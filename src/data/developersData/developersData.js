@@ -1,0 +1,165 @@
+// src/data/developersData/developersData.js
+
+export const developersData = (CDN) => [
+  // ============================================================
+  // CORE DEVELOPERS (WITH EXISTING LOGOS)
+  // ============================================================
+  {
+    id: "sobha",
+    slug: "sobha",
+    name: "Sobha Realty",
+    logo: "/Sobha-Realty-Square-Logo.jpg",
+    image: `${CDN}/aquamont/intro-main.png`,
+    tagline: "Master developer of waterfront and park-front communities.",
+  },
+  {
+    id: "arada",
+    slug: "arada",
+    name: "Arada",
+    logo: "/arada-developer.avif",
+    image: `${CDN}/massar-3/hero-bg.jpg`,
+    tagline: "Lifestyle communities with greenery and family amenities.",
+  },
+  {
+    id: "damac",
+    slug: "damac",
+    name: "DAMAC Properties",
+    logo: "/damac-logo.png",
+    image: `${CDN}/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20%281%29.jpeg`,
+    tagline: "High-impact branded residences & resort living.",
+  },
+  {
+    id: "azizi",
+    slug: "azizi",
+    name: "Azizi Developments",
+    logo: "/azizi.jpg",
+    image: `${CDN}/riviera/hero-bg.jpg`,
+    tagline: "Strong ROI options in strategic locations across Dubai.",
+  },
+  {
+    id: "omniyat",
+    slug: "omniyat",
+    name: "Omniyat",
+    logo: "/omniyat-logo.avif",
+    image: `${CDN}/lumena-alta/hero-bg.jpg`,
+    tagline: "Ultra-luxury design-led developments on the waterfront.",
+  },
+
+  // ============================================================
+  // EXTRA DEVELOPERS (LOGO OPTIONAL, IMAGES REUSE EXISTING CDN)
+  // ============================================================
+
+  {
+    id: "emaar",
+    slug: "emaar",
+    name: "Emaar Properties",
+    logo: "/Sobha-Realty-Square-Logo.jpg",
+    image: `${CDN}/aquamont/intro-main.png`,
+    tagline: "Creator of Downtown Dubai, Dubai Marina and iconic landmarks.",
+  },
+  {
+    id: "nakheel",
+    slug: "nakheel",
+    name: "Nakheel",
+    logo: "/arada-developer.avif",
+    image: `${CDN}/massar-3/hero-bg.jpg`,
+    tagline: "Waterfront and island communities shaping Dubai’s coastline.",
+  },
+  {
+    id: "meraas",
+    slug: "meraas",
+    name: "Meraas",
+    logo: "/damac-logo.png",
+    image: `${CDN}/riviera/hero-bg.jpg`,
+    tagline: "Urban lifestyle destinations and beachfront communities.",
+  },
+  {
+    id: "ellington",
+    slug: "ellington",
+    name: "Ellington Properties",
+    logo: "/azizi.jpg",
+    image: `${CDN}/lumena-alta/hero-bg.jpg`,
+    tagline: "Design-first boutique residences with curated interiors.",
+  },
+  {
+    id: "danube",
+    slug: "danube",
+    name: "Danube Properties",
+    logo: "/azizi.jpg",
+    image: `${CDN}/aquamont/intro-main.png`,
+    tagline: "Value-driven off-plan projects with flexible payment plans.",
+  },
+  {
+    id: "select-group",
+    slug: "select-group",
+    name: "Select Group",
+    logo: "/azizi.jpg",
+    image: `${CDN}/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20%281%29.jpeg`,
+    tagline: "High-end waterfront towers in Dubai Marina and beyond.",
+  },
+
+  {
+    id: "dubai-properties",
+    slug: "dubai-properties",
+    name: "Dubai Properties",
+    logo: "/azizi.jpg",
+    image: `${CDN}/massar-3/hero-bg.jpg`,
+    tagline: "Established communities across Business Bay, JBR and beyond.",
+  },
+  {
+    id: "mag",
+    slug: "mag",
+    name: "MAG",
+    logo: "/azizi.jpg",
+    image: `${CDN}/riviera/hero-bg.jpg`,
+    tagline: "Mixed-use developments with a focus on livability and value.",
+  },
+  {
+    id: "tiger",
+    slug: "tiger",
+    name: "Tiger Properties",
+    logo: "/azizi.jpg",
+    image: `${CDN}/lumena-alta/hero-bg.jpg`,
+    tagline: "Residential towers in emerging and established communities.",
+  },
+  {
+    id: "deyaar",
+    slug: "deyaar",
+    name: "Deyaar Development",
+    logo: "/azizi.jpg",
+    image: `${CDN}/aquamont/intro-main.png`,
+    tagline: "Mid- to high-rise residential buildings across key districts.",
+  },
+  {
+    id: "nshama",
+    slug: "nshama",
+    name: "NSHAMA",
+    logo: "/azizi.jpg",
+    image: `${CDN}/massar-3/hero-bg.jpg`,
+    tagline: "Town Square Dubai and family-oriented suburban communities.",
+  },
+  {
+    id: "binghatti",
+    slug: "binghatti",
+    name: "Binghatti",
+    logo: "/azizi.jpg",
+    image: `${CDN}/riviera/hero-bg.jpg`,
+    tagline: "Architecturally expressive towers with strong rental demand.",
+  },
+  {
+    id: "reportage",
+    slug: "reportage",
+    name: "Reportage Properties",
+    logo: "/azizi.jpg",
+    image: `${CDN}/lumena-alta/hero-bg.jpg`,
+    tagline: "Efficient layouts and investor-friendly pricing structures.",
+  },
+  {
+    id: "samana",
+    slug: "samana",
+    name: "Samana Developers",
+    logo: "/azizi.jpg",
+    image: `${CDN}/aquamont/intro-main.png`,
+    tagline: "Resort-style projects with private pools and leisure decks.",
+  },
+];

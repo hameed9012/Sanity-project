@@ -1,0 +1,464 @@
+.missionVision {
+  position: relative;
+  padding: 120px 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0a0a0a 100%);
+  overflow: hidden;
+}
+
+.backgroundElements {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.goldOrb {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(215, 180, 106, 0.1) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: floatOrb 8s ease-in-out infinite;
+}
+
+.diamondGrid {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  width: 400px;
+  height: 400px;
+  background-image: linear-gradient(
+      45deg,
+      rgba(215, 180, 106, 0.03) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, rgba(215, 180, 106, 0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(215, 180, 106, 0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(215, 180, 106, 0.03) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+  opacity: 0.4;
+}
+
+@keyframes floatOrb {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.sectionTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.accent {
+  background: linear-gradient(135deg, #d7b46a 0%, #f4e4b4 50%, #d7b46a 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(215, 180, 106, 0.3);
+}
+
+.titleDivider {
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #d7b46a, transparent);
+  margin: 0 auto;
+  position: relative;
+}
+
+.titleDivider::before,
+.titleDivider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: #d7b46a;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.titleDivider::before {
+  left: -20px;
+}
+
+.titleDivider::after {
+  right: -20px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 80px;
+}
+
+.missionCard,
+.visionCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(215, 180, 106, 0.15);
+  border-radius: 20px;
+  padding: 50px 40px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.missionCard::before,
+.visionCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d7b46a, transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.missionCard:hover::before,
+.visionCard:hover::before {
+  opacity: 1;
+}
+
+.missionCard:hover,
+.visionCard:hover {
+  transform: translateY(-10px);
+  border-color: rgba(215, 180, 106, 0.4);
+  box-shadow: 0 20px 60px rgba(215, 180, 106, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.iconWrapper {
+  width: 70px;
+  height: 70px;
+  background: rgba(215, 180, 106, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(215, 180, 106, 0.3);
+}
+
+.crownIcon,
+.visionIcon {
+  font-size: 2rem;
+  filter: grayscale(1) brightness(2);
+}
+
+.cardTitle {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 600;
+  color: #d7b46a;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cardContent {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cardText {
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  line-height: 1.7;
+  margin-bottom: 30px;
+
+  font-weight: 300;
+}
+
+.highlight {
+  color: #d7b46a;
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(215, 180, 106, 0.3);
+}
+
+.missionPoints {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.point {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pointIcon {
+  color: #d7b46a;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.visionAspirations {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.aspiration {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+  transition: all 0.3s ease;
+}
+
+.aspiration:hover {
+  background: rgba(215, 180, 106, 0.05);
+  border-color: rgba(215, 180, 106, 0.3);
+  transform: translateX(10px);
+}
+
+.aspirationNumber {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #d7b46a;
+  min-width: 50px;
+}
+
+.aspirationText {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.philosophy {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+  position: relative;
+}
+
+.philosophy::before {
+  content: '"';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 6rem;
+  color: rgba(215, 180, 106, 0.1);
+  line-height: 1;
+}
+
+.philosophyContent {
+  position: relative;
+  z-index: 2;
+}
+
+.philosophyTitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #d7b46a;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.philosophyText {
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  margin-bottom: 25px;
+}
+
+.signature {
+  font-size: 1.1rem;
+  color: #d7b46a;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .missionVision {
+    padding: 100px 0;
+  }
+
+  .contentGrid {
+    gap: 40px;
+  }
+
+  .missionCard,
+  .visionCard {
+    padding: 40px 30px;
+  }
+
+  .goldOrb {
+    width: 200px;
+    height: 200px;
+  }
+
+  .diamondGrid {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .container {
+    padding: 0 25px;
+  }
+
+  .missionCard,
+  .visionCard {
+    padding: 35px 25px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .iconWrapper {
+    width: 60px;
+    height: 60px;
+  }
+
+  .crownIcon,
+  .visionIcon {
+    font-size: 1.5rem;
+  }
+
+  .aspiration {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+    padding: 25px 20px;
+  }
+
+  .aspiration:hover {
+    transform: translateY(-5px);
+  }
+
+  .philosophy {
+    padding: 50px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .missionVision {
+    padding: 80px 0;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .missionCard,
+  .visionCard {
+    padding: 30px 20px;
+  }
+
+  .header {
+    margin-bottom: 60px;
+  }
+
+  .sectionTitle {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .cardText {
+    font-size: 1rem;
+  }
+
+  .point {
+    font-size: 0.9rem;
+  }
+
+  .aspirationText {
+    font-size: 0.9rem;
+  }
+
+  .philosophyText {
+    font-size: 1.1rem;
+  }
+
+  .goldOrb {
+    display: none;
+  }
+
+  .diamondGrid {
+    display: none;
+  }
+}
+
+/* Enhanced hover effects for mobile */
+@media (hover: none) {
+  .missionCard:hover,
+  .visionCard:hover {
+    transform: none;
+  }
+
+  .aspiration:hover {
+    transform: none;
+  }
+}
+
+.sectionTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}

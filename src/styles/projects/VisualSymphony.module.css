@@ -1,0 +1,254 @@
+/* Fonts – same as Sobha */
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/ringside");
+
+/* ========= LAYOUT ========= */
+
+.section {
+  padding: 80px 0 100px;
+  background: #ffffff;
+}
+
+.wrapper {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 30px;
+  text-align: center;
+}
+
+/* Keep desktop exactly the same - only change below 1000px */
+@media (max-width: 1000px) {
+  .wrapper {
+    padding: 0 20px;
+  }
+}
+
+.heading {
+  margin: 0 0 42px 0;
+  text-transform: uppercase;
+
+  font-weight: 300;
+  font-size: 34px;
+  line-height: 41px;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 1000px) {
+  .heading {
+    font-size: 30px;
+    line-height: 36px;
+  }
+}
+
+.loadingState {
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #000;
+}
+
+/* ========= OUTER SLIDER SHELL ========= */
+
+.slider {
+  margin: 0;
+  direction: ltr;
+  position: relative;
+}
+
+.swiperShell {
+  position: relative;
+}
+
+/* ========= SWIPER CORE HOOKS ========= */
+
+.slider :global(.visual-symphony-swiper.swiper) {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 1440px;
+  overflow: visible;
+}
+
+.slider :global(.visual-symphony-swiper .swiper-wrapper) {
+  align-items: center;
+}
+
+.slider :global(.visual-symphony-swiper .swiper-slide) {
+  width: 1173px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+  transition: transform 0.4s linear;
+  z-index: 1;
+}
+
+@media (min-width: 1000px) {
+  .slider :global(.visual-symphony-swiper .swiper-slide) {
+    margin: 0 -80px;
+  }
+}
+
+@media (max-width: 999px) {
+  .slider :global(.visual-symphony-swiper .swiper-slide) {
+    width: 100% !important;
+    margin: 0;
+    flex: 0 0 100%;
+  }
+
+  .slider :global(.visual-symphony-swiper .swiper-wrapper) {
+    display: flex;
+    width: 100%;
+  }
+}
+
+.slideItem {
+  height: 100%;
+}
+
+.slideInner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.imageWrapper {
+  width: 100%;
+  max-width: 1173px;
+  height: 708.93px;
+}
+
+@media (max-width: 999px) {
+  .imageWrapper {
+    height: auto;
+    aspect-ratio: 16/9;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+.image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  border-radius: 7px;
+  display: block;
+  box-sizing: border-box;
+  transition: all 0.5s ease;
+  cursor: url("/s-icon-pointer.svg"), auto;
+}
+
+@media (max-width: 999px) {
+  .image {
+    object-fit: contain;
+    border-radius: 5px;
+  }
+}
+
+/* SCALE BEHAVIOR */
+
+@media (min-width: 1000px) {
+  .slider :global(.visual-symphony-swiper .swiper-slide-prev),
+  .slider :global(.visual-symphony-swiper .swiper-slide-next) {
+    transform: scale(0.7) !important;
+    transition: all 0.4s linear !important;
+  }
+}
+
+.slider :global(.visual-symphony-swiper .swiper-slide-active) {
+  transform: scale(1) !important;
+  transition: all 0.4s linear !important;
+  z-index: 3 !important;
+}
+
+@media (max-width: 999px) {
+  .slider :global(.visual-symphony-swiper .swiper-slide),
+  .slider :global(.visual-symphony-swiper .swiper-slide-prev),
+  .slider :global(.visual-symphony-swiper .swiper-slide-next) {
+    transform: scale(1) !important;
+    margin: 0 !important;
+  }
+}
+
+/* PADDING */
+
+.slider
+  :global(
+    .visual-symphony-swiper.swiper.swiper-initialized.swiper-horizontal.swiper-backface-hidden
+  ) {
+  padding: 0;
+}
+
+@media (max-width: 999px) {
+  .slider
+    :global(
+      .visual-symphony-swiper.swiper.swiper-initialized.swiper-horizontal.swiper-backface-hidden
+    ) {
+    padding: 15px 0;
+  }
+}
+
+/* ARROWS */
+
+.slider :global(.swiper-button-next),
+.slider :global(.swiper-button-prev) {
+  color: #ffffff;
+}
+
+.slider :global(.swiper-button-next::after),
+.slider :global(.swiper-button-prev::after) {
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  font-size: 26px;
+  font-weight: 700;
+}
+
+@media (min-width: 1000px) {
+  .slider :global(.swiper-button-next),
+  .slider :global(.swiper-button-prev) {
+    position: absolute;
+    width: 20px;
+    height: 38px;
+    border-radius: 50%;
+    top: 41%;
+  }
+
+  .slider :global(.swiper-button-prev) {
+    left: 0;
+  }
+
+  .slider :global(.swiper-button-next) {
+    right: 0;
+  }
+}
+
+@media (max-width: 999px) {
+  .slider :global(.swiper-button-next),
+  .slider :global(.swiper-button-prev) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slider :global(.swiper-button-prev) {
+    left: 10px;
+  }
+
+  .slider :global(.swiper-button-next) {
+    right: 10px;
+  }
+
+  .slider :global(.swiper-button-next::after),
+  .slider :global(.swiper-button-prev::after) {
+    font-size: 20px;
+  }
+}

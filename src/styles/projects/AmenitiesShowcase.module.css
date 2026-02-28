@@ -1,0 +1,256 @@
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/ringside");
+
+/* ===== SECTION WRAPPER (Sobha layout) ===== */
+
+.amenitiesSection {
+  background: #ffffff;
+  padding: 110px 0 100px;
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ===== TITLE – “Luxury That Elevates Every Moment” vibe ===== */
+
+.title {
+  font-weight: 300;
+  font-size: 46px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #000000;
+  margin: 0 0 45px 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== GRID (.row > .col-lg-2 col-6) ===== */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.col {
+  padding: 0 15px 30px;
+  width: 50%; /* col-6 on mobile by default */
+  display: flex;
+}
+
+/* ===== CARD (.grey-div) ===== */
+
+.greyCard {
+  padding: 30px 15px;
+  background: #f5f5f5; /* SAME colour as Sobha grey-div */
+  border-radius: 7px;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  border: none;
+  cursor: default;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  outline: none;
+}
+
+.greyCardActive,
+.greyCard:hover {
+  background: #f1f1f1; /* very subtle hover, like Sobha */
+}
+
+/* ===== ICON BLOCK (.grey-div i img) ===== */
+
+.iconWrapper {
+  margin-bottom: 20px;
+  width: 65px;
+  height: 65px;
+  margin-left: auto;
+  margin-right: auto;
+
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.iconImg {
+  object-fit: contain;
+}
+
+.iconFallback {
+  font-size: 32px;
+  color: #c7a386; /* warm gold similar to Sobha amenity icons */
+  line-height: 1;
+}
+
+/* ===== LABEL TEXT (.grey-div p) ===== */
+
+.label {
+  margin: 0;
+  font-size: 14px;
+  line-height: 19px;
+  text-transform: uppercase;
+  min-height: 60px;
+
+  letter-spacing: 0.09em;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== VIEW ALL BUTTON AREA (matches Sobha structure) ===== */
+
+/* ✅ FIXED VERSION */
+
+.buttonMain {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Scope the global class under a LOCAL class */
+.buttonMain :global(.button-1.view-all) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 260px;
+  height: 44px;
+  padding: 0 32px;
+
+  border-radius: 22px;
+  border: 1px solid #000000;
+  background: transparent;
+  color: #000000;
+
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+.buttonMain :global(.button-1.view-all i) {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS (copying Sobha’s grid behavior) ===== */
+
+@media (min-width: 1000px) {
+  .col {
+    width: 16.6667%; /* 6 per row like col-lg-2 */
+  }
+
+  .amenitiesSection {
+    padding-top: 120px;
+    padding-bottom: 110px;
+  }
+}
+
+@media (max-width: 999px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .amenitiesSection {
+    padding: 80px 0 70px;
+  }
+
+  .title {
+    font-size: 34px;
+    margin-bottom: 40px;
+  }
+
+  .row {
+    margin: 0 -10px;
+  }
+
+  .col {
+    width: 50%; /* col-6 */
+    padding: 0 10px 24px;
+  }
+
+  .greyCard {
+    padding: 24px 14px;
+  }
+
+  .label {
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 18px;
+  }
+
+  .title {
+    font-size: 30px;
+    margin-bottom: 32px;
+  }
+
+  .col {
+    width: 100%;
+  }
+
+  .greyCard {
+    padding: 22px 16px;
+  }
+}
+
+/* Reduced motion – no animation dependency */
+@media (prefers-reduced-motion: reduce) {
+  .greyCard,
+  .greyCard:hover {
+    transition: none;
+  }
+}
+/* Add to AmenitiesShowcase.module.css */
+.iconFallback {
+  color: #d7b46a;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.greyCard:hover .iconFallback {
+  opacity: 1;
+}
+/* Add to AmenitiesShowcase.module.css */
+.iconFallback {
+  color: #d7b46a;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.greyCard:hover .iconFallback {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Loading state */
+.loadingCard {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}

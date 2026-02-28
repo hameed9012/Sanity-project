@@ -1,0 +1,773 @@
+.footer {
+  background-color: #f9f9f9;
+  color: #000000;
+
+  position: relative;
+  padding: 108px 0 50px 0;
+  margin-bottom: -1px;
+  width: 100%;
+  overflow-x: hidden;
+
+  /* ✅ Make spacing scale smoothly */
+  --maxW: 1440px;
+  --padX: clamp(16px, 4.2vw, 80px);
+  --padXWide: clamp(16px, 5vw, 80px);
+  --padXMed: clamp(16px, 4vw, 40px);
+
+  /* ✅ Typography stable across screens */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.footer,
+.footer * {
+  box-sizing: border-box;
+}
+
+/* long golden line behind the logo – Sobha style */
+.footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: clamp(90px, 12vw, 135px);
+  width: 100%;
+  height: 1px;
+  background: #d5b9a1;
+  z-index: 0;
+}
+
+/* ========== TOP LOGO AREA ========== */
+
+.logoBar {
+  background-color: #f9f9f9;
+  width: 100%;
+}
+
+.logoBarInner {
+  max-width: var(--maxW);
+  margin: 0 auto;
+  padding: 0 var(--padX);
+  width: 100%;
+}
+
+.logoWrap {
+  background: #f9f9f9;
+  max-width: min(320px, 100%);
+  margin: 0 auto 25px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 18px 40px;
+  width: 100%;
+  line-height: 1.3;
+}
+
+.logoWrap::before,
+.logoWrap::after {
+  content: none;
+}
+
+.logoImage {
+  display: inline-block;
+  height: auto;
+  max-width: 100%;
+}
+
+/* ========== MAIN FOOTER AREA (LINK COLUMNS) ========== */
+
+.footerMain {
+  max-width: var(--maxW);
+  margin: 0 auto;
+  padding: 0 var(--padXWide);
+  width: 100%;
+}
+
+.footerMainInner {
+  border-bottom: 1px solid #eceae6;
+  padding-bottom: 40px;
+  width: 100%;
+}
+
+/* First row – APARTMENTS / VILLAS / PENTHOUSES */
+.propertiesRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 64px;
+  row-gap: 20px;
+  width: 100%;
+}
+
+.colBlock {
+  min-width: 0;
+  width: 100%;
+}
+
+.colTitle {
+  font-size: 16px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #000000;
+  margin-bottom: 16px;
+  text-align: left;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.linkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.linkItem {
+  margin: 10px 0;
+  width: 100%;
+}
+
+.linkItem:last-child {
+  margin-bottom: 0;
+}
+
+.linkItemMuted {
+  font-size: 12px;
+  color: #b0aca3;
+}
+
+.link {
+  font-size: 12px;
+  color: #4f5459;
+  text-decoration: none;
+  line-height: 1.6;
+  display: inline-block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  font-weight: 300;
+}
+
+.link:hover {
+  color: #c9a485;
+}
+
+/* ========== SECOND ROW – COMMUNITIES / MEDIA / ABOUT / CONTACT ========== */
+
+.footerMiddle {
+  padding: 45px 0 45px;
+  border-bottom: 1px solid #eceae6;
+  width: 100%;
+}
+
+.footerMiddleInner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 64px;
+  row-gap: 24px;
+  width: 100%;
+}
+
+.middleCol {
+  min-width: 0;
+  width: 100%;
+}
+
+.middleTitle {
+  font-size: 16px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #000000;
+  margin-bottom: 16px;
+  text-align: left;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ========== BOTTOM FOOTER - LUXURY CORPORATE ========== */
+
+.footerBottom {
+  padding: 70px 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 60px;
+  border-top: 1px solid #e8e6e1;
+  width: 100%;
+
+  /* grid layout always LTR so columns stay:
+     [corporate]  [address]  [contact] */
+  direction: ltr;
+}
+
+/* LEFT BLOCK */
+.bottomLeft {
+  width: 100%;
+}
+
+.corporateBlock {
+  text-align: left;
+  width: 100%;
+}
+
+.corporateName {
+  font-size: 16px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #000;
+  margin-bottom: 4px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.corporateTitle {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #8c8c8c;
+  margin-bottom: 20px;
+  font-weight: 300;
+  overflow-wrap: anywhere;
+}
+
+.corporateDivider {
+  width: 40px;
+  background: #c4b5a3;
+  margin: 20px 0;
+}
+
+.legalInfo {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #666;
+  line-height: 1.8;
+  width: 100%;
+  font-weight: 300;
+}
+
+.legalInfo div {
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+
+/* CENTER – ADDRESS */
+.bottomCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.prestigeAddress {
+  text-align: justify;
+  width: 100%;
+}
+
+.addressTitle {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #8c8c8c;
+  margin-bottom: 16px;
+  font-weight: 300;
+  overflow-wrap: anywhere;
+}
+
+.addressDivider {
+  width: 30px;
+  height: 1px;
+  background: #c4b5a3;
+  margin: 0 auto 20px;
+}
+
+.addressLines {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #000;
+  line-height: 1.8;
+  width: 100%;
+  font-weight: 300;
+}
+
+.addressLines div {
+  overflow-wrap: anywhere;
+}
+
+.poBox {
+  margin-top: 12px;
+  color: #666;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  font-weight: 300;
+}
+
+/* RIGHT – CONTACT */
+.bottomRight {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.contactBlock {
+  text-align: justify;
+  width: 100%;
+}
+
+.contactTitle {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #8c8c8c;
+  margin-bottom: 16px;
+  font-weight: 300;
+  overflow-wrap: anywhere;
+}
+
+.contactDivider {
+  width: 40px;
+  height: 1px;
+  background: #c4b5a3;
+  margin: 0 0 20px auto;
+}
+
+.contactDetails {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.contactLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 15px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.contactType {
+  color: #666;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  min-width: 60px;
+  overflow-wrap: anywhere;
+  font-weight: 300;
+}
+
+.contactNumber,
+.contactEmail {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  text-align: left;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.contactNumber:hover,
+.contactEmail:hover {
+  color: #8c8c8c;
+}
+
+/* ====== COPYRIGHT + SOCIALS STRIP (BOTTOM LINE) ====== */
+
+.footerMeta {
+  border-top: 1px solid #e8e6e1;
+  margin-top: 32px;
+  padding-top: 18px;
+  width: 100%;
+}
+
+.footerMetaInner {
+  max-width: var(--maxW);
+  margin: 0 auto;
+  padding: 0 var(--padXWide);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 24px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #777777;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.metaCopy {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  flex: 1;
+  min-width: 200px;
+  font-weight: 300;
+}
+
+/* Social icons row */
+.metaSocials {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.metaSocialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.metaSocialLink:hover {
+  transform: scale(1.1) translateY(-1px);
+  opacity: 0.8;
+}
+
+.metaSocialIcon {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+}
+
+.metaSocialIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ========== RTL OVERRIDES ========== */
+
+[dir="rtl"] .colTitle,
+[dir="rtl"] .middleTitle {
+  text-align: right;
+}
+
+[dir="rtl"] .link {
+  text-align: right;
+}
+
+[dir="rtl"] .corporateBlock,
+[dir="rtl"] .prestigeAddress,
+[dir="rtl"] .contactBlock {
+  text-align: right;
+}
+
+[dir="rtl"] .bottomRight {
+  justify-content: flex-start;
+}
+
+[dir="rtl"] .contactLine {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .contactType {
+  text-align: right;
+}
+
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+
+@media (min-width: 1440px) {
+  .footerMain,
+  .footerMetaInner,
+  .logoBarInner {
+    max-width: var(--maxW);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .footerMain {
+    padding: 0 var(--padXMed);
+  }
+
+  .footerMetaInner {
+    padding: 0 var(--padXMed);
+  }
+
+  .propertiesRow,
+  .footerMiddleInner {
+    column-gap: 40px;
+  }
+
+  .footerBottom {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .footerMain {
+    padding: 0 clamp(16px, 3.2vw, 32px);
+  }
+
+  .footerMetaInner {
+    padding: 0 clamp(16px, 3.2vw, 32px);
+  }
+
+  .propertiesRow,
+  .footerMiddleInner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+    row-gap: 32px;
+  }
+
+  .colTitle,
+  .middleTitle {
+    text-align: center;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .linkList {
+    text-align: center;
+  }
+
+  .link {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  .footerBottom {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 50px 0 30px;
+    text-align: center;
+  }
+
+  .footer::before {
+    top: 120px;
+  }
+
+  .corporateBlock,
+  .prestigeAddress,
+  .contactBlock {
+    text-align: center;
+  }
+
+  .corporateDivider,
+  .contactDivider,
+  .addressDivider {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bottomCenter,
+  .bottomRight {
+    justify-content: center;
+  }
+
+  .contactLine {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .contactNumber,
+  .contactEmail {
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .legalInfo,
+  .addressLines,
+  .contactDetails {
+    font-weight: 300;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer {
+    padding: 80px 0 40px 0;
+  }
+
+  .footer::before {
+    top: 100px;
+  }
+
+  .logoWrap {
+    max-width: min(280px, 100%);
+    margin-bottom: 60px;
+    padding: 18px 30px;
+    text-align: center;
+  }
+
+  .footerMain {
+    padding: 0 24px;
+  }
+
+  .footerMetaInner {
+    padding: 0 24px;
+  }
+
+  .propertiesRow,
+  .footerMiddleInner {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+
+  .colTitle,
+  .middleTitle {
+    font-size: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .link {
+    font-size: 14px;
+    font-weight: 300;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .linkList {
+    text-align: center;
+  }
+
+  .footerBottom {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+    margin-top: 30px;
+    padding: 40px 0 30px;
+  }
+
+  .contactDivider {
+    margin: 0 auto 20px;
+  }
+
+  .contactLine {
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  .contactNumber,
+  .contactEmail {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .contactType {
+    font-size: 12px;
+    font-weight: 300;
+    min-width: auto;
+    margin-bottom: 4px;
+  }
+
+  .footerMetaInner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    row-gap: 20px;
+  }
+
+  .metaCopy {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  .metaSocials {
+    justify-content: center;
+    width: 100%;
+    gap: 24px;
+  }
+
+  .metaSocialLink {
+    width: 26px;
+    height: 26px;
+  }
+
+  [dir="rtl"] .contactLine {
+    flex-direction: column;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .link,
+  .contactNumber,
+  .contactEmail,
+  .metaSocialLink {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .link {
+    padding: 12px 0;
+  }
+
+  .metaSocialLink {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media print {
+  .footer {
+    background-color: white !important;
+    color: black !important;
+    padding: 50px 0 20px 0 !important;
+  }
+
+  .footer::before {
+    display: none;
+  }
+
+  .link:hover,
+  .contactNumber:hover,
+  .contactEmail:hover {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .metaSocials {
+    display: none !important;
+  }
+}
+/* ✅ FIX: make socials always visible on mobile */
+@media (max-width: 767px) {
+  .metaSocials {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .metaSocialLink {
+    display: inline-flex !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .metaSocialIcon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .metaSocialIcon svg {
+    width: 22px !important;
+    height: 22px !important;
+    display: block;
+  }
+}
+
+/* ✅ Also ensure touch rule doesn't break it */
+@media (hover: none) and (pointer: coarse) {
+  .metaSocialLink {
+    min-width: 36px;
+    min-height: 36px;
+  }
+}

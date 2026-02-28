@@ -1,0 +1,960 @@
+/* DubaiEconomicGrowth.module.css - UPDATED WITH YOUR CONTENT */
+/* Import Fonts */
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/ringside");
+
+.growthSection {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 40px;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.growthSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Background Elements */
+.backgroundElements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.luxuryBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.1;
+  transition: opacity 1.5s ease;
+}
+
+.backgroundOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.98) 100%
+  );
+}
+
+.floatingOrb {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(215, 180, 106, 0.1);
+  animation: floatOrb 20s ease-in-out infinite;
+}
+
+.floatingOrb:nth-child(1) {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.floatingOrb:nth-child(2) {
+  width: 150px;
+  height: 150px;
+  top: 60%;
+  right: 10%;
+  animation-delay: 7s;
+}
+
+.floatingOrb:nth-child(3) {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 15%;
+  animation-delay: 14s;
+}
+
+.circuitPattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(
+      circle at 25% 25%,
+      rgba(215, 180, 106, 0.05) 2px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(215, 180, 106, 0.05) 2px,
+      transparent 2px
+    );
+  background-size: 60px 60px;
+  opacity: 0.3;
+}
+
+@keyframes floatOrb {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.2;
+  }
+  33% {
+    transform: translate(30px, -40px) rotate(120deg);
+    opacity: 0.4;
+  }
+  66% {
+    transform: translate(-20px, 30px) rotate(240deg);
+    opacity: 0.3;
+  }
+}
+
+.container {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Main Header - UPDATED */
+.mainHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 60px;
+  align-items: center;
+  margin-bottom: 80px;
+}
+
+.headerVisual {
+  flex-shrink: 0;
+}
+
+.growthVisual {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.globeContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.globe {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid rgba(215, 180, 106, 0.3);
+  animation: rotateGlobe 20s linear infinite;
+}
+
+.globeLine {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(215, 180, 106, 0.2);
+  transform-origin: center;
+}
+
+.globeLine:nth-child(1) {
+  transform: rotate(0deg);
+}
+.globeLine:nth-child(2) {
+  transform: rotate(60deg);
+}
+.globeLine:nth-child(3) {
+  transform: rotate(120deg);
+}
+
+.globeCore {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #d7b46a, #b8943c);
+  box-shadow: 0 0 30px rgba(215, 180, 106, 0.5);
+}
+
+.risingParticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.particle {
+  position: absolute;
+  background: #d7b46a;
+  border-radius: 50%;
+  animation: riseParticle 3s ease-in infinite;
+}
+
+.particle:nth-child(1) {
+  width: 4px;
+  height: 4px;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  width: 6px;
+  height: 6px;
+  left: 40%;
+  animation-delay: 0.5s;
+}
+
+.particle:nth-child(3) {
+  width: 3px;
+  height: 3px;
+  left: 60%;
+  animation-delay: 1s;
+}
+
+.particle:nth-child(4) {
+  width: 5px;
+  height: 5px;
+  left: 80%;
+  animation-delay: 1.5s;
+}
+
+.particle:nth-child(5) {
+  width: 4px;
+  height: 4px;
+  left: 30%;
+  animation-delay: 2s;
+}
+
+@keyframes rotateGlobe {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes riseParticle {
+  0% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+}
+
+.headerContent {
+  max-width: 700px;
+}
+
+.sectionTitle {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 25px 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.goldDivider {
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+  margin: 0 0 30px 0;
+  border-radius: 2px;
+}
+
+.sectionDescription {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  opacity: 0.9;
+}
+
+.sectionSubtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Economy Section - UPDATED */
+.economySection {
+  margin-bottom: 80px;
+}
+
+.economyCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 50px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.economyCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+}
+
+.economyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(215, 180, 106, 0.3);
+}
+
+.economyTitle {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.economyIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(215, 180, 106, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d7b46a;
+  flex-shrink: 0;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+}
+
+.sectorsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.sectorItem {
+  background: rgba(215, 180, 106, 0.03);
+  border-radius: 20px;
+  padding: 0;
+  border: 1px solid transparent;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.sectorItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--sector-color);
+  transform: scaleY(0);
+  transition: transform 0.4s ease;
+}
+
+.sectorItem.active::before,
+.sectorItem:hover::before {
+  transform: scaleY(1);
+}
+
+.sectorItem.active,
+.sectorItem:hover {
+  background: rgba(215, 180, 106, 0.08);
+  border-color: rgba(215, 180, 106, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.sectorVisual {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.sectorImageContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.sectorImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s ease;
+}
+
+.sectorItem:hover .sectorImage {
+  transform: scale(1.05);
+}
+
+.sectorOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+.sectorIcon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d7b46a;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.sectorIcon span {
+  font-size: 1.5rem;
+}
+
+.sectorItem:hover .sectorIcon {
+  transform: scale(1.1) rotate(5deg);
+  background: #d7b46a;
+  color: #000000;
+}
+
+.sectorGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--sector-color);
+  opacity: 0.1;
+  animation: sectorPulse 2s ease-in-out infinite;
+}
+
+.sectorItem.active .sectorGlow {
+  animation: sectorPulseActive 1.5s ease-in-out infinite;
+}
+
+@keyframes sectorPulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.05;
+  }
+}
+
+@keyframes sectorPulseActive {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0.1;
+  }
+}
+
+.sectorContent {
+  padding: 25px;
+}
+
+.sectorName {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.sectorDescription {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  opacity: 0.8;
+}
+
+.sectorProgress {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--sector-color);
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+/* The Result Section - ADDED */
+.resultSection {
+  margin-bottom: 60px;
+}
+
+.resultCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 50px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.resultCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+}
+
+/* Economy Impact Chart */
+.resultVisual {
+  display: flex;
+  justify-content: center;
+}
+
+.economyImpact {
+  background: rgba(215, 180, 106, 0.03);
+  border-radius: 20px;
+  padding: 40px 30px;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  min-width: 300px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.impactChart {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 25px;
+  height: 200px;
+  margin-bottom: 25px;
+}
+
+.chartBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.chartBar[data-type="economy"] .barFill {
+  background: linear-gradient(to top, #d7b46a, #b8943c);
+  box-shadow: 0 10px 30px rgba(215, 180, 106, 0.3);
+  animation: growBarEconomy 1.5s ease-out forwards;
+}
+
+.chartBar[data-type="realestate"] .barFill {
+  background: linear-gradient(
+    to top,
+    rgba(215, 180, 106, 0.7),
+    rgba(184, 148, 60, 0.7)
+  );
+  box-shadow: 0 8px 25px rgba(215, 180, 106, 0.2);
+  animation: growBarRealEstate 1.5s ease-out 0.3s forwards;
+}
+
+.barFill {
+  width: 80px;
+  height: 0; /* Start from 0 for animation */
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding-bottom: 15px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.barFill:hover {
+  transform: scale(1.05);
+}
+
+.barValue {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.barLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chartArrow {
+  color: #d7b46a;
+  animation: bounceArrow 2s ease-in-out infinite;
+  margin-bottom: 60px;
+}
+
+.chartTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000000;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Chart Animations */
+@keyframes growBarEconomy {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 190px; /* 95% of 200px container */
+  }
+}
+
+@keyframes growBarRealEstate {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 176px; /* 88% of 200px container */
+  }
+}
+
+@keyframes bounceArrow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Result Content */
+.resultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.resultHeader {
+  margin-bottom: 10px;
+}
+
+.resultTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.resultText {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resultHighlight {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  padding: 25px;
+  background: rgba(215, 180, 106, 0.08);
+  border-radius: 16px;
+  border-left: 4px solid #d7b46a;
+  position: relative;
+}
+
+.resultHighlight::before {
+  content: "→";
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d7b46a;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.resultStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.resultStat {
+  text-align: center;
+  padding: 20px 15px;
+  background: rgba(215, 180, 106, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #d7b46a;
+  line-height: 1;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.investmentFeatures {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  flex: 1;
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  background: rgba(215, 180, 106, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.feature:hover .featureIcon {
+  background: #d7b46a;
+  transform: scale(1.1);
+}
+
+.feature span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #000000;
+  opacity: 0.8;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+  .sectorsGrid {
+    gap: 25px;
+  }
+
+  .resultCard {
+    gap: 40px;
+    padding: 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .growthSection {
+    padding: 80px 30px;
+  }
+
+  .mainHeader {
+    gap: 40px;
+  }
+
+  .sectorsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resultCard {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .impactChart {
+    height: 180px;
+  }
+
+  .barFill {
+    width: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .growthSection {
+    padding: 60px 20px;
+  }
+
+  .mainHeader {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .headerVisual {
+    display: flex;
+    justify-content: center;
+  }
+
+  .economyCard {
+    padding: 30px;
+  }
+
+  .resultCard {
+    padding: 30px;
+  }
+
+  .resultTitle {
+    font-size: 1.8rem;
+  }
+
+  .resultHighlight {
+    font-size: 1.1rem;
+    padding: 20px 20px 20px 45px;
+  }
+
+  .resultStats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .investmentFeatures {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .economyImpact {
+    min-width: auto;
+    padding: 30px 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .growthSection {
+    padding: 50px 15px;
+  }
+
+  .economyCard {
+    padding: 25px;
+  }
+
+  .sectorContent {
+    padding: 20px;
+  }
+
+  .sectorTitle {
+    font-size: 1.2rem;
+  }
+
+  .resultCard {
+    padding: 25px;
+  }
+
+  .resultTitle {
+    font-size: 1.6rem;
+  }
+
+  .resultHighlight {
+    font-size: 1rem;
+    padding: 15px 15px 15px 40px;
+  }
+
+  .impactChart {
+    height: 150px;
+    gap: 20px;
+  }
+
+  .barFill {
+    width: 60px;
+  }
+
+  .barValue {
+    font-size: 1rem;
+  }
+}

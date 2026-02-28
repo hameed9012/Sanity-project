@@ -1,0 +1,253 @@
+/* src/styles/properties/properties.module.css */
+
+.page {
+  background: #ffffff;
+}
+
+.container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+  padding: 28px 0 60px;
+}
+
+.h1 {
+  text-align: center;
+  font-size: 54px;
+  font-weight: 500;
+  margin: 12px 0 22px;
+  font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+}
+
+@media (max-width: 900px) {
+  .h1 {
+    font-size: 36px;
+  }
+}
+
+/* HERO */
+.hero {
+  height: 420px;
+  background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.25),
+      rgba(0, 0, 0, 0.05)
+    ),
+    url("https://luxury-real-estate-media.b-cdn.net/gfs/coventry-curve-2/VIEW%201%20AERIAL.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.heroTop {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  width: min(1200px, 92%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.heroLogo {
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 40px;
+  color: #d4b05b;
+  text-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* INLINE SEARCH */
+.inlineSearchWrap {
+  margin: 10px 0 14px;
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.inlineSearchInput {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  width: 95%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  box-shadow: 0 8px 32px #0f172a1f;
+}
+
+.inlineSearchClear {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+/* STATUS TABS */
+.statusTabsContainer {
+  margin: 20px 0 16px;
+  padding: 0 12px;
+}
+
+.statusTabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2px;
+}
+
+.statusTab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.statusTab:hover {
+  color: #111827;
+}
+
+.statusTabActive {
+  color: #111827;
+  border-bottom-color: #111827;
+  font-weight: 700;
+}
+
+.tabLabel {
+  white-space: nowrap;
+}
+
+.tabCount {
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 30px;
+  text-align: center;
+}
+
+.statusTabActive .tabCount {
+  background: #111827;
+  color: white;
+}
+
+/* META */
+.metaRow {
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metaText {
+  color: #333;
+  font-size: 14px;
+}
+
+.metaTabName {
+  font-weight: 700;
+  color: #111827;
+}
+
+.resetBtn {
+  margin-left: auto;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+
+/* ✅ CARDS SECTION WRAPPER (NO MAP) */
+.cardsSection {
+  margin-top: 10px;
+}
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.loadMoreBtn {
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.endText {
+  text-align: center;
+  margin-top: 18px;
+  color: #777;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .statusTabs {
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 0;
+    scrollbar-width: none;
+  }
+
+  .statusTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .statusTab {
+    padding: 10px 14px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .metaRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .resetBtn {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+}

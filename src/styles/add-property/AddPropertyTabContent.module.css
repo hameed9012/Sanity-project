@@ -1,0 +1,59 @@
+.root {
+  width: 100%;
+}
+
+.tabRow {
+  display: flex;
+  gap: 12px;
+  padding: 16px 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.tabBtn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 14px 10px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  opacity: 0.7;
+}
+
+.active {
+  opacity: 1;
+  border-bottom-color: currentColor;
+}
+
+.panel {
+  padding: 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.cardTitle {
+  margin: 0 0 18px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.cardBody {
+  width: 100%;
+}
+
+/* mobile */
+@media (max-width: 720px) {
+  .tabRow {
+    padding: 12px 12px 0;
+  }
+  .card {
+    padding: 16px;
+  }
+}

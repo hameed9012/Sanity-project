@@ -1,0 +1,1931 @@
+/* TopHeader.module.css */
+
+:root {
+  --header-pad-y: 14px;
+  --container-max: 1385px;
+
+  --header-gutter-mobile: 16px;
+  --header-gutter-desktop: 28px;
+  --header-gutter: var(--header-gutter-mobile);
+
+  --gold-1: #c9a26a;
+  --gold-2: #a27b43;
+
+  --shadow-1: 0 28px 80px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.header :where(a, button, input) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 99999999;
+  padding: calc(var(--header-pad-y) + env(safe-area-inset-top, 0px)) 0;
+  transition:
+    backdrop-filter 0.25s ease,
+    background 0.25s ease;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.58) 0%,
+    rgba(10, 10, 10, 0.35) 40%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.scrolled {
+  backdrop-filter: blur(18px);
+}
+
+.mobileMenuOpenHeader {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.container {
+  width: min(var(--container-max), 100%);
+  margin: 0 auto;
+  padding-inline: var(--header-gutter);
+  display: grid;
+  grid-template-columns: 366px 1fr 1fr;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.menuLeft,
+.menuRight {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.menuLeft {
+  justify-content: flex-start;
+}
+
+.menuRight {
+  justify-content: flex-end;
+}
+
+.logoSec {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navLinks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+  align-items: center;
+  gap: 20px;
+}
+
+.level1Menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  opacity: 0.92;
+  white-space: nowrap;
+}
+
+.level1Menu::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: -3px;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  transition: width 0.18s ease;
+}
+
+.level1Menu:hover::after,
+.level1Menu.active::after {
+  width: 100%;
+}
+
+.level1Menu:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.active {
+  opacity: 1;
+}
+
+.menuItemHasChildren {
+  position: relative;
+}
+
+.megaMenuTrigger {
+  padding-inline-end: 10px;
+}
+
+/* Language button */
+.languageToggle {
+  margin-inline-start: 10px;
+}
+
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 106, 0.55);
+  background: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  color: #f9f5e9;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.langButton:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.langText {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.langDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+}
+
+.arabicActive {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+}
+
+.transitioning {
+  opacity: 0.7;
+}
+
+/* Mega menu animation */
+@keyframes curtainOpen {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scaleY(0.92);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scaleY(1);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.megaMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1185px, calc(100vw - 24px));
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+  animation: curtainOpen 0.5s cubic-bezier(0.24, 0.8, 0.25, 1);
+  animation-fill-mode: both;
+  transform-origin: top center;
+  z-index: 999;
+  max-height: calc(100vh - 92px);
+}
+
+/* ✅ BIG RIGHT IMAGE ALWAYS:
+   - keep 3rd column wide and image min-height big
+*/
+.megaMenuInner {
+  display: grid;
+  grid-template-columns: 220px 360px minmax(520px, 1fr);
+  min-height: 560px;
+  max-height: calc(100vh - 92px);
+}
+
+.megaMenuInnerRtl {
+  display: grid;
+  grid-template-columns: 220px 360px minmax(520px, 1fr);
+  min-height: 560px;
+  max-height: calc(100vh - 92px);
+}
+
+.megaColumnLeft {
+  background: #f9fafb;
+  padding: 18px 18px 22px 20px;
+  border-right: 1px solid rgba(209, 213, 219, 0.9);
+  overflow: auto;
+}
+
+.megaColumnLeftRtl {
+  border-right: none;
+  border-left: 1px solid rgba(209, 213, 219, 0.9);
+}
+
+.megaColumnMiddle {
+  padding: 22px;
+  border-right: 1px solid rgba(209, 213, 219, 0.9);
+  overflow: hidden;
+}
+
+.megaColumnMiddleRtl {
+  border-right: none;
+  border-left: 1px solid rgba(209, 213, 219, 0.9);
+}
+
+/* ✅ Right column always stretches */
+.megaColumnRight {
+  padding: 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 0;
+}
+
+.megaColumnHeader {
+  margin-bottom: 10px;
+}
+
+.megaColumnLabel {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+/* ✅ MARKET BLOCK (vertical column like categories) */
+.marketBlock {
+  margin-bottom: 14px;
+}
+
+.marketList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.marketLink {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #111;
+  font-weight: 800;
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.rtl .marketLink {
+  text-align: right;
+}
+
+.marketLink:hover,
+.marketActive {
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
+}
+
+/* Categories */
+.categoryList,
+.projectList {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0 0;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.categoryLink {
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #111;
+  font-weight: 600;
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.rtl .categoryLink {
+  text-align: right;
+}
+
+.categoryLink:hover,
+.activeCategory {
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
+}
+
+/* Projects list */
+.projectList {
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.projectList::-webkit-scrollbar {
+  width: 4px;
+}
+.projectList::-webkit-scrollbar-thumb {
+  background: var(--gold-1);
+  border-radius: 999px;
+}
+
+.projectLink {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #111;
+  transition:
+    background 0.14s ease,
+    transform 0.14s ease;
+}
+
+.projectLink:hover,
+.activeProject {
+  background: #f3f4f6;
+  transform: translateX(3px);
+}
+
+.rtl .projectLink:hover,
+.rtl .activeProject {
+  transform: translateX(-3px);
+}
+
+.projectTitleInline {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.projectMeta {
+  margin-top: 4px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.emptyListHint {
+  padding: 14px 12px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ✅ BIG IMAGE always */
+.megaImageWrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+  min-width: 0;
+}
+
+.megaImage {
+  width: 100%;
+  height: 100%;
+  min-height: 560px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Communities mega */
+.megaMenuInnerCommunities {
+  display: flex;
+  min-height: 520px;
+  max-height: calc(100vh - 92px);
+}
+
+.megaMenuInnerCommunitiesRtl {
+  flex-direction: row-reverse;
+}
+
+.megaCommunitiesLeft {
+  flex: 0 0 360px;
+  background: #f9fafb;
+  padding: 22px;
+  border-right: 1px solid rgba(209, 213, 219, 0.9);
+  overflow: auto;
+}
+
+.megaCommunitiesLeftRtl {
+  border-right: none;
+  border-left: 1px solid rgba(209, 213, 219, 0.9);
+  text-align: right;
+}
+
+.megaCommunitiesRight {
+  flex: 1 1 auto;
+  padding: 18px 20px;
+  min-width: 0;
+}
+
+.communitySearchForm {
+  margin-bottom: 10px;
+}
+
+.communitySearchInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  outline: none;
+}
+
+.communitySearchInput:focus {
+  border-color: var(--gold-1);
+}
+
+.communityList {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  max-height: 500px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.communityList::-webkit-scrollbar {
+  width: 4px;
+}
+.communityList::-webkit-scrollbar-thumb {
+  background: var(--gold-1);
+  border-radius: 999px;
+}
+
+.communityLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #111827;
+  font-size: 13px;
+  transition:
+    background 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.communityLink:hover,
+.activeCommunity {
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.16);
+  transform: translateX(3px);
+}
+
+.rtl .communityLink:hover,
+.rtl .activeCommunity {
+  transform: translateX(-3px);
+}
+
+.communityArrow {
+  color: #9ca3af;
+}
+
+.communityPreviewWrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0b1120;
+  box-shadow: var(--shadow-2);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+}
+
+.communityPreviewImage {
+  background-size: cover;
+  background-position: center;
+}
+
+.communityPreviewInfo {
+  background: #fff;
+  padding: 18px 20px;
+}
+
+.communityPreviewTitle {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.communityPreviewLocation {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.communityPreviewStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.communityStatLabel {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #9ca3af;
+}
+
+.communityStatValue {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.communityPreviewButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Touch close strip */
+.megaCloseStrip {
+  display: none;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 0 14px;
+  cursor: pointer;
+}
+.megaCloseStrip span {
+  display: block;
+  width: 68px;
+  height: 5px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.18);
+}
+@media (hover: none), (pointer: coarse) {
+  .megaCloseStrip {
+    display: block;
+  }
+}
+
+/* MOBILE ACTIONS */
+.mobileActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobileLang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 106, 0.55);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.burger {
+  width: 42px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: #fff;
+  border-radius: 999px;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.burgerActive span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.burgerActive span:nth-child(2) {
+  opacity: 0;
+}
+.burgerActive span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* SEARCH OVERLAY */
+.searchOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+}
+
+.searchPanel {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.searchPanelInner {
+  max-width: 1185px;
+  margin: 0 auto;
+  padding: 56px 16px 24px;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 12px 4px;
+  border: none;
+  border-bottom: 1px solid #d1d5db;
+  font-size: 16px;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-bottom-color: var(--gold-1);
+}
+
+.searchButton {
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.searchClose {
+  border: none;
+  background: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* MOBILE NAV (your existing mobile styles kept from earlier version) */
+.mobileNav {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.mobileNavActive {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobileNavBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.mobileNavSheet {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, calc(100vw - 24px));
+  background: #f7f7f7;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.mobileBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.mobileBrandLogo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+.mobileClose {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mobileContent {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: auto;
+}
+
+.mobileLangRow {
+  display: flex;
+  justify-content: center;
+}
+
+.mobileLangButton {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  padding: 12px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mobileNavItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobileNavLink {
+  background: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 14px;
+  padding: 14px 14px;
+  text-decoration: none;
+  color: #111;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileGroup {
+  border: 1px solid #e4e4e4;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.mobileGroupTrigger {
+  width: 100%;
+  border: none;
+  background: #fff;
+  padding: 14px 14px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.chev {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.mobileGroupPanel {
+  border-top: 1px solid #eeeeee;
+  padding: 12px;
+  background: #fbfbfb;
+  max-height: 52vh;
+  overflow: auto;
+}
+
+.mobileMainLink {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: linear-gradient(135deg, rgba(201, 162, 106, 0.12), #ffffff);
+  border: 1px solid rgba(201, 162, 106, 0.28);
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.mobileMainLinkTitle {
+  display: block;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mobileMainLinkSub {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mobileSubGroup {
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.mobileSubTrigger,
+.mobileSubTrigger2 {
+  width: 100%;
+  border: none;
+  background: #fff;
+  padding: 12px 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.mobileSubPanel {
+  border-top: 1px solid #f0f0f0;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.devRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.devLogo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 4px;
+}
+
+.mobileProjects {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobileProjectLink {
+  color: #111;
+  background: #fff;
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  grid-template-columns: 68px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  text-decoration: none;
+  display: grid;
+}
+
+.projectThumb {
+  width: 70px;
+  height: 54px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+}
+
+.projectText {
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.projectArrow {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.mobileSearch {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  outline: none;
+  margin-bottom: 12px;
+}
+
+.mobileWhereList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobileWhereItem {
+  display: grid;
+  grid-template-columns: 74px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #ededed;
+  color: #111;
+}
+
+.whereThumb {
+  width: 74px;
+  height: 56px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+}
+
+.whereText {
+  font-weight: 900;
+}
+
+/* CURTAIN Search Properties */
+@keyframes curtainBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes curtainPanelDrop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.curtainRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999980;
+}
+
+.curtainBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.58);
+  backdrop-filter: blur(12px);
+  animation: curtainBackdropFade 0.22s ease both;
+}
+
+.curtainPanel {
+  position: absolute;
+  left: 50%;
+  width: min(1285px, calc(100vw - 24px));
+  max-height: calc(100vh - 96px);
+  border-radius: 18px;
+  overflow: visible;
+  background: linear-gradient(180deg, #0b1120 0%, #070b14 100%);
+  box-shadow: 0 35px 110px rgba(0, 0, 0, 0.55);
+  animation: curtainPanelDrop 0.45s cubic-bezier(0.24, 0.8, 0.25, 1) both;
+}
+
+.curtainInnerCard {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(201, 162, 106, 0.2);
+}
+
+.curtainHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.curtainTitle {
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.curtainClose {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.curtainClose:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.curtainBody {
+  padding: 18px;
+  background: #ffffff;
+  overflow: auto;
+  height: 100vh;
+}
+
+.searchPropsItem {
+  display: flex;
+  align-items: center;
+}
+
+.searchPropsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* RESPONSIVE */
+@media (min-width: 1024px) {
+  :root {
+    --header-gutter: var(--header-gutter-desktop);
+  }
+  .navLinks {
+    display: flex;
+  }
+  .mobileActions {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .megaMenu {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 86px);
+  }
+  .megaMenuInner {
+    grid-template-columns: 200px 320px minmax(420px, 1fr);
+    min-height: 520px;
+    max-height: calc(100vh - 86px);
+  }
+  .megaImage {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .menuLeft .navLinks,
+  .menuRight .navLinks {
+    display: none !important;
+  }
+  .logoImage {
+    height: 38px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+  }
+  .mobileActions {
+    display: flex;
+  }
+}
+
+@media (max-width: 1023px) {
+  .mobileMenuOpenHeader .logoSec {
+    display: none !important;
+  }
+  .mobileMenuOpenHeader {
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+  .mobileMenuOpenHeader .burger,
+  .mobileMenuOpenHeader .mobileActions {
+    display: none !important;
+  }
+}
+/* =========================
+   MOBILE BADGES & MARKET STYLES (100% width on phone)
+========================= */
+@media (max-width: 767px) {
+  /* Badges container - full width */
+  .badgesContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+  }
+
+  /* Individual badge items */
+  .badgeItem {
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+  }
+
+  /* Market section - full width */
+  .marketSection {
+    width: 100% !important;
+    padding: 0 16px !important;
+  }
+
+  /* Market list items */
+  .marketItem {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Market buttons/links */
+  .marketLink,
+  .marketButton {
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Market grid adjustments */
+  .marketGrid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Market cards */
+  .marketCard {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* For RTL support */
+  .rtl .marketLink,
+  .rtl .marketButton {
+    text-align: center !important;
+  }
+
+  /* If you have specific badge styles */
+  .badge {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Market active state - full width */
+  .marketActive {
+    width: 100% !important;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  .badgesContainer,
+  .marketSection {
+    padding: 0 12px !important;
+  }
+
+  .marketLink,
+  .marketButton {
+    padding: 14px 12px !important;
+    font-size: 14px !important;
+  }
+}
+/* =========================
+   MOBILE MARKET BLOCK STYLES (100% width on phone)
+========================= */
+@media (max-width: 1023px) {
+  /* Market block in mega menu */
+  .marketBlock {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Market list - full width horizontal scroll or grid */
+  .marketList {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    padding-bottom: 8px !important;
+    gap: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important; /* Firefox */
+  }
+
+  .marketList::-webkit-scrollbar {
+    display: none !important; /* Chrome/Safari */
+  }
+
+  /* Market links - now full width buttons that fill container */
+  .marketLink {
+    width: auto !important;
+    min-width: 120px !important;
+    flex-shrink: 0 !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    border-radius: 8px !important;
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .rtl .marketLink {
+    text-align: center !important;
+  }
+
+  /* Active market state */
+  .marketLink:hover,
+  .marketActive {
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
+    border-color: var(--gold-1) !important;
+    color: #0f172a !important;
+  }
+
+  .marketActive {
+    background: linear-gradient(
+      135deg,
+      var(--gold-1),
+      var(--gold-2)
+    ) !important;
+    color: white !important;
+    border-color: var(--gold-2) !important;
+    font-weight: 900 !important;
+  }
+}
+
+/* For phones only (767px and below) */
+@media (max-width: 767px) {
+  .marketLink {
+    min-width: 110px !important;
+    padding: 12px 14px !important;
+    font-size: 12px !important;
+  }
+
+  /* Make sure the mega menu columns stack on mobile */
+  .megaMenuInner,
+  .megaMenuInnerRtl {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+
+  .megaColumnLeft,
+  .megaColumnCenter,
+  .megaColumnRight {
+    width: 100% !important;
+    padding: 16px !important;
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  .megaColumnRight {
+    border-bottom: none !important;
+  }
+
+  /* Adjust mega menu for mobile */
+  .megaMenu {
+    width: calc(100vw - 32px) !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  .marketList {
+    gap: 6px !important;
+  }
+
+  .marketLink {
+    min-width: 100px !important;
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+  }
+}
+/* =========================
+   MOBILE MARKET BLOCK STYLES - Full Width for Off-Plan/Secondary Tabs
+========================= */
+
+/* Tablet and below - make market block take full width */
+@media (max-width: 1023px) {
+  /* Market block container */
+  .marketBlock {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Market header - make it full width */
+  .megaColumnHeader {
+    width: 100% !important;
+    padding: 0 16px !important;
+  }
+
+  .megaColumnLabel {
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Market list - horizontal scrolling for mobile */
+  .marketList {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    padding: 12px 16px !important;
+    margin: 0 !important;
+    gap: 12px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important; /* Firefox */
+  }
+
+  .marketList::-webkit-scrollbar {
+    display: none !important; /* Chrome/Safari */
+  }
+
+  /* Remove list styling */
+  .marketList li {
+    flex: 0 0 auto !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Market links - styled as full-width buttons */
+  .marketLink {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 140px !important;
+    height: 48px !important;
+    padding: 0 24px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    color: #1e293b !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+  }
+
+  /* RTL support */
+  .rtl .marketLink {
+    text-align: center !important;
+  }
+
+  /* Active state styling */
+  .marketLink:hover,
+  .marketActive {
+    background: linear-gradient(
+      135deg,
+      var(--gold-1),
+      var(--gold-2)
+    ) !important;
+    color: white !important;
+    border-color: var(--gold-2) !important;
+    box-shadow: 0 6px 20px rgba(201, 162, 106, 0.25) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  /* Active state only */
+  .marketActive {
+    font-weight: 900 !important;
+    border-width: 2px !important;
+  }
+}
+
+/* Mobile phones only (767px and below) */
+@media (max-width: 767px) {
+  .marketLink {
+    min-width: 130px !important;
+    height: 44px !important;
+    padding: 0 20px !important;
+    font-size: 13px !important;
+  }
+
+  .marketList {
+    padding: 10px 16px !important;
+    gap: 10px !important;
+  }
+
+  /* If the mega menu columns need to stack */
+  .megaMenuInner,
+  .megaMenuInnerRtl {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Make columns stack vertically */
+  .megaColumnLeft,
+  .megaColumnMiddle,
+  .megaColumnRight {
+    width: 100% !important;
+    padding: 16px !important;
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  /* Remove borders for RTL */
+  .megaColumnLeftRtl,
+  .megaColumnMiddleRtl {
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  /* Remove border from last column */
+  .megaColumnRight {
+    border-bottom: none !important;
+  }
+
+  /* Adjust mega menu for mobile */
+  .megaMenu {
+    width: calc(100vw - 32px) !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Make sure the left column background looks good on mobile */
+  .megaColumnLeft {
+    background: #ffffff !important;
+  }
+}
+
+/* Extra small phones (480px and below) */
+@media (max-width: 480px) {
+  .marketLink {
+    min-width: 120px !important;
+    height: 40px !important;
+    padding: 0 16px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  .marketList {
+    padding: 8px 16px !important;
+    gap: 8px !important;
+  }
+
+  /* Smaller text for mobile */
+  .megaColumnLabel {
+    font-size: 9px !important;
+    letter-spacing: 0.2em !important;
+  }
+
+  /* Adjust padding for mobile */
+  .megaColumnLeft,
+  .megaColumnMiddle,
+  .megaColumnRight {
+    padding: 12px !important;
+  }
+}
+
+/* Tablet landscape and small laptops (1024px - 1279px) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .marketLink {
+    font-size: 11px !important;
+    padding: 8px 14px !important;
+    min-width: 110px !important;
+  }
+
+  .marketList {
+    gap: 8px !important;
+  }
+}
+
+/* Ensure the market block doesn't interfere with desktop hover */
+@media (min-width: 1024px) {
+  /* Desktop hover states */
+  .marketLink:hover:not(.marketActive) {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .marketActive:hover {
+    background: linear-gradient(
+      135deg,
+      var(--gold-1),
+      var(--gold-2)
+    ) !important;
+    color: white !important;
+    border-color: var(--gold-2) !important;
+  }
+}
+
+/* =========================
+   MOBILE MARKET SELECTOR (inside mobile menu)
+========================= */
+@media (max-width: 1023px) {
+  .mobileMarketSelector {
+    display: flex !important;
+    width: 100% !important;
+    gap: 8px !important;
+    margin: 0 0 16px 0 !important;
+    padding: 0 16px !important;
+  }
+
+  .mobileMarketButton {
+    flex: 1 !important;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    border: 2px solid #e5e7eb !important;
+    background: #f8fafc !important;
+    color: #4b5563 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobileMarketButtonActive {
+    background: linear-gradient(
+      135deg,
+      var(--gold-1),
+      var(--gold-2)
+    ) !important;
+    color: white !important;
+    border-color: var(--gold-2) !important;
+    font-weight: 800 !important;
+  }
+
+  /* RTL support for mobile market selector */
+  .rtl .mobileMarketSelector {
+    padding: 0 16px !important;
+  }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 480px) {
+  .mobileMarketSelector {
+    gap: 6px !important;
+    padding: 0 12px !important;
+  }
+
+  .mobileMarketButton {
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+.secondaryBadge {
+  color: #fff;
+  vertical-align: middle;
+  background: #ff9800;
+  border-radius: 4px;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-block;
+}
+/* =========================
+   NEW: Mobile sub-links for Offplan and Secondary
+========================= */
+.mobileSubLink {
+  display: block;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.mobileSubLink:hover {
+  background: #f3f4f6;
+  border-color: var(--gold-1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* RTL support */
+.rtl .mobileSubLink {
+  text-align: right;
+}
+
+/* Active state */
+.mobileSubLink:active {
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  color: white;
+  border-color: var(--gold-2);
+}
+
+/* Adjust spacing in mobile group panel */
+.mobileGroupPanel .mobileSubLink {
+  margin-bottom: 10px;
+}
+
+/* Remove market selector from mobile since we have direct links */
+.mobileMarketSelector {
+  display: none !important;
+}
+
+/* =========================
+   Desktop spacing adjustments for new nav items
+========================= */
+@media (min-width: 1024px) {
+  .navLinks {
+    gap: 16px; /* Slightly reduced gap to accommodate new items */
+  }
+
+  .level1Menu {
+    font-size: 11px; /* Slightly smaller font if needed */
+    letter-spacing: 0.16em;
+  }
+}
+
+/* =========================
+   Tablet adjustments
+========================= */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .navLinks {
+    gap: 14px;
+  }
+
+  .level1Menu {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* =========================
+   Ensure Properties mega menu stays the same
+========================= */
+@media (min-width: 1024px) {
+  /* Keep all mega menu styles exactly the same */
+  .megaMenu {
+    /* All existing mega menu styles remain unchanged */
+  }
+
+  .megaMenuInner {
+    /* All existing mega menu inner styles remain unchanged */
+  }
+
+  /* Ensure properties menu opens correctly */
+  .menuItemHasChildren:hover .megaMenu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* =========================
+   Mobile responsive adjustments
+========================= */
+@media (max-width: 1023px) {
+  .mobileNavLink {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .mobileSubLink {
+    font-size: 12px;
+    padding: 14px 12px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  .mobileSubLink {
+    font-size: 11px;
+    padding: 12px 10px;
+    margin-bottom: 6px;
+  }
+}
+/* =========================
+   CONTAINER RESPONSIVE STYLES
+   Desktop: 366px 1fr 1fr
+   Phone: 1fr auto 1fr
+========================= */
+
+/* Desktop (≥1024px) - Your custom 3-column layout */
+@media (min-width: 1024px) {
+  .container {
+    grid-template-columns: 366px 1fr 1fr;
+  }
+}
+
+/* Tablet (768px - 1023px) - Responsive 3-column */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container {
+    grid-template-columns: 280px 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Adjust logo size for tablet */
+  .logoImage {
+    height: 40px;
+    max-width: 140px;
+  }
+
+  /* Adjust navigation spacing for tablet */
+  .navLinks {
+    gap: 16px;
+  }
+
+  .level1Menu {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+  }
+}
+
+/* Phone (<768px) - 1fr auto 1fr (logo centered) */
+@media (max-width: 767px) {
+  .container {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    padding-inline: 16px;
+  }
+
+  /* Adjust logo size for phones */
+  .logoImage {
+    height: 36px;
+    max-width: 130px;
+  }
+
+  /* Adjust mobile actions spacing for phones */
+  .mobileActions {
+    gap: 8px;
+  }
+
+  /* Adjust burger button for phones */
+  .burger {
+    width: 40px;
+    height: 36px;
+    padding: 0 9px;
+  }
+
+  .mobileLang {
+    height: 36px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+  .container {
+    gap: 6px;
+    padding-inline: 12px;
+  }
+
+  .logoImage {
+    height: 32px;
+    max-width: 120px;
+  }
+
+  .burger {
+    width: 36px;
+    height: 32px;
+    padding: 0 8px;
+  }
+
+  .burger span {
+    height: 1.5px;
+  }
+
+  .mobileLang {
+    height: 32px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,824 @@
+/* OffPlanInvestment.module.css */
+/* Import Fonts */
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/ringside");
+
+.investmentSection {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.investmentSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.container {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* SECTION HEADER */
+.sectionHeader {
+  margin-bottom: 60px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 25px 0;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+}
+
+.goldDivider {
+  width: 100px;
+  height: 2px;
+  background: #d7b46a;
+  margin: 0 auto 30px auto;
+}
+
+.sectionDescription {
+  color: #000000;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* VISUAL HERO SECTION */
+.visualHero {
+  position: relative;
+  margin-bottom: 80px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.imageCarousel {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.carouselTrack {
+  display: flex;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  height: 100%;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.propertyImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s ease;
+}
+
+.carouselSlide:hover .propertyImage {
+  transform: scale(1.05);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(215, 180, 106, 0.1) 100%
+  );
+}
+
+.imageContent {
+  position: absolute;
+  bottom: 60px;
+  left: 60px;
+  color: white;
+  z-index: 3;
+}
+
+.imageTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.imageDescription {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin: 0;
+  opacity: 0.9;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+}
+
+.carouselNav {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 4;
+}
+
+.navDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navDot.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 4;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #d7b46a, #ffffff);
+  transition: width 0.5s ease;
+}
+
+/* STATS OVERLAY */
+.statsOverlay {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 4;
+}
+
+.statItem {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(215, 180, 106, 0.3);
+  min-width: 120px;
+  transition: transform 0.3s ease;
+}
+
+.statItem:hover {
+  transform: translateY(-5px);
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 300;
+  color: #d7b46a;
+  margin: 0 0 5px 0;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* CONTENT GRID */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 80px;
+  align-items: start;
+}
+
+/* DEFINITION CARD */
+.definitionCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.definitionCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+}
+
+.definitionCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.definitionIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(215, 180, 106, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d7b46a;
+  margin-bottom: 25px;
+}
+
+.definitionContent {
+  position: relative;
+}
+
+.definitionTitle {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 20px 0;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+.definitionText {
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0 0 25px 0;
+  padding: 20px;
+  background: rgba(215, 180, 106, 0.05);
+  border-left: 3px solid #d7b46a;
+  border-radius: 8px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.paymentHighlight {
+  background: linear-gradient(135deg, #d7b46a, #c4a15d);
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.highlightText {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* BENEFITS CARD */
+.benefitsCard {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.benefitsCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+}
+
+.benefitsCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.benefitsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 35px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(215, 180, 106, 0.3);
+}
+
+.benefitsTitle {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+.benefitsIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(215, 180, 106, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d7b46a;
+  flex-shrink: 0;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.benefitItem {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: rgba(215, 180, 106, 0.03);
+}
+
+.benefitItem:hover {
+  background: rgba(215, 180, 106, 0.08);
+  transform: translateX(5px);
+}
+
+.benefitIcon {
+  flex-shrink: 0;
+}
+
+.iconCircle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #d7b46a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 5px 15px rgba(215, 180, 106, 0.3);
+}
+
+.benefitContent {
+  flex: 1;
+}
+
+.benefitHeading {
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+.benefitDescription {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TIMELINE SECTION */
+.timelineSection {
+  background: rgba(215, 180, 106, 0.03);
+  border-radius: 24px;
+  padding: 60px 40px;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+}
+
+.timelineTitle {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #000000;
+  text-align: center;
+  margin: 0 0 50px 0;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 2px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+  z-index: 1;
+}
+
+.timelineItem {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+.timelineDot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d7b46a;
+  margin: 0 auto 20px auto;
+  position: relative;
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 2px #d7b46a;
+}
+
+.timelineContent {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+}
+
+.timelineContent h4 {
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 10px 0;
+}
+
+.timelineContent p {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .investmentSection {
+    padding: 60px 30px;
+  }
+
+  .contentGrid {
+    gap: 40px;
+  }
+
+  .imageCarousel {
+    height: 400px;
+  }
+
+  .statsOverlay {
+    top: 30px;
+    right: 30px;
+  }
+
+  .statItem {
+    padding: 15px;
+    min-width: 100px;
+  }
+
+  .statNumber {
+    font-size: 1.7rem;
+  }
+
+  .timeline {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+
+  .timeline::before {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .investmentSection {
+    padding: 50px 20px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 50px;
+  }
+
+  .visualHero {
+    margin-bottom: 60px;
+  }
+
+  .imageCarousel {
+    height: 350px;
+  }
+
+  .imageContent {
+    bottom: 40px;
+    left: 40px;
+  }
+
+  .imageTitle {
+    font-size: 2rem;
+  }
+
+  .imageDescription {
+    font-size: 1.1rem;
+  }
+
+  .statsOverlay {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 15px;
+  }
+
+  .statItem {
+    flex: 1;
+    max-width: 120px;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+
+  .definitionCard,
+  .benefitsCard {
+    padding: 30px;
+  }
+
+  .timelineSection {
+    padding: 50px 30px;
+  }
+
+  .timeline {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .investmentSection {
+    padding: 40px 15px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 40px;
+  }
+
+  .imageCarousel {
+    height: 280px;
+  }
+
+  .imageContent {
+    bottom: 25px;
+    left: 25px;
+  }
+
+  .imageTitle {
+    font-size: 1.7rem;
+  }
+
+  .imageDescription {
+    font-size: 1rem;
+  }
+
+  .statsOverlay {
+    flex-wrap: wrap;
+  }
+
+  .statItem {
+    min-width: calc(50% - 10px);
+    margin-bottom: 10px;
+  }
+
+  .definitionCard,
+  .benefitsCard {
+    padding: 25px;
+  }
+
+  .benefitItem {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .benefitsHeader {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .timelineSection {
+    padding: 40px 20px;
+  }
+
+  .timelineTitle {
+    font-size: 1.8rem;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 360px) {
+  .investmentSection {
+    padding: 30px 10px;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .imageCarousel {
+    height: 220px;
+  }
+
+  .imageContent {
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .imageTitle {
+    font-size: 1.4rem;
+  }
+
+  .statNumber {
+    font-size: 1.4rem;
+  }
+
+  .statLabel {
+    font-size: 0.8rem;
+  }
+}
+/* Add these new styles to your existing CSS file */
+
+/* SECTION HEADER UPDATES */
+.sectionSubDescription {
+  color: #000000;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 20px 0 0 0;
+  opacity: 0.9;
+  -webkit-font-smoothing: antialiased;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* STRATEGY OVERVIEW */
+.strategyOverview {
+  background: rgba(215, 180, 106, 0.05);
+  border-radius: 16px;
+  padding: 30px 40px;
+  margin: 40px 0;
+  border-left: 4px solid #d7b46a;
+  text-align: center;
+}
+
+.strategyText {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* DEFINITION CARD UPDATES */
+.paymentNote {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 15px 0 0 0;
+  padding: 15px;
+  background: rgba(215, 180, 106, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Update existing styles for better spacing */
+.sectionHeader {
+  margin-bottom: 60px;
+  max-width: 900px; /* Increased to accommodate more text */
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* Update benefit descriptions for better readability */
+.benefitDescription {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Update timeline content for better text flow */
+.timelineContent p {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* Responsive updates */
+@media (max-width: 768px) {
+  .strategyOverview {
+    padding: 25px 30px;
+    margin: 30px 0;
+  }
+
+  .strategyText {
+    font-size: 1.1rem;
+  }
+
+  .sectionSubDescription {
+    margin: 15px 0 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .strategyOverview {
+    padding: 20px 25px;
+    margin: 25px 0;
+  }
+
+  .strategyText {
+    font-size: 1rem;
+  }
+
+  .paymentNote {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,946 @@
+/* PortfolioInvestment.module.css */
+/* Import Fonts */
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/ringside");
+
+.portfolioSection {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.portfolioSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Elegant Header */
+.elegantHeader {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.headerOrnament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.ornamentLine {
+  width: 40px;
+  height: 1px;
+  background: #d7b46a;
+}
+
+.ornamentDot {
+  width: 6px;
+  height: 6px;
+  background: #d7b46a;
+  border-radius: 50%;
+}
+
+.mainTitle {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+}
+
+.titleDivider {
+  width: 100px;
+  height: 2px;
+  background: #d7b46a;
+  margin: 0 auto 20px auto;
+}
+
+.tagline {
+  color: #000000;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Properties Grid */
+.propertiesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 60px;
+}
+
+.propertyCard {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(215, 180, 106, 0.1);
+  transition: all 0.3s ease;
+}
+
+.propertyCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(215, 180, 106, 0.3);
+}
+
+.cardImage {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.propertyImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.propertyCard:hover .propertyImage {
+  transform: scale(1.05);
+}
+
+.cardOverlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+.propertyCategory {
+  background: rgba(215, 180, 106, 0.95);
+  color: #000000;
+  padding: 6px 12px;
+  border-radius: 15px;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cardContent {
+  padding: 20px;
+}
+
+.propertyTitle {
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.propertyMetrics {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d7b46a;
+  margin-bottom: 10px;
+}
+
+.propertyDescription {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  opacity: 0.8;
+}
+
+.cardDivider {
+  width: 30px;
+  height: 2px;
+  background: rgba(215, 180, 106, 0.3);
+}
+
+/* Growth Section */
+.growthSection {
+  margin-bottom: 60px;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+}
+
+.sectionDivider {
+  width: 80px;
+  height: 2px;
+  background: #d7b46a;
+  margin: 0 auto 15px auto;
+}
+
+.sectionSubtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #000000;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Growth Visualization */
+.growthVisualization {
+  background: #fafafa;
+  border-radius: 20px;
+  padding: 40px;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+}
+
+.yearSelector {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.yearButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  padding: 15px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.yearButton.active {
+  background: #d7b46a;
+  border-color: #d7b46a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(215, 180, 106, 0.3);
+}
+
+.yearButton:hover:not(.active) {
+  border-color: rgba(215, 180, 106, 0.5);
+  transform: translateY(-1px);
+}
+
+.yearLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.yearButton.active .yearLabel {
+  color: #000000;
+}
+
+.yearReturn {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #d7b46a;
+}
+
+.yearButton.active .yearReturn {
+  color: #000000;
+}
+
+/* Growth Chart */
+.growthChart {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.chartContainer {
+  position: relative;
+  height: 300px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+}
+
+.growthLine {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dataPoint {
+  position: absolute;
+  transform: translate(-50%, 50%);
+  transition: all 0.5s ease;
+  z-index: 2;
+}
+
+.dataPoint.active {
+  z-index: 3;
+}
+
+.dataPoint.current .pointDot {
+  transform: scale(1.3);
+  background: #d7b46a;
+  box-shadow: 0 0 0 4px rgba(215, 180, 106, 0.3);
+}
+
+.pointValue {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000000;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dataPoint.active .pointValue {
+  opacity: 1;
+}
+
+.pointDot {
+  width: 12px;
+  height: 12px;
+  background: rgba(215, 180, 106, 0.6);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dataPoint.active .pointDot {
+  background: #d7b46a;
+  transform: scale(1.2);
+}
+
+.connectionLines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.connectionLine {
+  position: absolute;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(215, 180, 106, 0.3),
+    rgba(215, 180, 106, 0.1)
+  );
+  bottom: 0;
+  transform-origin: left center;
+  transition: all 0.5s ease;
+}
+
+.connectionLine.active {
+  background: linear-gradient(90deg, #d7b46a, rgba(215, 180, 106, 0.5));
+  height: 4px;
+}
+
+/* Axes */
+.yAxis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 0;
+  width: 60px;
+}
+
+.yLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #000000;
+  opacity: 0.6;
+}
+
+.xAxis {
+  position: absolute;
+  bottom: 0;
+  left: 60px;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+}
+
+.xLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #000000;
+  opacity: 0.6;
+}
+
+/* Current Info */
+.currentInfo {
+  display: flex;
+  align-items: center;
+}
+
+.infoCard {
+  background: #ffffff;
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+}
+
+.infoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.infoTitle {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.infoReturn {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #d7b46a;
+}
+
+.infoDescription {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0 0 25px 0;
+  opacity: 0.8;
+}
+
+.progressIndicator {
+  width: 100%;
+  height: 4px;
+  background: rgba(215, 180, 106, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* Performance Section */
+.performanceSection {
+  margin-bottom: 50px;
+}
+
+.performanceGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.performanceCard {
+  background: #ffffff;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+  border-radius: 12px;
+  padding: 25px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.performanceCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(215, 180, 106, 0.3);
+}
+
+.cardOrnament {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #d7b46a;
+}
+
+.cardIcon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 2;
+}
+
+.cardValue {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.cardLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.cardTrend {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #d7b46a;
+}
+
+/* Philosophy Section */
+.philosophySection {
+  margin-bottom: 30px;
+}
+
+.philosophyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.objectivesCard {
+  background: #ffffff;
+  border: 1px solid rgba(215, 180, 106, 0.1);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.objectivesCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d7b46a, #c4a15d);
+}
+
+.objectivesHeader {
+  margin-bottom: 20px;
+}
+
+.headerAccent {
+  width: 25px;
+  height: 2px;
+  background: #d7b46a;
+  margin-bottom: 12px;
+}
+
+.objectivesTitle {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.objectivesList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.objectiveItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  background: rgba(215, 180, 106, 0.03);
+}
+
+.objectiveItem:hover {
+  background: rgba(215, 180, 106, 0.08);
+  transform: translateX(3px);
+}
+
+.objectiveMarker {
+  width: 6px;
+  height: 6px;
+  background: #d7b46a;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.objectiveContent {
+  flex: 1;
+}
+
+.objectiveHeading {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.promiseCard {
+  background: rgba(215, 180, 106, 0.05);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  border-radius: 16px;
+  padding: 30px;
+}
+
+.promiseHeader {
+  margin-bottom: 20px;
+}
+
+.promiseOrnament {
+  width: 25px;
+  height: 2px;
+  background: #d7b46a;
+  margin-bottom: 12px;
+}
+
+.promiseTitle {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0;
+}
+
+.promiseContent {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.promiseStatement {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.promiseHighlight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(215, 180, 106, 0.1);
+  padding: 18px;
+  border-radius: 10px;
+  border-left: 3px solid #d7b46a;
+}
+
+.highlightAccent {
+  width: 3px;
+  height: 30px;
+  background: #d7b46a;
+  border-radius: 2px;
+}
+
+.highlightText {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .propertiesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .growthChart {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .performanceGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolioSection {
+    padding: 30px 15px;
+  }
+
+  .elegantHeader {
+    margin-bottom: 40px;
+  }
+
+  .propertiesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .growthVisualization {
+    padding: 30px 20px;
+  }
+
+  .yearSelector {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .yearButton {
+    min-width: 80px;
+    padding: 12px 15px;
+  }
+
+  .chartContainer {
+    height: 250px;
+    padding: 25px 20px;
+  }
+
+  .performanceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .philosophyGrid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .objectivesCard,
+  .promiseCard {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .portfolioSection {
+    padding: 20px 15px;
+  }
+
+  .elegantHeader {
+    margin-bottom: 30px;
+  }
+
+  .mainTitle {
+    font-size: 2rem;
+  }
+
+  .growthVisualization {
+    padding: 20px 15px;
+  }
+
+  .yearSelector {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .yearButton {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .chartContainer {
+    height: 200px;
+    padding: 20px 15px;
+  }
+
+  .yAxis {
+    width: 40px;
+  }
+
+  .xAxis {
+    left: 40px;
+    padding: 10px 15px;
+  }
+
+  .infoCard {
+    padding: 20px;
+  }
+
+  .objectivesCard,
+  .promiseCard {
+    padding: 20px;
+  }
+}
+/* Add these new styles to your existing CSS file */
+
+/* Update property card titles for better text handling */
+.propertyTitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  min-height: 2.6em; /* Ensure consistent height for two lines */
+}
+
+/* Update property descriptions for better readability */
+.propertyDescription {
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  opacity: 0.8;
+  min-height: 4.5em; /* Ensure consistent height for three lines */
+}
+
+/* Update performance card labels for better text wrapping */
+.cardLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 5px;
+  line-height: 1.3;
+  min-height: 2.6em; /* Ensure consistent height for two lines */
+}
+
+/* Update objective headings for better text handling */
+.objectiveHeading {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: 1.4;
+  min-height: 2.8em; /* Ensure consistent height */
+}
+
+/* Update promise statement for better text flow */
+.promiseStatement {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #000000;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 3em; /* Ensure consistent height */
+}
+
+/* Update highlight text for better readability */
+.highlightText {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1.4;
+  min-height: 2.8em; /* Ensure consistent height */
+}
+
+/* Add specific styles for the Key Market Insights section */
+.performanceSection .sectionHeader {
+  margin-bottom: 30px;
+}
+
+/* Responsive updates for better text handling */
+@media (max-width: 1024px) {
+  .propertyTitle {
+    font-size: 1.1rem;
+    min-height: 2.8em;
+  }
+
+  .propertyDescription {
+    font-size: 0.82rem;
+    min-height: 5em;
+  }
+
+  .cardLabel {
+    font-size: 0.8rem;
+    min-height: 3em;
+  }
+}
+
+@media (max-width: 768px) {
+  .propertyTitle {
+    font-size: 1.1rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+
+  .propertyDescription {
+    font-size: 0.8rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+
+  .cardLabel {
+    font-size: 0.78rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+
+  .objectiveHeading {
+    font-size: 0.95rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+
+  .promiseStatement {
+    font-size: 0.95rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+
+  .highlightText {
+    font-size: 0.9rem;
+    min-height: auto; /* Remove fixed height on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .propertyTitle {
+    font-size: 1rem;
+  }
+
+  .propertyDescription {
+    font-size: 0.78rem;
+  }
+
+  .cardLabel {
+    font-size: 0.75rem;
+  }
+
+  .objectiveHeading {
+    font-size: 0.9rem;
+  }
+}

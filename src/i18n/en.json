@@ -1,0 +1,1452 @@
+{
+  "categories": {
+    "apartments": "Luxury Apartments",
+    "villas": "Signature Villas",
+    "commercial": "Prime Commercial",
+    "penthouses": "Sky Penthouses",
+    "mixedUse": "Destination Mixed-Use"
+  },
+  "descriptions": {
+    "apartments": "Curated luxury apartments in Dubai’s most desirable addresses — built for lifestyle and long-term value.",
+    "villas": "Private villas and townhomes with space, seclusion, and statement architecture in elite communities.",
+    "commercial": "Investment-grade retail and commercial spaces in high-footfall districts with proven demand drivers.",
+    "penthouses": "Ultra-luxury penthouses with panoramic views, private terraces, and world-class amenities.",
+    "mixedUse": "Integrated projects combining residences, offices, and retail — designed for convenience, yield, and prestige."
+  },
+  "developers": {
+    "sobhaRealty": "Sobha Realty",
+    "arada": "Arada",
+    "damacProperties": "DAMAC Properties",
+    "aziziDevelopments": "Azizi Developments",
+    "danubeProperties": "Danube Properties",
+    "binghatti": "Binghatti",
+    "imtiazDevelopments": "Imtiaz Developments",
+    "tiger": "Tiger Properties"
+  },
+  "projectNames": {
+    "sobhaSkyParks": "Sobha SkyParks",
+    "sobhaAquaCrest": "Sobha AquaCrest",
+    "sobhaCentral": "Sobha Central",
+    "sobhaAquamont": "Sobha Aquamont",
+    "sobhaOrbis": "Sobha Orbis",
+    "sobhaSolis": "Sobha Solis",
+    "sobhaOne": "Sobha One",
+    "sobhaTheElement": "Sobha The Element",
+    "sobhaSeaHavenPenthouse": "Sobha SeaHaven",
+    "sobhaEstates": "Sobha Estates",
+    "sobhaSiniyaIsland": "Siniya Island",
+    "sobhaElwood": "Sobha Elwood",
+    "chelseaResidences": "Chelsea Residences",
+    "damacSafaGate": "DAMAC Safa Gate",
+    "damacIslands2": "Damac Islands 2",
+    "aradaMassar3": "Masaar",
+    "armaniBeachResidences": "Armani Beach Residences",
+    "opusTower": "The Opus by OMNIYAT",
+    "velaViento": "VELA Viento",
+    "velaDorchester": "VELA Dorchester",
+    "orlaDorchester": "ORLA Dorchester",
+    "luminaAlta": "Lumena Alta",
+    "aziziRivieraRetails": "Riviera Retails",
+    "danubeAspirz": "Danube Aspirz",
+    "danubeShahrukhz": "Danube Shahrukhz",
+    "kanyon": "Kanyon",
+    "aquarise": "Aquarise",
+    "bugattiResidences": "Bugatti Residences",
+    "above31": "31 Above",
+    "aziziMilan": "Azizi Milan",
+    "aziziAmir": "Azizi Amir",
+    "aziziCreekViews1": "Azizi Creek Views",
+    "aziziCreekViews2": "Azizi Creek Views II",
+    "aziziCreekViews3": "Azizi Creek Views III",
+    "aziziDavid": "Azizi David",
+    "aziziArian": "Azizi Arian",
+    "aziziAbraham": "Azizi Abraham",
+    "aziziFarishta2": "Azizi Farishta 2",
+    "aziziGabriel": "Azizi Gabriel",
+    "aziziLina": "Azizi Lina",
+    "aziziNoura": "Azizi Noura",
+    "aziziRaffi": "Azizi Raffi",
+    "aziziSikander": "Azizi Sikander",
+    "aziziWares": "Azizi Wares",
+    "aziziEmerald": "Azizi Emerald",
+    "aziziMonaco": "Azizi Monaco",
+    "aziziVenice": "Azizi Venice",
+    "aziziLeily": "Azizi Leily",
+    "wynwood": "Wynwood",
+    "orchidTiger": "Orchid by Tiger",
+    "alatiTower": "Altai Tower",
+    "anandaTower": "Ananda Residences",
+    "aurestaTower": "Auresta",
+    "elbrusTower": "Elbrus Tower",
+    "sobhaVerde": "Sobha Verde",
+    "sobhaReserve": "Sobha Reserve",
+    "theAlbaResidences": "The Alba Residences",
+    "guzelTower": "Guzel Tower",
+    "jadeTower": "Jade Tower",
+    "liliumTower": "Lilium Tower",
+    "redSquareTower": "Red Square Tower",
+    "skyTower": "Sky Tower",
+    "volgaTower": "Volga Tower",
+    "mercedesBenzPlacesByBinghatti": "Mercedes-Benz Places",
+    "damacAltitude": "DAMAC Altitude",
+    "damacAykonCity": "DAMAC Aykon City",
+    "damacCanalCrown": "DAMAC Canal Crown",
+    "damacCanalHeights": "DAMAC Canal Heights",
+    "damacChicTower": "DAMAC Chic Tower",
+    "cavalliCouture": "Cavalli Couture",
+    "damacCasa": "DAMAC Casa",
+    "damacLagoonViews": "Lagoon Views",
+    "damacRiversideViews": "Riverside Views",
+    "damacHills2Elo2": "DAMAC Hills 2 - ELO 2",
+    "damacBay": "DAMAC Bay",
+    "golfGreens": "Golf Greens",
+    "damacVolta": "DAMAC Volta",
+    "damacDistrict": "DAMAC District",
+    "golfTown": "Golf Town",
+    "akalaResidences": "Akala Residences",
+    "anantaraSharjahResidences": "Anantara Sharjah Residences",
+    "ilTeatroResidences": "IL Teatro Residences",
+    "inauraHotelsResidences": "Inaura Hotels & Residences",
+    "nesba3": "Nesba 3",
+    "safa1": "Safa 1",
+    "safaParkView": "Safa Park View",
+    "theGate4": "The Gate 4",
+    "theGate3": "The Gate 3",
+    "sequoia": "Sequoia Villas",
+    "wResidences": "W Residences",
+    "masaarAzalea": "Masaar Azalea",
+    "apex": "Apex",
+    "cullinan": "Cullinan",
+    "elite": "Elite",
+    "ghost": "Ghost",
+    "haven": "Haven",
+    "hillcrest": "Hillcrest",
+    "hills": "Hills",
+    "hillside": "Hillside",
+    "hillviews": "Hillviews",
+    "moonlight": "Moonlight",
+    "pinnacle": "Pinnacle",
+    "skyblade": "Skyblade",
+    "skyhall": "Skyhall",
+    "skyrise": "Skyrise",
+    "skyterraces": "Sky Terraces",
+    "starlight": "Starlight",
+    "titania": "Titania",
+    "twilight": "Twilight",
+    "vintage": "Vintage",
+    "binghattiOne": "One by Binghatti",
+    "mercedesBenzPlacesBinghattiCity": "Mercedes-Benz Places | Binghatti City"
+  },
+  "nav": {
+    "about": "ABOUT US",
+    "properties": "PROPERTIES",
+    "offplan": "Off-Plan",
+    "secondary": "Resale",
+    "whereToLive": "WHERE TO LIVE",
+    "developers": "DEVELOPERS",
+    "mediaCenter": "INSIGHTS",
+    "contactUs": "PRIVATE CONSULTATION",
+    "marketAnalysis": "MARKET INTELLIGENCE",
+    "searchProperties": "Search",
+    "lands": "Land & Plots"
+  },
+  "ui": {
+    "marketLabel": "Market",
+    "offPlanLabel": "Off-Plan (Developer)",
+    "marketEmptyHint": "This collection is being curated — new opportunities will appear as inventory is released.",
+    "secondaryLabel": "Secondary (Resale)",
+    "propertyTypesLabel": "PROPERTY TYPES",
+    "projectsLabel": "PROJECTS",
+    "dubaiNeighborhoodsLabel": "DUBAI DISTRICTS",
+    "searchNeighborhoodPlaceholderDesktop": "Search districts (e.g. Palm Jumeirah, Marina, Downtown)...",
+    "searchNeighborhoodPlaceholderMobile": "Search districts...",
+    "searchOverlayPlaceholder": "Search projects, districts, developers, and market insights...",
+    "searchOverlayButton": "SEARCH",
+    "viewNeighborhoodDetails": "VIEW DISTRICT PROFILE",
+    "mobilePropertyTypesTitle": "Property Types",
+    "mobileDevelopersTitlePrefix": "Developers in",
+    "mobileContactTitle": "Private Consultation",
+    "mobileDirectLine": "Direct Line",
+    "avgPurchaseLabel": "Avg. Purchase",
+    "avgRentLabel": "Avg. Rent",
+    "roiLabel": "Estimated ROI",
+    "defaultNeighborhoodTitle": "Dubai District",
+    "viewAllPropertiesMobile": "View All Opportunities",
+    "viewAllNeighborhoodsMobile": "View All Districts",
+    "secondaryBadge": "Resale"
+  },
+  "whereToLive": {
+    "businessBay": {
+      "name": "Business Bay",
+      "location": "Dubai Water Canal address — moments from Downtown Dubai and DIFC access corridors",
+      "avgBuy": "1BR from AED 1.1M",
+      "avgRent": "1BR from AED 95K / year",
+      "roi": "7–8% estimated ROI"
+    },
+    "sheikhZayedRoad": {
+      "name": "Sheikh Zayed Road",
+      "location": "Dubai’s prime skyline boulevard — Downtown, Business Bay and Marina connectivity in one corridor",
+      "avgBuy": "1BR from AED 1.2M",
+      "avgRent": "1BR from AED 100K / year",
+      "roi": "6–7% estimated ROI"
+    },
+    "mbrCity": {
+      "name": "Mohammed Bin Rashid City (MBR City)",
+      "location": "Master community near Downtown and Meydan — villas, waterfront pockets, and flagship residences",
+      "avgBuy": "Villas from AED 6M",
+      "avgRent": "Villas from AED 350K / year",
+      "roi": "5–6% estimated ROI"
+    },
+    "dubailand": {
+      "name": "Dubailand",
+      "location": "Growth corridor with family communities and strong road connectivity via E611 & Al Ain Road",
+      "avgBuy": "1BR from AED 750K",
+      "avgRent": "1BR from AED 60K / year",
+      "roi": "6–8% estimated ROI"
+    },
+    "ummAlQuwain": {
+      "name": "Umm Al Quwain Waterfront",
+      "location": "Island and beachfront living on the UAQ coastline — privacy, sea views, and long-horizon appreciation",
+      "avgBuy": "Villas from AED 2.2M",
+      "avgRent": "Villas from AED 120K / year",
+      "roi": "5–6% estimated ROI"
+    },
+    "masaarTilalCity": {
+      "name": "Masaar, Tilal City (Sharjah)",
+      "location": "Tilal City, Sharjah — forest community living with easy E611 corridor access",
+      "description": "A nature-first, gated forest community by Arada with smart homes, lifestyle amenities, and a family-focused masterplan.",
+      "avgBuy": "From AED 1.71M (2BR townhouse) • From AED 1.739M (2BR villa)",
+      "avgRent": "From AED 112K/year (2BR townhouse/villa)",
+      "roi": "Varies by unit type (see Bayut guide)",
+      "bayutGuide": "Masaar Area Guide"
+    },
+    "sharjah": {
+      "name": "Sharjah",
+      "location": "Green, family-centric neighborhoods with larger layouts and excellent value across the UAE corridor",
+      "avgBuy": "Townhouses from AED 1.6M",
+      "avgRent": "Townhouses from AED 110K / year",
+      "roi": "5–7% estimated ROI"
+    },
+    "motorCity": {
+      "name": "Motor City",
+      "location": "Low-rise living with community parks — practical connectivity and lifestyle-led planning",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "dubaiSportsCity": {
+      "name": "Dubai Sports City",
+      "location": "Active lifestyle district with strong rental demand pockets and easy access to key highways",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "dubaiMaritimeCity": {
+      "name": "Dubai Maritime City (DMC)",
+      "location": "Coastal address near Port Rashid — waterfront projects and marina-adjacent living",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "dubaiHarbour": {
+      "name": "Dubai Harbour",
+      "location": "Elite waterfront between Marina and Palm Jumeirah — luxury towers, superyacht vibe, iconic views",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "meydanOne": {
+      "name": "Meydan One",
+      "location": "MBR City zone near Downtown — large-scale, future-forward projects and premium accessibility",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "nadAlSheba": {
+      "name": "Nad Al Sheba",
+      "location": "Low-density living near Meydan — privacy, space, and fast central access",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "arjan": {
+      "name": "Arjan",
+      "location": "High-growth residential district near key attractions and Dubai Hills connectivity",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "dubailandResidenceComplex": {
+      "name": "Dubailand Residence Complex (DLRC)",
+      "location": "Family-oriented residential cluster with expanding new inventory and long-term upside",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "dubaiIndustrialCity": {
+      "name": "Dubai Industrial City",
+      "location": "A strategic zone with growing housing supply and strong commuter demand dynamics",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "majan": {
+      "name": "Majan",
+      "location": "Emerging Dubailand sub-district near Al Barari — value-led mid-rise communities",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "ajman": {
+      "name": "Ajman",
+      "location": "Northern emirate with coastal living and expanding investment corridors",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "jumeirahIslands": {
+      "name": "Jumeirah Islands",
+      "location": "Exclusive, low-density villa community near JLT — privacy, greenery, and prime access",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "jumeirahGolfEstates": {
+      "name": "Jumeirah Golf Estates",
+      "location": "Golf-course luxury with landmark villas, mature landscaping, and global lifestyle appeal",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "palmJumeirah": {
+      "name": "Palm Jumeirah",
+      "location": "Dubai’s iconic beachfront address — resort living, branded residences, and global prestige",
+      "avgBuy": "Avg. purchase varies",
+      "avgRent": "Avg. rent varies",
+      "roi": "Estimated ROI varies"
+    },
+    "filters": {
+      "searchAndFilters": "Search & filters",
+      "price": "Price",
+      "priceRangeLabel": "Price Range (AED)",
+      "priceRangeValue": "AED {value}",
+      "minPriceLabel": "Minimum price",
+      "maxPriceLabel": "Maximum price",
+      "size": "Size",
+      "sizeRangeLabel": "Size Range (sqft)",
+      "sizeRangeValue": "{value} sqft",
+      "minSizeLabel": "Minimum size",
+      "maxSizeLabel": "Maximum size",
+      "unitType": "Unit type",
+      "unitTypeLabel": "Property Type",
+      "status": "Status",
+      "statusLabel": "Development Status",
+      "bedrooms": "Bedrooms",
+      "bedroomsLabel": "Bedrooms",
+      "unitTypeOptions": {
+        "apartments": "Apartment",
+        "villa": "Villa",
+        "townhouse": "Townhouse",
+        "duplex": "Duplex",
+        "penthouse": "Penthouse",
+        "retail": "Retail"
+      },
+      "devStatusOptions": {
+        "completed": "Completed",
+        "presale": "Pre-Sale",
+        "underConstruction": "Under Construction"
+      },
+      "bedroomOptions": {
+        "studio": "Studio",
+        "one": "1 BR",
+        "two": "2 BR",
+        "three": "3 BR",
+        "four": "4 BR",
+        "fivePlus": "5+ BR"
+      }
+    }
+  },
+  "homeSlider": {
+    "mainTitle": "Curated Luxury & Ultra-Luxury Properties in Dubai and the UAE",
+    "discoverButton": "Discover",
+    "exploreButton": "Explore project",
+    "ariaLabels": {
+      "previousSlide": "Previous slide",
+      "nextSlide": "Next slide"
+    },
+    "seo": {
+      "ctaAriaTemplate": "Discover {title} by {developer} — luxury property in {location}",
+      "imageAltTemplate": "{title} by {developer} in {location} — luxury property Dubai / UAE"
+    },
+    "amenities": {
+      "infinityPool": "Infinity Pool",
+      "skyGardens": "Sky Gardens",
+      "burjKhalifaView": "Burj Khalifa View",
+      "marinaYacht": "Marina & Yacht Lifestyle",
+      "waterfrontLiving": "Waterfront Living",
+      "citySkylineView": "Skyline Views",
+      "luxuryInteriors": "Designer Interiors",
+      "premiumAmenities": "Five-Star Amenities",
+      "waterfrontPromenade": "Waterfront Promenade",
+      "skyDeck": "Private Sky Deck",
+      "waterfrontCommunity": "Waterfront Community",
+      "internationalSchools": "International Schools",
+      "greenSpaces": "Landscaped Green Spaces",
+      "privateBeach": "Private Beach Access",
+      "islandLiving": "Island Living",
+      "resortLifestyle": "Resort Lifestyle",
+      "forestCommunity": "Forest Community",
+      "cyclingTrack": "Cycling Track",
+      "familyParks": "Family Parks",
+      "waterfrontVillas": "Waterfront Villas",
+      "privateMarina": "Private Marina",
+      "retailBoulevard": "Retail Boulevard",
+      "diningDestination": "Dining Destination",
+      "signatureRetail": "Signature Retail",
+      "primeLocation": "Prime Location",
+      "architecturalLandmark": "Architectural Landmark",
+      "padelCourt": "Padel Court",
+      "yogaDeck": "Yoga Deck"
+    },
+    "projects": {
+      "skyparks": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
+      "aquaCrest": {
+        "category": "Luxury Apartments",
+        "location": "Dubai, UAE"
+      },
+      "central": {
+        "category": "Luxury Apartments",
+        "location": "Sheikh Zayed Road, Dubai"
+      },
+      "aquamont": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
+      "orbis": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
+      "verde": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
+      "hartland": {
+        "category": "Signature Villas",
+        "location": "MBR City, Dubai"
+      },
+      "sobhaSiniyaIsland": {
+        "category": "Signature Villas",
+        "location": "Umm Al Quwain, UAE"
+      },
+      "massar": { "category": "Signature Villas", "location": "Sharjah, UAE" },
+      "damacIslands2": {
+        "category": "Signature Villas",
+        "location": "Dubai, UAE"
+      },
+      "rivieraRetails": {
+        "category": "Prime Commercial",
+        "location": "Dubai, UAE"
+      },
+      "lumenaAlta": {
+        "category": "Prime Commercial",
+        "location": "Dubai, UAE"
+      },
+      "seaHavenPenthouse": {
+        "category": "Sky Penthouses",
+        "location": "Dubai Harbour, Dubai"
+      }
+    }
+  },
+  "artOfDetail": {
+    "sloganPre": "Where",
+    "sloganMain": "The 1% Invest",
+    "companyLine": "Mohamad Kodmani Real Estate Brokers",
+    "description": "At Mohamad Kodmani Real Estate Brokers, luxury is never accidental. It is curated — from the address and the layout to the investment story behind every unit. We advise discerning clients on luxury property Dubai opportunities, off-plan releases, and investment strategies designed for capital preservation and upside.",
+    "discoverMore": "DISCOVER MORE",
+    "ownerAlt": "Portrait of Mohamad Kodmani — Dubai real estate investment advisor"
+  },
+  "pillarsSection": {
+    "heading": "A PRIVATE STANDARD: OUR PILLARS FOR LUXURY PROPERTY INVESTMENT",
+    "pillar1": {
+      "title": "Why Invest in Dubai Property?",
+      "intro": "Dubai remains one of the world’s most attractive destinations for property investment — combining lifestyle prestige with global liquidity.",
+      "point1": "High-demand luxury districts with strong resale activity.",
+      "point2": "Stable environment and world-class infrastructure.",
+      "point3": "Tax-efficient structure for many investors (subject to your circumstances).",
+      "point4": "Golden Visa pathway for eligible investors (including property thresholds).",
+      "point5": "International buyer access and transparent ownership frameworks.",
+      "point6": "A global city that continues to attract talent, capital, and brands.",
+      "point7": "A deep off-plan market with premium launches and flexible developer plans."
+    },
+    "pillar2": {
+      "title": "What Is a Real Estate Portfolio?",
+      "intro": "A portfolio is not “more properties.” It is a deliberate mix of assets — designed to balance yield, growth, and exit liquidity.",
+      "point1": "Diversifies exposure across districts, unit types, and timelines.",
+      "point2": "Reduces risk through spread and disciplined entry points.",
+      "point3": "Targets returns via rental income and capital appreciation.",
+      "point4": "We structure, monitor, and manage the strategy — so your portfolio performs without noise."
+    },
+    "pillar3": {
+      "title": "What Is Off-Plan Property in Dubai?",
+      "intro": "Off-plan properties Dubai buyers secure early — often before public launch — with staged payments to the developer.",
+      "point1": "Earlier entry points compared to completed stock (subject to project).",
+      "point2": "Potential uplift as construction milestones and demand mature.",
+      "point3": "Flexible payment plans that can reduce immediate capital pressure versus bank financing."
+    }
+  },
+  "pressReleases": {
+    "heading": "PRESS RELEASES",
+    "viewAll": "VIEW ALL",
+    "publishedLabel": "Published on",
+    "aria": {
+      "prev": "Previous press release",
+      "next": "Next press release"
+    }
+  },
+  "footer": {
+    "brand": {
+      "logoBar": "Mohamad Kodmane Real Estate Brokers",
+      "corporateName": "MOHAMAD KODMANE",
+      "corporateTitle": "Real Estate Consultant & Investment Advisor",
+      "legal": {
+        "tradeLicense": "TRADE LICENSE: 1192580",
+        "advertisingPermit": "ADVERTISING PERMIT: 139532",
+        "reraCertified": "RERA CERTIFIED"
+      }
+    },
+    "headers": {
+      "apartments": "APARTMENTS",
+      "villas": "VILLAS",
+      "penthouses": "PENTHOUSES",
+      "communities": "COMMUNITIES",
+      "mediaCenter": "INSIGHTS",
+      "aboutUs": "ABOUT",
+      "contact": "CONTACT"
+    },
+    "projects": {
+      "apartments": {
+        "sobhaSkyParks": "Sobha SkyParks",
+        "sobhaAquaCrest": "Sobha AquaCrest",
+        "sobhaCentral": "Sobha Central",
+        "sobhaAquamont": "Sobha Aquamont"
+      },
+      "villas": {
+        "sobhaHartlandVillas": "Sobha Hartland Villas",
+        "sobhaSiniyaIsland": "Sobha Al Sinniyyah Island",
+        "masaarByArada": "Masaar by Arada",
+        "damacIslands2": "Damac Islands 2"
+      },
+      "penthouses": {
+        "sobhaSeaHavenPenthouse": "Sobha SeaHaven"
+      }
+    },
+    "communities": {
+      "sobhaSkyParks": "Sobha SkyParks",
+      "sobhaCentral": "Sobha Central",
+      "sobhaHartland": "Sobha Hartland",
+      "alSinniyyahIsland": "Al Sinniyyah Island",
+      "masaarByArada": "Masaar by Arada",
+      "damacIslands2": "Damac Islands 2"
+    },
+    "mediaCenter": {
+      "mediaCenter": "Insights",
+      "blogs": "Articles",
+      "reports": "Reports"
+    },
+    "aboutUs": {
+      "aboutMohamadKodmane": "About Mohamad Kodmane",
+      "legacyExperience": "Legacy & Experience",
+      "thoughtfulAdvice": "Investment Advisory"
+    },
+    "contact": {
+      "contactUs": "Private Consultation",
+      "channelPartner": "Channel Partner",
+      "ourPresence": "Our Presence",
+      "faq": "FAQ"
+    },
+    "address": {
+      "title": "HEADQUARTERS",
+      "line1": "AZIZI RIVIERA 21",
+      "line2": "RETAIL 13, MEYDAN",
+      "line3": "DUBAI, UNITED ARAB EMIRATES",
+      "poBox": "P.O. BOX 446097"
+    },
+    "contactBlock": {
+      "title": "PRIVATE CONSULTATION",
+      "directLabel": "DIRECT:",
+      "officeLabel": "OFFICE:",
+      "emailLabel": "EMAIL:"
+    },
+    "meta": {
+      "allRightsReserved": "All rights reserved."
+    }
+  },
+  "cta": {
+    "whatsapp": "WHATSAPP"
+  },
+  "aboutHero": {
+    "description1": "Mohamad Kodmani is a Dubai real estate investment specialist, advising clients on luxury property Dubai opportunities, off-plan strategies, and portfolio building with a disciplined, numbers-first approach.",
+    "description2": "With experience across contracting, business development, and real estate, he supports investors in selecting the right assets, negotiating the right terms, and executing with clarity — from acquisition to handover, leasing, and exit.",
+    "yearsNumber": "18",
+    "yearsPlus": "+",
+    "labelTop": "Years of",
+    "yearsLabel": "Years of",
+    "line1": "Strategy",
+    "line2": "& Execution",
+    "since": "Since 2006",
+    "imageAltDesk": "Luxury real estate advisory and investment strategy in Dubai",
+    "imageAltMob": "Dubai luxury property advisory banner"
+  },
+  "buildingExcellence": {
+    "heading": {
+      "line1": "Real Estate Decisions",
+      "line2": "Built for Wealth,",
+      "line3": "Not Headlines"
+    },
+    "paragraph": "At <strong>Mohamad Kodmani Real Estate Brokerage</strong>, we do not “push units.” We design investment paths — selecting the right projects, the right entry points, and the right exit windows. Every recommendation is grounded in market reality, risk control, and a clear plan for capital appreciation and rental performance. In just two years, our team has supported investors in closing more than AED 650 million in transactions, targeting returns above 8% annually through disciplined selection and timing.",
+    "stats": [
+      {
+        "count": "19",
+        "suffix": "+",
+        "label": "Years of entrepreneurial and real estate experience."
+      },
+      {
+        "count": "650",
+        "suffix": "M+",
+        "label": "Transaction volume supported for investors."
+      },
+      {
+        "count": "8",
+        "suffix": "%+",
+        "label": "Targeted annual returns for structured strategies."
+      }
+    ],
+    "dividerAlt": "Decorative section divider"
+  },
+  "aboutBuildingExcellence": {
+    "heading": "Real Estate Decisions Built for Wealth, Not Headlines",
+    "lead": "At Mohamad Kodmani Real Estate Brokerage, we design investment paths — not just transactions. Every recommendation is grounded in market reality, risk control, and a clear plan that balances capital appreciation with rental performance. In just two years, our team has supported investors in closing more than AED 650 million in transactions, targeting returns above 8% annually through disciplined selection and timing.",
+    "stats": {
+      "experience": {
+        "label": "years",
+        "description": "Of entrepreneurial and real estate experience across multiple sectors."
+      },
+      "volume": {
+        "label": "AED 650 M+",
+        "description": "Transaction volume supported for investors in just two years."
+      },
+      "returns": {
+        "label": "8%+",
+        "description": "Targeted annual returns on structured investment strategies with controlled risk."
+      }
+    }
+  },
+  "services": {
+    "title": "What We Deliver for Luxury Investors",
+    "intro": "At <span class=\"brandHighlight\">Mohamad Kodmani Real Estate Brokerage</span>, you receive more than listings. You receive a private advisory process — built for luxury buyers, international investors, and clients pursuing off-plan properties Dubai opportunities with clear strategy.",
+    "cards": [
+      {
+        "title": "Investment Advisory & Off-Plan Strategy",
+        "items": [
+          "Private consultation to align capital, goals, and risk profile.",
+          "Shortlisting premium launches and luxury property Dubai opportunities in high-demand locations.",
+          "Scenario planning for capital growth, rental yield, and resale liquidity.",
+          "Off-plan advisory: entry timing, payment plan structuring, and early unit selection before broad release."
+        ]
+      },
+      {
+        "title": "Portfolio Structuring & Asset Management",
+        "items": [
+          "Building balanced portfolios combining <strong>cash-flow assets</strong> and <strong>capital-growth opportunities</strong>.",
+          "Mixing ready and off-plan assets to manage risk and timing.",
+          "Leasing strategy and tenant placement to optimise rent and reduce vacancy.",
+          "Performance reporting and ongoing optimisation based on market movement."
+        ]
+      },
+      {
+        "title": "Handover, Resale & Premium Positioning",
+        "items": [
+          "Handover support: inspection coordination and defect follow-up for a smooth closeout.",
+          "Positioning the property for lease or resale with the right finishes and pricing strategy.",
+          "Discreet resale execution: serious buyer filtration and timing the exit for maximum value.",
+          "Furnishing and interior advisory for luxury units to drive premium rents and faster absorption."
+        ]
+      }
+    ],
+    "footer": "With us, you gain a long-term investment partner who reads the market, protects your downside, and targets the <strong class=\"highlight\">highest possible outcome with controlled risk</strong>."
+  },
+  "aboutServices": {
+    "sectionTitle": "What We Deliver for Luxury Investors",
+    "intro": "At Mohamad Kodmani Real Estate Brokerage, you receive a private advisory process — built for luxury buyers, international investors, and clients pursuing off-plan opportunities with a clear plan from entry to exit.",
+    "cards": {
+      "investmentAdvisory": {
+        "title": "Investment Advisory & Off-Plan Strategy",
+        "points": {
+          "p1": "Private consultation to align capital, goals, and risk profile.",
+          "p2": "Shortlisting premium launches in Dubai’s strongest locations.",
+          "p3": "Scenario planning for growth, yield, and liquidity.",
+          "p4": "Off-plan advisory: entry timing, payment plan structuring, and early unit selection."
+        }
+      },
+      "portfolioBuilding": {
+        "title": "Portfolio Structuring & Asset Management",
+        "points": {
+          "p1": "Building balanced portfolios combining cash-flow and capital-growth assets.",
+          "p2": "Mixing ready and off-plan assets to manage risk and timing.",
+          "p3": "Leasing strategy, tenant placement, and rent optimisation.",
+          "p4": "Ongoing performance reporting and optimisation."
+        }
+      },
+      "handoverResale": {
+        "title": "Handover, Resale & Premium Positioning",
+        "points": {
+          "p1": "Handover support and inspection coordination for smooth closeout.",
+          "p2": "Positioning for lease or resale with the right finish and pricing strategy.",
+          "p3": "Discreet resale execution with serious buyer filtration.",
+          "p4": "Furnishing and interior advisory for premium performance."
+        }
+      }
+    },
+    "footer": {
+      "text": "With us, you gain a long-term investment partner who reads the market, protects your downside, and targets the best outcome with controlled risk.",
+      "highlight": "best outcome with controlled risk"
+    }
+  },
+  "pillars": {
+    "vision": {
+      "title": "Our Vision",
+      "text": "To become the trusted private desk for investors seeking luxury property Dubai opportunities — building diversified portfolios designed for stable returns, strong upside, and clear exit liquidity."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "text": "To deliver an advisory system that creates measurable outcomes for investors — with transparent analysis, disciplined selection, and responsible strategy execution across Dubai’s property market."
+    },
+    "core": {
+      "title": "Our Core Pillars",
+      "subtitleTop": "BUILT ON",
+      "subtitleBottom": "Disciplined Standards",
+      "p1": {
+        "title": "Transparency",
+        "text": "Every assumption is stated. Every number is explained. Every recommendation is justified — so decisions are made with calm confidence."
+      },
+      "p2": {
+        "title": "Expertise & Commitment",
+        "text": "We track market movement continuously and advise with intent — not noise — with genuine commitment to your outcome."
+      },
+      "p3": {
+        "title": "Results & Professionalism",
+        "text": "Our priority is performance: protect downside, target upside, and execute with precision from acquisition to exit."
+      }
+    }
+  },
+  "journey": {
+    "kicker": "OUR JOURNEY",
+    "heading": "From Construction to Investment Advisory Leadership",
+    "2006": {
+      "title": "From Legacy to On-Ground Execution",
+      "description": "With roots in contracting and real estate, Mohamad establishes Al Bairaq Contracting in Dubai, building a foundation in delivery, quality, and execution."
+    },
+    "2013": {
+      "title": "Business Development & Brand Growth",
+      "description": "He expands into business development, strengthening capabilities in operations, growth strategy, and customer-first delivery."
+    },
+    "2016": {
+      "title": "Entrepreneurship & Operational Discipline",
+      "description": "Mohamad builds and manages businesses, reinforcing practical skills in cashflow management, risk control, and performance under pressure."
+    },
+    "2023": {
+      "title": "Launching Mohamad Kodmani Real Estate Brokerage",
+      "description": "He launches the brokerage in Dubai, focusing on investment-led advisory, off-plan strategy, and portfolio building for serious buyers."
+    },
+    "2023_2025": {
+      "title": "Structuring Investor Portfolios Across Dubai",
+      "description": "In two years, the team supports investors in closing more than AED 650 million in transactions, focusing on disciplined entry points, premium launches, and end-to-end post-purchase execution."
+    }
+  },
+  "aboutBrandPillars": {
+    "vision": {
+      "title": "Our Vision",
+      "body": "To become the trusted private desk for investors seeking luxury property Dubai opportunities — building diversified portfolios designed for stable returns, strong upside, and clear exit liquidity."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "body": "To deliver an advisory system that creates measurable outcomes for investors — with transparent analysis, disciplined selection, and responsible strategy execution across Dubai’s property market."
+    },
+    "pillars": {
+      "sectionTitle": "Our Core Pillars",
+      "headingKicker": "BUILT ON",
+      "headingMain": "Disciplined Standards",
+      "transparency": {
+        "title": "Transparency",
+        "body": "Every assumption is stated. Every number is explained. Every recommendation is justified — so decisions are made with calm confidence."
+      },
+      "expertise": {
+        "title": "Expertise & Commitment",
+        "body": "We track the market continuously and advise with intent — with genuine commitment to your outcome."
+      },
+      "results": {
+        "title": "Results & Professionalism",
+        "body": "Performance first: protect downside, target upside, and execute with precision from acquisition to exit."
+      }
+    }
+  },
+  "aboutJourney": {
+    "kicker": "OUR JOURNEY",
+    "heading": "From Construction to Investment Advisory Leadership",
+    "steps": {
+      "2006": {
+        "year": "2006",
+        "title": "From Legacy to On-Ground Execution",
+        "description": "With roots in contracting and real estate, Mohamad establishes Al Bairaq Contracting in Dubai, building a foundation in delivery, quality, and execution."
+      },
+      "2013": {
+        "year": "2013",
+        "title": "Business Development & Brand Growth",
+        "description": "He expands into business development, strengthening capabilities in operations, growth strategy, and customer-first delivery."
+      },
+      "2016": {
+        "year": "2016",
+        "title": "Entrepreneurship & Operational Discipline",
+        "description": "Mohamad builds and manages businesses, reinforcing practical skills in cashflow management, risk control, and performance under pressure."
+      },
+      "2023": {
+        "year": "2023",
+        "title": "Launching Mohamad Kodmani Real Estate Brokerage",
+        "description": "He launches the brokerage in Dubai, focusing on investment-led advisory, off-plan strategy, and portfolio building for serious buyers."
+      },
+      "2023_2025": {
+        "year": "2023–2025",
+        "title": "Structuring Investor Portfolios Across Dubai",
+        "description": "In two years, the team supports investors in closing more than AED 650 million in transactions, focusing on disciplined entry points, premium launches, and end-to-end post-purchase execution."
+      }
+    }
+  },
+  "common": {
+    "clear": "Clear",
+    "from": "From",
+    "to": "To"
+  },
+  "developerHero": {
+    "subtitle": "Developer Portfolio",
+    "breadcrumb": {
+      "home": "Home",
+      "developers": "Developers"
+    }
+  },
+  "developerAbout": {
+    "title": "About {developer}",
+    "signature": "Curated. Verified. Investment-Led."
+  },
+  "developerStats": {
+    "labels": {
+      "totalProjects": "Total Projects",
+      "delivered": "Delivered",
+      "underConstruction": "Under Construction",
+      "communities": "Communities",
+      "sales2024": "2024 Sales"
+    }
+  },
+  "developersDashboard": {
+    "empty": {
+      "title": "No developers configured",
+      "description": "Add entries in developersDetails to activate this page."
+    },
+    "sidebar": {
+      "title": "Developers",
+      "searchPlaceholder": "Search developers...",
+      "noResults": "No developers found",
+      "clearSearch": "Clear search",
+      "resultsInfo": "{count} {count, plural, one {developer} other {developers}} found",
+      "footerCount": "{shown} of {total} developers"
+    },
+    "projects": {
+      "title": "Portfolio Collection",
+      "subtitle": "A curated selection of {developer}'s premium developments",
+      "ariaLabel": "{developer} projects",
+      "resultsInfo": "{count} projects by {developer}"
+    },
+    "filters": {
+      "clearAll": "Clear all"
+    },
+    "results": {
+      "countLine": "{count} projects by {developer}",
+      "filtersApplied": "({count} filter{count, plural, one {} other {s}} applied)"
+    },
+    "noProjects": {
+      "title": "No projects found matching your filters.",
+      "reset": "Reset filters"
+    },
+    "aria": {
+      "toggleDevelopersMenu": "Toggle developers menu",
+      "closeSidebar": "Close sidebar",
+      "searchDevelopers": "Search developers",
+      "clearSearch": "Clear search",
+      "clearAllFilters": "Clear all filters"
+    }
+  },
+  "projects": {
+    "empty": {
+      "title": "No Projects Found",
+      "subtitle": "Adjust filters to reveal more luxury opportunities",
+      "resetButton": "Reset All Filters"
+    },
+    "status": {
+      "completed": "Completed",
+      "presale": "Pre-Sale",
+      "underConstruction": "Under Construction",
+      "announced": "Announced",
+      "onSale": "On Sale",
+      "offPlan": "Off-Plan",
+      "ready": "Ready",
+      "readyAndOffPlan": "Ready & Off-Plan",
+      "available": "Available"
+    },
+    "cards": {
+      "imageFallback": "Project",
+      "priceOnRequest": "Price on request",
+      "priceFrom": "Price from",
+      "typeLabel": "Type",
+      "typeDefault": "Apartment",
+      "sizeLabel": "Size",
+      "sizeNA": "N/A",
+      "sqft": "sqft",
+      "completionLabel": "Completion",
+      "completionTBA": "TBA",
+      "viewDetails": "View Project Details",
+      "defaultLocation": "Dubai"
+    }
+  },
+  "developerProfiles": {
+    "sobha": {
+      "hero": {
+        "title": "Sobha Realty",
+        "tagline": "Precision-Built Luxury with Enduring Value",
+        "subtitle": "A premium developer recognized for craftsmanship, consistency, and investment-led communities designed to hold value over time."
+      },
+      "whySobha": [
+        {
+          "title": "Quality-First Delivery",
+          "description": "A detail-driven approach to finishing and build standards — created for owners who refuse compromise."
+        },
+        {
+          "title": "Community-Led Masterplanning",
+          "description": "Projects designed around livability: open green spaces, waterfront moments, and seamless connectivity."
+        },
+        {
+          "title": "High-Demand Residential Addresses",
+          "description": "A portfolio positioned in districts with strong buyer pull and robust long-term desirability."
+        }
+      ],
+      "performance": {
+        "title": "Sobha — Market Presence",
+        "intro": "Sobha’s performance is best assessed through official records and real transaction momentum in the market — alongside delivery consistency and end-user demand.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Verified market activity reflected in official transaction records",
+          "totalValue": "Transaction values vary by project, unit type, and release phase",
+          "capitalGains": "Capital appreciation depends on entry timing, unit selection, and market cycle"
+        }
+      },
+      "projectsInventory": {
+        "title": "Sobha Project Inventory",
+        "since": "Active development since 2012",
+        "underConstruction": {
+          "projects": 24,
+          "units": 26933
+        },
+        "completed": {
+          "projects": 19,
+          "units": 6767
+        },
+        "note": "Inventory visibility helps investors assess delivery depth and future supply — key for timing and resale strategy."
+      },
+      "investorMeaning": [
+        "Delivery discipline and brand confidence",
+        "Strong end-user pull in premium communities",
+        "Liquidity supported by recognisable positioning",
+        "Quality standards that reduce long-term ownership risk"
+      ],
+      "summary": "For investors seeking luxury property Dubai exposure with a quality-first narrative, Sobha remains a compelling option — especially when unit selection and entry timing are handled strategically.",
+      "investmentPerspective": "Buying with Sobha is not just a purchase — it is an allocation toward build quality, livability, and long-term desirability.",
+      "cta": {
+        "primary": "View Available Sobha Projects",
+        "final": "Explore a curated selection of Sobha opportunities with private advisory."
+      }
+    },
+    "sobhaRealty": {
+      "hero": {
+        "title": "Sobha Realty",
+        "tagline": "Precision-Built Luxury with Enduring Value",
+        "subtitle": "A premium developer recognized for craftsmanship, consistency, and investment-led communities designed to hold value over time."
+      },
+      "whySobha": [
+        {
+          "title": "Quality-First Delivery",
+          "description": "A detail-driven approach to finishing and build standards — created for owners who refuse compromise."
+        },
+        {
+          "title": "Community-Led Masterplanning",
+          "description": "Projects designed around livability: open green spaces, waterfront moments, and seamless connectivity."
+        },
+        {
+          "title": "High-Demand Residential Addresses",
+          "description": "A portfolio positioned in districts with strong buyer pull and robust long-term desirability."
+        }
+      ],
+      "performance": {
+        "title": "Sobha — Market Presence",
+        "intro": "Sobha’s performance is best assessed through official records and real transaction momentum in the market — alongside delivery consistency and end-user demand.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Verified market activity reflected in official transaction records",
+          "totalValue": "Transaction values vary by project, unit type, and release phase",
+          "capitalGains": "Capital appreciation depends on entry timing, unit selection, and market cycle"
+        }
+      },
+      "projectsInventory": {
+        "title": "Sobha Project Inventory",
+        "since": "Active development since 2012",
+        "underConstruction": {
+          "projects": 24,
+          "units": 26933
+        },
+        "completed": {
+          "projects": 19,
+          "units": 6767
+        },
+        "note": "Inventory visibility helps investors assess delivery depth and future supply — key for timing and resale strategy."
+      },
+      "investorMeaning": [
+        "Delivery discipline and brand confidence",
+        "Strong end-user pull in premium communities",
+        "Liquidity supported by recognisable positioning",
+        "Quality standards that reduce long-term ownership risk"
+      ],
+      "summary": "For investors seeking luxury property Dubai exposure with a quality-first narrative, Sobha remains a compelling option — especially when unit selection and entry timing are handled strategically.",
+      "investmentPerspective": "Buying with Sobha is not just a purchase — it is an allocation toward build quality, livability, and long-term desirability.",
+      "cta": {
+        "primary": "View Available Sobha Projects",
+        "final": "Explore a curated selection of Sobha opportunities with private advisory."
+      }
+    },
+    "arada": {
+      "hero": {
+        "title": "Arada",
+        "tagline": "Community-First Living with Strong End-User Demand",
+        "subtitle": "An Emirati developer creating integrated communities designed around lifestyle, greenery, and everyday usability — attractive to both families and investors."
+      },
+      "whyArada": [
+        {
+          "title": "Integrated Community Planning",
+          "description": "Residential, retail, wellness, and leisure elements designed to work together — not added later."
+        },
+        {
+          "title": "Lifestyle & Liveability",
+          "description": "Walkable clusters, green spaces, and community amenities that drive real occupancy demand."
+        },
+        {
+          "title": "Modern Design Language",
+          "description": "Contemporary architecture and practical layouts positioned for end-user appeal."
+        }
+      ],
+      "performance": {
+        "title": "Arada — Market Presence",
+        "intro": "Market performance is best evaluated through official transaction records, delivery progress, and end-user occupancy demand.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Official transaction activity varies by community and release phase",
+          "totalValue": "Value performance depends on unit type, entry timing, and availability",
+          "capitalGains": "Capital growth is influenced by handover timelines and demand cycles"
+        }
+      },
+      "investorMeaning": [
+        "End-user led demand supports stability",
+        "Community planning strengthens long-term desirability",
+        "Better occupancy dynamics in family markets",
+        "Lower volatility than purely speculative launches"
+      ],
+      "summary": "Arada’s communities are positioned for liveability — an advantage for investors seeking durable rental demand and long-horizon value.",
+      "investmentPerspective": "Investing with Arada means prioritising real demand drivers: community, usability, and long-term occupancy appeal.",
+      "cta": {
+        "primary": "View Available Arada Projects",
+        "final": "Discover a curated shortlist of Arada’s strongest communities."
+      }
+    },
+    "damac": {
+      "hero": {
+        "title": "DAMAC Properties",
+        "tagline": "Scale, Brand Recognition, and Market Liquidity",
+        "subtitle": "One of Dubai’s most recognised developers, offering a wide product spectrum — including lifestyle-led, branded, and investment-focused communities."
+      },
+      "whyDamac": [
+        {
+          "title": "High Market Visibility",
+          "description": "Strong brand recognition that can support liquidity across primary and resale markets."
+        },
+        {
+          "title": "Wide Portfolio Coverage",
+          "description": "Diverse communities and unit types across Dubai — enabling multiple investment approaches."
+        },
+        {
+          "title": "Resale & Rental Activity",
+          "description": "Broad market participation supporting various exit and leasing strategies."
+        }
+      ],
+      "performance": {
+        "title": "DAMAC — Market Presence",
+        "intro": "Performance should be assessed by official transaction records, delivery progress, and community-level demand.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Market activity varies by community and release cycles",
+          "totalValue": "Transaction values depend on unit mix and launch timing",
+          "capitalGains": "Capital gains depend on entry points and holding horizon"
+        }
+      },
+      "projectsInventory": {
+        "title": "DAMAC Project Inventory",
+        "since": "Continuous activity since 2012",
+        "underConstruction": {
+          "projects": 111,
+          "units": 46554
+        },
+        "completed": {
+          "projects": 132,
+          "units": 45268
+        }
+      },
+      "summary": "DAMAC can suit investors who value brand recognition, inventory depth, and multiple product lines — when unit selection and timing are handled carefully.",
+      "investmentPerspective": "Investing with DAMAC is a strategy choice: choose the right community, the right release, and the right exit plan.",
+      "cta": {
+        "primary": "View Available DAMAC Projects",
+        "final": "Browse curated DAMAC opportunities aligned with your investment goals."
+      }
+    },
+    "azizi": {
+      "hero": {
+        "title": "Azizi Developments",
+        "tagline": "Strategic Locations with Investment-Led Pricing",
+        "subtitle": "A prominent Dubai developer focused on accessible entry points in strategic districts — attractive for rental yield and portfolio building."
+      },
+      "whyAzizi": [
+        {
+          "title": "Location-Driven Supply",
+          "description": "Projects concentrated in districts with strong tenant demand and connectivity."
+        },
+        {
+          "title": "Portfolio-Friendly Units",
+          "description": "Product designed to perform as investment assets — with practical layouts and leasing appeal."
+        },
+        {
+          "title": "Active Delivery Pipeline",
+          "description": "A wide pipeline that allows investors to plan entries across timelines."
+        }
+      ],
+      "performance": {
+        "title": "Azizi — Market Presence",
+        "intro": "Performance is best evaluated through official transaction records and rental market absorption in each district.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Activity varies by project launches and inventory release",
+          "totalValue": "Value depends on unit mix, phase, and demand cycle",
+          "capitalGains": "Appreciation depends on entry timing and handover windows"
+        }
+      },
+      "projectsInventory": {
+        "title": "Azizi Project Inventory",
+        "underConstruction": {
+          "projects": 52,
+          "units": 36464
+        },
+        "completed": {
+          "projects": 87,
+          "units": 19983
+        }
+      },
+      "summary": "Azizi can be a strong fit for investors focused on rental yield and scalable portfolio building — especially when district selection is done with demand evidence.",
+      "investmentPerspective": "Investing with Azizi is about choosing the right district for tenants and the right price-per-sqft for returns.",
+      "cta": {
+        "primary": "View Available Azizi Projects",
+        "final": "Explore Azizi opportunities selected for demand, connectivity, and rental performance."
+      }
+    },
+    "danube": {
+      "hero": {
+        "title": "Danube Properties",
+        "tagline": "Payment Flexibility with Strong Rental Appeal",
+        "subtitle": "A fast-growing developer known for flexible payment structures and investment-friendly apartments in active districts."
+      },
+      "whyDanube": [
+        {
+          "title": "Flexible Payment Structures",
+          "description": "Payment plans designed to reduce upfront pressure and support broader investment access."
+        },
+        {
+          "title": "Value-Led Positioning",
+          "description": "Competitive pricing dynamics compared to wider market supply in similar zones."
+        },
+        {
+          "title": "Rental-Oriented Product",
+          "description": "Layouts and locations that can support steady leasing demand."
+        }
+      ],
+      "performance": {
+        "title": "Danube — Market Presence",
+        "intro": "Performance depends on district demand, project delivery, and price-per-sqft competitiveness.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Transaction activity varies by project cycle and release volume",
+          "totalValue": "Value is influenced by unit mix and payment-plan popularity",
+          "capitalGains": "Gains depend on entry timing and market movement"
+        }
+      },
+      "projectsInventory": {
+        "title": "Danube Project Inventory",
+        "underConstruction": {
+          "projects": 21,
+          "units": 15424
+        },
+        "completed": {
+          "projects": 20,
+          "units": 8357
+        }
+      },
+      "summary": "Danube can suit investors focused on rental income and flexible entry structures — when district selection is done with demand evidence.",
+      "investmentPerspective": "Investing with Danube is about rental dynamics, pricing efficiency, and structured payment comfort.",
+      "cta": {
+        "primary": "View Danube Real Estate Projects",
+        "final": "Explore Danube opportunities selected for leasing potential and value positioning."
+      }
+    },
+    "binghatti": {
+      "hero": {
+        "title": "Binghatti Developers",
+        "tagline": "Distinctive Architecture with Strong Market Visibility",
+        "subtitle": "A Dubai developer recognised for bold design identity and high market presence across key investor districts."
+      },
+      "whyBinghatti": [
+        {
+          "title": "Recognisable Architectural Identity",
+          "description": "Projects built with visual distinction — supporting memorability and marketability."
+        },
+        {
+          "title": "Active Development Pipeline",
+          "description": "A steady pipeline that keeps the brand visible across the market."
+        },
+        {
+          "title": "Investor District Footprint",
+          "description": "Concentration in areas known for tenant demand and resale activity."
+        }
+      ],
+      "performance": {
+        "title": "Binghatti — Market Presence",
+        "intro": "Performance is best evaluated through official transaction records, delivery progress, and district-level absorption.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Activity varies by location and release cycles",
+          "totalValue": "Values depend on unit mix and market demand windows",
+          "capitalGains": "Gains depend on entry timing and exit strategy"
+        }
+      },
+      "projectsInventory": {
+        "title": "Binghatti Project Inventory",
+        "underConstruction": {
+          "projects": 32,
+          "units": 25072
+        },
+        "completed": {
+          "projects": 38,
+          "units": 11322
+        }
+      },
+      "summary": "Binghatti can work well for investors who want market visibility, recognisable positioning, and active district demand — with disciplined unit selection.",
+      "investmentPerspective": "Investing with Binghatti is a positioning play: choose the right tower, view line, and exit window.",
+      "cta": {
+        "primary": "View Binghatti Real Estate Projects",
+        "final": "Explore Binghatti developments selected for demand, visibility, and liquidity potential."
+      }
+    },
+
+    "imtiaz": {
+      "hero": {
+        "title": "Imtiaz Developments",
+        "tagline": "Investment-Focused Living with Smart Entry Points",
+        "subtitle": "A Dubai developer known for practical residential projects designed for leasing demand and portfolio building."
+      },
+      "whyImtiaz": [
+        {
+          "title": "Return-Led Product Thinking",
+          "description": "A focus on layouts and pricing that can support achievable investment returns."
+        },
+        {
+          "title": "Competitive Entry Strategy",
+          "description": "Positioned to offer market-relevant pricing within active tenant zones."
+        },
+        {
+          "title": "Leasing Demand Alignment",
+          "description": "Units designed to rent efficiently — supporting steady cash-flow dynamics."
+        }
+      ],
+      "performance": {
+        "title": "Imtiaz — Market Presence",
+        "intro": "Performance depends on district demand, delivery timelines, and price-per-sqft positioning.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Activity varies by project and release phase",
+          "totalValue": "Values depend on unit type and demand windows",
+          "capitalGains": "Gains depend on entry timing and holding horizon"
+        }
+      },
+      "projectsInventory": {
+        "title": "Imtiaz Project Inventory",
+        "underConstruction": {
+          "projects": 30,
+          "units": 6086
+        },
+        "completed": {
+          "projects": 7,
+          "units": 987
+        }
+      },
+      "summary": "Imtiaz can suit investors looking for portfolio scalability, practical layouts, and rental-market alignment — when district selection is evidence-led.",
+      "investmentPerspective": "Investing with Imtiaz is about efficiency: strong rental demand, sensible entry points, and consistent execution.",
+      "cta": {
+        "primary": "View Imtiaz Developments",
+        "final": "Explore Imtiaz opportunities selected for leasing dynamics and smart entry levels."
+      }
+    },
+    "tiger": {
+      "hero": {
+        "title": "Tiger Properties",
+        "tagline": "Turnkey Investment Solutions with Practical Delivery",
+        "subtitle": "A long-standing developer delivering residential and commercial projects with investment-friendly structures and broad buyer accessibility."
+      },
+      "whyTiger": [
+        {
+          "title": "Turnkey Options",
+          "description": "Projects often positioned as convenient ownership solutions with simplified decision-making."
+        },
+        {
+          "title": "Accessible Entry Points",
+          "description": "Pricing designed to enable market entry without excessive liquidity lock-up."
+        },
+        {
+          "title": "Tenant Demand Footprint",
+          "description": "Focus on areas with active leasing needs that can support rental performance."
+        }
+      ],
+      "performance": {
+        "title": "Tiger — Market Presence",
+        "intro": "Performance depends on delivery, district demand, and pricing competitiveness per project.",
+        "year": "2025",
+        "stats": {
+          "transactions": "Activity varies by project and handover cycle",
+          "totalValue": "Values depend on unit type and release mix",
+          "capitalGains": "Gains depend on entry timing and market movement"
+        }
+      },
+      "projectsInventory": {
+        "title": "Tiger Project Inventory",
+        "underConstruction": {
+          "projects": 14,
+          "units": 6919
+        },
+        "completed": {
+          "projects": 13,
+          "units": 5358
+        }
+      },
+      "summary": "Tiger can be suitable for investors seeking practical market entry, tenant-demand areas, and investment-friendly ownership structures.",
+      "investmentPerspective": "Investing with Tiger is a cash-flow play when matched to the right district and leasing strategy.",
+      "cta": {
+        "primary": "View Tiger Properties",
+        "final": "Explore Tiger opportunities selected for practicality, leasing demand, and value positioning."
+      }
+    }
+  },
+  "search": {
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest",
+      "priceAsc": "Price (Low → High)",
+      "priceDesc": "Price (High → Low)",
+      "sizeAsc": "Size (Small → Large)",
+      "sizeDesc": "Size (Large → Small)"
+    },
+    "view": {
+      "grid": "Grid",
+      "list": "List"
+    },
+    "results": {
+      "none": "No results",
+      "showing": "Showing {start}–{end} of {total} results"
+    },
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next",
+      "page": "Page {page} / {totalPages}",
+      "clearAll": "Clear all"
+    },
+    "loading": "Loading results..."
+  },
+  "salesOffer": {
+    "editTitle": "Edit description",
+    "generateTitle": "Generate Sales Offer",
+    "saveContinue": "Save & Continue",
+    "pdfPreferences": "PDF Preferences",
+    "pdfPreferencesHint": "Configure your presentation before generation",
+    "selectedUnit": "Selected unit",
+    "addUnit": "Add unit",
+    "language": "Language",
+    "selectLanguage": "Select language",
+    "currency": "Currency",
+    "selectCurrency": "Select currency",
+    "fxBase": "Base currency: AED",
+    "measureUnits": "Measure units",
+    "personalisedDescription": "Personalised description",
+    "personalisedHint": "Tailor the description for luxury buyers — or refine it with Reelly AI.",
+    "descriptionLabel": "Description",
+    "projectGeneralFacts": "Project information extracted from data",
+    "edit": "Edit",
+    "improveWithAI": "Improve with AI",
+    "displaySettings": "Display Settings",
+    "displayDeveloper": "Display developer",
+    "displayLocationOnMap": "Display location on map",
+    "displayTypicalUnits": "Display typical units",
+    "displayUnitPrices": "Display unit prices",
+    "savedTemplates": "Saved project description templates",
+    "selectTemplate": "Select template",
+    "saveAsTemplate": "Save description as template",
+    "generateSalesOffer": "Generate sales offer",
+    "description": {
+      "projectOverview": "Project Overview",
+      "developer": "Developer",
+      "location": "Location & Connectivity",
+      "pricing": "Pricing & Payment",
+      "unitTypes": "Available Units",
+      "amenities": "Amenities & Features",
+      "status": "Project Status",
+      "features": "Unit Features",
+      "projectGeneralFacts": "Project general facts",
+      "finishingAndMaterials": "Finishing & materials",
+      "kitchenAndAppliances": "Kitchen & appliances",
+      "furnishing": "Furnishing",
+      "locationDescriptionAndBenefits": "Location benefits"
+    }
+  },
+  "developersPage": {
+    "title": "Developers",
+    "subtitle": "Explore developers with a quick overview and project stats.",
+    "searchPlaceholder": "Search developers...",
+    "sortBy": "Sort by",
+    "sort": {
+      "name": "Name",
+      "available": "Available Projects",
+      "total": "Total Projects"
+    },
+    "availableProjects": "Available Projects",
+    "totalProjects": "Total Projects",
+    "explore": "Explore",
+    "noResults": "No results found.",
+    "noProjectsYet": "No projects yet",
+    "loadMore": "Load more",
+    "defaultDescription": "A developer delivering high-quality projects with strong market positioning and long-term demand drivers.",
+    "aria": {
+      "clearSearch": "Clear search",
+      "categories": "Categories",
+      "developerCard": "View {developer}",
+      "coverAlt": "{developer} cover",
+      "logoAlt": "{developer} logo"
+    }
+  }
+}

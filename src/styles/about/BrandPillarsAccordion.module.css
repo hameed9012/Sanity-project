@@ -1,0 +1,731 @@
+/* SECTION WRAPPER */
+.brandAccSec {
+  background-color: #ffffff;
+  padding: 80px 0 120px;
+}
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ACCORDION CORE (mimic Bootstrap accordion-item lines) */
+.accordion {
+  width: 100%;
+}
+
+.accItem {
+  border-top: 1px solid #d1d1d1;
+  border-bottom: 0;
+  overflow: hidden;
+}
+
+.accItem:last-child {
+  border-bottom: 1px solid #d1d1d1;
+}
+
+/* HEADER ROW – position like Sobha */
+.accHeader {
+  width: 100%;
+  padding: 15px 24px;
+  display: flex;
+  align-items: flex-start;
+  border: none;
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .accHeader {
+    padding: 15px 0;
+    align-items: flex-start;
+  }
+}
+
+/* PLUS / MINUS ICON – EXACT BEHAVIOUR */
+.icons {
+  transition: 0.5s ease;
+  background: url("/about/icons/plus-icon-big.svg") no-repeat center center;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+}
+
+@media (min-width: 1000px) {
+  .icons {
+    opacity: 0;
+    visibility: hidden;
+    margin-left: -20px; /* hides it to the left like Sobha */
+  }
+}
+
+/* Mobile: icon always visible, aligned like original */
+@media (max-width: 1000px) {
+  .icons {
+    margin-top: 25px;
+    margin-right: 28px;
+    opacity: 1;
+  }
+}
+
+/* Hover + active: slide in + show  */
+@media (min-width: 1000px) {
+  .accHeader:hover .icons,
+  .accItemActive .icons {
+    opacity: 1;
+    visibility: visible;
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+}
+
+/* Active state uses minus icon, same path logic as Sobha */
+.accItemActive .icons {
+  background-image: url("/about/icons/minus-icon-big.svg");
+}
+
+/* HEADER TITLE – HUGE like Sobha */
+.accTitle {
+  margin: 0;
+
+  font-weight: 300;
+  font-size: 111px;
+  line-height: 134px;
+  color: #000000;
+  letter-spacing: 0;
+}
+
+@media (max-width: 1000px) {
+  .accTitle {
+    font-size: 60px;
+    line-height: 63px;
+    text-align: left;
+  }
+}
+
+/* Hover + active = gold heading colour */
+@media (min-width: 1000px) {
+  .accHeader:hover .accTitle,
+  .accItemActive .accTitle {
+    color: #c7a386;
+  }
+}
+
+/* when closed on desktop, Sobha shows gold – we mimic by default on desktop */
+@media (min-width: 1000px) {
+  .accItem:not(.accItemActive) .accTitle {
+    color: #000000;
+  }
+}
+
+/* BODY – COLLAPSE ANIMATION (custom, not from Sobha, but feels same) */
+.accBodyWrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: max-height 0.45s ease, opacity 0.35s ease, transform 0.35s ease;
+}
+
+.accBodyOpen {
+  max-height: 900px; /* enough for pillars layout */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.accBody {
+  padding-top: 0;
+  padding-bottom: 100px;
+}
+
+@media (max-width: 1000px) {
+  .accBody {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 50px;
+    text-align: center;
+  }
+}
+
+/* ------------- TWO-COLUMN CONTENT (VISION / MISSION) ------------- */
+
+.twoColContent {
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 1000px) {
+  .twoColContent {
+    padding-top: 30px;
+    padding-left: 100px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .twoColContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+}
+
+.twoColLeft {
+  text-align: center;
+}
+
+@media (max-width: 1000px) {
+  .twoColLeft {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+}
+
+.twoColRight {
+  flex: 1;
+}
+
+.iconImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Typography for paragraph exactly like Sobha */
+.twoColParagraph {
+  font-size: 26px;
+  line-height: 48px;
+}
+
+@media (max-width: 1000px) {
+  .twoColParagraph {
+    margin-bottom: 10px;
+  }
+}
+
+/* Limit width like .disc in Sobha */
+.disc {
+  max-width: 448px;
+}
+
+@media (max-width: 1000px) {
+  .disc {
+    max-width: 100%;
+  }
+}
+
+/* ------------- “BUILT ON 3 KEY PILLARS” TITLE ------------- */
+
+.style2 {
+  font-weight: 300;
+  font-size: 34px;
+  margin: 10px 0 40px;
+  color: #c7a386;
+  text-align: center;
+  font-style: italic;
+}
+
+.style2 span {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+/* Sobha adds extra bottom margin to this in accordion-body */
+.accBodyHeadingStyle2 {
+  margin-bottom: 50px;
+}
+
+@media (max-width: 1000px) {
+  .accBodyHeadingStyle2 {
+    margin-bottom: 40px;
+    margin-top: 20px;
+    text-align: center !important;
+  }
+
+  .brandAccSec .style2 span {
+    display: block;
+  }
+}
+
+/* ------------- PILLAR CARDS ------------- */
+
+.brandAccBoxMain {
+  display: flex;
+}
+
+.brandAccBox {
+  display: flex;
+  flex-direction: column;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+/* mimic their nth-child tweaks */
+@media (min-width: 1000px) {
+  .brandAccBox:nth-child(even) {
+    flex-direction: column-reverse;
+  }
+
+  .brandAccBox:nth-child(1),
+  .brandAccBox:nth-child(2) {
+    margin-top: 45px;
+  }
+
+  .brandAccBox:nth-child(3) {
+    margin-top: 10px;
+  }
+
+  .brandAccBox:nth-child(3) .brandPillarContent {
+    padding-bottom: 91px;
+  }
+
+  .brandAccBox:nth-child(1) .brandPillarContent,
+  .brandAccBox:nth-child(2) .brandPillarContent {
+    padding-top: 35px;
+  }
+}
+
+/* Card image wrapper */
+.brandAccThumb {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #000;
+}
+
+/* Image behaviour like Sobha’s card hover */
+.brandAccImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transform: scale(1);
+  opacity: 0.9;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.brandAccBox:hover .brandAccImage {
+  transform: scale(1.06);
+  opacity: 1;
+}
+
+/* Text under card – matches brand-piller-content  */
+.brandPillarContent {
+  border-left: 1px solid #dbdbdb;
+  margin-left: 25px;
+  padding-top: 30px;
+  padding-left: 10px;
+  padding-right: 20px;
+  padding-bottom: 30px;
+  bottom: 0;
+}
+
+.brandPillarContent h5 {
+  margin: 0;
+  max-width: 132px;
+
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 300;
+  color: #000;
+  text-align: left;
+  transition: 0.5s ease;
+}
+
+@media (max-width: 1000px) {
+  .brandPillarContent h5 {
+    font-size: 18px;
+    line-height: 21px;
+  }
+}
+
+/* Mobile layout of pillar boxes like Sobha */
+@media (max-width: 1000px) {
+  .brandAccBoxMain {
+    margin: 0 -22px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .brandAccBox {
+    padding: 21px;
+    width: 50%;
+  }
+
+  .brandAccBox:nth-child(even) {
+    flex-direction: column-reverse;
+  }
+
+  .brandAccBox .brandPillarContent {
+    padding-top: 12px;
+    padding-bottom: 40px;
+  }
+} /* GOLD HOVER FOR TITLES */
+.brandPillarContent h5:hover,
+.accTitle:hover {
+  color: #c7a386 !important;
+  transition: 0.3s ease;
+}
+
+/* RTL fixes */
+[dir="rtl"] .accTitle {
+  text-align: right;
+}
+
+[dir="rtl"] .twoColContent {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .brandPillarContent {
+  border-left: none;
+  border-right: 1px solid #dbdbdb;
+}
+/* Better spacing between image and text */
+.twoColContent {
+  display: flex;
+  align-items: center;
+  gap: 50px; /* NEW spacing */
+}
+
+@media (max-width: 1000px) {
+  .twoColContent {
+    gap: 35px;
+  }
+}
+
+/* Default text = black */
+.twoColParagraph,
+.brandPillarContent p,
+.brandPillarContent h5 {
+  color: #000 !important;
+}
+
+/* Hover effect: gold + bold */
+.twoColParagraph:hover,
+.brandPillarContent p:hover,
+.brandPillarContent h5:hover {
+  color: #c7a386 !important;
+  /* font-weight: 600 !important; */
+}
+
+/* More spacing in pillar cards */
+.brandPillarContent {
+  margin-left: 35px;
+  padding-top: 40px;
+}
+
+.brandAccBox {
+  margin-bottom: 50px; /* space between boxes */
+}
+/* SECTION WRAPPER */
+.brandAccSec {
+  background-color: #ffffff; /* FULL BLACK BACKGROUND */
+  padding: 80px 0 120px;
+  color: #fff;
+}
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ACCORDION */
+.accordion {
+  width: 100%;
+}
+
+.accItem {
+  border-top: 1px solid #333;
+}
+
+.accItem:last-child {
+  border-bottom: 1px solid #333;
+}
+
+/* HEADER */
+.accHeader {
+  width: 100%;
+  padding: 15px 24px;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.accTitle {
+  font-size: 80px;
+  font-weight: 300;
+  transition: 0.3s ease;
+}
+
+/* HOVER → GOLD + BOLD */
+.accHeader:hover .accTitle,
+.accItemActive .accTitle {
+  color: #c7a386;
+  /* font-weight: 600; */
+}
+
+/* ACCORDION BODY */
+.accBodyWrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: 0.4s ease;
+}
+
+.accBodyOpen {
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.accBody {
+  padding: 50px 0;
+  color: #fff;
+}
+
+/* TWO COLUMN CONTENT */
+.twoColContent {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+@media (max-width: 900px) {
+  .twoColContent {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.iconImage {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* TEXT */
+.twoColParagraph,
+.disc,
+.brandPillarContent p,
+.brandPillarContent h5 {
+  transition: all 0.3s;
+  color: #000000 !important;
+  font-weight: 400;
+}
+
+/* HOVER → GOLD + BOLD */
+.twoColParagraph:hover,
+.brandPillarContent p:hover,
+.brandPillarContent h5:hover {
+  color: #c7a386 !important;
+  /* font-weight: 600; */
+}
+
+/* CORE PILLARS BOXES */
+.brandAccBoxMain {
+  display: flex;
+  gap: 40px;
+}
+
+@media (max-width: 900px) {
+  .brandAccBoxMain {
+    flex-direction: column;
+  }
+}
+
+.brandAccBox {
+  flex: 1;
+}
+
+.brandAccImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  opacity: 0.9;
+  transition: 0.4s ease;
+}
+
+.brandAccBox:hover .brandAccImage {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.brandPillarContent {
+  margin-top: 20px;
+  border-left: 2px solid #444;
+  padding-left: 20px;
+}
+/* ================================
+   RESPONSIVE FIXES (Mobile + iPad)
+   WITHOUT changing desktop layout
+================================ */
+
+/* TABLETS (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .accTitle {
+    font-size: 70px !important;
+    line-height: 80px !important;
+  }
+
+  .twoColContent {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 35px !important;
+    padding-left: 0 !important;
+  }
+
+  .brandAccBoxMain {
+    gap: 30px !important;
+  }
+}
+
+/* IPADS & BIG MOBILES (max-width: 900px) */
+@media (max-width: 900px) {
+  .accTitle {
+    font-size: 55px !important;
+    line-height: 62px !important;
+  }
+
+  .icons {
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-left: 0 !important;
+  }
+
+  .brandAccBoxMain {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .brandAccBox {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 40px !important;
+  }
+
+  .brandPillarContent {
+    border-left: none !important;
+    border-top: 1px solid #444 !important;
+    margin-left: 0 !important;
+    padding: 20px 0 !important;
+    text-align: center !important;
+  }
+}
+
+/* MOBILE (max-width: 600px) */
+@media (max-width: 600px) {
+  .accTitle {
+    font-size: 40px !important;
+    line-height: 48px !important;
+  }
+
+  .twoColParagraph {
+    font-size: 20px !important;
+    line-height: 32px !important;
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  .iconImage {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 12px !important;
+  }
+
+  .brandAccBox {
+    width: 100% !important;
+  }
+}
+
+/* SMALL MOBILE (max-width: 430px) */
+@media (max-width: 430px) {
+  .accTitle {
+    font-size: 32px !important;
+    line-height: 40px !important;
+  }
+
+  .style2 {
+    font-size: 22px !important;
+  }
+
+  .style2 span {
+    font-size: 12px !important;
+  }
+
+  .brandAccImage {
+    height: auto !important;
+  }
+}
+
+/* RTL fixes for mobile */
+@media (max-width: 900px) {
+  [dir="rtl"] .twoColContent {
+    flex-direction: column !important;
+  }
+
+  [dir="rtl"] .brandPillarContent {
+    border-right: none !important;
+    border-top: 1px solid #444 !important;
+    padding-right: 0 !important;
+  }
+}
+/* ================================
+   H5 VISIBILITY FIX FOR MOBILE + TABLETS
+================================ */
+
+/* iPads + tablets */
+@media (max-width: 1024px) {
+  .brandPillarContent {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-left: none !important;
+    text-align: center !important;
+  }
+
+  .brandPillarContent h5 {
+    max-width: 100% !important;
+    margin: 0 auto 12px auto !important;
+    text-align: center !important;
+  }
+}
+
+/* Phones (600px and below) */
+@media (max-width: 600px) {
+  .brandPillarContent {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-left: none !important;
+    border-top: 1px solid #444 !important;
+    text-align: center !important;
+    padding-top: 20px !important;
+  }
+
+  .brandPillarContent h5 {
+    font-size: 20px !important;
+    line-height: 26px !important;
+    max-width: 90% !important;
+    margin: 0 auto 14px auto !important;
+  }
+
+  .disc {
+    max-width: 90% !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+  }
+}
+
+/* Small screens 430px → tighter spacing */
+@media (max-width: 430px) {
+  .brandPillarContent h5 {
+    font-size: 18px !important;
+    line-height: 24px !important;
+  }
+}

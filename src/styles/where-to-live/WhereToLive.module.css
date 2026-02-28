@@ -1,0 +1,893 @@
+/* =========================
+   PAGE / LAYOUT
+========================= */
+
+.page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #111;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+/* =========================
+   HERO (same structure as properties)
+   If you already set the hero bg image in CSS,
+   put it in .hero as background-image.
+========================= */
+
+.hero {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+
+  /* Optional hero background image:
+  background-image: url("/assets/images/hero/where-to-live.jpg");
+  background-size: cover;
+  background-position: center;
+  */
+
+  background: linear-gradient(135deg, #e9e9e9 0%, #f7f7f7 100%);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.12) 45%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 1;
+}
+
+.heroTop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 160px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 38%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  z-index: 2;
+}
+
+/* =========================
+   SEARCH (same feel)
+========================= */
+
+.inlineSearchWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 999px;
+  padding: 12px 14px;
+
+  margin-top: -30px;
+  position: relative;
+  z-index: 3;
+
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.06);
+}
+
+.inlineSearchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #111;
+  background: transparent;
+  padding: 6px 4px;
+}
+
+.inlineSearchInput::placeholder {
+  color: #9a9a9a;
+}
+
+.inlineSearchClear {
+  border: 1px solid #e7e7e7;
+  background: #ffffff;
+  color: #111;
+
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inlineSearchClear:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   META ROW
+========================= */
+
+.metaRow {
+  border-top: 1px solid #efefef;
+  padding-top: 18px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.metaText {
+  font-size: 18px;
+  color: #222;
+}
+
+.metaText b {
+  font-weight: 800;
+}
+
+.resetBtn {
+  border: 1px solid #e6e6e6;
+  background: #ffffff;
+  color: #111;
+
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resetBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   CARDS SECTION
+========================= */
+
+.cardsSection {
+  margin-top: 10px;
+}
+
+/* IMPORTANT:
+   align-items: stretch -> all cards same row height
+*/
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .featuredGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .featuredGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   CARD (PERFECT EQUAL HEIGHTS)
+========================= */
+
+/* Key changes:
+   - display:flex; flex-direction:column; height:100%
+   - cardContent flex:1
+   - title/desc clamped
+   - details consistent
+   - CTA pinned at bottom
+*/
+.featuredCard {
+  background: #ffffff;
+  border-radius: 26px;
+  overflow: hidden;
+
+  border: 1px solid #efefef;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.06);
+
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none;
+  color: inherit;
+}
+
+.featuredCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.1);
+}
+
+/* ROI badge (top right) */
+.roiBadge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 6;
+
+  background: #000000;
+  color: #fff;
+
+  padding: 7px 12px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
+}
+
+/* image container fixed height => equal across cards */
+.imageContainer {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  background: #f2f2f2;
+  flex: 0 0 auto;
+}
+
+/* Next/Image class */
+.projectImage {
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.02);
+  transition: transform 0.35s ease;
+}
+
+.featuredCard:hover .projectImage {
+  transform: scale(1.06);
+}
+
+/* fallback if image missing */
+.imageFallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #e6e6e6, #f6f6f6);
+  display: grid;
+  place-items: center;
+}
+
+.imageFallbackInner {
+  text-align: center;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.imageFallbackTitle {
+  display: block;
+  font-weight: 900;
+  color: #111;
+}
+
+.imageFallbackSub {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+/* overlay */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.12) 45%,
+    rgba(0, 0, 0, 0.18) 100%
+  );
+  z-index: 1;
+}
+
+/* meta at bottom-left of image */
+.projectMeta {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+}
+
+.developer {
+  display: inline-block;
+  width: fit-content;
+
+  padding: 7px 14px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a6a2d;
+
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.location {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* content fills remaining card height */
+.cardContent {
+  padding: 22px 20px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CLAMP title => equal heights */
+.projectTitle {
+  margin: 0 0 10px;
+  font-size: 26px;
+  line-height: 1.18;
+  font-weight: 900;
+  color: #111;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* fixed */
+  overflow: hidden;
+  min-height: calc(26px * 1.18 * 2); /* keeps title block height consistent */
+}
+
+/* CLAMP description => equal heights */
+.projectDescription {
+  margin: 0 0 18px;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* fixed */
+  overflow: hidden;
+  min-height: calc(14px * 1.6 * 3);
+}
+
+/* details ALWAYS align: pushed down if title/desc shorter */
+.projectDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+
+  margin-top: auto; /* 🔥 makes bottom section consistent */
+}
+
+/* box consistent height */
+.detailItem {
+  border: 1px solid #ededed;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px;
+  min-height: 78px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  color: #8a8a8a;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.detailValue {
+  font-size: 18px;
+  font-weight: 900;
+  color: #111;
+}
+
+/* CTA pinned at bottom */
+.projectCTA {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+
+  background: #111;
+  color: #fff;
+
+  padding: 14px 16px;
+  border-radius: 14px;
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  margin-top: 16px;
+}
+
+.projectCTA:hover {
+  transform: translateY(-2px);
+  background: #000;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================
+   LOAD MORE
+========================= */
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 34px;
+  padding-bottom: 50px;
+}
+
+.loadMoreBtn {
+  border-radius: 999px;
+  padding: 14px 22px;
+
+  border: 1px solid #e6e6e6;
+  background: #ffffff;
+  color: #111;
+
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.loadMoreBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+}
+
+.endText {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+}
+
+/* =========================
+   NO RESULTS
+========================= */
+
+.noResults {
+  border: 1px solid #efefef;
+  background: #fff;
+  border-radius: 20px;
+  padding: 22px;
+  text-align: center;
+  color: #444;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.noResults p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+/* ===== Meta actions (Compare button + Reset) ===== */
+.metaActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.compareToggleBtn {
+  border: 1px solid rgba(176, 141, 87, 0.35);
+  background: linear-gradient(180deg, rgba(176, 141, 87, 0.1), transparent);
+  color: #0f172a;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.compareToggleBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.12);
+}
+
+/* ===== Compare Mode Badge on Cards ===== */
+.compareBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 6;
+
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(176, 141, 87, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.compareBadgeSelected {
+  background: rgba(176, 141, 87, 0.18);
+  border-color: rgba(176, 141, 87, 0.55);
+}
+
+/* Card clickable in compare mode */
+.compareClickable {
+  cursor: pointer;
+  outline: none;
+}
+
+.compareSelectedCard {
+  border: 2px solid rgba(176, 141, 87, 0.7);
+}
+
+/* ===== Sticky Compare Bar ===== */
+.compareBar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 999;
+
+  background: white;
+  border: 1px solid rgb(226, 232, 240);
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 10px 35px;
+  border-radius: 16px;
+  padding: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: min(980px, calc(100% - 24px));
+  margin: 0 auto;
+}
+
+.compareBarLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.compareBarTitle {
+  font-weight: 1000;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.compareChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.compareHint {
+  color: #64748b;
+  font-weight: 800;
+  padding-top: 6px;
+}
+
+/* Actions */
+.compareBarActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.compareClearBtn {
+  border: 1px solid rgba(220, 38, 38, 0.55);
+  color: rgb(220, 38, 38);
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.compareClearBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.12);
+}
+
+.compareGoBtn {
+  border: none;
+  background: #0f172a;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 1000;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.compareGoBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.18);
+}
+
+.compareGoBtn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Chip */
+.compareChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  max-width: 320px;
+}
+
+.compareChipImg {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.compareChipLabel {
+  font-weight: 950;
+  font-size: 12px;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compareChipRemove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 1000;
+  color: #0f172a;
+}
+/* ========= Compare Mode UI ========= */
+
+.metaActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.compareToggleBtn {
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  background: #fff;
+  color: #0f172a;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.compareToggleBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.1);
+}
+
+.compareCard {
+  cursor: pointer;
+  outline: none;
+  border: 2px solid transparent;
+  position: relative;
+}
+
+.compareCardSelected {
+  border-color: #0f172a;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.comparePill {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.comparePillActive {
+  background: #0f172a;
+}
+
+/* ========= Sticky Compare Bar ========= */
+
+.compareBarWrap {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.compareBar {
+  pointer-events: all;
+  width: min(980px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  border-radius: 16px;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.compareBarLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compareBarTitle {
+  font-weight: 950;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.compareChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.compareHint {
+  color: rgba(15, 23, 42, 0.55);
+  font-weight: 900;
+  padding-top: 6px;
+}
+
+.compareBarActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.compareClearBtn {
+  border: 1px solid rgba(220, 38, 38, 0.6);
+  color: #dc2626;
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.compareGoBtn {
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.compareGoBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.22);
+}
+
+.compareGoBtnDisabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* chips */
+.compareChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(226, 232, 240, 1);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(248, 250, 252, 1);
+}
+
+.compareChipImg {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.compareChipText {
+  font-weight: 950;
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.compareChipRemove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+@media (max-width: 520px) {
+  .compareBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .compareBarActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

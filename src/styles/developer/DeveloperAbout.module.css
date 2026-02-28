@@ -1,0 +1,886 @@
+/* src/styles/developer/DeveloperAbout.module.css */
+
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro");
+
+.about {
+  --ink: #0b0b0c;
+  --muted: rgba(11, 11, 12, 0.64);
+  --muted2: rgba(11, 11, 12, 0.52);
+
+  --paper: #ffffff;
+  --ivory: #fbfaf7;
+
+  --gold: #b79243;
+  --gold2: #dbc47e;
+
+  position: relative;
+  width: 100%;
+  padding: 88px 0;
+  background: linear-gradient(
+    180deg,
+    var(--ivory) 0%,
+    var(--paper) 50%,
+    var(--ivory) 100%
+  );
+  overflow: hidden;
+}
+
+/* Background elegance */
+.bg {
+  position: absolute;
+  inset: -35%;
+  background: radial-gradient(
+      700px 700px at 16% 26%,
+      rgba(183, 146, 67, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      680px 680px at 82% 24%,
+      rgba(0, 0, 0, 0.06),
+      transparent 58%
+    ),
+    radial-gradient(
+      900px 900px at 70% 86%,
+      rgba(183, 146, 67, 0.1),
+      transparent 62%
+    ),
+    repeating-linear-gradient(
+      125deg,
+      rgba(183, 146, 67, 0.06) 0px,
+      rgba(183, 146, 67, 0.06) 1px,
+      transparent 1px,
+      transparent 26px
+    );
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(0, 0, 0, 0.03),
+      transparent 40%
+    ),
+    radial-gradient(circle at 80% 40%, rgba(0, 0, 0, 0.02), transparent 42%),
+    radial-gradient(circle at 60% 90%, rgba(0, 0, 0, 0.02), transparent 42%);
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hairlineTop,
+.hairlineBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(183, 146, 67, 0.55),
+    transparent
+  );
+  z-index: 1;
+  opacity: 0.9;
+}
+.hairlineTop {
+  top: 28px;
+}
+.hairlineBottom {
+  bottom: 28px;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 42px;
+}
+
+/* Shell layout */
+.shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+/* LEFT sidebar */
+.side {
+  position: sticky;
+  top: 90px;
+  align-self: start;
+  border-radius: 26px;
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.85),
+      rgba(255, 255, 255, 0.72)
+    ),
+    radial-gradient(
+      700px 260px at 30% 0%,
+      rgba(183, 146, 67, 0.12),
+      transparent 60%
+    );
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.06), 0 2px 12px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.sideInner {
+  padding: 34px 30px 28px 30px;
+}
+
+.sideBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(6px);
+}
+
+.sideBadgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 3px rgba(183, 146, 67, 0.12);
+}
+
+.sideBadgeText {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.68);
+}
+
+.title {
+  margin: 18px 0 10px 0;
+  font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.06;
+  color: var(--ink);
+  font-size: clamp(2.2rem, 3vw, 3.2rem);
+}
+
+.tagline {
+  margin: 0;
+  margin-top: 8px;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.quote {
+  color: rgba(183, 146, 67, 0.75);
+  font-style: normal;
+  font-weight: 700;
+  padding: 0 6px;
+}
+
+.sideDivider {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sideLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.12),
+    transparent
+  );
+}
+
+.sideGem {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 6px rgba(183, 146, 67, 0.1), 0 12px 22px rgba(0, 0, 0, 0.06);
+}
+
+.sideMeta {
+  margin-top: 22px;
+  padding: 18px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.metaRow:last-child {
+  border-bottom: none;
+}
+
+.metaLabel {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.55);
+}
+
+.metaValue {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 13px;
+  color: rgba(11, 11, 12, 0.74);
+  letter-spacing: 0.02em;
+  text-align: right;
+}
+
+/* Sidebar signature */
+.signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.sigLine {
+  width: 70px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(183, 146, 67, 0.55),
+    transparent
+  );
+  opacity: 0.75;
+}
+
+.sigText {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.58);
+}
+
+/* Golden spine strip */
+.spine {
+  position: relative;
+  height: 72px;
+  border-top: 1px solid rgba(183, 146, 67, 0.25);
+  background: linear-gradient(90deg, rgba(183, 146, 67, 0.08), transparent);
+  overflow: hidden;
+}
+
+.spineGlow {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(
+    240px 100px at 15% 50%,
+    rgba(183, 146, 67, 0.3),
+    transparent 60%
+  );
+  filter: blur(10px);
+  opacity: 0.8;
+}
+
+.spineDots {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spineDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  opacity: 0.65;
+  box-shadow: 0 0 0 4px rgba(183, 146, 67, 0.1);
+}
+
+/* RIGHT timeline */
+.main {
+  position: relative;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Step row */
+.step {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Timeline index column */
+.stepIndex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 6px;
+}
+
+.indexRing {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(216, 194, 122, 0.95),
+    rgba(183, 146, 67, 0.95)
+  );
+  box-shadow: 0 0 0 6px rgba(183, 146, 67, 0.1), 0 16px 28px rgba(0, 0, 0, 0.07);
+}
+
+.indexText {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.76)
+  );
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: grid;
+  place-items: center;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: rgba(11, 11, 12, 0.7);
+}
+
+.indexLine {
+  width: 1px;
+  flex: 1;
+  margin-top: 12px;
+  background: linear-gradient(to bottom, rgba(183, 146, 67, 0.35), transparent);
+  min-height: 34px;
+}
+
+/* Step card */
+.stepCard {
+  position: relative;
+  padding: 26px 26px 22px 26px;
+  border-radius: 22px;
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.88),
+      rgba(255, 255, 255, 0.74)
+    ),
+    radial-gradient(
+      820px 220px at 20% 0%,
+      rgba(183, 146, 67, 0.1),
+      transparent 60%
+    );
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06), 0 2px 10px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  transition: transform 260ms ease, box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.stepChrome {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.62) 18%,
+      transparent 38%
+    ),
+    radial-gradient(
+      520px 220px at 85% 20%,
+      rgba(183, 146, 67, 0.1),
+      transparent 60%
+    );
+  opacity: 0.7;
+  pointer-events: none;
+  transform: translateX(-18%);
+}
+
+.stepCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(183, 146, 67, 0.22);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.035);
+}
+.stepCard:hover .stepChrome {
+  transform: translateX(10%);
+  transition: transform 600ms ease;
+}
+
+/* Step top row */
+.stepTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stepTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stepTagDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 3px rgba(183, 146, 67, 0.12);
+}
+
+.stepTagText {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.62);
+}
+
+.stepRule {
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(183, 146, 67, 0.55), transparent);
+  opacity: 0.65;
+}
+
+.text {
+  margin: 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: rgba(11, 11, 12, 0.72);
+  letter-spacing: 0.01em;
+}
+
+/* Corners */
+.corners span {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: rgba(183, 146, 67, 0.55);
+  border-style: solid;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.cTL {
+  top: 14px;
+  left: 14px;
+  border-width: 2px 0 0 2px;
+  border-radius: 10px 0 0 0;
+}
+.cTR {
+  top: 14px;
+  right: 14px;
+  border-width: 2px 2px 0 0;
+  border-radius: 0 10px 0 0;
+}
+.cBL {
+  bottom: 14px;
+  left: 14px;
+  border-width: 0 0 2px 2px;
+  border-radius: 0 0 0 10px;
+}
+.cBR {
+  bottom: 14px;
+  right: 14px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 10px 0;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .shell {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .side {
+    position: relative;
+    top: auto;
+  }
+  .metaValue {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 18px;
+  }
+  .about {
+    padding: 64px 0;
+  }
+  .sideInner {
+    padding: 26px 20px 20px 20px;
+  }
+  .step {
+    grid-template-columns: 56px 1fr;
+  }
+  .stepCard {
+    padding: 22px 18px 18px 18px;
+    border-radius: 18px;
+  }
+  .text {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .stepRule {
+    display: none;
+  }
+}
+/* ---------------------------------------
+   HERO (new header section)
+---------------------------------------- */
+.heroHeader {
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.heroKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+}
+
+.heroKickerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 3px rgba(183, 146, 67, 0.12);
+}
+
+.heroKickerText {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.68);
+}
+
+.heroTitle {
+  margin: 18px 0 10px 0;
+  font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.06;
+  color: var(--ink);
+  font-size: clamp(2.2rem, 3vw, 3.2rem);
+}
+
+.heroTagline {
+  margin: 0;
+  margin-top: 8px;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: rgba(11, 11, 12, 0.74);
+  font-style: italic;
+}
+
+.heroSubtitle {
+  margin: 10px 0 0 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(11, 11, 12, 0.62);
+}
+
+.heroRule {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ruleLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.12),
+    transparent
+  );
+}
+.ruleGem {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 6px rgba(183, 146, 67, 0.1), 0 12px 22px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------------------------------------
+   INSIGHTS (cards distribution)
+---------------------------------------- */
+.insights {
+  margin-top: 26px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+  font-weight: 300;
+  color: rgba(11, 11, 12, 0.9);
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+  letter-spacing: 0.02em;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(183, 146, 67, 0.55), transparent);
+  opacity: 0.6;
+}
+
+/* The grid is the key for “good distribution” */
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* luxury insight card */
+.insightCard {
+  position: relative;
+  border-radius: 22px;
+  padding: 22px 22px 18px 22px;
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.88),
+      rgba(255, 255, 255, 0.74)
+    ),
+    radial-gradient(
+      820px 220px at 20% 0%,
+      rgba(183, 146, 67, 0.1),
+      transparent 60%
+    );
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06), 0 2px 10px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  transition: transform 260ms ease, box-shadow 260ms ease,
+    border-color 260ms ease;
+  min-height: 210px;
+}
+
+.insightCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(183, 146, 67, 0.22);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.035);
+}
+
+.insightTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.insightLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.insightLabelDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 3px rgba(183, 146, 67, 0.12);
+}
+
+.insightLabelText {
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.62);
+}
+
+.insightOrnament {
+  display: inline-flex;
+  gap: 6px;
+  opacity: 0.7;
+}
+.insightOrnament span {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 4px rgba(183, 146, 67, 0.08);
+}
+
+.insightTitle {
+  margin: 0 0 10px 0;
+  font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+  font-weight: 300;
+  font-size: 22px;
+  line-height: 1.2;
+  color: rgba(11, 11, 12, 0.88);
+}
+
+.insightText {
+  margin: 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(11, 11, 12, 0.7);
+  letter-spacing: 0.01em;
+}
+
+.insightCorners span {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: rgba(183, 146, 67, 0.55);
+  border-style: solid;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ---------------------------------------
+   SUMMARY / PERSPECTIVE (2 cards)
+---------------------------------------- */
+.summaryWrap {
+  margin-top: 26px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.summaryCard {
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+}
+
+.summaryCardTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.summaryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--gold2), var(--gold));
+  box-shadow: 0 0 0 4px rgba(183, 146, 67, 0.12);
+}
+
+.summaryTitle {
+  margin: 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.62);
+}
+
+.summaryText {
+  margin: 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system,
+    Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  color: rgba(11, 11, 12, 0.7);
+}
+
+/* ---------------------------------------
+   Responsive distribution
+---------------------------------------- */
+@media (max-width: 1100px) {
+  .insightsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}

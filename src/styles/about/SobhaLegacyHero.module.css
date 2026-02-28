@@ -1,0 +1,407 @@
+/* ============ CONTAINER ============ */
+.heroSection {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(0, 0, 0, 0.12), transparent);
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.stickyWrapper {
+  position: relative;
+  z-index: 3;
+}
+
+.heroInner {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 120px 40px 140px;
+  position: relative;
+}
+
+/* ============ LEFT TEXT PANEL (MOVED) ============ */
+.leftTextBlock {
+  position: absolute;
+  left: 6%;
+  bottom: 18%;
+  width: 380px;
+  z-index: 20;
+}
+
+.textContainer {
+  backdrop-filter: blur(14px);
+  background: #ffffffdb;
+  border: 1px solid #b48a3c29;
+  border-radius: 18px;
+  padding: 34px;
+  line-height: 1.9;
+  box-shadow: 0 30px 80px #0a0c101f;
+}
+
+.description {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #333;
+
+  color: #0f1115bf;
+  letter-spacing: 0.01em;
+  margin-bottom: 14px;
+  font-size: 15.8px;
+}
+
+/* ============ CENTER BANNER ============ */
+.bannerWrapper {
+  width: 100%;
+  margin: 80px 0;
+}
+
+.aboutBanner {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  height: 650px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #000;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer,
+.mobileImageContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.bannerImage {
+  object-fit: cover;
+  object-position: center top;
+  width: 100%;
+  height: 100%;
+}
+
+.imageOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.45)
+  );
+}
+
+.onlyMob {
+  display: none;
+}
+
+/* ============ RIGHT BADGE PANEL ============ */
+.rightBadgeBlock {
+  position: absolute;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  z-index: 30;
+}
+
+.luxuryBadge {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.badgeYearsNumber,
+.badgeYearsPlus {
+  background: linear-gradient(135deg, #d8b566, #b48a3c, #e7d19c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badgeYearsNumber {
+  font-size: 80px;
+  font-weight: 700;
+}
+
+.badgeYearsPlus {
+  font-size: 32px;
+  margin-left: 6px;
+}
+
+.badgeShine {
+  width: 130px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 220, 160, 0) 0%,
+    rgba(255, 220, 160, 0.8) 50%,
+    rgba(255, 220, 160, 0) 100%
+  );
+  animation: shineMove 2.4s linear infinite;
+}
+
+@keyframes shineMove {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-20px);
+    opacity: 0.4;
+  }
+}
+
+.luxuryHeading {
+  margin: 10px 0 8px;
+  line-height: 1.2;
+}
+
+.luxuryTop {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.luxuryMain {
+  font-size: 42px;
+  font-weight: 700;
+  color: #111;
+}
+
+.sinceLine {
+  color: #b48a3c;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ============ MOBILE RESPONSIVE ============ */
+@media (max-width: 1000px) {
+  .onlyDesk {
+    display: none;
+  }
+  .onlyMob {
+    display: block;
+  }
+
+  .heroInner {
+    padding: 96px 20px;
+  }
+
+  .leftTextBlock,
+  .rightBadgeBlock {
+    position: relative;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    margin: 40px auto;
+    width: 100%;
+  }
+
+  .aboutBanner {
+    height: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .aboutBanner {
+    height: 360px;
+  }
+  .luxuryMain {
+    font-size: 34px;
+  }
+  .description {
+    font-size: 15px;
+  }
+}
+/* ================= RTL SUPPORT ================= */
+
+/* Swap text block to the RIGHT in Arabic */
+.rightTextBlockRTL {
+  position: absolute;
+  right: 6%;
+  bottom: 18%;
+  width: 380px;
+  z-index: 20;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Swap badge block to the LEFT */
+.leftBadgeBlockRTL {
+  position: absolute;
+  left: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  z-index: 30;
+  direction: rtl;
+  text-align: right;
+}
+
+.leftBadgeBlockRTL .badgeYearsPlus {
+  margin-right: 6px; /* Flip margin */
+  margin-left: 0;
+}
+
+.rightTextBlockRTL .textContainer {
+  text-align: right;
+}
+/* -------------------------------------- */
+/* BASE LAYOUT — positions NEVER change   */
+/* -------------------------------------- */
+
+.leftTextBlock {
+  position: absolute;
+  left: 6%;
+  bottom: 18%;
+  width: 380px;
+  z-index: 20;
+}
+
+.rightBadgeBlock {
+  position: absolute;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  z-index: 30;
+}
+
+/* -------------------------------------- */
+/* RTL TEXT SUPPORT — NO layout flipping  */
+/* -------------------------------------- */
+
+[dir="rtl"] .textContainer,
+[dir="rtl"] .description {
+  text-align: right;
+}
+
+[dir="rtl"] .rightBadgeBlock {
+  text-align: right;
+}
+
+[dir="rtl"] .luxuryMain,
+[dir="rtl"] .luxuryTop,
+[dir="rtl"] .sinceLine {
+  text-align: right;
+}
+
+[dir="rtl"] .badgeYearsPlus {
+  margin-right: 6px;
+  margin-left: 0;
+}
+
+/* LTR Direction */
+[dir="ltr"] .textContainer,
+[dir="ltr"] .description {
+  text-align: left;
+}
+/* =========================================================
+   📱 MOBILE/TABLET LAYOUT — YEARS ABOVE DESCRIPTION
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  /* Make heroInner a vertical stack */
+  .heroInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 60px 20px !important;
+  }
+
+  /* Remove all absolute positioning for 2 blocks */
+  .leftTextBlock,
+  .rightBadgeBlock,
+  .rightTextBlockRTL,
+  .leftBadgeBlockRTL {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 500px;
+    margin: 0 auto !important;
+    z-index: 3 !important;
+  }
+
+  @media (max-width: 786px) {
+    .leftTextBlock,
+    .rightBadgeBlock,
+    .rightTextBlockRTL,
+    .leftBadgeBlockRTL {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  /* Correct vertical order */
+  .rightBadgeBlock,
+  .leftBadgeBlockRTL {
+    order: 1; /* YEARS block FIRST */
+  }
+
+  .leftTextBlock,
+  .rightTextBlockRTL {
+    order: 2; /* DESCRIPTION block SECOND */
+  }
+
+  .bannerWrapper {
+    order: 0; /* IMAGE ALWAYS FIRST */
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .aboutBanner {
+    height: 420px !important;
+  }
+
+  /* Clean spacing */
+  .textContainer {
+    padding: 24px !important;
+  }
+
+  /* Typography scaling */
+  .badgeYearsNumber {
+    font-size: 56px !important;
+  }
+
+  .badgeYearsPlus {
+    font-size: 24px !important;
+  }
+
+  .luxuryMain {
+    font-size: 28px !important;
+  }
+
+  .luxuryTop {
+    font-size: 16px !important;
+  }
+
+  .sinceLine {
+    font-size: 12px !important;
+  }
+}

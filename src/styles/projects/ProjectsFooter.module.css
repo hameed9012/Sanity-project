@@ -1,0 +1,472 @@
+/* Luxury Projects Footer */
+.luxuryFooter {
+  position: relative;
+  background: linear-gradient(135deg, #0b0b0b 0%, #1a1a1a 50%, #0b0b0b 100%);
+  border-top: 1px solid rgba(215, 180, 106, 0.2);
+  overflow: hidden;
+}
+
+/* Luxury Background */
+.backgroundLuxury {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.goldGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+      rgba(215, 180, 106, 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(215, 180, 106, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+.goldGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(215, 180, 106, 0.05) 0%,
+    transparent 70%
+  );
+  filter: blur(60px);
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(50px);
+  }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 20px 50px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Elegant Header */
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.mainTitle {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #ffffff 0%, #d7b46a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.titleLine {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d7b46a, transparent);
+  margin: 0 auto;
+  position: relative;
+}
+
+.titleLine::before,
+.titleLine::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: #d7b46a;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.titleLine::before {
+  left: -20px;
+}
+
+.titleLine::after {
+  right: -20px;
+}
+
+/* Premium Navigation Grid */
+.navigationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 70px;
+}
+
+/* Category Card */
+.categoryCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.categoryCard:hover,
+.categoryCard.cardActive {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(215, 180, 106, 0.4);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(215, 180, 106, 0.1);
+}
+
+/* Category Header */
+.categoryHeader {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.categoryIcon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.categoryTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #d7b46a;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.categoryDescription {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Projects Container */
+.projectsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.developerSection {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.developerSection:hover {
+  border-color: rgba(215, 180, 106, 0.2);
+}
+
+.developerName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.premiumTag {
+  font-size: 0.7rem;
+  background: linear-gradient(135deg, #d7b46a, #b89444);
+  color: #000000;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Projects List */
+.projectsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.projectItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.projectItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(5px);
+}
+
+.projectItem:last-child {
+  border-bottom: none;
+}
+
+.projectImage {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.projectItem:hover .image {
+  transform: scale(1.1);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(215, 180, 106, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.projectItem:hover .imageOverlay {
+  opacity: 1;
+}
+
+.projectInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.projectTitle {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.3;
+}
+
+.projectMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.projectType {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.projectArrow {
+  font-size: 1.1rem;
+  color: #d7b46a;
+  transition: transform 0.3s ease;
+}
+
+.projectItem:hover .projectArrow {
+  transform: translateX(3px);
+}
+
+/* Card Accent */
+.cardAccent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #d7b46a, #b89444);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.categoryCard:hover .cardAccent {
+  transform: scaleX(1);
+}
+
+/* Luxury Contact Section */
+.contactSection {
+  text-align: center;
+  padding-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contactLine {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d7b46a, transparent);
+  margin: 0 auto 40px;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.contactItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(215, 180, 106, 0.3);
+  transform: translateY(-3px);
+}
+
+.contactIcon {
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  background: rgba(215, 180, 106, 0.1);
+  border: 1px solid rgba(215, 180, 106, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contactDetails {
+  text-align: left;
+}
+
+.contactLabel {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.contactValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .navigationGrid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  .container {
+    padding: 60px 15px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navigationGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .mainTitle {
+    font-size: 2.2rem;
+  }
+
+  .categoryCard {
+    padding: 25px 20px;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .projectTitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 40px 10px 30px;
+  }
+
+  .mainTitle {
+    font-size: 1.8rem;
+  }
+
+  .categoryTitle {
+    font-size: 1.2rem;
+  }
+
+  .categoryDescription {
+    font-size: 0.9rem;
+  }
+
+  .projectItem {
+    padding: 12px 15px;
+  }
+
+  .projectImage {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .goldGrid,
+  .categoryCard,
+  .projectItem,
+  .contactItem,
+  .image {
+    animation: none;
+    transition: none;
+  }
+
+  .cardAccent {
+    transition: none;
+  }
+}

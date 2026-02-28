@@ -1,0 +1,373 @@
+/* InvestmentHighlights.module.css */
+
+.investmentSection {
+  margin: 80px 0 100px 0;
+  position: relative;
+}
+
+.investmentHeader {
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.investmentTitle {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: #0a0a0a;
+  margin: 0 0 20px 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.investmentTitle::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #d2aa69, transparent);
+  margin: 15px auto 0;
+}
+
+.investmentOrnament {
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.1),
+    transparent
+  );
+  margin: 0 auto;
+}
+
+/* Investment Grid */
+.investmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.investmentCard {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.investmentCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+  border-color: rgba(210, 170, 105, 0.3);
+}
+
+.investmentCard.activeInvestment {
+  border-color: rgba(210, 170, 105, 0.5);
+  box-shadow: 0 25px 60px rgba(210, 170, 105, 0.15);
+}
+
+/* Card Image */
+.cardImageContainer {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.cardImage {
+  object-fit: cover;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.investmentCard:hover .cardImage {
+  transform: scale(1.05);
+}
+
+.cardImageOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.9) 0%,
+    transparent 100%
+  );
+}
+
+.cardIndex {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0a0a0a;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Content */
+.cardContent {
+  padding: 25px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a0a0a;
+  margin: 0 0 15px 0;
+  line-height: 1.3;
+}
+
+.cardDetails {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.detailItem {
+  margin-bottom: 10px;
+}
+
+.detailHeader {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 8px;
+}
+
+.bulletPoint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+  line-height: 1.5;
+}
+
+.bullet {
+  width: 6px;
+  height: 6px;
+  background: #d2aa69;
+  border-radius: 50%;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.cardFooter {
+  margin-top: auto;
+}
+
+.cardStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat {
+  padding: 5px 12px;
+  background: rgba(210, 170, 105, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 11px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(210, 170, 105, 0.2);
+}
+
+/* Conclusion Section */
+.conclusionSection {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.conclusionOrnament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.ornamentLine {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, #d2aa69, transparent);
+}
+
+.ornamentCircle {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #d2aa69;
+  border-radius: 50%;
+}
+
+.conclusionContent {
+  text-align: center;
+}
+
+.conclusionTitle {
+  font-size: 28px;
+  font-weight: 300;
+  color: #0a0a0a;
+  margin: 0 0 25px 0;
+}
+
+.conclusionPoints {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.conclusionPoint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  transition: all 0.3s ease;
+}
+
+.conclusionPoint:hover {
+  background: rgba(210, 170, 105, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.checkmark {
+  color: #d2aa69;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.conclusionText {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.conclusionText p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.7);
+  margin-bottom: 20px;
+}
+
+.conclusionTag {
+  display: inline-block;
+  padding: 12px 25px;
+  background: linear-gradient(
+    135deg,
+    rgba(210, 170, 105, 0.1),
+    rgba(210, 170, 105, 0.05)
+  );
+  border-radius: 25px;
+  border: 1px solid rgba(210, 170, 105, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+  margin-top: 15px;
+}
+
+/* RTL Support */
+[dir="rtl"] .investmentTitle::after {
+  background: linear-gradient(270deg, #d2aa69, transparent);
+}
+
+[dir="rtl"] .ornamentLine {
+  background: linear-gradient(270deg, #d2aa69, transparent);
+}
+
+[dir="rtl"] .cardIndex {
+  left: auto;
+  right: 20px;
+}
+
+[dir="rtl"] .bulletPoint {
+  direction: rtl;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .investmentGrid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  .investmentSection {
+    margin: 60px 0 80px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .investmentTitle {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+  }
+
+  .investmentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .conclusionSection {
+    padding: 30px 20px;
+  }
+
+  .conclusionPoints {
+    gap: 10px;
+  }
+
+  .conclusionPoint {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .investmentSection {
+    margin: 40px 0 60px 0;
+  }
+
+  .cardContent {
+    padding: 20px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .conclusionTitle {
+    font-size: 22px;
+  }
+
+  .conclusionTag {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}

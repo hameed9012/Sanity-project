@@ -1,0 +1,363 @@
+/* Page Container */
+.pageContainer {
+  min-height: 100vh;
+  background: #ffffff;
+  position: relative;
+}
+
+/* Not Found */
+.notFound {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.notFoundContent {
+  text-align: center;
+  color: #000000;
+}
+
+.notFoundContent h1 {
+  font-size: 3rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.notFoundContent p {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 300;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Market Section - Pill Design */
+.marketSection {
+  position: relative;
+  padding: 120px 0 80px;
+  background: transparent;
+}
+
+.marketPill {
+  background: #ffffff;
+  padding: 80px 0;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.1);
+}
+
+.marketHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.marketTitle {
+  font-size: 48px;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.marketSubtitle {
+  font-size: 14px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Market Grid */
+.marketGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-bottom: 80px;
+}
+
+.marketCard {
+  padding: 40px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+}
+
+.cardHeader {
+  margin-bottom: 30px;
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.cardDivider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, #000000, transparent);
+  opacity: 0.6;
+}
+
+/* Data Lists */
+.dataList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dataItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dataType {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.dataValue {
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+}
+
+/* Buildings Section */
+.buildingsSection {
+  padding-top: 60px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.buildingsHeader {
+  margin-bottom: 40px;
+}
+
+.buildingsTitle {
+  font-size: 32px;
+  font-weight: 300;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.titleDivider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, #000000, transparent);
+  opacity: 0.6;
+}
+
+.buildingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.buildingCard {
+  padding: 24px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.buildingCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.buildingName {
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.buildingLocation {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Info Section */
+.infoSection {
+  position: relative;
+  padding: 80px 0 120px;
+  background: transparent;
+}
+
+.infoPill {
+  background: #ffffff;
+  padding: 80px 0;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+/* Location Card */
+.locationCard,
+.faqCard {
+  padding: 40px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+}
+
+.locationList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.locationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.locationLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.locationValue {
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+  background: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #f0f0f0;
+}
+
+/* FAQ List */
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.faqItem {
+  padding-bottom: 30px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.faqItem:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.faqQuestion {
+  font-size: 18px;
+  color: #000000;
+  margin: 0 0 16px 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.faqAnswer {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Responsive Design */
+@media (max-width: 1000px) {
+  .marketPill,
+  .infoPill {
+    border-top-right-radius: 40px;
+    border-top-left-radius: 40px;
+    padding: 60px 0;
+  }
+
+  .marketTitle {
+    font-size: 36px;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .marketGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .buildingsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .marketSection {
+    padding: 80px 0 40px;
+  }
+
+  .infoSection {
+    padding: 40px 0 80px;
+  }
+
+  .marketPill,
+  .infoPill {
+    border-top-right-radius: 30px;
+    border-top-left-radius: 30px;
+    padding: 40px 0;
+  }
+
+  .marketTitle {
+    font-size: 32px;
+  }
+
+  .marketCard,
+  .locationCard,
+  .faqCard {
+    padding: 30px 24px;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .marketTitle {
+    font-size: 28px;
+  }
+
+  .cardTitle {
+    font-size: 20px;
+  }
+
+  .buildingsTitle {
+    font-size: 24px;
+  }
+
+  .marketGrid,
+  .infoGrid {
+    gap: 20px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}

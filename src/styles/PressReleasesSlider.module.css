@@ -1,0 +1,472 @@
+/* ====== SECTION WRAPPER ====== */
+
+.sobhaStoriesSec {
+  padding: 96px 0 120px;
+  background-color: #ffffff;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px; /* smaller side padding so neighbour cards are visible */
+}
+
+/* Heading */
+
+.heading {
+  font-size: 18px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #111111;
+  margin: 0 0 40px;
+}
+
+/* ====== SLIDER SHELL ====== */
+
+.sliderShell {
+  position: relative;
+}
+
+/* Swiper root */
+
+.storiesSlider {
+  position: relative;
+  /* padding-bottom: 30px; */
+}
+
+/* Optional helper if you want different tweaks in RTL */
+.rtlSlider {
+}
+
+/* Each slide width – slightly smaller so both neighbours peek in */
+
+.slide {
+  width: 760px; /* this + smaller container padding shows side cards */
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* ====== CARD / BOX ====== */
+
+.card {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+  }
+}
+
+.cardBox {
+  display: block;
+  border: 1px solid #c9c9c9;
+  color: #000000;
+  border-radius: 11px;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* cinematic scaling: side cards ~0.72, center 1.0 */
+
+.storiesSlider :global(.swiper-slide) .cardBox {
+  -webkit-transition: transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  -webkit-transform: scale(0.72);
+  transform: scale(0.72);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  /* box-shadow: 0 18px 55px rgba(0, 0, 0, 0.22); */
+}
+
+/* side slides lose radius like Sobha */
+
+.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox,
+.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox {
+  border-radius: 0;
+}
+
+.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox img,
+.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox img {
+  border-radius: 0;
+}
+
+/* ====== IMAGE ====== */
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 372 / 249;
+  width: 896.383px;
+  height: 600px;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  object-position: center;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+}
+
+/* desktop vs mobile images */
+
+.onlyDesk {
+  display: block;
+}
+
+.onlyMob {
+  display: none;
+}
+
+/* ====== CONTENT ====== */
+
+.cardContent {
+  padding: 30px 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.storyTitle {
+  flex: 0 0 66%;
+  min-width: 0;
+}
+
+.storyPublish {
+  flex: 0 0 34%;
+  text-align: right;
+}
+
+/* RTL: align publish block left in Arabic if you prefer */
+[dir="rtl"] .storyPublish {
+  text-align: left;
+}
+
+/* Title */
+
+.cardTitle {
+  font-size: 18px;
+  color: #000000;
+  margin: 0;
+}
+
+/* "Published on" block */
+
+.datePlace {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+[dir="rtl"] .datePlace {
+  align-items: flex-start;
+}
+
+.publishedLabel {
+  font-size: 18px;
+  font-weight: 300;
+  color: #a8a8a8;
+  display: block;
+}
+
+.publishedDate {
+  font-size: 18px;
+  font-weight: 300;
+  color: #000000;
+  display: block;
+}
+
+/* ====== NAV ARROWS ====== */
+
+.navArrow {
+  position: absolute;
+  top: 50%;
+  z-index: 15;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.25s ease, border-color 0.25s ease,
+    transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.navPrev {
+  left: 24px;
+}
+
+.navNext {
+  right: 24px;
+}
+
+/* RTL: flip arrow positions */
+
+[dir="rtl"] .navPrev {
+  left: auto;
+  right: 24px;
+}
+
+[dir="rtl"] .navNext {
+  right: auto;
+  left: 24px;
+}
+
+.navArrow:hover {
+  background: #111111;
+  border-color: #111111;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
+  transform: translateY(-50%) translateY(-1px);
+}
+
+/* chevron */
+
+.arrowIcon {
+  position: relative;
+  width: 9px;
+  height: 19px;
+}
+
+.arrowIcon::before,
+.arrowIcon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  height: 11px;
+  background-color: #000000;
+  transform-origin: center;
+  transition: background-color 0.25s ease;
+}
+
+/* LTR chevrons */
+
+.navPrev .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.navPrev .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.navNext .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+.navNext .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* RTL: flip visual direction so “prev” looks right, “next” left */
+
+[dir="rtl"] .navPrev .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+[dir="rtl"] .navPrev .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+[dir="rtl"] .navNext .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+[dir="rtl"] .navNext .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.navArrow:hover .arrowIcon::before,
+.navArrow:hover .arrowIcon::after {
+  background-color: #ffffff;
+}
+
+/* ====== VIEW ALL ====== */
+
+.viewAllRow {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.viewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 70px;
+  border-radius: 999px;
+  border: 1px solid #111111;
+  background: transparent;
+  color: #111111;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.viewAllBtn:hover {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ====== RESPONSIVE ====== */
+
+@media (max-width: 1200px) {
+  .container {
+    padding: 0 32px;
+  }
+
+  .slide {
+    width: 640px;
+  }
+
+  .navPrev {
+    left: 16px;
+  }
+
+  .navNext {
+    right: 16px;
+  }
+
+  [dir="rtl"] .navPrev {
+    right: 16px;
+  }
+
+  [dir="rtl"] .navNext {
+    left: 16px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .cardContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .storyTitle,
+  .storyPublish {
+    flex: 0 0 100%;
+    text-align: center;
+  }
+
+  .datePlace {
+    align-items: center;
+  }
+
+  [dir="rtl"] .datePlace {
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sobhaStoriesSec {
+    padding: 56px 0 72px;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .heading {
+    font-size: 15px;
+    letter-spacing: 0.24em;
+    margin-bottom: 28px;
+  }
+
+  .slide {
+    width: 100%;
+  }
+
+  .navArrow {
+    display: none; /* like Sobha – no arrows on mobile */
+  }
+
+  .onlyDesk {
+    display: none;
+  }
+
+  .onlyMob {
+    display: block;
+  }
+
+  .viewAllBtn {
+    width: 100%;
+    max-width: 260px;
+    padding-inline: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .cardContent {
+    padding: 22px 18px;
+  }
+
+  .publishedLabel,
+  .publishedDate {
+    font-size: 14px;
+  }
+}
+/* =========================
+   PRESS RELEASES — KEEP PEEK + FIX BIG GAP
+   Paste at VERY bottom
+========================= */
+
+/* keep neighbors visible */
+.sliderShell,
+.storiesSlider,
+.storiesSlider :global(.swiper) {
+  overflow: visible !important;
+}
+
+/* ✅ restore your original spacing/gap */
+@media (min-width: 769px) {
+  .slide {
+    width: 760px !important; /* back to original => gap returns */
+    max-width: 100%;
+  }
+}
+
+/* ✅ make ONLY the active card bigger on large screens (no gap change) */
+@media (min-width: 1400px) {
+  .storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
+    transform: scale(1) !important; /* no extra scaling */
+  }
+}
+
+/* mobile stays single */
+@media (max-width: 768px) {
+  .storiesSlider {
+    overflow: hidden !important;
+  }
+  .slide {
+    width: 100% !important;
+  }
+}

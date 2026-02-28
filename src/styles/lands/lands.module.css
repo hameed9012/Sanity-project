@@ -1,0 +1,1000 @@
+/* ✅ src/styles/lands/lands.module.css */
+/* FULL WORKING CSS — no banner, badge on cards + badge inside modal
+   Modal is distributed (tabs + content + contact) and avoids scrolling
+*/
+
+@import url("https://fonts.cdnfonts.com/css/chronicle-display");
+@import url("https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro");
+
+:root {
+  --gold: #c9a26a;
+  --gold-dark: #a27b43;
+  --ink: #0b0b0c;
+  --muted: rgba(11, 11, 12, 0.62);
+  --paper: #ffffff;
+  --ivory: #fbfaf7;
+}
+
+/* =========================
+   PAGE
+========================= */
+.page {
+  background: linear-gradient(180deg, #fbfaf7 0%, #ffffff 50%, #fbfaf7 100%);
+  min-height: 100vh;
+}
+
+.container {
+  width: min(1240px, 92%);
+  margin: 0 auto;
+  padding: 100px 0 78px;
+  position: relative;
+}
+
+/* elegant subtle layers */
+.container::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(700px 700px at 16% 26%, rgba(201, 162, 106, 0.12), transparent 60%),
+    radial-gradient(680px 680px at 82% 24%, rgba(0, 0, 0, 0.05), transparent 58%),
+    radial-gradient(900px 900px at 70% 86%, rgba(201, 162, 106, 0.10), transparent 62%),
+    repeating-linear-gradient(
+      125deg,
+      rgba(201, 162, 106, 0.055) 0px,
+      rgba(201, 162, 106, 0.055) 1px,
+      transparent 1px,
+      transparent 26px
+    );
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03), transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(0, 0, 0, 0.02), transparent 42%),
+    radial-gradient(circle at 60% 90%, rgba(0, 0, 0, 0.02), transparent 42%);
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =========================
+   TOP ROW
+========================= */
+.topRow {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.pageTitleWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.pageSubOnly {
+  margin: 0;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  max-width: 680px;
+}
+
+.metaPill {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
+}
+
+.metaPill b {
+  color: rgba(11, 11, 12, 0.86);
+  letter-spacing: 0.02em;
+}
+
+/* =========================
+   TABS
+========================= */
+.tabsWrap {
+  position: relative;
+  z-index: 2;
+  margin: 14px 0 22px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  color: var(--muted);
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.035);
+}
+
+.tab:hover {
+  transform: translateY(-1px);
+  border-color: rgba(201, 162, 106, 0.35);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.05);
+}
+
+.tabActive {
+  background: linear-gradient(135deg, rgba(201, 162, 106, 0.35), rgba(162, 123, 67, 0.22));
+  border-color: rgba(201, 162, 106, 0.55);
+  color: rgba(11, 11, 12, 0.85);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06);
+}
+
+.tabLabel {
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.tabCount {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  color: rgba(11, 11, 12, 0.58);
+  letter-spacing: 0.06em;
+}
+
+.tabActive .tabCount {
+  background: rgba(255, 255, 255, 0.62);
+  color: rgba(11, 11, 12, 0.7);
+}
+
+/* =========================
+   GRID
+========================= */
+.grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+    radial-gradient(820px 220px at 20% 0%, rgba(201, 162, 106, 0.10), transparent 60%);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.06), 0 2px 10px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  text-align: initial;
+  padding: 0;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 162, 106, 0.32);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.035);
+}
+
+.card:focus {
+  outline: 2px solid rgba(201, 162, 106, 0.45);
+  outline-offset: 2px;
+}
+
+/* ✅ brand badge on card (NO emojis) */
+.brandBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  background: linear-gradient(135deg, rgba(11, 11, 12, 0.95), rgba(0, 0, 0, 0.92));
+  color: rgba(201, 162, 106, 0.95);
+  border: 1px solid rgba(201, 162, 106, 0.40);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+/* Media */
+.cardMedia {
+  position: relative;
+  height: 220px;
+  background: #f3f4f6;
+}
+
+.cardImg {
+  object-fit: cover;
+}
+
+.mediaOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(11, 11, 12, 0.25), rgba(11, 11, 12, 0));
+}
+
+/* PDF fallback */
+.pdfFallback {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  background: linear-gradient(135deg, #fbfaf7, #f1ece2);
+}
+
+.pdfBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(11, 11, 12, 0.92);
+  color: #fff;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.18em;
+}
+
+.pdfTitle {
+  font-weight: 900;
+  font-size: 16px;
+  color: rgba(11, 11, 12, 0.92);
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.pdfHint {
+  font-size: 13px;
+  color: rgba(11, 11, 12, 0.62);
+  line-height: 1.6;
+}
+
+/* Body */
+.cardBody {
+  padding: 14px 14px 16px;
+}
+
+.pillsRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: radial-gradient(circle at 30% 30%, rgba(219, 196, 126, 0.9), rgba(201, 162, 106, 0.9));
+  color: rgba(11, 11, 12, 0.9);
+  border: 1px solid rgba(201, 162, 106, 0.35);
+}
+
+.pillSoft {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(11, 11, 12, 0.62);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(11, 11, 12, 0.92);
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.cardSub {
+  margin: 8px 0 0;
+  color: rgba(11, 11, 12, 0.62);
+  font-size: 13px;
+  line-height: 1.55;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.cardPrice {
+  display: inline-block;
+  color: var(--gold-dark);
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* CTA */
+.cardCtaRow {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.cardCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(11, 11, 12, 0.92);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* EMPTY / LOAD MORE */
+.empty {
+  position: relative;
+  z-index: 2;
+  margin-top: 22px;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px dashed rgba(201, 162, 106, 0.35);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.emptyTitle {
+  font-weight: 900;
+  color: rgba(11, 11, 12, 0.9);
+  font-size: 18px;
+}
+
+.emptySub {
+  margin-top: 6px;
+  color: rgba(11, 11, 12, 0.62);
+  font-size: 14px;
+}
+
+.loadMoreWrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.loadMoreBtn {
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 106, 0.40);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: rgba(11, 11, 12, 0.82);
+  text-transform: uppercase;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.05);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.loadMoreBtn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(201, 162, 106, 0.6);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================
+   MODAL
+========================= */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 11, 12, 0.72);
+  backdrop-filter: blur(18px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.modal {
+  width: min(1200px, 96vw);
+  max-height: 92vh;
+  overflow: hidden; /* ✅ no scroll container */
+  border-radius: 24px;
+  border: 1px solid rgba(201, 162, 106, 0.28);
+  background: linear-gradient(135deg, rgba(11, 11, 12, 0.96), rgba(0, 0, 0, 0.98));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65);
+  position: relative;
+}
+
+.modalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  z-index: 6;
+  transition: all 0.2s ease;
+}
+
+.modalClose:hover {
+  background: rgba(201, 162, 106, 0.18);
+  border-color: rgba(201, 162, 106, 0.35);
+  transform: rotate(90deg);
+}
+
+/* ✅ brand badge inside modal (NO emojis) */
+.modalBrandBadge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  background: linear-gradient(135deg, rgba(11, 11, 12, 0.95), rgba(0, 0, 0, 0.92));
+  border: 1px solid rgba(201, 162, 106, 0.40);
+  color: rgba(201, 162, 106, 0.95);
+  font-weight: 900;
+  font-size: 12px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  min-height: 620px;
+}
+
+@media (max-width: 1024px) {
+  .modalBody {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+/* LEFT */
+.modalLeft {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 1024px) {
+  .modalLeft {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Gallery */
+.gallery {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.galleryMain {
+  position: relative;
+  height: 520px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 1024px) {
+  .galleryMain {
+    height: 420px;
+  }
+}
+
+.galleryMainImg {
+  object-fit: cover;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.navPrev {
+  left: 14px;
+}
+
+.navNext {
+  right: 14px;
+}
+
+.galleryCounter {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(201, 162, 106, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  z-index: 3;
+}
+
+.galleryThumbs {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 540px) {
+  .galleryThumbs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  padding-top: 68%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.thumbImg {
+  object-fit: cover;
+}
+
+.thumbActive {
+  border-color: rgba(201, 162, 106, 0.6);
+  box-shadow: 0 0 0 2px rgba(201, 162, 106, 0.22);
+}
+
+/* RIGHT */
+.modalRight {
+  padding: 30px 30px 24px;
+  overflow: hidden; /* ✅ important for no-scroll */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .modalRight {
+    padding: 22px;
+  }
+}
+
+/* Header block */
+.modalHeaderBlock {
+  padding-top: 12px; /* leave space below badges */
+}
+
+.modalProjectTitle {
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  font-family: "Chronicle Display", Georgia, "Times New Roman", serif;
+}
+
+.modalProjectSubtitle {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.modalProjectLocation {
+  margin: 10px 0 0;
+  color: rgba(201, 162, 106, 0.92);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Stats row */
+.projectStats {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .projectStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statItem {
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.statLabel {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.statValue {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Tabs inside modal */
+.modalTabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modalTab {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.modalTab:hover {
+  transform: translateY(-1px);
+  border-color: rgba(201, 162, 106, 0.35);
+}
+
+.modalTabActive {
+  background: linear-gradient(135deg, rgba(201, 162, 106, 0.22), rgba(162, 123, 67, 0.14));
+  border-color: rgba(201, 162, 106, 0.45);
+  color: #fff;
+}
+
+/* Content grid: left card + right contact
+   ✅ fixed layout, no scrolling */
+.modalContentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0; /* ✅ critical for no overflow issues */
+}
+
+@media (max-width: 980px) {
+  .modalContentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Main content card */
+.modalCard {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px 16px 14px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Title */
+.modalCardTitle {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Paragraph (clamped to avoid scroll) */
+.modalParagraph {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.85;
+  font-size: 14px;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Quick grid in overview */
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+@media (max-width: 560px) {
+  .quickGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quickItem {
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.quickLabel {
+  color: rgba(255, 255, 255, 0.60);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.quickValue {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Lists (clamped via overflow hidden + limited height) */
+.modalList {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: disc;
+  color: rgba(255, 255, 255, 0.80);
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.75;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+}
+
+.modalListItem {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+/* Feature chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.90);
+  background: rgba(201, 162, 106, 0.12);
+  border: 1px solid rgba(201, 162, 106, 0.28);
+}
+
+/* Nearby grid */
+.nearbyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  overflow: hidden;
+}
+
+@media (max-width: 560px) {
+  .nearbyGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nearbyItem {
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.nearbyName {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 800;
+  font-size: 14px;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.nearbyDistance {
+  margin-top: 6px;
+  color: rgba(201, 162, 106, 0.92);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Contact section always visible */
+.contactSection {
+  border-radius: 18px;
+  border: 1px solid rgba(201, 162, 106, 0.18);
+  background: rgba(201, 162, 106, 0.10);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.contactTitle {
+  color: rgba(201, 162, 106, 0.95);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.contactButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contactButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 106, 0.32);
+  background: rgba(0, 0, 0, 0.20);
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.contactButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(201, 162, 106, 0.50);
+  background: rgba(0, 0, 0, 0.26);
+}
+
+.contactButtonPrimary {
+  background: linear-gradient(135deg, rgba(201, 162, 106, 0.22), rgba(162, 123, 67, 0.16));
+  border-color: rgba(201, 162, 106, 0.45);
+}
+
+.brandNote {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: "Neue Haas Grotesk Display Pro", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* =========================
+   RESPONSIVE SPACING
+========================= */
+@media (max-width: 900px) {
+  .container {
+    padding: 70px 0 66px;
+  }
+}
+
+@media (max-width: 520px) {
+  .container {
+    padding: 62px 0 62px;
+  }
+}

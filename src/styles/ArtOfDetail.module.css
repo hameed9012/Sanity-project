@@ -1,0 +1,630 @@
+/* ===========================
+   Art Of Detail (FULL WORKING)
+   Fixes:
+   - overlap without stealing clicks
+   - no duplicate selectors
+   =========================== */
+
+/* ====== BASE SECTION WRAPPER ====== */
+.artOfDetailSec {
+  position: relative;
+  width: 100%;
+
+  /* overlap */
+  margin-top: clamp(-160px, -15vh, -90px);
+
+  /* keep above previous sections but NOT insane */
+  z-index: 2;
+
+  /* ✅ IMPORTANT: allow clicks to pass through for the overlapped transparent area */
+  pointer-events: none;
+
+  /* predictable stacking */
+  isolation: isolate;
+
+  background: transparent;
+}
+
+/* ====== CONTAINER ====== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+}
+
+/* ====== WHITE PILL BLOCK ====== */
+.artAnimSec {
+  position: relative;
+
+  /* sits above within its own context */
+  z-index: 2;
+
+  border-top-right-radius: 50vw;
+  border-top-left-radius: 50vw;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+
+  height: 70vh;
+  background: #ffffff;
+
+  transform-origin: center bottom;
+  box-shadow: none;
+
+  /* ✅ IMPORTANT: ONLY the pill is clickable */
+  pointer-events: auto;
+}
+
+/* ====== LAYOUT ====== */
+.row {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.h100vh {
+  height: 70vh;
+}
+
+/* ====== CONTENT COLUMN ====== */
+.artContentSec {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 80px 40px 80px 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ====== TYPOGRAPHY ====== */
+.description {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0 0 40px;
+  color: #000;
+  font-weight: 300;
+}
+
+.companyLine {
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #666;
+  margin: 0 0 32px;
+  font-weight: 400;
+}
+
+/* ====== BUTTON ====== */
+.buttonMain {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.button1 {
+  position: relative;
+  border-radius: 999px;
+  border: 1px solid #111;
+  background: transparent;
+  padding: 16px 48px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #111;
+  text-decoration: none;
+}
+
+.button1:hover {
+  background: #111;
+  color: #fff;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+}
+
+/* ====== IMAGE SECTIONS ====== */
+.ownerImgWrapper {
+  position: relative;
+  flex: 0 0 50%;
+  max-width: 50%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 80px 0;
+  top: 36px;
+}
+
+.ownerImg {
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.25));
+}
+
+.ownerImgMobile {
+  text-align: center;
+}
+
+.ownerImgMobileImg {
+  object-fit: contain;
+  filter: drop-shadow(0 22px 55px rgba(0, 0, 0, 0.2));
+}
+
+/* ====== VISIBILITY TOGGLES ====== */
+.onlyDesk {
+  display: block;
+}
+
+.onlyMob {
+  display: none;
+}
+
+/* ============================================================================ */
+/* ============================ SLOGAN VARIATIONS ============================ */
+/* ============================================================================ */
+
+/* === VARIATION 1: ARCHITECTURAL STATEMENT === */
+.sloganV1 {
+  margin: 0 0 48px;
+}
+
+.sloganArchitectural {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sloganPre {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.sloganMainContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.sloganMain {
+  font-size: 64px;
+  line-height: 0.9;
+  font-weight: 300;
+  color: #000;
+  letter-spacing: -0.01em;
+  display: block;
+}
+
+.sloganDivider {
+  width: 80px;
+  height: 1.5px;
+  background: linear-gradient(90deg, #000 0%, transparent 100%);
+  margin-top: 16px;
+  opacity: 0.6;
+}
+
+/* === VARIATION 2: VERTICAL POWER PLAY === */
+.sloganV2 {
+  margin: 0 0 56px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.sloganVertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.sloganPowerMain {
+  font-size: 68px;
+  line-height: 0.85;
+  font-weight: 300;
+  color: #000;
+  letter-spacing: -0.02em;
+}
+
+/* === VARIATION 3: MINIMALIST FORTUNE === */
+.sloganV3 {
+  margin: 0 0 52px;
+  position: relative;
+  padding-left: 32px;
+}
+
+.sloganV3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: #000;
+  opacity: 0.15;
+}
+
+.sloganFortuneTop {
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.sloganFortuneMain {
+  font-size: 60px;
+  line-height: 0.9;
+  font-weight: 300;
+  color: #000;
+  letter-spacing: -0.01em;
+}
+
+/* === VARIATION 4: CRYPTOGRAPHIC WEALTH === */
+.sloganV4 {
+  margin: 0 0 48px;
+}
+
+.sloganCodeTop {
+  font-size: 9px;
+  letter-spacing: 0.6em;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  opacity: 0.4;
+  font-weight: 300;
+}
+
+.sloganCodeMain {
+  font-size: 52px;
+  line-height: 0.95;
+  color: #000;
+  letter-spacing: -0.005em;
+  position: relative;
+  display: inline-block;
+}
+
+.sloganCodeLine {
+  width: 100%;
+  height: 0.5px;
+  background: #000;
+  margin-top: 16px;
+  opacity: 0.1;
+}
+
+/* === VARIATION 5: GEOMETRIC PROOF === */
+.sloganV5 {
+  margin: 0 0 56px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.sloganGeometricShape {
+  width: 50px;
+  height: 50px;
+  border: 0.5px solid #000;
+  opacity: 0.15;
+  position: relative;
+}
+
+.sloganGeometricShape::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: #000;
+  opacity: 0.3;
+}
+
+.sloganGeometricMain {
+  font-size: 58px;
+  line-height: 0.9;
+  font-weight: 300;
+  color: #000;
+  letter-spacing: -0.015em;
+}
+
+/* === VARIATION 6: KINETIC TYPE === */
+.sloganV6 {
+  margin: 0 0 52px;
+  overflow: hidden;
+}
+
+.sloganKineticContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.sloganKineticLine {
+  font-size: 56px;
+  line-height: 0.85;
+  font-weight: 300;
+  color: #000;
+  transform: translateX(-8px);
+  opacity: 0;
+  animation: slideIn 0.8s ease-out forwards;
+}
+
+.sloganKineticLine:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.sloganKineticLine:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* === VARIATION 7: FRACTIONAL ELITE === */
+.sloganV7 {
+  margin: 0 0 48px;
+}
+
+.sloganFraction {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.sloganFractionTop {
+  font-size: 48px;
+  font-weight: 200;
+  color: #000;
+  opacity: 0.8;
+  line-height: 0.8;
+}
+
+.sloganFractionBar {
+  width: 1px;
+  height: 32px;
+  background: #000;
+  opacity: 0.2;
+  transform: rotate(30deg);
+}
+
+.sloganFractionMain {
+  font-size: 36px;
+  font-weight: 300;
+  color: #000;
+  line-height: 0.95;
+}
+
+/* === VARIATION 8: TYPOGRAPHIC SCULPTURE === */
+.sloganV8 {
+  margin: 0 0 60px;
+  position: relative;
+}
+
+.sloganSculpture {
+  transform: skewX(-3deg);
+  display: inline-block;
+}
+
+.sloganSculptureMain {
+  font-size: 62px;
+  line-height: 0.85;
+  font-weight: 300;
+  color: #000;
+  letter-spacing: -0.02em;
+  transform: skewX(3deg);
+  display: block;
+}
+
+.sloganSculptureCaption {
+  font-size: 9px;
+  letter-spacing: 0.6em;
+  color: #000;
+  text-transform: uppercase;
+  margin-top: 16px;
+  opacity: 0.4;
+  transform: skewX(-3deg);
+}
+
+/* ============================================================================ */
+/* ============================ RESPONSIVE DESIGN ============================ */
+/* ============================================================================ */
+
+@media (max-width: 1000px) {
+  .artOfDetailSec {
+    margin-top: 0;
+  }
+
+  .artAnimSec {
+    height: auto;
+    background: #ffffff !important;
+  }
+
+  .container {
+    padding: 0;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+  }
+
+  .h100vh {
+    height: auto;
+  }
+
+  .artContentSec {
+    padding: 60px 32px;
+    text-align: center;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .ownerImgWrapper {
+    padding: 40px 0;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  .companyLine {
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+
+  .buttonMain {
+    justify-content: center;
+  }
+
+  .onlyDesk {
+    display: none;
+  }
+
+  .onlyMob {
+    display: block;
+  }
+
+  /* Mobile slogan adjustments */
+  .sloganMain,
+  .sloganPowerMain,
+  .sloganFortuneMain,
+  .sloganGeometricMain,
+  .sloganKineticLine,
+  .sloganSculptureMain {
+    font-size: 42px !important;
+  }
+
+  .sloganCodeMain {
+    font-size: 38px !important;
+  }
+
+  .sloganFractionTop {
+    font-size: 36px !important;
+  }
+
+  .sloganFractionMain {
+    font-size: 28px !important;
+  }
+
+  /* Reset grid layouts */
+  .sloganV2,
+  .sloganV5 {
+    display: block;
+    text-align: center;
+  }
+
+  .sloganVertical {
+    writing-mode: horizontal-tb;
+    transform: none;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .sloganV3 {
+    padding-left: 0;
+  }
+
+  .sloganV3::before {
+    display: none;
+  }
+
+  .sloganGeometricShape {
+    margin: 0 auto 20px;
+  }
+}
+
+@media (min-width: 767px) and (max-width: 1000px) {
+  .artContentSec {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .artContentSec {
+    padding: 48px 24px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .sloganMain,
+  .sloganPowerMain,
+  .sloganFortuneMain,
+  .sloganGeometricMain,
+  .sloganKineticLine,
+  .sloganSculptureMain {
+    font-size: 36px !important;
+  }
+
+  .sloganCodeMain {
+    font-size: 32px !important;
+  }
+
+  .sloganFractionTop {
+    font-size: 32px !important;
+  }
+
+  .sloganFractionMain {
+    font-size: 24px !important;
+  }
+
+  .description {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .button1 {
+    padding: 14px 40px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .artContentSec {
+    padding: 40px 20px;
+  }
+
+  .sloganMain,
+  .sloganPowerMain,
+  .sloganFortuneMain,
+  .sloganGeometricMain,
+  .sloganKineticLine,
+  .sloganSculptureMain {
+    font-size: 32px !important;
+  }
+
+  .sloganCodeMain {
+    font-size: 28px !important;
+  }
+}

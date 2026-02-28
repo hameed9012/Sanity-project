@@ -1,0 +1,789 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  background: #000000;
+}
+
+/* ✅ FIX: filters always under navbar */
+.topBar {
+  position: fixed;
+  top: var(--site-navbar-height, 92px); /* ✅ fallback added */
+  left: 0;
+  right: 0;
+  z-index: 9999;
+
+  width: 100%;
+  padding: 14px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.pillsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.pillWrap {
+  position: relative;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.pill:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pillIcon {
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.caret {
+  opacity: 0.65;
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 46px;
+  left: 0;
+  min-width: 190px;
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+}
+
+.dropdownItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 12px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.dropdownItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Price modal ===== */
+.priceModal {
+  position: absolute;
+  top: 46px;
+  left: 0;
+  width: 520px;
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 30;
+  backdrop-filter: blur(10px);
+}
+
+.priceTabs {
+  display: flex;
+  padding: 12px;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.priceTab {
+  flex: 1;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-weight: 800;
+  color: #fff;
+}
+
+.priceTabActive {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.priceGrid {
+  padding: 14px 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.priceField {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.priceLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 6px;
+}
+
+.priceInput {
+  width: 100%;
+  border: 0;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: #fff;
+}
+
+.priceInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.resetBtn,
+.applyBtn {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  font-weight: 800;
+  color: #fff;
+}
+
+.resetBtn {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.resetBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.applyBtn {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.applyBtn:hover {
+  background: #2563eb;
+}
+
+/* ===== 3D toggle ===== */
+.toggle3D {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #fff;
+  user-select: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.toggle3D input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+}
+
+/* ===== Map Shell ===== */
+.mapShell {
+  position: relative;
+  width: 100%;
+  height: calc(
+    100vh - var(--site-navbar-height, 92px) - var(--filters-bar-height, 64px)
+  );
+  min-height: 560px;
+  background: #000000;
+  margin-top: calc(
+    var(--site-navbar-height, 92px) + var(--filters-bar-height, 64px)
+  );
+  overflow: hidden;
+}
+
+.mapContainer {
+  position: absolute;
+  inset: 0;
+}
+
+.mapLoading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  z-index: 1;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Results Counter ===== */
+.resultsCounter {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 420px;
+  max-width: 92vw;
+  background: rgba(0, 0, 0, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.5);
+  z-index: 9;
+  backdrop-filter: blur(10px);
+
+  transform: translateX(-102%);
+  transition: transform 0.22s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarOpen {
+  transform: translateX(0%);
+}
+
+.sidebarHeader {
+  position: relative;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.sidebarClose {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sidebarClose:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebarTitleWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebarTitle {
+  font-weight: 900;
+  font-size: 18px;
+  color: #fff;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarSub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarHero {
+  width: 100%;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.sidebarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sidebarImgFallback {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebarBody {
+  padding: 14px 16px 16px;
+  overflow: auto;
+  flex: 1;
+}
+
+.sidebarPriceBlock {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px;
+}
+
+.sidebarPriceLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+}
+
+.sidebarPriceValue {
+  font-size: 26px;
+  font-weight: 1000;
+  margin-top: 6px;
+  color: #fff;
+}
+
+.sidebarMiniGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sidebarMiniItem {
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebarMiniLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 800;
+}
+
+.sidebarMiniValue {
+  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* Dates */
+.datesGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dateItem {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dateLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 800;
+}
+
+.dateValue {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* Description */
+.descBlock {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.descTitle {
+  font-size: 12px;
+  font-weight: 1000;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.descText {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Actions */
+.sidebarActions {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.actionBtn {
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-weight: 900;
+  color: #fff;
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Payment Plan Cards Styling */
+.paymentPlanCard {
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.paymentPlanCard:first-of-type {
+  margin-top: 8px;
+}
+
+.paymentPlanLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.paymentPlanValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Multi payment plan cards */
+.multiPaymentPlan {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.paymentPlanItem {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.paymentPlanItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.paymentPlanItemLabel {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.paymentPlanBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #3b82f6;
+  color: #fff;
+}
+
+.paymentPlanItemContent {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.sidebarEmpty {
+  padding: 40px 16px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 700;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.sidebarEmptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.sidebarEmptyText {
+  font-size: 14px;
+  max-width: 200px;
+  line-height: 1.4;
+}
+
+/* ===== Search overlay ===== */
+.searchOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  display: grid;
+  place-items: center;
+}
+
+.searchModal {
+  width: min(640px, calc(100% - 28px));
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.searchInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.searchIcon {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.searchInput {
+  flex: 1;
+  height: 40px;
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  padding: 0 12px;
+  outline: none;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.searchClose {
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.8;
+  color: #fff;
+}
+
+.searchList {
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.searchEmpty {
+  padding: 16px;
+  opacity: 0.7;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.searchItem {
+  display: grid;
+  grid-template-columns: 20px 1fr auto 24px;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  color: #fff;
+  text-align: left;
+  width: 100%;
+}
+
+.searchItem:hover {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.searchBuildingIcon {
+  opacity: 0.75;
+}
+
+.searchName {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.searchTag {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.searchArrow {
+  opacity: 0.75;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 920px) {
+  .topBar {
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle3D {
+    align-self: flex-end;
+    margin-top: -30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mapShell {
+    min-height: 520px;
+  }
+
+  .resultsCounter {
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  /* Sidebar becomes bottom sheet */
+  .sidebar {
+    left: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 70%;
+    border-right: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(102%);
+  }
+
+  .sidebarOpen {
+    transform: translateY(0%);
+  }
+
+  .sidebarHero {
+    height: 160px;
+  }
+
+  .priceModal {
+    width: min(520px, calc(100vw - 28px));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .topBar {
+    padding: 12px;
+  }
+
+  .pillsRow {
+    gap: 8px;
+  }
+
+  .pill {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,240 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+  padding: 14px 0;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: block;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #111;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
+}
+
+.cardTop {
+  position: relative;
+}
+
+.mediaWrap {
+  position: relative;
+  width: 100%;
+  height: 265px;
+  background: #f2f2f2;
+  overflow: hidden;
+}
+
+.mediaImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.01);
+}
+
+.mediaPlaceholder {
+  height: 265px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #777;
+  font-size: 14px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  user-select: none;
+}
+
+.mediaWrap:hover .arrow {
+  opacity: 1;
+}
+
+.arrow:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.left {
+  left: 14px;
+}
+.right {
+  right: 14px;
+}
+
+.dots {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dotActive {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.ribbon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #1d5870;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+}
+
+.status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cardBody {
+  padding: 16px 18px 18px;
+}
+
+.iconsRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.iconBtn {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  background: #fff;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 500;
+  margin: 4px 0 6px;
+  font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+}
+
+.subTitle {
+  font-size: 14px;
+  color: #222;
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.pin {
+  opacity: 0.85;
+}
+
+.rangeBox {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 12px;
+}
+
+.rangeLabel {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.rangeValue {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.toRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.toLabel {
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.toValue {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.devLine {
+  font-size: 11px;
+  color: #777;
+  margin-top: 6px;
+}
+
+.devText {
+  opacity: 0.9;
+}

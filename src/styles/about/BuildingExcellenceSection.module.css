@@ -1,0 +1,192 @@
+/* SECTION WRAPPER */
+.section {
+  padding: 120px 0 90px;
+  background-color: #f8f7f4;
+  position: relative;
+  overflow: hidden;
+}
+
+/* LUXURY NAME PATTERN BACKGROUND */
+.bgPattern {
+  /* create the SVG below as /public/patterns/mohamad-kodmani-pattern.svg */
+  background-image: url("/patterns/mohamad-kodmani-pattern.svg");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  background-position: 0 0;
+}
+
+/* MAIN CONTAINER – same feel as Sobha */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* TOP ROW – HEADING LEFT, TEXT RIGHT */
+.topRow {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  column-gap: 90px;
+  align-items: flex-start;
+  margin-bottom: 56px;
+}
+
+.leftCol {
+  /* used only as a GSAP hook */
+}
+
+.heading {
+  font-weight: 300;
+  font-size: 3.7rem; /* close to Sobha */
+  line-height: 1.08;
+  color: #000;
+}
+
+.rightCol {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #222;
+  max-width: 600px;
+}
+
+.rightCol p {
+  margin: 0;
+}
+
+/* STATS ROW */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 48px;
+  row-gap: 24px;
+  align-items: stretch;
+  margin-top: 40px;
+}
+
+.statBoxMain {
+  position: relative;
+}
+
+.statBox {
+  display: flex;
+  align-items: center;
+  padding: 26px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* ICON + VERTICAL DIVIDER */
+.iconWrapper {
+  flex-shrink: 0;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider {
+  width: 1px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.16);
+  margin: 0 24px;
+}
+
+/* NUMBER + LABEL */
+.statText {
+  display: flex;
+  flex-direction: column;
+}
+
+.statNumber {
+  font-weight: 300;
+  font-size: 52px; /* taken from Sobha CSS */
+  line-height: 62px;
+  color: #000;
+  margin: 0 0 4px;
+  letter-spacing: 0.04em;
+}
+
+.countSpan {
+  display: inline-block;
+}
+
+.statLabel {
+  font-size: 13px;
+  line-height: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #555;
+}
+
+/* bottom horizontal line like Sobha */
+.bottomLine {
+  margin-top: 36px;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 32px;
+  }
+
+  .topRow {
+    column-gap: 60px;
+  }
+
+  .heading {
+    font-size: 3.1rem;
+  }
+
+  .statsRow {
+    column-gap: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 100px 0 70px;
+  }
+
+  .container {
+    padding: 0 24px;
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+    row-gap: 26px;
+  }
+
+  .rightCol {
+    max-width: none;
+  }
+
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .statBox {
+    padding: 22px 0;
+  }
+
+  .heading {
+    font-size: 2.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .heading {
+    font-size: 2.3rem;
+  }
+
+  .statNumber {
+    font-size: 42px;
+    line-height: 52px;
+  }
+}

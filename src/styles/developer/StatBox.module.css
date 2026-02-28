@@ -1,0 +1,78 @@
+.statBox {
+  min-width: 120px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  flex: 1;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .statBox {
+    min-width: 100px;
+    padding: 8px 12px;
+    min-height: 48px;
+  }
+
+  .value {
+    font-size: 16px;
+  }
+
+  .label {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 640px) {
+  .statBox {
+    min-width: unset;
+    padding: 6px 10px;
+    min-height: 44px;
+    text-align: center;
+  }
+
+  .value {
+    font-size: 15px;
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+}
+
+@media (max-width: 480px) {
+  .statBox {
+    padding: 5px 8px;
+    min-height: 40px;
+    border-radius: 10px;
+  }
+
+  .value {
+    font-size: 14px;
+  }
+
+  .label {
+    font-size: 9px;
+  }
+}
