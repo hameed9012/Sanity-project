@@ -12,98 +12,46 @@ import DeveloperAbout from "@/components/developer/DeveloperAbout";
 import DeveloperStats from "@/components/developer/DeveloperStats";
 import DeveloperFounder from "@/components/developer/DeveloperFounder";
 
-import { getProjectsByDeveloper } from "@/data/regionProjectsIndex";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import { useLanguage } from "@/components/LanguageProvider";
 
 import styles from "@/styles/developer/DeveloperPage.module.css";
 
-// ✅ Slug aliases -> your JSON keys under developerProfiles
 const SLUG_TO_PROFILE_KEY = {
-  sobha: "sobha",
-  "sobha-realty": "sobha",
-  sobharealty: "sobha",
-
+  sobha: "sobha", "sobha-realty": "sobha", sobharealty: "sobha",
   arada: "arada",
-
-  damac: "damac",
-  "damac-properties": "damac",
-
-  azizi: "azizi",
-  "azizi-developments": "azizi",
-
+  damac: "damac", "damac-properties": "damac",
+  azizi: "azizi", "azizi-developments": "azizi",
   omniyat: "omniyat",
-
-  danube: "danube",
-  "danube-properties": "danube",
-
+  danube: "danube", "danube-properties": "danube",
   binghatti: "binghatti",
-
-  samana: "samana",
-  "samana-developers": "samana",
-
-  "gulf-land-property": "gulf-land-property",
-  "gulf-land": "gulf-land-property",
-
-  gfs: "gfs",
-  "gfs-properties": "gfs",
-
-  taraf: "taraf",
-  "taraf-development": "taraf",
-
-  reportage: "reportage",
-  "reportage-properties": "reportage",
-
-  ellington: "ellington",
-  "ellington-properties": "ellington",
-
-  imtiaz: "imtiaz",
-  "imtiaz-developments": "imtiaz",
-
-  tiger: "tiger",
-  "tiger-properties": "tiger",
-
-  evolutions: "evolutions",
-  "evolutions-real-estate": "evolutions",
-
-  "prestige-one": "prestige-one",
-  "prestige-one-developments": "prestige-one",
-
+  samana: "samana", "samana-developers": "samana",
+  "gulf-land-property": "gulf-land-property", "gulf-land": "gulf-land-property",
+  gfs: "gfs", "gfs-properties": "gfs",
+  taraf: "taraf", "taraf-development": "taraf",
+  reportage: "reportage", "reportage-properties": "reportage",
+  ellington: "ellington", "ellington-properties": "ellington",
+  imtiaz: "imtiaz", "imtiaz-developments": "imtiaz",
+  tiger: "tiger", "tiger-properties": "tiger",
+  evolutions: "evolutions", "evolutions-real-estate": "evolutions",
+  "prestige-one": "prestige-one", "prestige-one-developments": "prestige-one",
   "ajmal-makan": "ajmal-makan",
 };
 
-// ✅ OPTIONAL: assets map (JSON doesn’t have images/logos)
 const CDN = "https://luxury-real-estate-media.b-cdn.net";
 const ASSETS_BY_PROFILE = {
-  sobha: {
-    heroImage: `${CDN}/aquamont/intro-main.png`,
-    logo: "/Sobha-Realty-Square-Logo.jpg",
-  },
-  arada: {
-    heroImage: `${CDN}/massar-3/hero-bg.jpg`,
-    logo: "/arada-developer.avif",
-  },
-  damac: {
-    heroImage: `${CDN}/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20(1).jpeg`,
-    logo: "/damac-logo.png",
-  },
+  sobha: { heroImage: `${CDN}/aquamont/intro-main.png`, logo: "/Sobha-Realty-Square-Logo.jpg" },
+  arada: { heroImage: `${CDN}/massar-3/hero-bg.jpg`, logo: "/arada-developer.avif" },
+  damac: { heroImage: `${CDN}/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20(1).jpeg`, logo: "/damac-logo.png" },
   azizi: { heroImage: `${CDN}/riviera/hero-bg.jpg`, logo: "/azizi.jpg" },
-  omniyat: {
-    heroImage: `${CDN}/lumena-alta/hero-bg.jpg`,
-    logo: "/omniyat-logo.avif",
-  },
-
-  // Add more if you want (safe if missing)
+  omniyat: { heroImage: `${CDN}/lumena-alta/hero-bg.jpg`, logo: "/omniyat-logo.avif" },
 };
 
 function formatSlugToName(slug) {
   if (!slug) return "";
-  return String(slug)
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  return String(slug).split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
-// ✅ Robust helper to read OBJECTS from i18n JSON
 function getTObject(t, key) {
   if (!t) return null;
   try {
@@ -111,362 +59,230 @@ function getTObject(t, key) {
     if (!v || v === key) return null;
     if (typeof v === "string") return null;
     return v;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-// ✅ Safe string translator
 function safeT(t, key, fallback, values) {
   try {
     const v = t?.(key, values);
     if (v === undefined || v === null || v === "" || v === key) return fallback;
     return v;
-  } catch {
-    return fallback;
-  }
+  } catch { return fallback; }
 }
 
 export default function DeveloperPage() {
   const { slug } = useParams();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { allProjects } = useAllProjects();
+
+  const [sanityDeveloper, setSanityDeveloper] = useState(null);
+  const [sanityLoaded, setSanityLoaded] = useState(false);
+
+  // Try to load this developer from Sanity
+  useEffect(() => {
+    async function fetchSanityDev() {
+      try {
+        const res = await fetch(`/api/sanity-developer?slug=${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data._id) setSanityDeveloper(data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch Sanity developer", e);
+      } finally {
+        setSanityLoaded(true);
+      }
+    }
+    fetchSanityDev();
+  }, [slug]);
 
   const profileKey = useMemo(() => {
-    const s = String(slug || "")
-      .trim()
-      .toLowerCase();
+    const s = String(slug || "").trim().toLowerCase();
     return SLUG_TO_PROFILE_KEY[s] || s;
   }, [slug]);
 
-  // ✅ Pull the full profile from JSON: developerProfiles.<key>
-  const profile = useMemo(() => {
-    return getTObject(t, `developerProfiles.${profileKey}`) || null;
-  }, [t, profileKey]);
+  const jsonProfile = useMemo(() => getTObject(t, `developerProfiles.${profileKey}`) || null, [t, profileKey]);
 
-  // ✅ Build a “developer object” that your existing components can render
-  // (DeveloperHero expects name/tagline/subtitle-ish + images)
-  // (DeveloperAbout expects developerProfiles.<slug>.tagline and .about array → we supply those via developer object too)
+  // Build developer object — Sanity wins over JSON
   const developer = useMemo(() => {
-    const hero = profile?.hero || {};
-    const assets = ASSETS_BY_PROFILE[profileKey] || {};
-
-    const name = hero?.title || formatSlugToName(profileKey);
-    const tagline = hero?.tagline || "";
-    const subtitle = hero?.subtitle || "";
-
-    // ✅ Create an “about” array so DeveloperAbout won’t return null
-    // We build it from your JSON sections.
-    const about = [];
-
-    if (subtitle) about.push(subtitle);
-
-    const why = Array.isArray(profile?.whySobha) ? profile.whySobha : [];
-    for (const item of why) {
-      if (item?.description) about.push(item.description);
+    if (sanityDeveloper) {
+      const about = [];
+      if (Array.isArray(sanityDeveloper.about)) about.push(...sanityDeveloper.about);
+      return {
+        slug: profileKey,
+        name: sanityDeveloper.name,
+        displayName: sanityDeveloper.name,
+        tagline: sanityDeveloper.tagline || "",
+        description: sanityDeveloper.tagline || "",
+        heroImage: sanityDeveloper.heroImageUrl || ASSETS_BY_PROFILE[profileKey]?.heroImage || null,
+        logo: sanityDeveloper.logoUrl || ASSETS_BY_PROFILE[profileKey]?.logo || null,
+        about,
+        stats: sanityDeveloper.stats || null,
+        highlights: sanityDeveloper.highlights || [],
+        _fromSanity: true,
+      };
     }
 
-    if (profile?.performance?.intro) about.push(profile.performance.intro);
-    if (profile?.summary) about.push(profile.summary);
-    if (profile?.investmentPerspective)
-      about.push(profile.investmentPerspective);
+    if (!jsonProfile) return null;
+
+    const hero = jsonProfile?.hero || {};
+    const assets = ASSETS_BY_PROFILE[profileKey] || {};
+    const name = hero?.title || formatSlugToName(profileKey);
+    const about = [];
+    if (hero?.subtitle) about.push(hero.subtitle);
+    const why = Array.isArray(jsonProfile?.whySobha) ? jsonProfile.whySobha : [];
+    for (const item of why) { if (item?.description) about.push(item.description); }
+    if (jsonProfile?.performance?.intro) about.push(jsonProfile.performance.intro);
+    if (jsonProfile?.summary) about.push(jsonProfile.summary);
+    if (jsonProfile?.investmentPerspective) about.push(jsonProfile.investmentPerspective);
 
     return {
       slug: profileKey,
       name,
       displayName: name,
-
-      // These are used by your UI components
-      tagline,
-      description: subtitle,
-
-      // For DeveloperHero / DeveloperStats logo rendering
+      tagline: hero?.tagline || "",
+      description: hero?.subtitle || "",
       heroImage: assets.heroImage || null,
       logo: assets.logo || null,
-
-      // Give DeveloperAbout something to render even if it still reads from JSON
       about,
-
-      // Optional: keep this for backward compatibility, but DeveloperStats will read from JSON now
       stats: null,
     };
-  }, [profile, profileKey]);
+  }, [sanityDeveloper, jsonProfile, profileKey]);
 
   const [filters, setFilters] = useState({
-    search: "",
-    minPrice: "",
-    maxPrice: "",
-    minSize: "",
-    maxSize: "",
-    devStatus: [],
-    unitTypes: [],
-    bedrooms: [],
-    completionYears: [],
-    postHandoverOnly: false,
-    minPostHandoverMonths: 1,
+    search: "", minPrice: "", maxPrice: "", minSize: "", maxSize: "",
+    devStatus: [], unitTypes: [], bedrooms: [], completionYears: [],
+    postHandoverOnly: false, minPostHandoverMonths: 1,
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 450);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // ✅ Projects list (keep your existing matching logic)
-  const developerProjects = useMemo(() => {
-    const possibleNames = [
-      developer?.name,
-      developer?.slug,
-      formatSlugToName(profileKey),
-    ].filter(Boolean);
-
-    for (const name of possibleNames) {
-      const projects = getProjectsByDeveloper(name);
-      if (projects && projects.length > 0) return projects;
+    if (sanityLoaded) {
+      const timer = setTimeout(() => setIsLoading(false), 300);
+      return () => clearTimeout(timer);
     }
-    return getProjectsByDeveloper(developer?.name);
-  }, [developer?.name, developer?.slug, profileKey]);
+  }, [sanityLoaded]);
+
+  // Get projects for this developer from merged list
+  const developerProjects = useMemo(() => {
+    if (!developer) return [];
+    const nameVariants = [developer.name, developer.slug, formatSlugToName(profileKey)]
+      .filter(Boolean).map((n) => n.toLowerCase());
+
+    return allProjects.filter((p) => {
+      const devName = (p.developer || "").toLowerCase();
+      const devSlug = (p.developerSlug || "").toLowerCase();
+      return nameVariants.some((n) => devName.includes(n) || devSlug.includes(n) || n.includes(devSlug));
+    });
+  }, [developer, allProjects, profileKey]);
 
   const filteredProjects = useMemo(() => {
-    if (!developerProjects) return [];
-
     return developerProjects.filter((project) => {
-      if (filters.search && filters.search.trim() !== "") {
-        const searchTerm = filters.search.toLowerCase().trim();
-        const searchableFields = [
-          project.name,
-          project.developer,
-          project.location,
-          project.bedrooms,
-          project.unitType,
-        ]
-          .filter(Boolean)
-          .map((f) => String(f).toLowerCase());
-
-        const matchesSearch = searchableFields.some((f) =>
-          f.includes(searchTerm),
-        );
-        if (!matchesSearch) return false;
+      if (filters.search?.trim()) {
+        const s = filters.search.toLowerCase().trim();
+        const fields = [project.name, project.developer, project.location, project.unitType].filter(Boolean).map((f) => f.toLowerCase());
+        if (!fields.some((f) => f.includes(s))) return false;
       }
-
-      const projectPrice = project.priceAED || project.startingPriceAED || 0;
-      if (filters.minPrice !== "" && filters.minPrice != null) {
-        if (projectPrice < Number(filters.minPrice)) return false;
-      }
-      if (filters.maxPrice !== "" && filters.maxPrice != null) {
-        if (projectPrice > Number(filters.maxPrice)) return false;
-      }
-
-      const projectSize = project.sizeSqftMin || 0;
-      if (filters.minSize !== "" && filters.minSize != null) {
-        if (projectSize < Number(filters.minSize)) return false;
-      }
-      if (filters.maxSize !== "" && filters.maxSize != null) {
-        if (projectSize > Number(filters.maxSize)) return false;
-      }
-
-      if (filters.devStatus.length > 0) {
-        if (!filters.devStatus.includes(project.devStatus)) return false;
-      }
-
-      if (filters.unitTypes.length > 0) {
-        if (!filters.unitTypes.includes(project.unitType)) return false;
-      }
-
-      if (filters.bedrooms.length > 0) {
-        const hasMatchingBedroom = filters.bedrooms.some((bedroom) => {
-          const minBeds = project.minBedrooms || 0;
-          const maxBeds = project.maxBedrooms || project.minBedrooms || 0;
-          if (bedroom === 5) return minBeds >= 5;
-          return bedroom >= minBeds && bedroom <= maxBeds;
+      const p = project.priceAED || 0;
+      if (filters.minPrice && p < Number(filters.minPrice)) return false;
+      if (filters.maxPrice && p > Number(filters.maxPrice)) return false;
+      if (filters.devStatus.length && !filters.devStatus.includes(project.devStatus)) return false;
+      if (filters.unitTypes.length && !filters.unitTypes.includes(project.unitType)) return false;
+      if (filters.bedrooms.length) {
+        const match = filters.bedrooms.some((br) => {
+          const min = project.minBedrooms || 0; const max = project.maxBedrooms || min;
+          if (br === 5) return min >= 5; return br >= min && br <= max;
         });
-        if (!hasMatchingBedroom) return false;
+        if (!match) return false;
       }
-
-      if (filters.completionYears.length > 0) {
-        if (!filters.completionYears.includes(project.completionYear))
-          return false;
-      }
-
+      if (filters.completionYears.length && !filters.completionYears.includes(project.completionYear)) return false;
       if (filters.postHandoverOnly && !project.hasPostHandover) return false;
-
-      if (filters.minPostHandoverMonths > 1) {
-        if (
-          !project.hasPostHandover ||
-          project.postHandoverMonths < filters.minPostHandoverMonths
-        ) {
-          return false;
-        }
-      }
-
       return true;
     });
   }, [developerProjects, filters]);
 
   const handleResetFilters = () => {
-    setFilters({
-      search: "",
-      minPrice: "",
-      maxPrice: "",
-      minSize: "",
-      maxSize: "",
-      devStatus: [],
-      unitTypes: [],
-      bedrooms: [],
-      completionYears: [],
-      postHandoverOnly: false,
-      minPostHandoverMonths: 1,
-    });
+    setFilters({ search: "", minPrice: "", maxPrice: "", minSize: "", maxSize: "", devStatus: [], unitTypes: [], bedrooms: [], completionYears: [], postHandoverOnly: false, minPostHandoverMonths: 1 });
   };
 
   const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (filters.search?.trim()) count++;
-    if (filters.minPrice !== "") count++;
-    if (filters.maxPrice !== "") count++;
-    if (filters.minSize !== "") count++;
-    if (filters.maxSize !== "") count++;
-    if (filters.devStatus.length) count++;
-    if (filters.unitTypes.length) count++;
-    if (filters.bedrooms.length) count++;
-    if (filters.completionYears.length) count++;
-    if (filters.postHandoverOnly) count++;
-    if (filters.minPostHandoverMonths > 1) count++;
-    return count;
+    let c = 0;
+    if (filters.search?.trim()) c++;
+    if (filters.minPrice) c++; if (filters.maxPrice) c++;
+    if (filters.devStatus.length) c++; if (filters.unitTypes.length) c++;
+    if (filters.bedrooms.length) c++; if (filters.completionYears.length) c++;
+    if (filters.postHandoverOnly) c++;
+    return c;
   }, [filters]);
 
-  // ✅ Not found if JSON profile missing
-  if (!profile) {
+  // Not found — only after Sanity loaded AND no JSON profile
+  if (sanityLoaded && !developer) {
     return (
       <div className={styles.notFound}>
         <div className={styles.notFoundContent}>
           <h1>Developer Not Found</h1>
-          <p>developerProfiles.{profileKey} is missing from your JSON.</p>
-          <div className={styles.notFoundOrnament}></div>
+          <p>No data found for developer: {slug}</p>
         </div>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !developer) {
     return (
       <div className={styles.loadingScreen}>
         <div className={styles.loadingOrnament}></div>
         <div className={styles.loadingText}>
           <span>Loading</span>
-          <div className={styles.loadingDots}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <div className={styles.loadingDots}><span></span><span></span><span></span></div>
         </div>
       </div>
     );
   }
 
-  const portfolioTitle = safeT(
-    t,
-    "developerPage.portfolioTitle",
-    "Portfolio Collection",
-  );
-  const portfolioSubtitle = safeT(
-    t,
-    "developerPage.portfolioSubtitle",
-    `Curated selection of ${developer?.name}'s exceptional developments`,
-    { developer: developer?.name || "" },
-  );
+  const portfolioTitle = safeT(t, "developerPage.portfolioTitle", "Portfolio Collection");
+  const portfolioSubtitle = safeT(t, "developerPage.portfolioSubtitle", `Curated selection of ${developer?.name}'s exceptional developments`, { developer: developer?.name || "" });
 
   return (
     <div className={styles.page}>
       <DeveloperHero developer={developer} />
-
       <div className={styles.contentWrapper}>
-        {/* Will render now because we provided developer.about/tagline and JSON is present */}
         <DeveloperAbout developer={developer} />
-
-        {/* ✅ Now reads from JSON (see DeveloperStats.jsx below) */}
         <DeveloperStats developer={developer} />
-
-        {/* Founder: your JSON doesn’t include founder, so it will likely return null. Safe. */}
         <DeveloperFounder developer={developer} />
-
         <section className={styles.projectsSection}>
           <div className={styles.sectionHeader}>
             <div className={styles.headerOrnament}></div>
             <h2 className={styles.sectionTitle}>{portfolioTitle}</h2>
             <p className={styles.sectionSubtitle}>{portfolioSubtitle}</p>
-
             <div className={styles.projectCountBadge}>
-              {filteredProjects.length}{" "}
-              {filteredProjects.length === 1 ? "Project" : "Projects"}
+              {filteredProjects.length} {filteredProjects.length === 1 ? "Project" : "Projects"}
             </div>
           </div>
-
-          <ProjectsFiltersBar
-            filters={filters}
-            onChange={setFilters}
-            onOpenFullFilters={() => setIsModalOpen(true)}
-          />
-
-          <ProjectsFiltersModal
-            isOpen={isModalOpen}
-            filters={filters}
-            onChange={setFilters}
-            onClose={() => setIsModalOpen(false)}
-            onReset={handleResetFilters}
-            totalProjects={filteredProjects.length}
-          />
-
+          <ProjectsFiltersBar filters={filters} onChange={setFilters} onOpenFullFilters={() => setIsModalOpen(true)} />
+          <ProjectsFiltersModal isOpen={isModalOpen} filters={filters} onChange={setFilters} onClose={() => setIsModalOpen(false)} onReset={handleResetFilters} totalProjects={filteredProjects.length} />
           <div className={styles.projectsContent}>
             <div className={styles.resultsHeader}>
               <div className={styles.resultsInfo}>
-                <span className={styles.resultsCount}>
-                  {filteredProjects.length}
-                </span>
-                <span className={styles.resultsLabel}>
-                  {filteredProjects.length === 1
-                    ? "Exclusive Project"
-                    : "Signature Developments"}
-                </span>
-
-                {activeFilterCount > 0 && (
-                  <div className={styles.filtersBadge}>
-                    {activeFilterCount}{" "}
-                    {activeFilterCount === 1 ? "Filter" : "Filters"} Active
-                  </div>
-                )}
+                <span className={styles.resultsCount}>{filteredProjects.length}</span>
+                <span className={styles.resultsLabel}>{filteredProjects.length === 1 ? "Exclusive Project" : "Signature Developments"}</span>
+                {activeFilterCount > 0 && <div className={styles.filtersBadge}>{activeFilterCount} {activeFilterCount === 1 ? "Filter" : "Filters"} Active</div>}
               </div>
-
               {activeFilterCount > 0 && (
-                <button
-                  onClick={handleResetFilters}
-                  className={styles.clearFiltersBtn}
-                >
-                  <span>Clear All</span>
-                  <div className={styles.btnOrnament}></div>
+                <button onClick={handleResetFilters} className={styles.clearFiltersBtn}>
+                  <span>Clear All</span><div className={styles.btnOrnament}></div>
                 </button>
               )}
             </div>
-
             {filteredProjects.length > 0 ? (
-              <ProjectCards
-                projects={filteredProjects}
-                onResetFilters={handleResetFilters}
-              />
+              <ProjectCards projects={filteredProjects} onResetFilters={handleResetFilters} />
             ) : (
               <div className={styles.noProjects}>
                 <div className={styles.noProjectsIcon}>🏗️</div>
                 <h3>No Projects Found</h3>
-                <p>
-                  No projects match your current filters for {developer.name}.
-                </p>
-                <button
-                  onClick={handleResetFilters}
-                  className={styles.resetFiltersBtn}
-                >
-                  Reset Filters
-                </button>
+                <p>No projects match your current filters for {developer.name}.</p>
+                <button onClick={handleResetFilters} className={styles.resetFiltersBtn}>Reset Filters</button>
               </div>
             )}
           </div>

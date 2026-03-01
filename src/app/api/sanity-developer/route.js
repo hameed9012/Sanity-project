@@ -6,34 +6,26 @@ export async function GET(request) {
     const slug = searchParams.get("slug");
 
     const filter = slug
-      ? `*[_type == "area" && slug.current == "${slug}"][0]`
-      : `*[_type == "area"] | order(order asc)`;
+      ? `*[_type == "developer" && slug.current == "${slug}"][0]`
+      : `*[_type == "developer"] | order(_createdAt asc)`;
 
     const data = await sanityClient.fetch(`
       ${filter} {
         _id,
         name,
-        nameAr,
         "slug": slug.current,
-        heroImage,
         tagline,
-        taglineAr,
-        description,
-        descriptionAr,
-        location,
-        avgBuyPrice,
-        avgRentPrice,
-        roi,
-        regionSlug,
+        logoUrl,
+        heroImageUrl,
+        about,
+        aboutAr,
+        stats,
         highlights,
-        highlightsAr,
-        order,
-        featured,
       }
     `);
     return Response.json(data || (slug ? null : []));
   } catch (err) {
-    console.error("sanity-areas API error:", err);
+    console.error("sanity-developer API error:", err);
     return Response.json(slug ? null : [], { status: 500 });
   }
 }
