@@ -8,12 +8,13 @@ import TopHeader from "@/components/TopHeader";
 import FooterFinal from "@/components/FooterFinal";
 import { menuData } from "@/data/menuData";
 
-import LanguageProvider from "@/components/LanguageProvider"; // ✅ DEFAULT IMPORT
+import LanguageProvider from "@/components/LanguageProvider";
 import WhatsappFloatingButton from "@/components/FloatingWhatsApp";
 import DirectionWrapper from "@/components/DirectionWrapper";
 import { CompareProvider } from "@/components/compare/CompareProvider";
 import ChatWidget from "@/components/ChatDemoWidget";
 import GAListener from "@/components/GAListener";
+import { SanityProjectsProvider } from "@/components/SanityProjectsContext";
 
 // ===============================
 // GLOBAL CONSTANTS
@@ -60,7 +61,7 @@ export const metadata = {
   },
 
   alternates: {
-    canonical: "/", // resolves to https://mohamadkodmani.ae
+    canonical: "/",
   },
 
   openGraph: {
@@ -89,7 +90,7 @@ export const metadata = {
   },
 
   icons: {
-    icon: [{ url: "/logo.jpg" }], // ✅ favicon = logo
+    icon: [{ url: "/logo.jpg" }],
   },
 };
 
@@ -195,15 +196,17 @@ export default function RootLayout({ children }) {
             APP STRUCTURE
             =============================== */}
         <LanguageProvider>
-          <CompareProvider>
-            <DirectionWrapper>
-              <TopHeader />
-              {children}
-              {/* <ChatWidget /> */}
-              <WhatsappFloatingButton />
-              <FooterFinal menuData={menuData} />
-            </DirectionWrapper>
-          </CompareProvider>
+          <SanityProjectsProvider>
+            <CompareProvider>
+              <DirectionWrapper>
+                <TopHeader />
+                {children}
+                {/* <ChatWidget /> */}
+                <WhatsappFloatingButton />
+                <FooterFinal menuData={menuData} />
+              </DirectionWrapper>
+            </CompareProvider>
+          </SanityProjectsProvider>
         </LanguageProvider>
       </body>
     </html>

@@ -9,11 +9,11 @@ import ProjectCards from "@/components/projects/ProjectCards";
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
 import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
 
-import { regionProjectsIndex } from "@/data/regionProjectsIndex";
 import { filterProjects } from "@/lib/projects/filterProjects";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
-const PAGE_SIZE = 9; // 3 columns x 3 rows
+const PAGE_SIZE = 9;
 
 const initialFilters = {
   search: "",
@@ -26,9 +26,6 @@ const initialFilters = {
   maxSize: "",
 };
 
-/* -----------------------
-  Status Tabs Configuration  
------------------------- */
 const STATUS_TABS = [
   { id: "all", labelEn: "All", labelAr: "الكل" },
   { id: "off-plan", labelEn: "Off-plan", labelAr: "قيد الإنشاء" },
@@ -36,9 +33,6 @@ const STATUS_TABS = [
   { id: "sold-out", labelEn: "Sold-out", labelAr: "مباع" },
 ];
 
-/* -----------------------
-  Seeded shuffle (stable)
------------------------- */
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -53,7 +47,6 @@ function mulberry32(seed) {
 function shuffleWithSeed(arr, seed) {
   const a = Array.isArray(arr) ? [...arr] : [];
   const rnd = mulberry32(seed || 1);
-
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rnd() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
@@ -61,27 +54,20 @@ function shuffleWithSeed(arr, seed) {
   return a;
 }
 
-/* -----------------------
-  Filter by Status Tab
------------------------- */
 function filterByStatusTab(projects, activeTab) {
   if (activeTab === "all") return projects;
-
   return projects.filter((project) => {
     const status = project?.status || project?.devStatus || "";
     const statusLower = status.toLowerCase();
-
     if (activeTab === "off-plan") {
       return (
         statusLower.includes("off-plan") ||
         statusLower.includes("off plan") ||
         statusLower.includes("under construction") ||
         statusLower.includes("construction") ||
-        statusLower.includes("off-plan") ||
         status === "Off-plan"
       );
     }
-
     if (activeTab === "secondary") {
       return (
         statusLower.includes("secondary") ||
@@ -90,7 +76,6 @@ function filterByStatusTab(projects, activeTab) {
         (statusLower.includes("ready") && statusLower.includes("secondary"))
       );
     }
-
     if (activeTab === "sold-out") {
       return (
         statusLower.includes("sold-out") ||
@@ -99,7 +84,6 @@ function filterByStatusTab(projects, activeTab) {
         status === "Sold out"
       );
     }
-
     return true;
   });
 }
@@ -108,45 +92,36 @@ export default function PropertiesPage() {
   const { locale: ctxLocale, t } = useLanguage();
   const locale = ctxLocale || "en";
   const isRTL = locale === "ar";
-
   const pathname = usePathname();
 
-  // ✅ changes every time you ENTER /properties (new visit seed)
+  // ✅ Sanity-merged projects
+  const { allProjects: sanityMergedProjects } = useAllProjects();
+
   const [visitSeed, setVisitSeed] = React.useState(() =>
     Math.floor(Date.now() % 2147483647)
   );
-
-  // ✅ Status tab state
   const [activeTab, setActiveTab] = React.useState("all");
 
-  // ✅ optional but recommended: when user comes back to /properties, reshuffle + reset
   React.useEffect(() => {
     if (pathname !== "/properties") return;
-
     const newSeed = Math.floor(
       (Date.now() + Math.random() * 1e9) % 2147483647 || 1
     );
-
     setVisitSeed(newSeed);
-    // reset filters + pagination on each visit so they see a fresh hierarchy
     setFilters(initialFilters);
     setActiveTab("all");
     setVisibleCount(PAGE_SIZE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // ✅ shuffled ONCE per visitSeed (stable during the visit)
   const allProjects = React.useMemo(() => {
-    return shuffleWithSeed(regionProjectsIndex || [], visitSeed);
-  }, [visitSeed]);
+    return shuffleWithSeed(sanityMergedProjects || [], visitSeed);
+  }, [sanityMergedProjects, visitSeed]);
 
   const [filters, setFilters] = React.useState(initialFilters);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-  // slicing
   const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
 
-  // reset slicing when filters change OR tab changes
   React.useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [
@@ -161,7 +136,6 @@ export default function PropertiesPage() {
     filters.maxSize,
   ]);
 
-  // ✅ First filter by active tab, THEN apply other filters
   const tabFilteredProjects = React.useMemo(() => {
     return filterByStatusTab(allProjects, activeTab);
   }, [allProjects, activeTab]);
@@ -182,7 +156,6 @@ export default function PropertiesPage() {
     setVisibleCount(PAGE_SIZE);
   }, []);
 
-  // ✅ Get counts for each tab
   const tabCounts = React.useMemo(() => {
     return {
       all: allProjects.length,
@@ -194,17 +167,13 @@ export default function PropertiesPage() {
   return (
     <div className={styles.page}>
       <Hero />
-
       <div className={styles.container}>
-        {/* Inline search */}
         <InlineSearch
           isRTL={isRTL}
           value={filters.search}
           onChange={(v) => setFilters((prev) => ({ ...prev, search: v }))}
           onClear={() => setFilters((prev) => ({ ...prev, search: "" }))}
         />
-
-        {/* Status Tabs */}
         <StatusTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -212,15 +181,11 @@ export default function PropertiesPage() {
           isRTL={isRTL}
           t={t}
         />
-
-        {/* Sticky filters bar */}
         <ProjectsFiltersBar
           filters={filters}
           onChange={setFilters}
           onOpenFullFilters={() => setIsModalOpen(true)}
         />
-
-        {/* Modal */}
         <ProjectsFiltersModal
           isOpen={isModalOpen}
           filters={filters}
@@ -229,16 +194,12 @@ export default function PropertiesPage() {
           onReset={onResetAll}
           totalProjects={filtered.length}
         />
-
-        {/* Top meta row */}
         <div className={styles.metaRow}>
           <div className={styles.metaText}>
             {isRTL ? (
               <>
                 <span className={styles.metaTabName}>
-                  {STATUS_TABS.find((tab) => tab.id === activeTab)?.labelAr ||
-                    "الكل"}
-                  :
+                  {STATUS_TABS.find((tab) => tab.id === activeTab)?.labelAr || "الكل"}:
                 </span>{" "}
                 عرض <b>{Math.min(visibleCount, filtered.length)}</b> من{" "}
                 <b>{filtered.length}</b> مشروع
@@ -246,36 +207,22 @@ export default function PropertiesPage() {
             ) : (
               <>
                 <span className={styles.metaTabName}>
-                  {STATUS_TABS.find((tab) => tab.id === activeTab)?.labelEn ||
-                    "All"}
-                  :
+                  {STATUS_TABS.find((tab) => tab.id === activeTab)?.labelEn || "All"}:
                 </span>{" "}
                 Showing <b>{Math.min(visibleCount, filtered.length)}</b> of{" "}
                 <b>{filtered.length}</b> projects
               </>
             )}
           </div>
-
           {hasActiveFilters ? (
-            <button
-              type="button"
-              className={styles.resetBtn}
-              onClick={onResetAll}
-            >
+            <button type="button" className={styles.resetBtn} onClick={onResetAll}>
               {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
             </button>
           ) : null}
         </div>
-
-        {/* Cards */}
         <div className={styles.cardsSection}>
-          <ProjectCards
-            projects={visibleProjects}
-            onResetFilters={onResetAll}
-          />
+          <ProjectCards projects={visibleProjects} onResetFilters={onResetAll} />
         </div>
-
-        {/* Load more */}
         {canLoadMore ? (
           <div className={styles.loadMoreWrap}>
             <button
@@ -287,7 +234,6 @@ export default function PropertiesPage() {
             </button>
           </div>
         ) : null}
-
         {!canLoadMore && filtered.length > 0 ? (
           <div className={styles.endText}>
             {isRTL ? "وصلت إلى النهاية." : "You've reached the end."}
@@ -298,9 +244,6 @@ export default function PropertiesPage() {
   );
 }
 
-/* -----------------------
-  Hero
------------------------- */
 function Hero() {
   return (
     <div className={styles.hero}>
@@ -310,9 +253,6 @@ function Hero() {
   );
 }
 
-/* -----------------------
-  Inline Search
------------------------- */
 function InlineSearch({ value, onChange, onClear, isRTL }) {
   return (
     <div className={styles.inlineSearchWrap}>
@@ -328,11 +268,7 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
         dir={isRTL ? "rtl" : "ltr"}
       />
       {value ? (
-        <button
-          type="button"
-          className={styles.inlineSearchClear}
-          onClick={onClear}
-        >
+        <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
           {isRTL ? "مسح" : "Clear"}
         </button>
       ) : null}
@@ -340,9 +276,6 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
   );
 }
 
-/* -----------------------
-  Status Tabs Component
------------------------- */
 function StatusTabs({ activeTab, onTabChange, tabCounts, isRTL, t }) {
   const getTabLabel = (tab) => {
     const translationKey = `properties.tabs.${tab.id}`;
@@ -360,9 +293,7 @@ function StatusTabs({ activeTab, onTabChange, tabCounts, isRTL, t }) {
           <button
             key={tab.id}
             type="button"
-            className={`${styles.statusTab} ${
-              activeTab === tab.id ? styles.statusTabActive : ""
-            }`}
+            className={`${styles.statusTab} ${activeTab === tab.id ? styles.statusTabActive : ""}`}
             onClick={() => onTabChange(tab.id)}
             aria-pressed={activeTab === tab.id}
           >

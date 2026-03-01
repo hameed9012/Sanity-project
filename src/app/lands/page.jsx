@@ -7,6 +7,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 import styles from "@/styles/lands/lands.module.css";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import { landsData, pickLang, getLandThumbnail } from "@/data/lands/landData";
 import { useLanguage } from "@/components/LanguageProvider";
 

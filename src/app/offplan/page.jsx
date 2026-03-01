@@ -8,9 +8,9 @@ import ProjectCards from "@/components/projects/ProjectCards";
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
 import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
 
-import { regionProjectsIndex } from "@/data/regionProjectsIndex";
 import { filterProjects } from "@/lib/projects/filterProjects";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 9;
 
@@ -66,17 +66,19 @@ export default function OffPlanPage() {
   const { locale: ctxLocale, t } = useLanguage();
   const locale = ctxLocale || "en";
   const isRTL = locale === "ar";
-
   const pathname = usePathname();
 
+  // ✅ Sanity-merged projects
+  const { allProjects: sanityMergedProjects } = useAllProjects();
+
   const [visitSeed, setVisitSeed] = React.useState(() =>
-    Math.floor(Date.now() % 2147483647),
+    Math.floor(Date.now() % 2147483647)
   );
 
   React.useEffect(() => {
     if (pathname !== "/offplan") return;
     const newSeed = Math.floor(
-      (Date.now() + Math.random() * 1e9) % 2147483647 || 1,
+      (Date.now() + Math.random() * 1e9) % 2147483647 || 1
     );
     setVisitSeed(newSeed);
     setFilters(initialFilters);
@@ -84,8 +86,8 @@ export default function OffPlanPage() {
   }, [pathname]);
 
   const allProjects = React.useMemo(() => {
-    return shuffleWithSeed(regionProjectsIndex || [], visitSeed);
-  }, [visitSeed]);
+    return shuffleWithSeed(sanityMergedProjects || [], visitSeed);
+  }, [sanityMergedProjects, visitSeed]);
 
   const [filters, setFilters] = React.useState(initialFilters);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -126,7 +128,6 @@ export default function OffPlanPage() {
   return (
     <div className={styles.page}>
       <Hero isRTL={isRTL} />
-
       <div className={styles.container}>
         <InlineSearch
           isRTL={isRTL}
@@ -134,13 +135,11 @@ export default function OffPlanPage() {
           onChange={(v) => setFilters((prev) => ({ ...prev, search: v }))}
           onClear={() => setFilters((prev) => ({ ...prev, search: "" }))}
         />
-
         <ProjectsFiltersBar
           filters={filters}
           onChange={setFilters}
           onOpenFullFilters={() => setIsModalOpen(true)}
         />
-
         <ProjectsFiltersModal
           isOpen={isModalOpen}
           filters={filters}
@@ -149,7 +148,6 @@ export default function OffPlanPage() {
           onReset={onResetAll}
           totalProjects={filtered.length}
         />
-
         <div className={styles.metaRow}>
           <div className={styles.metaText}>
             {isRTL ? (
@@ -164,25 +162,15 @@ export default function OffPlanPage() {
               </>
             )}
           </div>
-
           {hasActiveFilters && (
-            <button
-              type="button"
-              className={styles.resetBtn}
-              onClick={onResetAll}
-            >
+            <button type="button" className={styles.resetBtn} onClick={onResetAll}>
               {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
             </button>
           )}
         </div>
-
         <div className={styles.cardsSection}>
-          <ProjectCards
-            projects={visibleProjects}
-            onResetFilters={onResetAll}
-          />
+          <ProjectCards projects={visibleProjects} onResetFilters={onResetAll} />
         </div>
-
         {canLoadMore ? (
           <div className={styles.loadMoreWrap}>
             <button
@@ -194,13 +182,11 @@ export default function OffPlanPage() {
             </button>
           </div>
         ) : null}
-
         {!canLoadMore && filtered.length > 0 && (
           <div className={styles.endText}>
             {isRTL ? "وصلت إلى النهاية." : "You've reached the end."}
           </div>
         )}
-
         {filtered.length === 0 && (
           <div className={styles.noResults}>
             <div className={styles.noResultsIcon}>🏗️</div>
@@ -213,11 +199,7 @@ export default function OffPlanPage() {
                 : "We couldn't find any off-plan projects matching your search criteria."}
             </p>
             {hasActiveFilters && (
-              <button
-                type="button"
-                className={styles.noResultsButton}
-                onClick={onResetAll}
-              >
+              <button type="button" className={styles.noResultsButton} onClick={onResetAll}>
                 {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
               </button>
             )}
@@ -261,11 +243,7 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
         dir={isRTL ? "rtl" : "ltr"}
       />
       {value && (
-        <button
-          type="button"
-          className={styles.inlineSearchClear}
-          onClick={onClear}
-        >
+        <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
           ×
         </button>
       )}

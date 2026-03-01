@@ -1,4 +1,4 @@
-// e.g. src/app/where-to-live/[slug]/page.jsx
+// src/app/where-to-live/[slug]/page.jsx
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -14,12 +14,15 @@ import AreaNarrative from "@/components/where-to-live/AreaNarrative";
 import MarketInsights from "@/components/where-to-live/MarketInsights";
 import LocationFAQ from "@/components/where-to-live/LocationFAQ";
 
-import { regionProjectsIndex } from "@/data/regionProjectsIndex";
 import { getWhereToLiveRegionLocalized } from "@/data/whereToLiveData/whereToLiveRegionDetails";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 export default function ProjectsPage() {
   const { slug } = useParams();
-  const { locale, t } = useLanguage(); // locale is used by regionData, t for text
+  const { locale, t } = useLanguage();
+
+  // ✅ Sanity-merged projects
+  const { allProjects: sanityMergedProjects } = useAllProjects();
 
   const regionData = getWhereToLiveRegionLocalized(slug, locale);
 
@@ -40,10 +43,9 @@ export default function ProjectsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredProjects = useMemo(() => {
-    return regionProjectsIndex.filter((project) => {
+    return sanityMergedProjects.filter((project) => {
       if (slug && project.regionSlug !== slug) return false;
 
-      // SEARCH
       if (filters.search.trim() !== "") {
         const search = filters.search.toLowerCase().trim();
         const fields = [
@@ -55,35 +57,23 @@ export default function ProjectsPage() {
         ]
           .filter(Boolean)
           .map((f) => f.toLowerCase());
-
         if (!fields.some((f) => f.includes(search))) return false;
       }
 
-      // PRICE
       const p = project.priceAED || project.startingPriceAED || 0;
       if (filters.minPrice && p < Number(filters.minPrice)) return false;
       if (filters.maxPrice && p > Number(filters.maxPrice)) return false;
 
-      // SIZE
       const s = project.sizeSqft || 0;
       if (filters.minSize && s < Number(filters.minSize)) return false;
       if (filters.maxSize && s > Number(filters.maxSize)) return false;
 
-      // DEV STATUS
-      if (
-        filters.devStatus.length > 0 &&
-        !filters.devStatus.includes(project.devStatus)
-      )
+      if (filters.devStatus.length > 0 && !filters.devStatus.includes(project.devStatus))
         return false;
 
-      // UNIT TYPES
-      if (
-        filters.unitTypes.length > 0 &&
-        !filters.unitTypes.includes(project.unitType)
-      )
+      if (filters.unitTypes.length > 0 && !filters.unitTypes.includes(project.unitType))
         return false;
 
-      // BEDROOMS
       if (filters.bedrooms.length > 0) {
         const match = filters.bedrooms.some((br) => {
           const min = project.minBedrooms || 0;
@@ -94,14 +84,12 @@ export default function ProjectsPage() {
         if (!match) return false;
       }
 
-      // COMPLETION YEAR
       if (
         filters.completionYears.length > 0 &&
         !filters.completionYears.includes(project.completionYear)
       )
         return false;
 
-      // POST-HANDOVER
       if (filters.postHandoverOnly && !project.hasPostHandover) return false;
 
       if (
@@ -113,7 +101,7 @@ export default function ProjectsPage() {
 
       return true;
     });
-  }, [filters, slug]);
+  }, [filters, slug, sanityMergedProjects]);
 
   const handleResetFilters = () => {
     setFilters({
@@ -154,30 +142,20 @@ export default function ProjectsPage() {
 
   const filtersAppliedText =
     activeFilterCount > 0
-      ? t("projects.listing.filtersApplied", {
-          count: activeFilterCount,
-        }) ||
-        `(${activeFilterCount} filter${
-          activeFilterCount !== 1 ? "s" : ""
-        } applied)`
+      ? t("projects.listing.filtersApplied", { count: activeFilterCount }) ||
+        `(${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""} applied)`
       : "";
 
   return (
     <>
-      {/* HERO SECTION */}
       <AreaGuideHero regionData={regionData} />
-
-      {/* ABOUT + MARKET DATA */}
       <AreaNarrative regionData={regionData} />
       <MarketInsights regionData={regionData} />
-
-      {/* FILTER BAR */}
       <ProjectsFiltersBar
         filters={filters}
         onChange={setFilters}
         onOpenFullFilters={() => setIsModalOpen(true)}
       />
-
       <ProjectsFiltersModal
         isOpen={isModalOpen}
         filters={filters}
@@ -186,8 +164,6 @@ export default function ProjectsPage() {
         onReset={handleResetFilters}
         totalProjects={filteredProjects.length}
       />
-
-      {/* PROJECT CARDS */}
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
@@ -206,7 +182,6 @@ export default function ProjectsPage() {
             {summaryText}
             {filtersAppliedText && <> {filtersAppliedText}</>}
           </span>
-
           {activeFilterCount > 0 && (
             <button
               onClick={handleResetFilters}
@@ -225,14 +200,8 @@ export default function ProjectsPage() {
             </button>
           )}
         </div>
-
-        <ProjectCards
-          projects={filteredProjects}
-          onResetFilters={handleResetFilters}
-        />
+        <ProjectCards projects={filteredProjects} onResetFilters={handleResetFilters} />
       </div>
-
-      {/* FAQ */}
       <LocationFAQ regionData={regionData} />
     </>
   );
