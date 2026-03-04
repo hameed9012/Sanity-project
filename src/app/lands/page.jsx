@@ -2,10 +2,11 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 import styles from "@/styles/lands/lands.module.css";
-import { landsData, pickLang, getLandThumbnail } from "@/data/lands/landData";
+import { pickLang, getLandThumbnail } from "@/data/lands/landData";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
@@ -16,41 +17,24 @@ function normalizeLocale(locale) {
   return s.startsWith("ar") ? "ar" : "en";
 }
 
-function stripCoords(text = "") {
-  let s = String(text || "");
-  s = s.replace(/-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?/g, "");
-  s = s.replace(/\d{1,3}\s*°\s*\d{1,3}\s*'\s*\d{1,3}(\.\d+)?\s*"\s*[NSEW]\s*/gi, "");
-  s = s.replace(/lat(?:itude)?\s*:\s*-?\d+(\.\d+)?/gi, "");
-  s = s.replace(/lng|long(?:itude)?\s*:\s*-?\d+(\.\d+)?/gi, "");
-  s = s.replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").trim();
-  return s;
-}
-
-// Convert a Sanity property (status=land) to the landsData shape
 function sanityToLand(p) {
-  const locale = "en";
   const en = p.data?.en || {};
   const ar = p.data?.ar || {};
   const project = en?.project || {};
   const projectAr = ar?.project || {};
   const slug = p.slug || p.data?._id;
-
   return {
-    slug,
-    _fromSanity: true,
-    type: "residential", // default, override below
+    slug, _fromSanity: true,
+    type: (project?.type || "residential").toLowerCase(),
     status: "available",
-    title: { en: project?.name || p.name || slug, ar: projectAr?.name || project?.name || slug },
+    title: { en: project?.name || slug, ar: projectAr?.name || project?.name || slug },
     subtitle: { en: project?.location || "", ar: projectAr?.location || "" },
     description: { en: en?.intro?.paragraphs?.[0] || "", ar: ar?.intro?.paragraphs?.[0] || "" },
     area: { en: project?.units || "", ar: projectAr?.units || "" },
     price: { en: project?.startingPrice || "", ar: projectAr?.startingPrice || "" },
     developer: project?.developer || p.developer || "",
-    location: { en: project?.location || "", ar: projectAr?.location || "" },
     gallery: Array.isArray(en?.gallery?.slides)
-      ? en.gallery.slides.map((s) => s?.url || s).filter(Boolean)
-      : [],
-    contact: { brochureUrl: en?.floorPlans?.brochureHref || "" },
+      ? en.gallery.slides.map((s) => s?.url || s).filter(Boolean) : [],
   };
 }
 
@@ -58,28 +42,20 @@ export default function LandsPage() {
   const { locale: ctxLocale } = useLanguage();
   const locale = normalizeLocale(ctxLocale);
   const isRTL = locale === "ar";
+  const { allProjects, loading } = useAllProjects();
 
-  const { allProjects } = useAllProjects();
-
-  // Merge static lands + Sanity land properties
+  // ✅ Sanity-only — no static landsData fallback
   const allLands = React.useMemo(() => {
-    const sanityLands = allProjects
+    return allProjects
       .filter((p) => {
         const s = (p.status || p.devStatus || "").toLowerCase();
         return s === "land" || s === "lands" || (p.data?.status || "").toLowerCase() === "land";
       })
       .map(sanityToLand);
-
-    // Deduplicate: Sanity wins if same slug
-    const sanitySlugSet = new Set(sanityLands.map((l) => l.slug));
-    const staticFiltered = landsData.filter((l) => !sanitySlugSet.has(l.slug));
-
-    return [...sanityLands, ...staticFiltered];
   }, [allProjects]);
 
   const [activeType, setActiveType] = React.useState("all");
   const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
-  const [selectedLand, setSelectedLand] = React.useState(null);
 
   const counts = React.useMemo(() => ({
     all: allLands.length,
@@ -94,16 +70,7 @@ export default function LandsPage() {
 
   const visible = React.useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
   const canLoadMore = visibleCount < filtered.length;
-
-  const openModal = (land) => { setSelectedLand(land); document.body.style.overflow = "hidden"; };
-  const closeModal = () => { setSelectedLand(null); document.body.style.overflow = "unset"; };
-
   React.useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeType]);
-  React.useEffect(() => {
-    const onKeyDown = (e) => { if (e.key === "Escape") closeModal(); };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
 
   return (
     <div className={styles.page} dir={isRTL ? "rtl" : "ltr"}>
@@ -115,54 +82,57 @@ export default function LandsPage() {
             </p>
           </div>
           <div className={styles.metaPill}>
-            {isRTL ? <><span>المشاريع: </span><b>{filtered.length}</b></> : <><span>Projects: </span><b>{filtered.length}</b></>}
+            {isRTL
+              ? <><span>المشاريع: </span><b>{filtered.length}</b></>
+              : <><span>Projects: </span><b>{filtered.length}</b></>}
           </div>
         </div>
 
         <TypeTabs value={activeType} isRTL={isRTL} onChange={setActiveType} counts={counts} />
 
+        {loading && allLands.length === 0 && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
+            {isRTL ? "جاري التحميل..." : "Loading..."}
+          </div>
+        )}
+
         <div className={styles.grid}>
           <AnimatePresence>
             {visible.map((land, idx) => (
-              <motion.button
-                key={land.slug || land.id}
-                type="button"
-                className={styles.card}
-                layout
+              <motion.div key={land.slug || land.id} layout
                 initial={{ opacity: 0, scale: 0.97, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.97, y: 10 }}
                 transition={{ duration: 0.25, delay: Math.min(idx * 0.03, 0.25) }}
-                whileHover={{ y: -6 }}
-                onClick={() => openModal(land)}
-              >
-                <span className={styles.brandBadge}>{isRTL ? "الراسخون" : "Al Rasikhoon"}</span>
-                <CardMedia land={land} locale={locale} isRTL={isRTL} />
-                <CardBody land={land} locale={locale} isRTL={isRTL} />
-              </motion.button>
+                whileHover={{ y: -6 }}>
+                <Link href={`/lands/${land.slug || land.id}`} className={styles.card}>
+                  <span className={styles.brandBadge}>{isRTL ? "الراسخون" : "Al Rasikhoon"}</span>
+                  <CardMedia land={land} locale={locale} isRTL={isRTL} />
+                  <CardBody land={land} locale={locale} isRTL={isRTL} />
+                </Link>
+              </motion.div>
             ))}
           </AnimatePresence>
         </div>
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>{isRTL ? "لا توجد مشاريع" : "No projects found"}</div>
-            <div className={styles.emptySub}>{isRTL ? "جرّب تغيير نوع الفلتر." : "Try changing the filter type."}</div>
+            <div className={styles.emptySub}>
+              {isRTL ? "أضف مشاريع الأراضي من Sanity Studio" : "Add land projects from Sanity Studio"}
+            </div>
           </div>
         )}
 
         {canLoadMore && (
           <div className={styles.loadMoreWrap}>
-            <button type="button" className={styles.loadMoreBtn} onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+            <button type="button" className={styles.loadMoreBtn}
+              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
               {isRTL ? "تحميل المزيد" : "LOAD MORE"}
             </button>
           </div>
         )}
       </div>
-
-      <AnimatePresence>
-        {selectedLand && <ProfessionalLandModal land={selectedLand} locale={locale} isRTL={isRTL} onClose={closeModal} />}
-      </AnimatePresence>
     </div>
   );
 }
@@ -179,8 +149,7 @@ function TypeTabs({ value, onChange, counts, isRTL }) {
         {tabs.map((t) => (
           <button key={t.id} type="button"
             className={`${styles.tab} ${value === t.id ? styles.tabActive : ""}`}
-            onClick={() => onChange(t.id)}
-          >
+            onClick={() => onChange(t.id)}>
             <span className={styles.tabLabel}>{isRTL ? t.ar : t.en}</span>
             <span className={styles.tabCount}>({counts?.[t.id] || 0})</span>
           </button>
@@ -193,10 +162,9 @@ function TypeTabs({ value, onChange, counts, isRTL }) {
 function CardMedia({ land, locale, isRTL }) {
   const title = pickLang(land.title, locale) || land.slug;
   const thumb = getLandThumbnail(land);
-  const hasImage = Boolean(thumb);
   return (
     <div className={styles.cardMedia}>
-      {hasImage ? (
+      {thumb ? (
         <Image src={thumb} alt={title} fill className={styles.cardImg}
           sizes="(max-width: 680px) 100vw, (max-width: 1024px) 50vw, 33vw" unoptimized />
       ) : (
@@ -216,8 +184,10 @@ function CardBody({ land, locale, isRTL }) {
   const subtitle = pickLang(land.subtitle, locale);
   const area = pickLang(land.area, locale);
   const price = pickLang(land.price, locale);
-  const typeLabel = (land.type || "").toLowerCase() === "industrial" ? (isRTL ? "صناعي" : "Industrial") : (isRTL ? "سكني" : "Residential");
-  const statusLabel = (land.status || "").toLowerCase() === "available" ? (isRTL ? "متاح" : "Available") : (isRTL ? "غير متاح" : "Unavailable");
+  const typeLabel = (land.type || "").toLowerCase() === "industrial"
+    ? (isRTL ? "صناعي" : "Industrial") : (isRTL ? "سكني" : "Residential");
+  const statusLabel = (land.status || "").toLowerCase() === "available"
+    ? (isRTL ? "متاح" : "Available") : (isRTL ? "غير متاح" : "Unavailable");
   return (
     <div className={styles.cardBody}>
       <div className={styles.pillsRow}>
@@ -230,161 +200,5 @@ function CardBody({ land, locale, isRTL }) {
       {price && <div className={styles.priceWrap}><span className={styles.cardPrice}>{price}</span></div>}
       <div className={styles.cardCtaRow}><span className={styles.cardCta}>{isRTL ? "عرض التفاصيل" : "VIEW DETAILS"}</span></div>
     </div>
-  );
-}
-
-function ProfessionalLandModal({ land, locale, isRTL, onClose }) {
-  const title = pickLang(land.title, locale) || land.slug;
-  const subtitle = pickLang(land.subtitle, locale);
-  const description = pickLang(land.description, locale);
-  const price = pickLang(land.price, locale);
-  const completion = pickLang(land.completion, locale);
-  const area = pickLang(land.area, locale);
-
-  const gallery = Array.isArray(land?.gallery) ? land.gallery.filter(Boolean) : [];
-  const hasGallery = gallery.length > 0;
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const [activeTab, setActiveTab] = React.useState("overview");
-
-  React.useEffect(() => { setActiveIndex(0); setActiveTab("overview"); }, [land?.slug]);
-
-  const next = () => hasGallery && setActiveIndex((i) => (i + 1) % gallery.length);
-  const prev = () => hasGallery && setActiveIndex((i) => (i - 1 + gallery.length) % gallery.length);
-  const mainImage = hasGallery ? gallery[activeIndex] : getLandThumbnail(land);
-
-  const safeArr = (obj, loc) => { if (!obj) return []; const v = obj?.[loc] || obj?.en || obj?.ar; return Array.isArray(v) ? v.filter(Boolean) : []; };
-  const details = safeArr(land.details, locale).slice(0, 10);
-  const features = safeArr(land.features, locale).slice(0, 10);
-  const nearby = (Array.isArray(land?.nearby) ? land.nearby : []).slice(0, 10);
-
-  const contact = land.contact || {};
-  const masterplanUrl = contact.brochureUrl || land.brochureUrl || land.masterplanUrl || "";
-  const typeLabel = (land.type || "").toLowerCase() === "industrial" ? (isRTL ? "صناعي" : "Industrial") : (isRTL ? "سكني" : "Residential");
-  const statusLabel = (land.status || "").toLowerCase() === "available" ? (isRTL ? "متاح" : "Available") : (isRTL ? "غير متاح" : "Unavailable");
-  const stats = [
-    { label: isRTL ? "النوع" : "Type", value: typeLabel },
-    { label: isRTL ? "المساحة" : "Area", value: area || "—" },
-    { label: isRTL ? "الحالة" : "Status", value: statusLabel },
-  ];
-  const tabs = [
-    { id: "overview", en: "Overview", ar: "نظرة عامة" },
-    { id: "details", en: "Details", ar: "تفاصيل" },
-    { id: "features", en: "Features", ar: "مزايا" },
-    { id: "nearby", en: "Nearby", ar: "بالقرب" },
-  ];
-
-  return (
-    <motion.div className={styles.modalBackdrop} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <motion.div className={styles.modal} initial={{ opacity: 0, scale: 0.96, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 10 }} transition={{ duration: 0.22 }} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.modalClose} onClick={onClose} aria-label="Close">×</button>
-        <div className={styles.modalBrandBadge}>{isRTL ? "الراسخون" : "Al Rasikhoon"}</div>
-        <div className={styles.modalBody}>
-          <div className={styles.modalLeft}>
-            {mainImage ? (
-              <div className={styles.gallery}>
-                <div className={styles.galleryMain}>
-                  <Image src={mainImage} alt={title} fill className={styles.galleryMainImg} sizes="(max-width: 1024px) 100vw, 50vw" unoptimized />
-                  {hasGallery && (
-                    <>
-                      <button type="button" className={`${styles.navBtn} ${styles.navPrev}`} onClick={prev}>‹</button>
-                      <button type="button" className={`${styles.navBtn} ${styles.navNext}`} onClick={next}>›</button>
-                      <div className={styles.galleryCounter}>{activeIndex + 1} / {gallery.length}</div>
-                    </>
-                  )}
-                </div>
-                {hasGallery && (
-                  <div className={styles.galleryThumbs}>
-                    {gallery.slice(0, 10).map((src, i) => (
-                      <button type="button" key={i} className={`${styles.thumb} ${i === activeIndex ? styles.thumbActive : ""}`} onClick={() => setActiveIndex(i)}>
-                        <Image src={src} alt={`${title} ${i + 1}`} fill className={styles.thumbImg} sizes="120px" unoptimized />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className={styles.noGallery}><div className={styles.noGalleryTitle}>{title}</div></div>
-            )}
-          </div>
-          <div className={styles.modalRight}>
-            <div className={styles.modalHeaderBlock}>
-              <h2 className={styles.modalProjectTitle}>{title}</h2>
-              {subtitle && <p className={styles.modalProjectSubtitle}>{subtitle}</p>}
-              <div className={styles.projectStats}>
-                {stats.map((s, i) => (
-                  <div key={i} className={styles.statItem}>
-                    <div className={styles.statLabel}>{s.label}</div>
-                    <div className={styles.statValue}>{s.value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className={styles.modalTabs}>
-              {tabs.map((t) => (
-                <button key={t.id} type="button" className={`${styles.modalTab} ${activeTab === t.id ? styles.modalTabActive : ""}`} onClick={() => setActiveTab(t.id)}>
-                  {isRTL ? t.ar : t.en}
-                </button>
-              ))}
-            </div>
-            <div className={styles.modalContentGrid}>
-              <div className={styles.modalCard}>
-                {activeTab === "overview" && (
-                  <>
-                    <div className={styles.modalCardTitle}>{isRTL ? "ملخص" : "Summary"}</div>
-                    <p className={styles.modalParagraph}>{description || "—"}</p>
-                    <div className={styles.quickGrid}>
-                      {price && <div className={styles.quickItem}><div className={styles.quickLabel}>{isRTL ? "السعر" : "Price"}</div><div className={styles.quickValue}>{price}</div></div>}
-                      {completion && <div className={styles.quickItem}><div className={styles.quickLabel}>{isRTL ? "حالة المشروع" : "Project Status"}</div><div className={styles.quickValue}>{completion}</div></div>}
-                      {land.developer && <div className={styles.quickItem}><div className={styles.quickLabel}>{isRTL ? "المطور" : "Developer"}</div><div className={styles.quickValue}>{land.developer}</div></div>}
-                      {area && <div className={styles.quickItem}><div className={styles.quickLabel}>{isRTL ? "المساحة" : "Area"}</div><div className={styles.quickValue}>{area}</div></div>}
-                    </div>
-                  </>
-                )}
-                {activeTab === "details" && (
-                  <>
-                    <div className={styles.modalCardTitle}>{isRTL ? "تفاصيل المشروع" : "Project Details"}</div>
-                    {details.length ? <ul className={styles.modalList}>{details.map((d, i) => <li key={i} className={styles.modalListItem}>{d}</li>)}</ul> : <p className={styles.modalParagraph}>—</p>}
-                  </>
-                )}
-                {activeTab === "features" && (
-                  <>
-                    <div className={styles.modalCardTitle}>{isRTL ? "المزايا" : "Features"}</div>
-                    {features.length ? <div className={styles.chips}>{features.map((f, i) => <span key={i} className={styles.chip}>{f}</span>)}</div> : <p className={styles.modalParagraph}>—</p>}
-                  </>
-                )}
-                {activeTab === "nearby" && (
-                  <>
-                    <div className={styles.modalCardTitle}>{isRTL ? "بالقرب" : "Nearby"}</div>
-                    {nearby.length ? (
-                      <div className={styles.nearbyGrid}>
-                        {nearby.map((n, i) => (
-                          <div key={i} className={styles.nearbyItem}>
-                            <div className={styles.nearbyName}>{pickLang(n.name, locale)}</div>
-                            <div className={styles.nearbyDistance}>{pickLang(n.distance, locale)}</div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : <p className={styles.modalParagraph}>—</p>}
-                  </>
-                )}
-              </div>
-              <div className={styles.contactSection}>
-                <div className={styles.contactTitle}>{isRTL ? "الملفات" : "Files"}</div>
-                <div className={styles.contactButtons}>
-                  {masterplanUrl ? (
-                    <a href={masterplanUrl} target="_blank" rel="noopener noreferrer" className={`${styles.contactButton} ${styles.contactButtonPrimary}`}>
-                      {isRTL ? "عرض المخطط العام" : "View Masterplan"}
-                    </a>
-                  ) : (
-                    <div className={styles.brandNote}>{isRTL ? "لا يوجد ملف مخطط عام حالياً." : "No masterplan file available."}</div>
-                  )}
-                </div>
-                {masterplanUrl && <div className={styles.brandNote}>{isRTL ? "سيتم فتح ملف PDF في نافذة جديدة." : "A PDF will open in a new tab."}</div>}
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }

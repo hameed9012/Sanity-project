@@ -8,11 +8,11 @@ const SITE_SETTINGS_QUERY = `*[_type=="siteSettings" && _id=="siteSettings"][0]{
 }`;
 
 const client = createClient({
-  projectId: "20d53wo5",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID, // ← no longer hardcoded
   dataset: "production",
   apiVersion: "2025-01-01",
   useCdn: false,
-  token: process.env.SANITY_READ_TOKEN, // ✅ add to Vercel env
+  token: process.env.SANITY_READ_TOKEN,
 });
 
 export async function GET() {
