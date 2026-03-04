@@ -1,0 +1,210 @@
+[
+  {
+    "id": "sobha",
+    "slug": "sobha",
+    "name": "Sobha Realty",
+    "logo": "/Sobha-Realty-Square-Logo.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/aquamont/intro-main.png",
+    "tagline": "Master developer of waterfront and park-front communities."
+  },
+  {
+    "id": "arada",
+    "slug": "arada",
+    "name": "Arada",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/arada.avif",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/massar-3/hero-bg.jpg",
+    "tagline": "Lifestyle communities with greenery and family amenities."
+  },
+  {
+    "id": "damac",
+    "slug": "damac",
+    "name": "DAMAC Properties",
+    "logo": "/damac-logo.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20%281%29.jpeg",
+    "tagline": "High-impact branded residences & resort living."
+  },
+  {
+    "id": "azizi",
+    "slug": "azizi",
+    "name": "Azizi Developments",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/riviera/hero-bg.jpg",
+    "tagline": "Strong ROI options in strategic locations across Dubai."
+  },
+  {
+    "id": "omniyat",
+    "slug": "omniyat",
+    "name": "Omniyat",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/omniyat.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/lumena-alta/hero-bg.jpg",
+    "tagline": "Ultra-luxury design-led developments on the waterfront."
+  },
+  {
+    "id": "emaar",
+    "slug": "emaar",
+    "name": "Emaar Properties",
+    "logo": "/Sobha-Realty-Square-Logo.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/aquamont/intro-main.png",
+    "tagline": "Creator of Downtown Dubai, Dubai Marina and iconic landmarks."
+  },
+  {
+    "id": "nakheel",
+    "slug": "nakheel",
+    "name": "Nakheel",
+    "logo": "/arada-developer.avif",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/massar-3/hero-bg.jpg",
+    "tagline": "Waterfront and island communities shaping Dubai\u2019s coastline."
+  },
+  {
+    "id": "meraas",
+    "slug": "meraas",
+    "name": "Meraas",
+    "logo": "/damac-logo.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/riviera/hero-bg.jpg",
+    "tagline": "Urban lifestyle destinations and beachfront communities."
+  },
+  {
+    "id": "ellington",
+    "slug": "ellington",
+    "name": "Ellington Properties",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/ellington.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/ellington/eltiera-views/Eltiera%20Views%20-%20adult%20pool.jpg",
+    "tagline": "Design-first boutique residences with curated interiors."
+  },
+  {
+    "id": "danube",
+    "slug": "danube",
+    "name": "Danube Properties",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/Danube_Properties.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/danube/shahkhruz/09_EXT_Bottom%20Up.jpg",
+    "tagline": "Value-driven off-plan projects with flexible payment plans."
+  },
+  {
+    "id": "select-group",
+    "slug": "select-group",
+    "name": "Select Group",
+    "logo": "/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20%281%29.jpeg",
+    "tagline": "High-end waterfront towers in Dubai Marina and beyond."
+  },
+  {
+    "id": "dubai-properties",
+    "slug": "dubai-properties",
+    "name": "Dubai Properties",
+    "logo": "/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/massar-3/hero-bg.jpg",
+    "tagline": "Established communities across Business Bay, JBR and beyond."
+  },
+  {
+    "id": "mag",
+    "slug": "mag",
+    "name": "MAG",
+    "logo": "/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/riviera/hero-bg.jpg",
+    "tagline": "Mixed-use developments with a focus on livability and value."
+  },
+  {
+    "id": "tiger",
+    "slug": "tiger",
+    "name": "Tiger Properties",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/tiger.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/tiger/orchid/amenties%20(2).jpg",
+    "tagline": "Residential towers in emerging and established communities."
+  },
+  {
+    "id": "deyaar",
+    "slug": "deyaar",
+    "name": "Deyaar Development",
+    "logo": "/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/aquamont/intro-main.png",
+    "tagline": "Mid- to high-rise residential buildings across key districts."
+  },
+  {
+    "id": "nshama",
+    "slug": "nshama",
+    "name": "NSHAMA",
+    "logo": "/azizi.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/massar-3/hero-bg.jpg",
+    "tagline": "Town Square Dubai and family-oriented suburban communities."
+  },
+  {
+    "id": "binghatti",
+    "slug": "binghatti",
+    "name": "Binghatti",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/binghatti.avif",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/binghatti/aquarise/Aquarise%20Exterior-4.jpg",
+    "tagline": "Architecturally expressive towers with strong rental demand."
+  },
+  {
+    "id": "reportage",
+    "slug": "reportage",
+    "name": "Reportage Properties",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/reportage.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/reportage/reportage-hills/CGI-01.jpg",
+    "tagline": "Efficient layouts and investor-friendly pricing structures."
+  },
+  {
+    "id": "samana",
+    "slug": "samana",
+    "name": "Samana Developers",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/Samana.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/samana/imperial-heights/4-roadlevelshot02.jpg",
+    "tagline": "Resort-style projects with private pools and leisure decks."
+  },
+  {
+    "id": "gulf-land-property",
+    "slug": "gulf-land-property",
+    "name": "Gulf Land Property",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/gulf.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/gulf-land-property/tonino-lamborghini-residences/Facad.jpg",
+    "tagline": "Signature branded residences in prime locations."
+  },
+  {
+    "id": "gfs",
+    "slug": "gfs",
+    "name": "GFS",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/gfs.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/gfs/coventry-curve-2/VIEW%204%20AERIAL%20NIGHT.jpg",
+    "tagline": "Coventry-series residences with investment-grade returns."
+  },
+  {
+    "id": "ajmal-makan",
+    "slug": "ajmal-makan",
+    "name": "Ajmal Makan",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/ajmal-makan.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/ajmal-makan/the-view-island/AJMAL%20MAKAN%20CITY%203D%20(1).png",
+    "tagline": "Waterfront and island communities in Sharjah."
+  },
+  {
+    "id": "imtiaz",
+    "slug": "imtiaz",
+    "name": "Imtiaz",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/imtiaz.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/imtiaz/wynwood-horizon/IMTIAZ_Wynwood-Exterior%20render%202.jpg",
+    "tagline": "Boutique off-plan developments with flexible payment plans."
+  },
+  {
+    "id": "taraf",
+    "slug": "taraf",
+    "name": "Taraf",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/taraf.webp",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/taraf/terra-golf-phase-2%20/Terra_ext_cam1_Final.jpg",
+    "tagline": "Branded luxury residences with world-class partnerships."
+  },
+  {
+    "id": "prestige-one",
+    "slug": "prestige-one",
+    "name": "Prestige One",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/prestige-one.png",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/prestige-one/hilton-residences/Facade%202-%20Hilton%20Residences%20DMC.jpg",
+    "tagline": "Design-led residences in emerging Dubai districts."
+  },
+  {
+    "id": "evolutions",
+    "slug": "evolutions",
+    "name": "Evolutions",
+    "logo": "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/evolutions.jpg",
+    "heroImage": "https://luxury-real-estate-media.b-cdn.net/evolutions/butterfly-towers/EXTERIOR%20PICS/Cam%201.jpg",
+    "tagline": "Contemporary towers with premium lifestyle amenities."
+  }
+]
