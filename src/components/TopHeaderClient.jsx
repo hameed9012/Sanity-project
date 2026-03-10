@@ -237,21 +237,14 @@ export default function TopHeader() {
     };
   }, []);
 
-  // ✅ Use Sanity ONLY if it has items, otherwise fallback to defaults
-  const leftLinks = useMemo(
-    () => [...defaultLeft, ...(extras.desktopLeft || [])],
-    [defaultLeft, extras.desktopLeft],
-  );
+  // ✅ Use Sanity if it returned items, otherwise show defaults (REPLACE not append)
+  const sanityLeft   = (extras.desktopLeft  || []).filter(isValidNavItem);
+  const sanityRight  = (extras.desktopRight || []).filter(isValidNavItem);
+  const sanityMobile = (extras.mobileMenu   || []).filter(isValidNavItem);
 
-  const rightLinks = useMemo(
-    () => [...defaultRight, ...(extras.desktopRight || [])],
-    [defaultRight, extras.desktopRight],
-  );
-
-  const mobileLinks = useMemo(
-    () => [...defaultMobile, ...(extras.mobileMenu || [])],
-    [defaultMobile, extras.mobileMenu],
-  );
+  const leftLinks   = sanityLeft.length   > 0 ? sanityLeft   : defaultLeft;
+  const rightLinks  = sanityRight.length  > 0 ? sanityRight  : defaultRight;
+  const mobileLinks = sanityMobile.length > 0 ? sanityMobile : defaultMobile;
 
   // SCROLL STYLE
   useEffect(() => {
@@ -461,28 +454,6 @@ export default function TopHeader() {
               {leftLinks.map(renderNavItemDesktop)}
             </ul>
 
-            {/* ✅ Debug (remove later) */}
-            <div
-              style={{
-                marginTop: 6,
-                fontSize: 11,
-                opacity: 0.75,
-                color: "white",
-                maxWidth: 480,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Sanity:{" "}
-              {sanityStatus.loading
-                ? "loading..."
-                : sanityStatus.ok
-                  ? "OK"
-                  : `ERROR: ${sanityStatus.error}`}
-              {" | "}
-              Left items: {leftLinks.length}
-            </div>
           </div>
 
           {/* CENTER LOGO */}

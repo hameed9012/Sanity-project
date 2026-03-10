@@ -20,11 +20,12 @@ const initialFilters = {
   minPrice: "", maxPrice: "", minSize: "", maxSize: "",
 };
 
-const STATUS_TABS = [
-  { id: "all", labelEn: "All", labelAr: "الكل" },
-  { id: "off-plan", labelEn: "Off-plan", labelAr: "قيد الإنشاء" },
-  { id: "secondary", labelEn: "Secondary", labelAr: "ثانوي" },
-  { id: "sold-out", labelEn: "Sold-out", labelAr: "مباع" },
+// ── Only 4 types allowed ──────────────────────────────────────
+const TYPE_TABS = [
+  { id: "all",              labelEn: "All",              labelAr: "الكل" },
+  { id: "off-plan",         labelEn: "Off-plan",         labelAr: "قيد الإنشاء" },
+  { id: "secondary",        labelEn: "Secondary",        labelAr: "ثانوي" },
+  { id: "sold-out",         labelEn: "Sold-out",         labelAr: "مباع" },
 ];
 
 function mulberry32(seed) {
@@ -36,7 +37,6 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
 function shuffleWithSeed(arr, seed) {
   const a = Array.isArray(arr) ? [...arr] : [];
   const rnd = mulberry32(seed || 1);
@@ -50,18 +50,10 @@ function shuffleWithSeed(arr, seed) {
 function filterByStatusTab(projects, activeTab) {
   if (activeTab === "all") return projects;
   return projects.filter((project) => {
-    const status = project?.status || project?.devStatus || "";
-    const statusLower = status.toLowerCase();
-    if (activeTab === "off-plan") {
-      return statusLower.includes("off-plan") || statusLower.includes("off plan") ||
-        statusLower.includes("under construction") || statusLower.includes("construction") || status === "Off-plan";
-    }
-    if (activeTab === "secondary") {
-      return statusLower.includes("secondary") || status === "Secondary" || statusLower.includes("resale");
-    }
-    if (activeTab === "sold-out") {
-      return statusLower.includes("sold-out") || statusLower.includes("sold out") || status === "Sold-out";
-    }
+    const status = (project?.status || project?.devStatus || "").toLowerCase();
+    if (activeTab === "off-plan")  return status.includes("off-plan") || status.includes("off plan") || status.includes("under construction") || status === "off-plan";
+    if (activeTab === "secondary") return status.includes("secondary") || status.includes("resale");
+    if (activeTab === "sold-out")  return status.includes("sold-out") || status.includes("sold out");
     return true;
   });
 }
@@ -73,7 +65,6 @@ export default function PropertiesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ✅ Read tab FROM URL — persists on refresh
   const activeTab = searchParams.get("tab") || "all";
   const setActiveTab = (tab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -82,7 +73,7 @@ export default function PropertiesPage() {
     router.replace(`/properties?${params.toString()}`, { scroll: false });
   };
 
-  const { allProjects: sanityMergedProjects } = useAllProjects();
+  const { allProjects: rawProjects, loading } = useAllProjects();
 
   const [visitSeed] = React.useState(() => Math.floor(Date.now() % 2147483647));
   const [filters, setFilters] = React.useState(initialFilters);
@@ -95,96 +86,80 @@ export default function PropertiesPage() {
     filters.minPrice, filters.maxPrice, filters.minSize, filters.maxSize,
   ]);
 
-  const allProjects = React.useMemo(() => shuffleWithSeed(sanityMergedProjects || [], visitSeed), [sanityMergedProjects, visitSeed]);
-  const tabFilteredProjects = React.useMemo(() => filterByStatusTab(allProjects, activeTab), [allProjects, activeTab]);
-  const { filtered, hasActiveFilters } = React.useMemo(() => filterProjects(tabFilteredProjects, filters), [tabFilteredProjects, filters]);
-  const visibleProjects = React.useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
-  const canLoadMore = visibleCount < filtered.length;
-
-  const onResetAll = React.useCallback(() => {
-    setFilters(initialFilters);
-    setActiveTab("all");
-    setVisibleCount(PAGE_SIZE);
-  }, []);
-
-  const tabCounts = React.useMemo(() => ({
-    all: allProjects.length,
-    "off-plan": filterByStatusTab(allProjects, "off-plan").length,
-    secondary: filterByStatusTab(allProjects, "secondary").length,
-    "sold-out": filterByStatusTab(allProjects, "sold-out").length,
-  }), [allProjects]);
-
-  return (
-    <div className={styles.page}>
-      <Hero />
-      <div className={styles.container}>
-        <InlineSearch isRTL={isRTL} value={filters.search}
-          onChange={(v) => setFilters((prev) => ({ ...prev, search: v }))}
-          onClear={() => setFilters((prev) => ({ ...prev, search: "" }))} />
-        <StatusTabs activeTab={activeTab} onTabChange={setActiveTab} tabCounts={tabCounts} isRTL={isRTL} t={t} />
-        <ProjectsFiltersBar filters={filters} onChange={setFilters} onOpenFullFilters={() => setIsModalOpen(true)} />
-        <ProjectsFiltersModal isOpen={isModalOpen} filters={filters} onChange={setFilters}
-          onClose={() => setIsModalOpen(false)} onReset={onResetAll} totalProjects={filtered.length} />
-        <div className={styles.metaRow}>
-          <div className={styles.metaText}>
-            {isRTL ? (
-              <><span className={styles.metaTabName}>{STATUS_TABS.find((tab) => tab.id === activeTab)?.labelAr || "الكل"}:</span>{" "}عرض <b>{Math.min(visibleCount, filtered.length)}</b> من <b>{filtered.length}</b> مشروع</>
-            ) : (
-              <><span className={styles.metaTabName}>{STATUS_TABS.find((tab) => tab.id === activeTab)?.labelEn || "All"}:</span>{" "}Showing <b>{Math.min(visibleCount, filtered.length)}</b> of <b>{filtered.length}</b> projects</>
-            )}
-          </div>
-          {hasActiveFilters && <button type="button" className={styles.resetBtn} onClick={onResetAll}>{isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}</button>}
-        </div>
-        <div className={styles.cardsSection}>
-          <ProjectCards projects={visibleProjects} onResetFilters={onResetAll} />
-        </div>
-        {canLoadMore && (
-          <div className={styles.loadMoreWrap}>
-            <button type="button" className={styles.loadMoreBtn} onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
-              {isRTL ? "تحميل المزيد" : "LOAD MORE"}
-            </button>
-          </div>
-        )}
-        {!canLoadMore && filtered.length > 0 && (
-          <div className={styles.endText}>{isRTL ? "وصلت إلى النهاية." : "You've reached the end."}</div>
-        )}
-      </div>
-    </div>
+  // ── Exclude lands from properties page ──────────────────────
+  const propertiesOnly = React.useMemo(
+    () => (rawProjects || []).filter((p) => !p.isLand && p.category !== "lands"),
+    [rawProjects]
   );
-}
 
-function Hero() {
-  return <div className={styles.hero}><div className={styles.heroOverlay} /><div className={styles.heroTop}></div></div>;
-}
-
-function InlineSearch({ value, onChange, onClear, isRTL }) {
-  return (
-    <div className={styles.inlineSearchWrap}>
-      <input value={value || ""} onChange={(e) => onChange?.(e.target.value)}
-        placeholder={isRTL ? "ابحث حسب اسم المشروع، المطوّر، أو المنطقة" : "Search by project, developer, district"}
-        className={styles.inlineSearchInput} dir={isRTL ? "rtl" : "ltr"} />
-      {value && <button type="button" className={styles.inlineSearchClear} onClick={onClear}>{isRTL ? "مسح" : "Clear"}</button>}
-    </div>
+  const allProjects = React.useMemo(
+    () => shuffleWithSeed(propertiesOnly, visitSeed),
+    [propertiesOnly, visitSeed]
   );
-}
+  const tabFiltered   = React.useMemo(() => filterByStatusTab(allProjects, activeTab), [allProjects, activeTab]);
+  const { filtered, hasActiveFilters } = React.useMemo(() => filterProjects(tabFiltered, filters), [tabFiltered, filters]);
 
-function StatusTabs({ activeTab, onTabChange, tabCounts, isRTL, t }) {
-  const getTabLabel = (tab) => {
-    if (t) { const translated = t(`properties.tabs.${tab.id}`); if (translated !== `properties.tabs.${tab.id}`) return translated; }
-    return isRTL ? tab.labelAr : tab.labelEn;
-  };
+  const visibleProjects = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   return (
-    <div className={styles.statusTabsContainer}>
-      <div className={styles.statusTabs}>
-        {STATUS_TABS.map((tab) => (
-          <button key={tab.id} type="button"
-            className={`${styles.statusTab} ${activeTab === tab.id ? styles.statusTabActive : ""}`}
-            onClick={() => onTabChange(tab.id)} aria-pressed={activeTab === tab.id}>
-            <span className={styles.tabLabel}>{getTabLabel(tab)}</span>
-            <span className={styles.tabCount}>({tabCounts[tab.id] || 0})</span>
+    <div className={styles.propertiesPage} dir={isRTL ? "rtl" : "ltr"}>
+      {/* Status tabs */}
+      <div className={styles.tabsBar}>
+        {TYPE_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {isRTL ? tab.labelAr : tab.labelEn}
           </button>
         ))}
       </div>
+
+      {/* Filters */}
+      <ProjectsFiltersBar
+        filters={filters}
+        setFilters={setFilters}
+        onOpenModal={() => setIsModalOpen(true)}
+        locale={locale}
+        t={t}
+      />
+
+      {isModalOpen && (
+        <ProjectsFiltersModal
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setIsModalOpen(false)}
+          locale={locale}
+          t={t}
+        />
+      )}
+
+      {/* Results */}
+      {loading ? (
+        <div className={styles.loadingState}>
+          {isRTL ? "جاري التحميل..." : "Loading properties..."}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className={styles.emptyState}>
+          {isRTL ? "لا توجد نتائج" : "No properties found"}
+        </div>
+      ) : (
+        <>
+          <ProjectCards projects={visibleProjects} locale={locale} t={t} />
+          {hasMore && (
+            <div className={styles.loadMoreWrap}>
+              <button
+                className={styles.loadMoreBtn}
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+              >
+                {isRTL ? "عرض المزيد" : "Load More"}
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

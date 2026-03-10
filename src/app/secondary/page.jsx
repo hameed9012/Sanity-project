@@ -46,18 +46,25 @@ function shuffleWithSeed(arr, seed) {
   return a;
 }
 
+// Slugs that must be excluded from secondary — not actually resale/secondary
+const SECONDARY_EXCLUDED_SLUGS = ["sobha-one", "riviera-reve"];
+
 function filterSecondaryProjects(projects) {
   return projects.filter((project) => {
     const status = project?.status || project?.devStatus || "";
     const statusLower = status.toLowerCase();
+    const slug = (project?.slug || "").toLowerCase();
+
+    // Exclude specific projects that are not secondary
+    if (SECONDARY_EXCLUDED_SLUGS.some((s) => slug.includes(s))) return false;
+
+    // Only true secondary/resale — not off-plan or under construction
+    if (statusLower.includes("off-plan") || statusLower.includes("under construction")) return false;
+
     return (
       statusLower.includes("secondary") ||
       status === "Secondary" ||
-      statusLower.includes("resale") ||
-      statusLower.includes("ready for immediate") ||
-      statusLower.includes("resale-ready") ||
-      statusLower.includes("completed") ||
-      (statusLower.includes("ready") && statusLower.includes("secondary"))
+      statusLower.includes("resale")
     );
   });
 }
@@ -158,7 +165,7 @@ export default function SecondaryPage() {
             ) : (
               <>
                 Showing <b>{Math.min(visibleCount, filtered.length)}</b> of{" "}
-                <b>{filtered.length}</b> ready properties
+                <b>{filtered.length}</b> ready to move in properties
               </>
             )}
           </div>
@@ -196,7 +203,7 @@ export default function SecondaryPage() {
             <p className={styles.noResultsText}>
               {isRTL
                 ? "لم نتمكن من العثور على عقارات جاهزة تطابق معايير البحث."
-                : "We couldn't find any secondary properties matching your search criteria."}
+                : "We couldn't find any ready to move in properties matching your search criteria."}
             </p>
             {hasActiveFilters && (
               <button type="button" className={styles.noResultsButton} onClick={onResetAll}>
@@ -216,12 +223,12 @@ function Hero({ isRTL }) {
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
-          {isRTL ? "العقارات الجاهزة للبيع" : "Ready Properties"}
+          {isRTL ? "العقارات الجاهزة للبيع" : "Ready To Move In"}
         </h1>
         <p className={styles.heroSubtitle}>
           {isRTL
             ? "اكتشف العقارات الجاهزة للبيع الفوري في دبي والإمارات العربية المتحدة"
-            : "Discover ready-to-buy properties available for immediate purchase in Dubai & UAE"}
+            : "Discover properties that are ready to move in — resale and completed projects available now"}
         </p>
       </div>
     </div>
@@ -237,7 +244,7 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
         placeholder={
           isRTL
             ? "ابحث عن عقارات جاهزة حسب الاسم، المطور، أو المنطقة"
-            : "Search ready properties by name, developer, or location"
+            : "Search ready to move in properties by name, developer, or location"
         }
         className={styles.inlineSearchInput}
         dir={isRTL ? "rtl" : "ltr"}

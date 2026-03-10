@@ -24,21 +24,9 @@ const devStatusOptions = [
 
 const unitTypeOptions = [
   { value: "Apartments", labelKey: "categories.apartments" },
-  { value: "Apartment", labelKey: "categories.apartments" },
   { value: "Villas", labelKey: "categories.villas" },
-  { value: "Villa", labelKey: "categories.villas" },
-  { value: "Luxury Villas", labelKey: "categories.villas" },
-  { value: "Penthouse", labelKey: "categories.penthouses" },
   { value: "Penthouses", labelKey: "categories.penthouses" },
-  { value: "Townhouses & Villas", labelKey: "categories.villas" },
-  { value: "Villas & Townhouses", labelKey: "categories.villas" },
-  { value: "Office Spaces", labelKey: "categories.commercial" },
-  { value: "Retail Spaces", labelKey: "categories.commercial" },
-  { value: "Retail Units", labelKey: "categories.commercial" },
-  { value: "Commercial", labelKey: "categories.commercial" },
-  { value: "Mixed Use", labelKey: "categories.mixedUse" },
-  { value: "Branded Residences", labelKey: "projects.cards.brandedResidences" },
-  { value: "Residential Tower", labelKey: "projects.cards.residentialTower" },
+  { value: "Commercial/Retail", labelKey: "categories.commercial" },
 ];
 
 const bedroomOptions = [
