@@ -17,18 +17,17 @@ function buildSanityProjectData(sanityDoc, locale) {
   const content = sanityDoc?.[lang] || sanityDoc?.en || {};
   const project = content?.project || {};
   const hero = content?.hero || {};
-  const gallery = content?.gallery || [];
+  const gallery = content?.gallery || {};
   const amenities = content?.amenities || {};
   const floorPlans = content?.floorPlans || {};
   const location = content?.location || {};
+  const intro = content?.intro || {};
 
   return {
-    // project meta
     title: project?.name || sanityDoc?.name || "",
     developer: project?.developer || sanityDoc?.developer || "",
     location: project?.location || sanityDoc?.location || "",
 
-    // hero section
     hero: {
       backgroundUrl: hero?.backgroundUrl || "",
       squareImageUrl: hero?.squareImageUrl || "",
@@ -41,38 +40,50 @@ function buildSanityProjectData(sanityDoc, locale) {
       type: project?.type || "",
     },
 
-    // intro section
     intro: {
-      title: project?.name || "",
-      description: project?.description || content?.description || "",
+      title: intro?.title || project?.name || "",
+      description: intro?.description || content?.description || "",
+      paragraphs: Array.isArray(intro?.paragraphs) ? intro.paragraphs : [],
+      brochures: Array.isArray(intro?.brochures) ? intro.brochures : [],
+      imgUrl: intro?.imgUrl || "",
+      imgAlt: intro?.imgAlt || "",
       stats: project?.stats || [],
     },
 
-    // gallery
     gallery: {
-      images: Array.isArray(gallery) ? gallery.map((g) => ({ url: g?.url || g, alt: project?.name || "" })) : [],
+      images: Array.isArray(gallery?.slides)
+        ? gallery.slides.map((g) =>
+            typeof g === "string"
+              ? { url: g, alt: project?.name || "" }
+              : { url: g?.url || "", alt: g?.alt || project?.name || "" }
+          )
+        : [],
     },
 
-    // floor plans
     floorPlans: {
       plans: Array.isArray(floorPlans?.plans) ? floorPlans.plans : [],
     },
 
-    // amenities
     amenities: {
-      items: Array.isArray(amenities?.items) ? amenities.items : [],
+      items: Array.isArray(amenities?.items)
+        ? amenities.items
+        : Array.isArray(amenities?.amenities)
+        ? amenities.amenities
+        : [],
     },
 
-    // location/map
     location: {
       lat: location?.lat || null,
       lng: location?.lng || null,
       address: project?.location || "",
+      proximityFeatures: Array.isArray(location?.proximityFeatures)
+        ? location.proximityFeatures
+        : [],
     },
 
-    // pass raw for contact form
     _sanity: true,
     _raw: sanityDoc,
+    _rawLocalized: content,
   };
 }
 
@@ -217,7 +228,11 @@ export default function ProjectPage({ params }) {
   return (
     <main>
       <ProjectHero data={projectData.hero} projectData={projectData} />
-      <ProjectIntro data={projectData.intro} projectData={projectData} />
+      <ProjectIntro
+        data={projectData.intro}
+        projectData={projectData}
+        rawProjectData={projectData._rawLocalized || projectData._raw || projectData}
+      />
       <VisualSymphony data={projectData.gallery} />
       {shouldShowFloorPlans && (
         <FloorPlanShowcase data={projectData.floorPlans} projectData={projectData} />

@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { injectAmenityIcons } from "@/lib/amenities/phosphorIconResolver";
 import { useLanguage } from "@/components/LanguageProvider";
 import SalesOfferPreferencesModal from "@/components/projects/SalesOfferPreferencesModal";
+import styles from "@/styles/projects/ProjectIntro.module.css";
 
 function pickLocaleBlock(projectData, locale) {
-  if (projectData?.en || projectData?.ar)
+  if (projectData?.en || projectData?.ar) {
     return projectData?.[locale] || projectData?.en;
+  }
   return projectData;
 }
 
@@ -17,12 +19,10 @@ function isProbablyVideo(url) {
 }
 
 function extractNumberFromText(text) {
-  // Extract "1,183,000" => 1183000
   const raw = String(text || "")
     .replace(/[^\d.,]/g, "")
     .replace(/,/g, "");
 
-  // If multiple dots, keep first (rare)
   const parts = raw.split(".");
   const normalized =
     parts.length > 2 ? `${parts[0]}.${parts.slice(1).join("")}` : raw;
@@ -40,35 +40,26 @@ function formatCurrency(amount, currency, locale) {
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {
-    // fallback
     return `${amount} ${currency}`;
   }
 }
 
 function convertAreaString(value, targetUnit, locale) {
-  // Handles: "466 sq.ft", "466 قدم²", "43 m²", "43 متر²" etc.
   const num = extractNumberFromText(value);
   if (!num) return value;
 
   const s = String(value || "").toLowerCase();
 
-  const isFt =
-    s.includes("sq.ft") ||
-    s.includes("sqft") ||
-    s.includes("ft") ||
-    s.includes("قدم");
   const isM =
     s.includes("m²") ||
     s.includes("m2") ||
     s.includes("متر") ||
     s.includes("م²");
 
-  // if unknown, assume ft² because your data uses ft² heavily
   const currentUnit = isM ? "m2" : "ft2";
 
   let out = num;
 
-  // 1 sqft = 0.092903 m2
   if (currentUnit === "ft2" && targetUnit === "m2") out = num * 0.092903;
   if (currentUnit === "m2" && targetUnit === "ft2") out = num / 0.092903;
 
@@ -78,12 +69,11 @@ function convertAreaString(value, targetUnit, locale) {
   if (locale === "ar") {
     return targetUnit === "m2" ? `${rounded} متر²` : `${rounded} قدم²`;
   }
+
   return targetUnit === "m2" ? `${rounded} m²` : `${rounded} sq.ft`;
 }
 
 function maybeConvertMoneyString(value, currency, fxRate, locale) {
-  // We assume your base prices are AED in your dataset.
-  // If currency is AED -> keep original.
   if (!value) return value;
   if (!currency || currency === "AED") return value;
   if (!fxRate || !Number.isFinite(fxRate)) return value;
@@ -96,7 +86,6 @@ function maybeConvertMoneyString(value, currency, fxRate, locale) {
 }
 
 function buildSalesOfferPayload(projectData, prefs, currentLocale) {
-  // prefs.pdfLang is the PDF language chosen in modal
   const pdfLocale = prefs?.pdfLang || currentLocale;
   const d = pickLocaleBlock(projectData, pdfLocale) || {};
 
@@ -108,13 +97,11 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
     d?.project?.name?.toLowerCase?.()?.replace(/\s+/g, "-") ||
     "sales-offer";
 
-  // ✅ Cover image: avoid mp4
   const heroBg = d?.hero?.backgroundUrl || "";
   const coverImage = !isProbablyVideo(heroBg)
     ? heroBg
     : d?.intro?.imgUrl || d?.gallery?.slides?.[0] || "";
 
-  // ✅ Amenities with injected iconUrl
   const developerSlugGuess =
     projectData?.project?.developerSlug ||
     projectData?.project?.developer?.slug ||
@@ -134,7 +121,6 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
     iconUrl: a?.iconUrl || "",
   }));
 
-  // ✅ Description comes from modal (editable + AI)
   const generalFacts =
     prefs?.description ||
     (Array.isArray(d?.intro?.paragraphs)
@@ -143,11 +129,9 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
     d?.seo?.description ||
     "";
 
-  // ✅ Currency conversion data from modal
   const chosenCurrency = prefs?.currency || "AED";
-  const fxRate = prefs?.fx?.rate; // 1 AED = fxRate CURRENCY
+  const fxRate = prefs?.fx?.rate;
 
-  // ✅ Facts conversion (starting price)
   const facts = [
     prefs?.displaySettings?.developer === false
       ? null
@@ -174,7 +158,7 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
               d.project.startingPrice,
               chosenCurrency,
               fxRate,
-              pdfLocale,
+              pdfLocale
             ),
           }
         : null,
@@ -201,47 +185,46 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
       : null,
   ].filter(Boolean);
 
-  // ✅ Floorplans: convert Total Area + Starting Price in specs if possible
   const targetUnit = prefs?.measureUnit || "ft2";
 
   const floorPlans = Array.isArray(d?.floorPlans?.plans)
     ? d.floorPlans.plans
     : [];
+
   const convertedFloorPlans = floorPlans.map((p) => {
     const specs = { ...(p?.specs || {}) };
 
-    // EN key
     if (specs["Total Area"]) {
       specs["Total Area"] = convertAreaString(
         specs["Total Area"],
         targetUnit,
-        pdfLocale,
+        pdfLocale
       );
     }
-    // AR key
+
     if (specs["إجمالي المساحة"]) {
       specs["إجمالي المساحة"] = convertAreaString(
         specs["إجمالي المساحة"],
         targetUnit,
-        pdfLocale,
+        pdfLocale
       );
     }
 
-    // Prices keys
     if (specs["Starting Price"]) {
       specs["Starting Price"] = maybeConvertMoneyString(
         specs["Starting Price"],
         chosenCurrency,
         fxRate,
-        pdfLocale,
+        pdfLocale
       );
     }
+
     if (specs["السعر الابتدائي"]) {
       specs["السعر الابتدائي"] = maybeConvertMoneyString(
         specs["السعر الابتدائي"],
         chosenCurrency,
         fxRate,
-        pdfLocale,
+        pdfLocale
       );
     }
 
@@ -249,22 +232,16 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
   });
 
   return {
-    // ✅ Everything the PDF route needs
     locale: pdfLocale,
-
     projectSlug: String(projectSlug)
       .replaceAll("/", "")
       .replaceAll("properties", ""),
     projectName,
-
     coverImage,
-
     createdAtLabel: pdfLocale === "ar" ? "تاريخ الإنشاء" : "Date of creation",
     createdAtValue: new Date().toLocaleDateString(
-      pdfLocale === "ar" ? "ar" : "en",
+      pdfLocale === "ar" ? "ar" : "en"
     ),
-
-    // ✅ Keep prefs for PDF rendering (important)
     preferences: {
       pdfLang: pdfLocale,
       currency: chosenCurrency,
@@ -272,7 +249,6 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
       displaySettings: prefs?.displaySettings || {},
       fx: prefs?.fx || null,
     },
-
     agent: {
       name: "Mohamad Kodmani",
       company: "Mohamad Kodmani Real Estate Brokers LLC",
@@ -280,7 +256,6 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
       email: "mohamadkodmani@gmail.com",
       avatar: "https://luxury-real-estate-media.b-cdn.net/agents/mohamad.jpg",
     },
-
     sections: {
       generalFacts,
       finishing: d?.project?.finishing || d?.finishing || "",
@@ -288,24 +263,18 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
       furnishing: d?.project?.furnishing || d?.furnishing || "",
       location: d?.location?.address || d?.project?.location || "",
     },
-
     facts,
-
     gallery: Array.isArray(d?.gallery?.slides) ? d.gallery.slides : [],
-
     floorPlans: convertedFloorPlans,
-
     amenities,
   };
 }
 
 export default function GenerateSalesOfferButton({ projectData }) {
   const { locale } = useLanguage();
-
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // You can pass a custom AI function later, or keep it null for now.
   const onImproveWithAI = null;
 
   const handleGenerateFromModal = async (prefs) => {
@@ -321,14 +290,22 @@ export default function GenerateSalesOfferButton({ projectData }) {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Failed to generate PDF");
+      if (!res.ok) {
+        let message = "Failed to generate PDF";
+        try {
+          const err = await res.json();
+          if (err?.message) message = err.message;
+          if (err?.error) message = err.error;
+        } catch {}
+        throw new Error(message);
+      }
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
       console.error(e);
-      alert("PDF generation failed. Check console.");
+      alert(e?.message || "PDF generation failed. Check console.");
     } finally {
       setBusy(false);
     }
@@ -340,25 +317,50 @@ export default function GenerateSalesOfferButton({ projectData }) {
         type="button"
         onClick={() => setOpen(true)}
         disabled={busy}
+        className={styles.downloadBrochure}
         style={{
-          padding: "12px 16px",
-          borderRadius: 10,
-          border: "1px solid #E7E7E7",
-          background: busy ? "#111" : "#2E2E2E",
-          color: "#fff",
-          cursor: busy ? "not-allowed" : "pointer",
-          fontWeight: 600,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           width: "100%",
-          maxWidth: 420,
+          cursor: busy ? "not-allowed" : "pointer",
+          opacity: busy ? 0.7 : 1
         }}
       >
-        {busy
-          ? locale === "ar"
-            ? "جاري الإنشاء..."
-            : "Generating..."
-          : locale === "ar"
+        <span className={styles.brochureText}>
+          {busy
+            ? locale === "ar"
+              ? "جاري الإنشاء..."
+              : "Generating..."
+            : locale === "ar"
             ? "إنشاء عرض بيع"
             : "Generate Sales Offer"}
+        </span>
+
+        <div className={styles.downloadIcon}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M7 4H14L19 9V20H7V4Z"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M14 4V9H19"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M10 13H16"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M10 17H14"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+          </svg>
+        </div>
       </button>
 
       <SalesOfferPreferencesModal

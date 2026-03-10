@@ -498,6 +498,21 @@
   font-weight: 500;
 }
 
+  .downloadBrochure {
+    border: 1px solid #c9a26a;
+    border-radius: 10px;
+    padding: 14px 18px;
+    background: #0f0f0f;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .downloadBrochure:hover {
+    border-color: #e5c48a;
+    background: #161616;
+  }
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .locationSection {

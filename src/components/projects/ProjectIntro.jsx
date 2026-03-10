@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Image from "next/image";
+import GenerateSalesOfferButton from "@/components/projects/GenerateSalesOfferButton";
 import styles from "@/styles/projects/ProjectIntro.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 
-export default function ProjectIntro({ data, projectData, isRTL, locale }) {
+export default function ProjectIntro({ data, projectData, rawProjectData, isRTL, locale }) {
   const { locale: ctxLocale } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
@@ -18,7 +19,7 @@ export default function ProjectIntro({ data, projectData, isRTL, locale }) {
   if (!data || !projectData) return null;
 
   const intro = data;
-  const { project } = projectData;
+  const project = projectData?.hero || {};
 
   const CDN = "https://luxury-real-estate-media.b-cdn.net";
 
@@ -252,23 +253,51 @@ export default function ProjectIntro({ data, projectData, isRTL, locale }) {
               </div>
             )}
 
-            {/* Brochures Section */}
-            {brochures.length > 0 && (
+            {/* Brochures + Sales Offer */}
+            {(brochures.length > 0 || rawProjectData) && (
               <div className={styles.brochuresSection}>
                 <div className={styles.brochuresGrid}>
-                  {brochures.map((b) => (
+                  {brochures.map((b, index) => (
                     <a
-                      key={b.id}
-                      href={b.url}
+                      key={b?.id || b?.url || index}
+                      href={b?.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={styles.brochureCard}
+                      className={styles.downloadBrochure}
+                      aria-label={`View ${project?.title || project?.developer || "project"} brochure`}
                     >
-                      <span className={styles.brochureTitle}>{b.title}</span>
-                      <span className={styles.brochureMeta}>PDF</span>
-                      <span className={styles.brochureIcon}>📄</span>
+                      <span className={styles.brochureText}>
+                        {b?.title || "Download Brochure"}
+                      </span>
+
+                      <div className={styles.downloadIcon}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <path
+                            d="M12 16L12 4"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M7 11L12 16L17 11"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M5 20H19"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </div>
                     </a>
                   ))}
+
+                  {rawProjectData ? (
+                    <GenerateSalesOfferButton projectData={rawProjectData} />
+                  ) : null}
                 </div>
               </div>
             )}
