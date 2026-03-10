@@ -5,89 +5,92 @@ import SalesOfferDocument from "@/lib/pdf/SalesOfferDocument";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function getBaseUrl(req) {
-  const host = req.headers.get("host");
-  const proto = req.headers.get("x-forwarded-proto") || "http";
-  return `${proto}://${host}`;
+function safeStr(v) {
+  return typeof v === "string" ? v : v == null ? "" : String(v);
 }
 
-function proxify(baseUrl, url) {
-  if (!url) return null;
-
-  // Already proxied
-  if (url.includes("/api/pdf-image?url=")) return url;
-
-  if (url.startsWith("http://") || url.startsWith("https://")) {
-    return `${baseUrl}/api/pdf-image?url=${encodeURIComponent(url)}`;
-  }
-
-  // local file in /public
-  if (url.startsWith("/")) return `${baseUrl}${url}`;
-
-  return null;
+function toArray(v) {
+  return Array.isArray(v) ? v : [];
 }
 
-function clone(obj) {
-  return JSON.parse(JSON.stringify(obj || {}));
-}
+function normalizePayload(payload) {
+  const p = payload || {};
+  const sections = p.sections || {};
+  const preferences = p.preferences || {};
 
-function proxifyPayload(baseUrl, payload) {
-  const p = clone(payload);
+  return {
+    projectName: safeStr(p.projectName || "Sales Offer"),
+    title: safeStr(p.projectName || "Sales Offer"),
 
-  p.coverImage = proxify(baseUrl, p.coverImage);
+    // keep image URLs direct first, no self-proxy for now
+    coverImage: p.coverImage || "",
+    gallery: toArray(p.gallery).filter(Boolean),
 
-  if (Array.isArray(p.gallery)) {
-    p.gallery = p.gallery.map((u) => proxify(baseUrl, u)).filter(Boolean);
-  }
+    createdAt: safeStr(p.createdAtValue || p.createdAt || ""),
 
-  if (Array.isArray(p.floorPlans)) {
-    p.floorPlans = p.floorPlans.map((plan) => {
-      const imgs = Array.isArray(plan?.images) ? plan.images : [];
-      return {
-        ...plan,
-        images: imgs.map((u) => proxify(baseUrl, u)).filter(Boolean),
-      };
-    });
-  }
+    generalFacts: safeStr(
+      sections.generalFacts || p.generalFacts || p.description || ""
+    ),
 
-  if (Array.isArray(p.amenities)) {
-    p.amenities = p.amenities.map((a) => ({
-      ...a,
-      iconUrl: proxify(baseUrl, a?.iconUrl),
-    }));
-  }
+    finishing: safeStr(sections.finishing || p.finishing || ""),
+    kitchen: safeStr(sections.kitchen || p.kitchen || ""),
+    furnishing: safeStr(sections.furnishing || p.furnishing || ""),
 
-  if (p?.agent?.avatar) p.agent.avatar = proxify(baseUrl, p.agent.avatar);
+    locationBenefits: safeStr(
+      sections.location || p.locationBenefits || p.location || ""
+    ),
 
-  return p;
+    amenities: toArray(p.amenities).map((a) => ({
+      label: safeStr(a?.label),
+      iconUrl: a?.iconUrl || "",
+    })),
+
+    floorPlans: toArray(p.floorPlans).map((plan) => ({
+      ...plan,
+      title: safeStr(plan?.title || plan?.name || "Floor Plan"),
+      images: toArray(plan?.images).filter(Boolean),
+      specs:
+        plan?.specs && typeof plan.specs === "object" ? plan.specs : {},
+    })),
+
+    agent: p.agent || {},
+    facts: toArray(p.facts),
+    preferences,
+    locale: p.locale || "en",
+  };
 }
 
 export async function POST(req) {
   try {
     const payload = await req.json();
-    const baseUrl = getBaseUrl(req);
-    const safePayload = proxifyPayload(baseUrl, payload);
+    const normalizedPayload = normalizePayload(payload);
 
     const pdfBuffer = await renderToBuffer(
-      <SalesOfferDocument payload={safePayload} />
+      <SalesOfferDocument payload={normalizedPayload} />
     );
 
     return new Response(pdfBuffer, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="sales-offer.pdf"`,
+        "Content-Disposition": `inline; filename="${safeStr(
+          payload?.projectSlug || "sales-offer"
+        )}.pdf"`,
         "Cache-Control": "no-store",
       },
     });
   } catch (err) {
     console.error("sales-offer error:", err);
+
     return new Response(
       JSON.stringify({
         ok: false,
         message: err?.message || "PDF failed",
         stack: err?.stack || null,
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 }
