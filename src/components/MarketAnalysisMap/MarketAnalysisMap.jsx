@@ -381,6 +381,10 @@ export default function MarketAnalysisMap() {
   const [areaError, setAreaError] = useState(null);
   const [areaDataSource, setAreaDataSource] = useState(null); // "file" | "cache" | "empty"
   const [areaDataAsOf, setAreaDataAsOf] = useState(null);
+  const [areaMinROI,     setAreaMinROI]     = useState("");
+  const [areaMaxPrice,   setAreaMaxPrice]   = useState("");
+  const [areaMinTxn,     setAreaMinTxn]     = useState(0);
+  const [areaFilterOpen, setAreaFilterOpen] = useState(false);
   const [selectedArea, setSelectedArea] = useState(null);  // { name, stats }
   const [areaSidebarOpen, setAreaSidebarOpen] = useState(false);
 
@@ -422,7 +426,36 @@ export default function MarketAnalysisMap() {
   }, [searchQuery, allProjects]);
 
   // ── Area GeoJSON with stats joined ─────────────────────────────────────
+  // ── Area GeoJSON with stats joined (and filtered) ──────────────────────
   const areaGeoJSON = useMemo(() => buildAreaGeoJSON(areaStats || {}), [areaStats]);
+
+  // filtered subset — applied as Mapbox filter expression on area layers
+  const areaMapboxFilter = useMemo(() => {
+    const f = ["all"];
+    const minROI = parseFloat(areaMinROI);
+    const maxPsf = parseFloat(areaMaxPrice);
+    const minTxn = parseInt(areaMinTxn) || 0;
+    if (!isNaN(minROI) && minROI > 0) {
+      f.push([">=", ["get", "totalROI"], minROI]);
+    }
+    if (!isNaN(maxPsf) && maxPsf > 0) {
+      f.push(["<=", ["get", "avgPriceSqft"], maxPsf]);
+    }
+    if (minTxn > 0) {
+      f.push([">=", ["get", "transactionCount"], minTxn]);
+    }
+    f.push(["==", ["get", "hasData"], true]);
+    return f;
+  }, [areaMinROI, areaMaxPrice, areaMinTxn]);
+
+  const activeAreaFiltersCount = useMemo(() => {
+    let c = 0;
+    if (parseFloat(areaMinROI) > 0) c++;
+    if (parseFloat(areaMaxPrice) > 0) c++;
+    if (parseInt(areaMinTxn) > 0) c++;
+    return c;
+  }, [areaMinROI, areaMaxPrice, areaMinTxn]);
+
 
   // ── Fetch area stats ───────────────────────────────────────────────────
   const fetchAreaStats = useCallback(async () => {
@@ -713,6 +746,16 @@ export default function MarketAnalysisMap() {
     } catch {}
   }, [mapboxFilter, mapLoaded]);
 
+
+  // ── Apply area filter to Mapbox layers ────────────────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    try {
+      map.setFilter("area-fill",      areaMapboxFilter);
+      map.setFilter("area-extrusion", areaMapboxFilter);
+    } catch {}
+  }, [areaMapboxFilter, mapLoaded]);
   // ── Fly to selected project ────────────────────────────────────────────
   const flyToProject = useCallback((p) => {
     const map = mapRef.current;
@@ -876,9 +919,13 @@ export default function MarketAnalysisMap() {
 
           {viewMode === "areas" && (
             <>
-              {/* Area metric dropdown */}
+              {/* ── Metric selector ── */}
               <div className={styles.pillWrap} data-dropdown>
-                <button className={styles.pill} onClick={() => setOpenDropdown((v) => v === "areametric" ? null : "areametric")} type="button">
+                <button
+                  className={styles.pill}
+                  onClick={() => setOpenDropdown((v) => v === "areametric" ? null : "areametric")}
+                  type="button"
+                >
                   <span className={styles.pillIcon}>📊</span>
                   <span>{areaMetricLabel}</span>
                   <span className={styles.caret}>▾</span>
@@ -886,7 +933,12 @@ export default function MarketAnalysisMap() {
                 {openDropdown === "areametric" && (
                   <div className={styles.dropdown}>
                     {AREA_METRICS.map((m) => (
-                      <button key={m.key} className={styles.dropdownItem} onClick={() => { setAreaMetricKey(m.key); setOpenDropdown(null); }} type="button">
+                      <button
+                        key={m.key}
+                        className={`${styles.dropdownItem} ${areaMetricKey === m.key ? styles.dropdownItemActive : ""}`}
+                        onClick={() => { setAreaMetricKey(m.key); setOpenDropdown(null); }}
+                        type="button"
+                      >
                         {locale === "ar" ? m.labelAr : m.labelEn}
                       </button>
                     ))}
@@ -894,12 +946,121 @@ export default function MarketAnalysisMap() {
                 )}
               </div>
 
+              {/* ── Filter button ── */}
+              <div className={styles.pillWrap} data-dropdown>
+                <button
+                  className={`${styles.pill} ${activeAreaFiltersCount > 0 ? styles.pillActive : ""}`}
+                  onClick={() => setAreaFilterOpen((v) => !v)}
+                  type="button"
+                >
+                  <span className={styles.pillIcon}>⚙️</span>
+                  <span>{locale === "ar" ? "تصفية" : "Filter"}</span>
+                  {activeAreaFiltersCount > 0 && (
+                    <span className={styles.filterBadge}>{activeAreaFiltersCount}</span>
+                  )}
+                  <span className={styles.caret}>▾</span>
+                </button>
+
+                {areaFilterOpen && (
+                  <div className={styles.areaFilterPanel}>
+                    <div className={styles.areaFilterTitle}>
+                      {locale === "ar" ? "تصفية المناطق" : "Filter Areas"}
+                    </div>
+
+                    {/* Min ROI */}
+                    <div className={styles.areaFilterRow}>
+                      <label className={styles.areaFilterLabel}>
+                        {locale === "ar" ? "الحد الأدنى للعائد %" : "Min ROI %"}
+                      </label>
+                      <input
+                        type="number"
+                        className={styles.areaFilterInput}
+                        placeholder="e.g. 10"
+                        value={areaMinROI}
+                        onChange={(e) => setAreaMinROI(e.target.value)}
+                        min="0"
+                        max="100"
+                      />
+                    </div>
+
+                    {/* Max price/sqft */}
+                    <div className={styles.areaFilterRow}>
+                      <label className={styles.areaFilterLabel}>
+                        {locale === "ar" ? "الحد الأقصى للسعر (درهم/قدم)" : "Max Price AED/sqft"}
+                      </label>
+                      <input
+                        type="number"
+                        className={styles.areaFilterInput}
+                        placeholder="e.g. 2000"
+                        value={areaMaxPrice}
+                        onChange={(e) => setAreaMaxPrice(e.target.value)}
+                        min="0"
+                      />
+                    </div>
+
+                    {/* Min transaction count */}
+                    <div className={styles.areaFilterRow}>
+                      <label className={styles.areaFilterLabel}>
+                        {locale === "ar" ? "الحد الأدنى للمعاملات" : "Min Transactions"}
+                      </label>
+                      <div className={styles.areaFilterTabs}>
+                        {[0, 10, 25, 50].map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            className={`${styles.areaFilterTab} ${areaMinTxn === v ? styles.areaFilterTabActive : ""}`}
+                            onClick={() => setAreaMinTxn(v)}
+                          >
+                            {v === 0 ? (locale === "ar" ? "الكل" : "All") : `${v}+`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Reset */}
+                    {activeAreaFiltersCount > 0 && (
+                      <button
+                        type="button"
+                        className={styles.areaFilterReset}
+                        onClick={() => { setAreaMinROI(""); setAreaMaxPrice(""); setAreaMinTxn(0); }}
+                      >
+                        {locale === "ar" ? "إعادة ضبط الفلاتر" : "Reset filters"}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Active filter chips */}
+              {activeAreaFiltersCount > 0 && (
+                <div className={styles.activeFilterChips}>
+                  {parseFloat(areaMinROI) > 0 && (
+                    <span className={styles.filterChip}>
+                      ROI ≥ {areaMinROI}%
+                      <button type="button" onClick={() => setAreaMinROI("")}>×</button>
+                    </span>
+                  )}
+                  {parseFloat(areaMaxPrice) > 0 && (
+                    <span className={styles.filterChip}>
+                      ≤ {Number(areaMaxPrice).toLocaleString()} AED/sqft
+                      <button type="button" onClick={() => setAreaMaxPrice("")}>×</button>
+                    </span>
+                  )}
+                  {areaMinTxn > 0 && (
+                    <span className={styles.filterChip}>
+                      {areaMinTxn}+ txns
+                      <button type="button" onClick={() => setAreaMinTxn(0)}>×</button>
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Data source badge */}
-              {areaDataSource && (
+              {areaDataSource && !areaLoading && (
                 <div className={`${styles.sourceBadge} ${areaDataSource === "empty" ? styles.sourceBadgeMock : styles.sourceBadgeLive}`}>
                   {areaDataSource === "empty"
-                    ? "⚠️ No data — run processor script"
-                    : `🟢 DLD Data${areaDataAsOf ? ` · ${areaDataAsOf}` : ""}`}
+                    ? "⚠️ No data"
+                    : `🟢 DLD${areaDataAsOf ? ` · ${areaDataAsOf}` : ""}`}
                 </div>
               )}
 
@@ -907,7 +1068,7 @@ export default function MarketAnalysisMap() {
               {areaLoading && (
                 <div className={styles.areaLoadingPill}>
                   <span className={styles.areaLoadingDot} />
-                  {locale === "ar" ? "جاري تحميل بيانات DLD..." : "Loading DLD data..."}
+                  {locale === "ar" ? "جاري التحميل..." : "Loading..."}
                 </div>
               )}
             </>

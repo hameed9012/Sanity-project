@@ -1,34 +1,39 @@
+/* ============================================================
+   MarketAnalysisMap.module.css  —  Premium UI Redesign
+   ============================================================ */
+
+/* ── Base wrapper ──────────────────────────────────────────── */
 .wrapper {
   position: relative;
   width: 100%;
-  background: #000000;
+  background: #000;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* ✅ FIX: filters always under navbar */
+/* ── Top bar ───────────────────────────────────────────────── */
 .topBar {
   position: fixed;
-  top: var(--site-navbar-height, 92px); /* ✅ fallback added */
+  top: var(--site-navbar-height, 92px);
   left: 0;
   right: 0;
   z-index: 9999;
-
   width: 100%;
-  padding: 14px 18px;
-
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-
-  background: rgba(0, 0, 0, 0.9);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  gap: 12px;
+  background: rgba(6, 6, 8, 0.97);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
+/* ── Pills row ─────────────────────────────────────────────── */
 .pillsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 6px;
   align-items: center;
 }
 
@@ -36,54 +41,56 @@
   position: relative;
 }
 
+/* ── Individual pill ───────────────────────────────────────── */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  height: 38px;
+  gap: 7px;
+  height: 36px;
   padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12.5px;
   font-weight: 600;
+  letter-spacing: 0.2px;
   cursor: pointer;
   user-select: none;
-  transition: all 0.12s ease;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
   white-space: nowrap;
 }
 
 .pill:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .pillIcon {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
-  opacity: 0.9;
+  opacity: 0.75;
 }
 
 .caret {
-  opacity: 0.65;
-  font-size: 12px;
-  margin-left: 2px;
+  opacity: 0.4;
+  font-size: 10px;
+  margin-left: 1px;
 }
 
+/* ── Dropdown ──────────────────────────────────────────────── */
 .dropdown {
   position: absolute;
-  top: 46px;
+  top: calc(100% + 6px);
   left: 0;
-  min-width: 190px;
-  background: rgba(0, 0, 0, 0.95);
-  border-radius: 12px;
+  min-width: 180px;
+  background: #111113;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   overflow: hidden;
   z-index: 20;
-  backdrop-filter: blur(10px);
 }
 
 .dropdownItem {
@@ -91,146 +98,209 @@
   text-align: left;
   background: transparent;
   border: 0;
-  padding: 12px 12px;
-  font-size: 13px;
+  padding: 11px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.75);
+  transition: background 0.1s, color 0.1s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dropdownItem:last-child {
+  border-bottom: 0;
 }
 
 .dropdownItem:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
-/* ===== Price modal ===== */
+/* ── Price modal ───────────────────────────────────────────── */
 .priceModal {
   position: absolute;
-  top: 46px;
+  top: calc(100% + 6px);
   left: 0;
-  width: 520px;
-  background: rgba(0, 0, 0, 0.95);
-  border-radius: 16px;
+  width: 500px;
+  background: #111113;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   overflow: hidden;
   z-index: 30;
-  backdrop-filter: blur(10px);
 }
 
 .priceTabs {
   display: flex;
-  padding: 12px;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .priceTab {
   flex: 1;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.1);
+  height: 36px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
   cursor: pointer;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.15s;
+}
+
+.priceTab:hover {
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 
 .priceTabActive {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: #fff;
+  background: rgba(201, 162, 106, 0.2);
+  border-color: rgba(201, 162, 106, 0.4);
+  color: #c9a26a;
 }
 
 .priceGrid {
-  padding: 14px 14px 16px;
+  padding: 12px 12px 14px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .priceField {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .priceLabel {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 5px;
 }
 
 .priceInput {
   width: 100%;
   border: 0;
   outline: none;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
   background: transparent;
   color: #fff;
 }
 
 .priceInput::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .resetBtn,
 .applyBtn {
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  font-weight: 800;
-  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: all 0.15s;
 }
 
 .resetBtn {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .resetBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .applyBtn {
-  background: #3b82f6;
-  border-color: #3b82f6;
+  background: #c9a26a;
+  border-color: #c9a26a;
+  color: #000;
+  font-weight: 800;
 }
 
 .applyBtn:hover {
-  background: #2563eb;
+  background: #d4af7a;
 }
 
-/* ===== 3D toggle ===== */
+/* ── 3D toggle ─────────────────────────────────────────────── */
 .toggle3D {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: #fff;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
   user-select: none;
   white-space: nowrap;
   cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: color 0.15s;
+}
+
+.toggle3D:hover {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .toggle3D input {
-  width: 16px;
-  height: 16px;
-  accent-color: #3b82f6;
+  width: 15px;
+  height: 15px;
+  accent-color: #c9a26a;
+  cursor: pointer;
 }
 
-/* ===== Map Shell ===== */
+/* ── View mode toggle ──────────────────────────────────────── */
+.viewModeToggle {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  gap: 0;
+}
+
+.viewModeBtn {
+  height: 36px;
+  padding: 0 18px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.viewModeBtn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.viewModeBtnActive {
+  background: rgba(201, 162, 106, 0.18);
+  color: #c9a26a;
+  border-radius: 7px;
+}
+
+/* ── Map shell ─────────────────────────────────────────────── */
 .mapShell {
   position: relative;
   width: 100%;
-  height: calc(
-    100vh - var(--site-navbar-height, 92px) - var(--filters-bar-height, 64px)
-  );
+  height: calc(100vh - var(--site-navbar-height, 92px) - var(--filters-bar-height, 64px));
   min-height: 560px;
-  background: #000000;
-  margin-top: calc(
-    var(--site-navbar-height, 92px) + var(--filters-bar-height, 64px)
-  );
+  background: #000;
+  margin-top: calc(var(--site-navbar-height, 92px) + var(--filters-bar-height, 64px));
   overflow: hidden;
 }
 
@@ -239,6 +309,7 @@
   inset: 0;
 }
 
+/* ── Map loading ───────────────────────────────────────────── */
 .mapLoading {
   position: absolute;
   inset: 0;
@@ -247,653 +318,62 @@
   align-items: center;
   justify-content: center;
   background: #000;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   z-index: 1;
+  gap: 16px;
 }
 
 .loadingSpinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #3b82f6;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-top-color: #c9a26a;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-/* ===== Results Counter ===== */
+/* ── Results counter ───────────────────────────────────────── */
 .resultsCounter {
   position: absolute;
-  right: 18px;
-  top: 18px;
+  right: 16px;
+  top: 16px;
   z-index: 4;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-}
-
-/* ===== Sidebar ===== */
-.sidebar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 420px;
-  max-width: 92vw;
-  background: rgba(0, 0, 0, 0.95);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.5);
-  z-index: 9;
-  backdrop-filter: blur(10px);
-
-  transform: translateX(-102%);
-  transition: transform 0.22s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebarOpen {
-  transform: translateX(0%);
-}
-
-.sidebarHeader {
-  position: relative;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.sidebarClose {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  font-weight: 800;
-  color: #fff;
-}
-
-.sidebarClose:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.sidebarTitleWrap {
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebarTitle {
-  font-weight: 900;
-  font-size: 18px;
-  color: #fff;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarSub {
-  margin-top: 4px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarHero {
-  width: 100%;
-  height: 180px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
-.sidebarImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.sidebarImgFallback {
-  height: 100%;
-  display: grid;
-  place-items: center;
-  color: rgba(255, 255, 255, 0.55);
+  background: rgba(6, 6, 8, 0.92);
+  color: rgba(255, 255, 255, 0.65);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 11.5px;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.sidebarBody {
-  padding: 14px 16px 16px;
-  overflow: auto;
-  flex: 1;
-}
-
-.sidebarPriceBlock {
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 14px;
-}
-
-.sidebarPriceLabel {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 700;
-}
-
-.sidebarPriceValue {
-  font-size: 26px;
-  font-weight: 1000;
-  margin-top: 6px;
-  color: #fff;
-}
-
-.sidebarMiniGrid {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.sidebarMiniItem {
-  padding: 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
+  letter-spacing: 0.3px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sidebarMiniLabel {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 800;
-}
-
-.sidebarMiniValue {
-  margin-top: 5px;
-  font-size: 13px;
-  font-weight: 900;
-  color: #fff;
-}
-
-/* Dates */
-.datesGrid {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.dateItem {
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.dateLabel {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 800;
-}
-
-.dateValue {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 900;
-  color: #fff;
-}
-
-/* Description */
-.descBlock {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.descTitle {
-  font-size: 12px;
-  font-weight: 1000;
-  color: #fff;
-  margin-bottom: 8px;
-}
-
-.descText {
-  font-size: 13px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Actions */
-.sidebarActions {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.actionBtn {
-  height: 40px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  font-weight: 900;
-  color: #fff;
-}
-
-.actionBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Payment Plan Cards Styling */
-.paymentPlanCard {
-  border: 2px solid #ffffff;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 16px;
-  margin-top: 12px;
-}
-
-.paymentPlanCard:first-of-type {
-  margin-top: 8px;
-}
-
-.paymentPlanLabel {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.paymentPlanValue {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.4;
-  padding: 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Multi payment plan cards */
-.multiPaymentPlan {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.paymentPlanItem {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  padding: 14px;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.paymentPlanItemHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.paymentPlanItemLabel {
-  font-size: 13px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.paymentPlanBadge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #3b82f6;
-  color: #fff;
-}
-
-.paymentPlanItemContent {
-  font-size: 14px;
-  color: #fff;
-  line-height: 1.4;
-}
-
-.sidebarEmpty {
-  padding: 40px 16px;
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 700;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-}
-
-.sidebarEmptyIcon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.sidebarEmptyText {
-  font-size: 14px;
-  max-width: 200px;
-  line-height: 1.4;
-}
-
-/* ===== Search overlay ===== */
-.searchOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(5px);
-  display: grid;
-  place-items: center;
-}
-
-.searchModal {
-  width: min(640px, calc(100% - 28px));
-  background: rgba(0, 0, 0, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.searchInputRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.searchIcon {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.searchInput {
-  flex: 1;
-  height: 40px;
-  border: 2px solid #3b82f6;
-  border-radius: 10px;
-  padding: 0 12px;
-  outline: none;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.searchClose {
-  border: 0;
-  background: transparent;
-  font-size: 16px;
-  cursor: pointer;
-  opacity: 0.8;
-  color: #fff;
-}
-
-.searchList {
-  padding: 10px;
-  display: grid;
-  gap: 8px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.searchEmpty {
-  padding: 16px;
-  opacity: 0.7;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
-}
-
-.searchItem {
-  display: grid;
-  grid-template-columns: 20px 1fr auto 24px;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  color: #fff;
-  text-align: left;
-  width: 100%;
-}
-
-.searchItem:hover {
-  background: #3b82f6;
-  color: #fff;
-  border-color: #3b82f6;
-}
-
-.searchBuildingIcon {
-  opacity: 0.75;
-}
-
-.searchName {
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.searchTag {
-  font-size: 11px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-weight: 900;
-}
-
-.searchArrow {
-  opacity: 0.75;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 920px) {
-  .topBar {
-    gap: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .toggle3D {
-    align-self: flex-end;
-    margin-top: -30px;
-  }
-}
-
-@media (max-width: 768px) {
-  .mapShell {
-    min-height: 520px;
-  }
-
-  .resultsCounter {
-    top: 12px;
-    right: 12px;
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-
-  /* Sidebar becomes bottom sheet */
-  .sidebar {
-    left: 0;
-    top: auto;
-    bottom: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 70%;
-    border-right: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    transform: translateY(102%);
-  }
-
-  .sidebarOpen {
-    transform: translateY(0%);
-  }
-
-  .sidebarHero {
-    height: 160px;
-  }
-
-  .priceModal {
-    width: min(520px, calc(100vw - 28px));
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 480px) {
-  .topBar {
-    padding: 12px;
-  }
-
-  .pillsRow {
-    gap: 8px;
-  }
-
-  .pill {
-    height: 34px;
-    padding: 0 12px;
-    font-size: 12px;
-  }
-
-/* ── View mode toggle ─────────────────────────────────────────────── */
-.viewModeToggle {
-  display: inline-flex;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  overflow: hidden;
-  gap: 0;
-}
-
-.viewModeBtn {
-  height: 38px;
-  padding: 0 18px;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  letter-spacing: 0.5px;
-}
-
-.viewModeBtn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.viewModeBtnActive {
-  background: rgba(201, 162, 106, 0.25);
-  color: #c9a26a;
-  border-radius: 999px;
-}
-
-/* ── Data source badge ────────────────────────────────────────────── */
-.sourceBadge {
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.sourceBadgeLive {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #4ade80;
-}
-
-.sourceBadgeMock {
-  background: rgba(234, 179, 8, 0.15);
-  border: 1px solid rgba(234, 179, 8, 0.3);
-  color: #fbbf24;
-}
-
-/* ── Area loading pill ────────────────────────────────────────────── */
-.areaLoadingPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.areaLoadingDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #c9a26a;
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.85); }
-}
-
-/* ── Area legend (bottom-right of map) ───────────────────────────── */
+/* ── Area legend ───────────────────────────────────────────── */
 .areaLegend {
   position: absolute;
-  bottom: 36px;
-  right: 18px;
+  bottom: 32px;
+  right: 16px;
   z-index: 4;
-  background: rgba(0, 0, 0, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  background: rgba(6, 6, 8, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
   padding: 14px 16px;
-  min-width: 160px;
-  backdrop-filter: blur(10px);
+  min-width: 150px;
 }
 
 .areaLegendTitle {
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
@@ -910,36 +390,637 @@
 }
 
 .areaLegendSwatch {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 3px;
   flex-shrink: 0;
 }
 
 .areaLegendValue {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 500;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
 }
 
 .areaLegendNote {
   font-size: 10px;
-  color: #fbbf24;
+  color: #c9a26a;
   margin-top: 10px;
   line-height: 1.5;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 8px;
 }
 
-/* ── ROI value styling in sidebar ────────────────────────────────── */
+/* ── Source badge ──────────────────────────────────────────── */
+.sourceBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.sourceBadgeLive {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.sourceBadgeMock {
+  background: rgba(201, 162, 106, 0.1);
+  border: 1px solid rgba(201, 162, 106, 0.25);
+  color: #c9a26a;
+}
+
+/* ── Area loading pill ─────────────────────────────────────── */
+.areaLoadingPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.areaLoadingDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c9a26a;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* ── Sidebar ───────────────────────────────────────────────── */
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 400px;
+  max-width: 92vw;
+  background: #0a0a0c;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  z-index: 9;
+  transform: translateX(-102%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarOpen {
+  transform: translateX(0%);
+}
+
+/* ── Sidebar header ────────────────────────────────────────── */
+.sidebarHeader {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.sidebarClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.sidebarClose:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sidebarTitleWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebarTitle {
+  font-weight: 800;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarSub {
+  margin-top: 3px;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* ── Sidebar hero image ────────────────────────────────────── */
+.sidebarHero {
+  width: 100%;
+  height: 185px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sidebarImgFallback {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── Sidebar body ──────────────────────────────────────────── */
+.sidebarBody {
+  padding: 14px 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* price block */
+.sidebarPriceBlock {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px;
+}
+
+.sidebarPriceLabel {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sidebarPriceValue {
+  font-size: 24px;
+  font-weight: 900;
+  margin-top: 4px;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+/* ROI value override */
 .roiValue {
-  font-size: 36px !important;
+  font-size: 34px !important;
   font-weight: 900 !important;
-  background: linear-gradient(135deg, #f5a623, #e94560);
+  background: linear-gradient(135deg, #c9a26a, #e8c98a);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -1px;
   line-height: 1.1;
-  margin-bottom: 2px;
 }
+
+.sidebarMiniGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sidebarMiniItem {
+  padding: 10px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebarMiniLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebarMiniValue {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* dates */
+.datesGrid {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dateItem {
+  padding: 11px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dateLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dateValue {
+  margin-top: 5px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* description */
+.descBlock {
+  margin-top: 8px;
+  padding: 12px 13px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.descTitle {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 7px;
+}
+
+.descText {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* action button */
+.sidebarActions {
+  margin-top: 10px;
+}
+
+.actionBtn {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid rgba(201, 162, 106, 0.35);
+  background: rgba(201, 162, 106, 0.1);
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #c9a26a;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+
+.actionBtn:hover {
+  background: rgba(201, 162, 106, 0.2);
+  border-color: rgba(201, 162, 106, 0.6);
+}
+
+/* payment plan */
+.paymentPlanCard {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.paymentPlanLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+.paymentPlanValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.multiPaymentPlan {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.paymentPlanItem {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.paymentPlanItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.paymentPlanItemLabel {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.paymentPlanBadge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: rgba(201, 162, 106, 0.2);
+  color: #c9a26a;
+  letter-spacing: 0.3px;
+}
+
+.paymentPlanItemContent {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+/* ── Sidebar empty state ───────────────────────────────────── */
+.sidebarEmpty {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.sidebarEmptyIcon {
+  font-size: 40px;
+  opacity: 0.25;
+}
+
+.sidebarEmptyText {
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 180px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Search overlay ────────────────────────────────────────── */
+.searchOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+}
+
+.searchModal {
+  width: min(600px, calc(100% - 28px));
+  background: #0e0e10;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.searchInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.searchIcon {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.searchInput {
+  flex: 1;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  padding: 0 12px;
+  outline: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  transition: border-color 0.15s;
+}
+
+.searchInput:focus {
+  border-color: rgba(201, 162, 106, 0.5);
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.searchClose {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.searchClose:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.searchList {
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.searchEmpty {
+  padding: 24px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+.searchItem {
+  display: grid;
+  grid-template-columns: 18px 1fr auto 20px;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: left;
+  width: 100%;
+  transition: all 0.12s;
+}
+
+.searchItem:hover {
+  background: rgba(201, 162, 106, 0.1);
+  border-color: rgba(201, 162, 106, 0.2);
+  color: #fff;
+}
+
+.searchBuildingIcon {
+  opacity: 0.5;
+  font-size: 13px;
+}
+
+.searchName {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.searchTag {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.searchArrow {
+  opacity: 0.3;
+  font-size: 12px;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  .topBar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .toggle3D {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mapShell {
+    min-height: 520px;
+  }
+
+  .resultsCounter {
+    top: 10px;
+    right: 10px;
+    font-size: 11px;
+    padding: 6px 11px;
+  }
+
+  .sidebar {
+    left: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 72%;
+    border-right: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    transform: translateY(102%);
+    border-radius: 14px 14px 0 0;
+  }
+
+  .sidebarOpen {
+    transform: translateY(0%);
+  }
+
+  .sidebarHero {
+    height: 150px;
+  }
+
+  .priceModal {
+    width: min(500px, calc(100vw - 24px));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .topBar {
+    padding: 9px 12px;
+  }
+
+  .pillsRow {
+    gap: 5px;
+  }
+
+  .pill {
+    height: 33px;
+    padding: 0 11px;
+    font-size: 11.5px;
+  }
+
+  .viewModeBtn {
+    padding: 0 14px;
+    font-size: 11px;
+  }
 }

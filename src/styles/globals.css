@@ -1,246 +1,100 @@
-/* Add this to your global.css or import in _app.js */
-@import url("https://fonts.cdnfonts.com/css/ringside"); /* Or your actual Ringside font source */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap");
+/* globals.css */
+/* Arabic font */
+/* Arabic Variable Font – El Messiri */
+@import url("https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&display=swap");
 
-/* Fallback font stack */
-body {
-  font-weight: 400;
-  letter-spacing: 0.2px;
+/* LTR (default) */
+body[dir="ltr"],
+body[dir="ltr"] * {
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
-/* === BASE BODY LIKE SOBHA === */
-body {
-  padding: 0 !important;
-  margin: 0;
+/* RTL */
+body[dir="rtl"],
+body[dir="rtl"] * {
+  font-family: "El Messiri", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: bold !important;
+}
 
+/* ✅ RTL: kill letter-spacing everywhere */
+html[dir="rtl"] body,
+html[dir="rtl"] body * {
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  /* ❌ REMOVED: overflow: hidden — was killing page scroll and breaking GSAP ScrollTrigger */
+}
+
+body {
+  color: #171717;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* Bootstrap-like body defaults Sobha is using */
-  font-size: var(--bs-body-font-size, 16px);
-  font-weight: var(--bs-body-font-weight, 400);
-  line-height: var(--bs-body-line-height, 1.6);
-  color: var(--bs-body-color, #fff);
-  background-color: var(--bs-body-bg, #000);
-  text-align: var(--bs-body-text-align, left);
-
-  cursor: url("/themes/sobha_uplift/images/s-icon-pointer.svg"), auto;
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-/* Prevent layout jump while Next Image loads */
-img,
-.next-image {
-  max-width: 100%;
-  height: auto;
-  display: block;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Optional: Disable animations before hydration */
-[data-nextjs-loading] * {
-  transition: none !important;
-  animation: none !important;
-}
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: light;
+  }
 
-@media (max-width: 768px) {
-  .Header_container__O36kb {
-    padding: 25px !important;
-    margin-top: 100px !important;
+  body {
+    color: #171717;
   }
 }
-*/
 
-/* Add to globals.css */
-body {
-  transition: all 0.3s ease;
-}
-
-body.language-transitioning {
-  overflow: hidden;
-  cursor: wait;
+section,
+div {
+  max-width: 100%;
 }
 
-body.language-transitioning * {
-  pointer-events: none !important;
+/* =========================
+   GOLD SCROLLBAR (Logo Gold)
+========================= */
+:root {
+  --gold: #c9a26a;
+  --gold-dark: #a27b43;
+  --track: #0b0b0b;
 }
 
-/* Smooth RTL/LTR transitions */
-html[dir="ltr"] {
-  --text-direction: ltr;
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) var(--track);
 }
 
-html[dir="rtl"] {
-  --text-direction: rtl;
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-/* Prevent layout shift during transition */
-.smooth-language-transition {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+::-webkit-scrollbar-track {
+  background: var(--track);
+  border-radius: 999px;
 }
 
-/* Enhanced language toggle animations */
-.langToggleActive {
-  position: relative;
-  overflow: hidden;
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  border-radius: 999px;
+  border: 2px solid var(--track);
 }
 
-.langToggleActive::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transition: left 0.6s ease;
-}
-
-.langToggleActive:hover::before {
-  left: 100%;
-}
-/* Add to globals.css */
-body {
-  transition: all 0.3s ease;
-}
-
-body.language-transitioning {
-  overflow: hidden;
-  cursor: wait;
-}
-
-body.language-transitioning * {
-  pointer-events: none !important;
-}
-
-/* Smooth RTL/LTR transitions */
-html[dir="ltr"] {
-  --text-direction: ltr;
-}
-
-html[dir="rtl"] {
-  --text-direction: rtl;
-}
-
-/* Prevent layout shift during transition */
-.smooth-language-transition {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Enhanced language toggle animations */
-.langToggleActive {
-  position: relative;
-  overflow: hidden;
-}
-
-.langToggleActive::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transition: left 0.6s ease;
-}
-
-.langToggleActive:hover::before {
-  left: 100%;
-}
-/* Add to globals.css */
-body {
-  transition: all 0.2s ease; /* 🔥 FAST */
-}
-
-body.language-transitioning {
-  overflow: hidden;
-  cursor: wait;
-}
-
-body.language-transitioning * {
-  pointer-events: none !important;
-}
-
-/* Smooth RTL/LTR transitions */
-html[dir="ltr"] {
-  --text-direction: ltr;
-}
-
-html[dir="rtl"] {
-  --text-direction: rtl;
-}
-
-/* Prevent layout shift - FAST */
-.smooth-language-transition {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-/* globals.css – language transition & RTL/LTR base */
-
-body {
-  transition: all 0.2s ease;
-}
-
-body.language-transitioning {
-  overflow: hidden;
-  cursor: wait;
-}
-
-body.language-transitioning * {
-  pointer-events: none !important;
-}
-
-/* Smooth RTL/LTR direction variable */
-html[dir="ltr"] {
-  --text-direction: ltr;
-}
-
-html[dir="rtl"] {
-  --text-direction: rtl;
-}
-
-/* Use on containers you want to animate when language flips */
-.smooth-language-transition {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Optional: fancier language toggle */
-.langToggleActive {
-  position: relative;
-  overflow: hidden;
-}
-
-.langToggleActive::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transition: left 0.6s ease;
-}
-
-.langToggleActive:hover::before {
-  left: 100%;
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #d9b67a, var(--gold-dark));
 }
