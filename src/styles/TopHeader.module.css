@@ -1168,7 +1168,7 @@
 }
 
 /* RESPONSIVE */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   :root {
     --header-gutter: var(--header-gutter-desktop);
   }
@@ -1180,7 +1180,7 @@
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1279px) {
+@media (min-width: 1280px) and (max-width: 1439px) {
   .megaMenu {
     width: calc(100vw - 24px);
     max-height: calc(100vh - 86px);
@@ -1195,7 +1195,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   .menuLeft .navLinks,
   .menuRight .navLinks {
     display: none !important;
@@ -1212,7 +1212,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   .mobileMenuOpenHeader .logoSec {
     display: none !important;
   }

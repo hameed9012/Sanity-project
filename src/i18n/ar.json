@@ -367,67 +367,9 @@
     }
   },
   "homeSlider": {
-    "mainTitle": "اكتشف عقارات فاخرة للبيع في دبي والإمارات",
-    "discoverButton": "ابدأ الاستكشاف",
-    "exploreButton": "استكشف المشروع",
-    "ariaLabels": {
-      "previousSlide": "الشريحة السابقة",
-      "nextSlide": "الشريحة التالية"
-    },
-    "amenities": {
-      "infinityPool": "مسبح إنفينيتي",
-      "skyGardens": "حدائق سماوية",
-      "burjKhalifaView": "إطلالة برج خليفة",
-      "marinaYacht": "مارينا ويخت",
-      "waterfrontLiving": "حياة على الواجهة البحرية",
-      "citySkylineView": "إطلالة بانورامية",
-      "luxuryInteriors": "تصاميم داخلية فاخرة",
-      "premiumAmenities": "مرافق راقية",
-      "waterfrontPromenade": "ممشى الواجهة البحرية",
-      "skyDeck": "سطح سكاي",
-      "waterfrontCommunity": "مجتمع واجهة بحرية",
-      "internationalSchools": "مدارس دولية",
-      "greenSpaces": "مساحات خضراء",
-      "privateBeach": "شاطئ خاص",
-      "islandLiving": "حياة الجزر",
-      "resortLifestyle": "أسلوب المنتجعات",
-      "forestCommunity": "مجتمع غابي",
-      "cyclingTrack": "مسار دراجات",
-      "familyParks": "حدائق عائلية",
-      "waterfrontVillas": "فلل واجهة بحرية",
-      "privateMarina": "مارينا خاصة",
-      "retailBoulevard": "بوليفارد تجاري",
-      "diningDestination": "وجهات طعام",
-      "signatureRetail": "تجزئة مميزة",
-      "primeLocation": "موقع استثنائي",
-      "architecturalLandmark": "معلم معماري",
-      "padelCourt": "ملعب بادل",
-      "yogaDeck": "منصة يوغا"
-    },
-    "projects": {
-      "skyparks": { "category": "شقق", "location": "دبي، الإمارات" },
-      "aquaCrest": { "category": "شقق", "location": "دبي، الإمارات" },
-      "central": { "category": "شقق", "location": "شارع الشيخ زايد، دبي" },
-      "aquamont": { "category": "شقق", "location": "دبي، الإمارات" },
-      "orbis": { "category": "شقق", "location": "دبي، الإمارات" },
-      "verde": { "category": "شقق", "location": "دبي، الإمارات" },
-      "hartland": { "category": "فلل", "location": "مدينة محمد بن راشد، دبي" },
-      "sobhaSiniyaIsland": {
-        "category": "فلل",
-        "location": "أم القيوين، الإمارات"
-      },
-      "massar": { "category": "فلل", "location": "الشارقة، الإمارات" },
-      "damacIslands2": { "category": "فلل", "location": "دبي، الإمارات" },
-      "rivieraRetails": {
-        "category": "تجزئة تجارية",
-        "location": "دبي، الإمارات"
-      },
-      "lumenaAlta": { "category": "تجزئة تجارية", "location": "دبي، الإمارات" },
-      "seaHavenPenthouse": {
-        "category": "بنتهاوس",
-        "location": "دبي هاربور، دبي"
-      }
-    }
+    "subtitle": "مجموعة منتقاة من العقارات الفاخرة وفائقة الفخامة في دبي والإمارات",
+    "mainTitle": "مجموعة منتقاة من العقارات الفاخرة وفائقة الفخامة في دبي والإمارات",
+    "discoverButton": "اكتشف"
   },
   "artOfDetail": {
     "sloganPre": "حيث",
@@ -477,77 +419,34 @@
   },
   "footer": {
     "brand": {
-      "logoBar": "محمد قضماني للوساطة العقارية",
-      "corporateName": "محمد قضماني",
-      "corporateTitle": "مستشار عقاري وخبير استثمار",
+      "logoBar": "محمد قدماني للوساطة العقارية",
+      "corporateName": "محمد قدماني",
+      "corporateTitle": "وسيط عقاري معتمد",
       "legal": {
         "tradeLicense": "رخصة تجارية: 1192580",
         "advertisingPermit": "تصريح إعلاني: 139532",
-        "reraCertified": "معتمد من دائرة الأراضي والأملاك"
+        "reraCertified": "معتمد من RERA"
       }
-    },
-    "headers": {
-      "apartments": "الشقق",
-      "villas": "الفلل",
-      "penthouses": "البنتهاوس",
-      "communities": "المناطق",
-      "mediaCenter": "المركز الإعلامي",
-      "aboutUs": "عنّا",
-      "contact": "التواصل"
-    },
-    "projects": {
-      "apartments": {
-        "sobhaSkyParks": "شوبا سكاي باركس",
-        "sobhaAquaCrest": "شوبا أكوا كريست",
-        "sobhaCentral": "شوبا سنترال",
-        "sobhaAquamont": "شوبا أكوامونت"
-      },
-      "villas": {
-        "sobhaHartlandVillas": "فلل شوبا هارتلاند",
-        "sobhaSiniyaIsland": "جزيرة السينية من شوبا",
-        "masaarByArada": "مسار من أرادا",
-        "damacIslands2": "جزر داماك 2"
-      },
-      "penthouses": {
-        "sobhaSeaHavenPenthouse": "بنتهاوس شوبا سي هافن"
-      }
-    },
-    "communities": {
-      "sobhaSkyParks": "شوبا سكاي باركس",
-      "sobhaCentral": "شوبا سنترال",
-      "sobhaHartland": "شوبا هارتلاند",
-      "sobhaSiniyaIsland": "جزيرة السينية",
-      "masaarByArada": "مسار من أرادا",
-      "damacIslands2": "جزر داماك 2"
-    },
-    "mediaCenter": {
-      "mediaCenter": "المركز الإعلامي",
-      "blogs": "المدونة",
-      "reports": "التقارير"
-    },
-    "aboutUs": {
-      "aboutMohamadKodmane": "عن محمد قضماني",
-      "legacyExperience": "الإرث والخبرة",
-      "thoughtfulAdvice": "استشارات مبنية على الأرقام"
-    },
-    "contact": {
-      "contactUs": "اتصل بنا",
-      "channelPartner": "شريك القناة",
-      "ourPresence": "تواجدنا",
-      "faq": "الأسئلة الشائعة"
     },
     "address": {
       "title": "المقر الرئيسي",
-      "line1": "عزيزي ريفييرا 21",
-      "line2": "محل تجاري 13، ميدان",
+      "line1": "الطابق 22، برج 22ND COURT",
+      "line2": "مكتب B08، الخليج التجاري",
       "line3": "دبي، الإمارات العربية المتحدة",
-      "poBox": "ص.ب 446097"
+      "poBox": "ص.ب. 446097"
     },
     "contactBlock": {
       "title": "استشارة خاصة",
       "directLabel": "مباشر:",
-      "officeLabel": "المكتب:",
-      "emailLabel": "البريد:"
+      "officeLabel": "مكتب:",
+      "emailLabel": "بريد:"
+    },
+    "headers": {
+      "featuredProperties": "مشاريع مميزة",
+      "aboutUs": "عنّا",
+      "communities": "المناطق",
+      "contact": "التواصل",
+      "mediaCenter": "المركز الإعلامي"
     },
     "meta": {
       "allRightsReserved": "جميع الحقوق محفوظة."
@@ -593,7 +492,8 @@
         "label": "مستهدف عوائد سنوية ضمن خطط مدروسة وإدارة مخاطر."
       }
     ],
-    "dividerAlt": "فاصل زخرفي للقسم"
+    "dividerAlt": "فاصل زخرفي للقسم",
+    "imageAlt": "عقار فاخر في دبي"
   },
   "aboutBuildingExcellence": {
     "heading": "قرارات عقارية تصنع الثروة، لا مجرد شراء",
@@ -645,7 +545,40 @@
         ]
       }
     ],
-    "footer": "معنا تحصل على شريك استثماري يركّز على <strong class=\"highlight\">نتائج أفضل ومخاطر أقل</strong> عبر قرارات واضحة وخطة تنفيذ كاملة."
+    "footer": "معنا تحصل على شريك استثماري يركّز على <strong class=\"highlight\">نتائج أفضل ومخاطر أقل</strong> عبر قرارات واضحة وخطة تنفيذ كاملة.",
+    "headerTitle": "خدماتنا",
+    "headerTagline": "استشارة عقارية متكاملة من البداية للنهاية",
+    "servicesTitle": "كيف نخدم المستثمرين",
+    "servicesSubtitle": "خدمات شاملة من الاستحواذ حتى الخروج",
+    "service1Title": "استشارات على الخارطة",
+    "service1Stage": "ما قبل الشراء",
+    "service1Desc": "اختيار استراتيجي لمشاريع على الخارطة ذات أعلى إمكانات نمو",
+    "service2Title": "بناء المحافظ",
+    "service2Stage": "الاستراتيجية",
+    "service2Desc": "تصميم محفظة عقارية متنوعة تتوافق مع أهدافك الاستثمارية",
+    "service3Title": "إدارة الإيجارات",
+    "service3Stage": "ما بعد الشراء",
+    "service3Desc": "إدارة شاملة للمستأجرين والتسعير وتحسين العائد",
+    "service4Title": "إعادة البيع والخروج",
+    "service4Stage": "استراتيجية الخروج",
+    "service4Desc": "إعادة بيع مدروسة التوقيت وتخطيط للخروج لتعظيم العائد",
+    "service5Title": "التأثيث والتجهيز",
+    "service5Stage": "إضافة القيمة",
+    "service5Desc": "باقات تأثيث فاخرة لتعظيم جاذبية الإيجار والعوائد الليلية",
+    "journeyTitle": "رحلتك الاستثمارية",
+    "journeySubtitle": "عملية منظمة من الاكتشاف حتى التسليم",
+    "journeyStep1Title": "مكالمة الاستكشاف",
+    "journeyStep1Desc": "فهم أهدافك وميزانيتك وشهيتك للمخاطر",
+    "journeyStep2Title": "تحليل السوق",
+    "journeyStep2Desc": "بحث وإدراج أفضل الفرص لملفك الاستثماري",
+    "journeyStep3Title": "الاستحواذ",
+    "journeyStep3Desc": "تأمين العقار المناسب بالسعر المناسب مع دعم قانوني كامل",
+    "promiseTitle": "وعدنا",
+    "promiseStatement": "نحن شريكك العقاري طويل الأمد — ليس مجرد صفقة لمرة واحدة.",
+    "promiseHighlight": "حوافز متوافقة: ننجح فقط عندما ينجح استثمارك.",
+    "statsExperience": "+18 سنة",
+    "statsManaged": "+650 مليون درهم",
+    "statsSatisfaction": "98%"
   },
   "aboutServices": {
     "sectionTitle": "كيف نخدم المستثمرين",
@@ -796,7 +729,8 @@
   "common": {
     "clear": "مسح",
     "from": "من",
-    "to": "إلى"
+    "to": "إلى",
+    "of": "من"
   },
   "developerHero": {
     "subtitle": "ملف المطور",
@@ -926,7 +860,10 @@
           "projects": "مشاريع متعددة",
           "units": "وحدات قيد التطوير"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" },
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        },
         "note": "هذا التوازن يعكس قدرة تنفيذية واستمرارية في التطوير ضمن مواقع استراتيجية."
       },
       "investorMeaning": [
@@ -979,7 +916,10 @@
           "projects": "مشاريع متعددة",
           "units": "وحدات قيد التطوير"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" },
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        },
         "note": "هذا التوازن يعكس قدرة تنفيذية واستمرارية في التطوير ضمن مواقع استراتيجية."
       },
       "investorMeaning": [
@@ -1075,7 +1015,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "داماك مناسبة للمستثمر الذي يبحث عن خيارات واسعة وسيولة أعلى في السوق عبر مشاريع معروفة.",
       "investmentPerspective": "الاستثمار مع داماك يتيح الدخول في مشاريع ذات حضور تسويقي قوي وقابلية تشغيل.",
@@ -1120,7 +1063,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "عزيزي خيار مناسب لمن يركز على الاستثمار الإيجاري ضمن مناطق عملية داخل دبي.",
       "investmentPerspective": "الاستثمار مع عزيزي يعني التركيز على التشغيل والتأجير واختيار موقع صحيح.",
@@ -1129,7 +1075,6 @@
         "final": "اكتشف مشاريع عزيزي مع خيارات متعددة للتأجير والاستثمار."
       }
     },
-
     "danube": {
       "hero": {
         "title": "دانوب للتطوير العقاري",
@@ -1166,7 +1111,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "دانوب مناسبة للمستثمر العملي الباحث عن خطط دفع مرنة وعقار قابل للتأجير.",
       "investmentPerspective": "الاستثمار مع دانوب يعني دخول أسهل وخيارات تشغيل أسرع ضمن شقق ذات طلب.",
@@ -1211,7 +1159,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "بن غاطي خيار مناسب لمن يريد سيولة أعلى وتصميم مميز في مناطق تأجير نشطة.",
       "investmentPerspective": "الاستثمار مع بن غاطي يعني عقار سهل التسويق مع قابلية تشغيل جيدة.",
@@ -1220,7 +1171,6 @@
         "final": "اكتشف مشاريع بن غاطي ذات الهوية المعمارية المميزة."
       }
     },
-
     "imtiaz": {
       "hero": {
         "title": "امتياز للتطوير العقاري",
@@ -1257,7 +1207,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "امتياز خيار مناسب لمن يريد دخولاً عملياً مع قابلية تشغيل وتأجير سريعة.",
       "investmentPerspective": "الاستثمار مع امتياز يعني التركيز على العائد التشغيلي والقرار المبني على الأرقام.",
@@ -1302,7 +1255,10 @@
           "projects": "مشاريع قيد الإنشاء",
           "units": "وحدات متعددة"
         },
-        "completed": { "projects": "مشاريع مُسلّمة", "units": "وحدات جاهزة" }
+        "completed": {
+          "projects": "مشاريع مُسلّمة",
+          "units": "وحدات جاهزة"
+        }
       },
       "summary": "تايغر مناسبة للمستثمر الذي يريد تشغيل أسرع وخيارات مفروشة وتقليل تكلفة الدخول.",
       "investmentPerspective": "الاستثمار مع تايغر يعني حلول جاهزة للتأجير مع مرونة في الدفع.",
@@ -1321,7 +1277,10 @@
       "sizeAsc": "المساحة (الأصغر إلى الأكبر)",
       "sizeDesc": "المساحة (الأكبر إلى الأصغر)"
     },
-    "view": { "grid": "شبكة", "list": "قائمة" },
+    "view": {
+      "grid": "شبكة",
+      "list": "قائمة"
+    },
     "results": {
       "none": "لا توجد نتائج",
       "showing": "عرض {start}–{end} من {total} نتيجة"
@@ -1403,5 +1362,214 @@
       "coverAlt": "غلاف {developer}",
       "logoAlt": "شعار {developer}"
     }
+  },
+  "relatedProjects": {
+    "eyebrow": "قد يعجبك أيضاً",
+    "heading": "مشاريع ذات صلة",
+    "subheading": "عقارات مختارة بعناية تتناسب مع اهتماماتك",
+    "viewAll": "عرض جميع العقارات"
+  },
+  "video": {
+    "close": "إغلاق",
+    "duration": "المدة",
+    "minutes": "دقيقة",
+    "playVideo": "تشغيل الفيديو",
+    "videoTitle": "فيديو استراتيجية الاستثمار",
+    "views": "مشاهدات"
+  },
+  "capitalGrowth": {
+    "heroBadge": "نمو رأس المال",
+    "heroTitle": "حيث ينمو رأس مالك",
+    "heroSubtitle": "استثمارات عقارية استراتيجية في أكثر مجتمعات دبي طلباً",
+    "galleryTitle": "مؤشرات النمو",
+    "gallerySubtitle": "مؤشرات الأداء الرئيسية عبر محفظتنا",
+    "metricLocationsValue": "+20",
+    "metricLocationsLabel": "مواقع متميزة",
+    "metricLocationsDesc": "عناوين منتقاة في أعلى مناطق دبي طلباً",
+    "metricAmenitiesValue": "+50",
+    "metricAmenitiesLabel": "مرافق عالمية",
+    "metricAmenitiesDesc": "مرافق فاخرة تستقطب عوائد إيجارية أعلى",
+    "metricReturnsValue": "+8%",
+    "metricReturnsLabel": "عوائد مستهدفة",
+    "metricReturnsDesc": "عوائد إيجارية ثابتة مع تقدير رأس المال طويل الأمد",
+    "metricCommunityValue": "+15",
+    "metricCommunityLabel": "مجتمعات نخبوية",
+    "metricCommunityDesc": "مجتمعات منتقاة تجمع بين أسلوب الحياة والتميز الاستثماري",
+    "mixTitle": "توزيع المحفظة",
+    "mixSubtitle": "توزيع متوازن عبر أنواع العقارات",
+    "mixUnderConstructionLabel": "قيد الإنشاء",
+    "mixReadyLabel": "جاهزة",
+    "mixInsight": "المحفظة المتنوعة تقلل المخاطر وتعظّم العوائد طويلة الأمد",
+    "fundamentalsTitle": "أساسيات السوق",
+    "fundamentalsStat1Value": "+400,000",
+    "fundamentalsStat1Label": "مقيم جديد سنوياً",
+    "fundamentalsStat2Value": "517 مليار دولار",
+    "fundamentalsStat2Label": "صفقات عقارية 2024",
+    "fundamentalsStat3Value": "0%",
+    "fundamentalsStat3Label": "ضريبة الأرباح الرأسمالية",
+    "fundamentalsText": "يرتكز سوق العقارات في دبي على طلب قوي ونمو سكاني وبيئة ضريبية تنافسية.",
+    "fundamentalsSource": "المصادر: دائرة الأراضي والأملاك، مركز دبي للإحصاء، البنك المركزي الإماراتي",
+    "communitiesTitle": "مجتمعات مميزة",
+    "communitiesDesc": "استكشف مجموعتنا المختارة من أرقى التطويرات السكنية"
+  },
+  "whereToLivePage": {
+    "searchPlaceholder": "ابحث حسب المنطقة أو الموقع أو العائد",
+    "showing": "عرض",
+    "areas": "منطقة",
+    "compareAreas": "قارن المناطق",
+    "exitCompare": "إنهاء المقارنة",
+    "resetFilters": "إعادة ضبط الفلاتر",
+    "loadMore": "عرض المزيد",
+    "endText": "لقد وصلت إلى النهاية.",
+    "noResults": "لا توجد مناطق تطابق معايير البحث.",
+    "pickOneMoreArea": "اختر منطقة أخرى",
+    "remove": "إزالة",
+    "selected": "تم الاختيار",
+    "select": "اختر",
+    "selectToCompare": "اختر للمقارنة",
+    "avgBuyLabel": "متوسط الشراء",
+    "avgRentLabel": "متوسط الإيجار",
+    "roiLabel": "العائد",
+    "exploreArea": "استكشف المنطقة",
+    "compare": "مقارنة",
+    "selectedCta": "قارن المختارة"
+  },
+  "Header": {
+    "title": "محمد قدماني",
+    "companyName": "محمد قدماني للوساطة العقارية",
+    "subtitle": "وسيط عقاري فاخر — دبي، الإمارات",
+    "expertise": "على الخارطة · فلل فاخرة · محافظ استثمارية",
+    "introPrefix": "بخبرة",
+    "introSuffix": "سنة في سوق العقارات الفاخرة بدبي",
+    "portfolio": "عرض المحفظة"
+  },
+  "callback": {
+    "sectionTitleLine1": "هل أنت مستعد",
+    "sectionTitleAccent": "للاستثمار",
+    "sectionTitleLine2": "في دبي؟",
+    "subtitle": "اترك بياناتك وسنتواصل معك خلال 24 ساعة.",
+    "nameLabel": "الاسم الكامل",
+    "phoneLabel": "رقم الهاتف",
+    "interestLabel": "أنا مهتم بـ",
+    "optionOffPlan": "عقارات على الخارطة",
+    "optionReady": "عقارات جاهزة",
+    "optionPortfolio": "إدارة المحافظ",
+    "optionConsultation": "استشارة استثمارية",
+    "submitIdle": "طلب مكالمة",
+    "submitSubmitting": "جارٍ الإرسال...",
+    "successTitle": "شكراً لك!",
+    "successMessage": "سنتواصل معك خلال 24 ساعة.",
+    "errorGeneric": "حدث خطأ ما. يرجى المحاولة مجدداً.",
+    "errorNetwork": "خطأ في الشبكة. يرجى التحقق من الاتصال.",
+    "bottomDecoration": "سري · موثوق · بدون التزام"
+  },
+  "dubaiDemand": {
+    "badge": "الطلب في السوق",
+    "title": "الطلب المتصاعد في دبي",
+    "description": "ثلاثة محركات طلب قوية تدفع نمو سوق العقارات في دبي",
+    "welcomesTitle": "دبي تستقبل",
+    "visitorsTitle": "زوار دوليون",
+    "visitorsDesc": "سياح ورجال أعمال دوليون سنوياً",
+    "visitorsStat": "+17 مليون سنوياً",
+    "investorsTitle": "مستثمرون أجانب",
+    "investorsDesc": "أصحاب الثروات يختارون دبي قاعدة لاستثماراتهم",
+    "investorsStat": "60% من المشترين دوليون",
+    "corporationsTitle": "شركات عالمية",
+    "corporationsDesc": "شركات متعددة الجنسيات تنشئ مقارها الإقليمية في دبي",
+    "corporationsStat": "+50,000 شركة مسجلة",
+    "chartTitle": "العرض مقابل الطلب",
+    "chartSubtitle": "مقارنة النمو السنوي",
+    "chartDemandLabel": "الطلب",
+    "chartSupplyLabel": "العرض",
+    "chartDemandGrowth": "+18%",
+    "chartSupplyGrowth": "+8%",
+    "resultBadge": "النتيجة",
+    "resultTitle": "أساسيات سوق قوية",
+    "resultHighlight": "الطلب يتجاوز العرض باستمرار",
+    "resultPriceGrowth": "نمو الأسعار: +15-20% سنوياً في المناطق الرئيسية",
+    "resultRentalYield": "عوائد الإيجار: 6-10% في المناطق عالية الطلب",
+    "resultRoi": "إجمالي العائد: 12-18% للأصول في مواقع جيدة",
+    "resultConclusion": "الفائض المستمر في الطلب يخلق ظروفاً لتقدير رأس المال المستدام."
+  },
+  "dubaiEconomy": {
+    "sectionTitle": "الميزة الاقتصادية لدبي",
+    "descriptionMain": "اقتصاد دبي من أكثر الاقتصادات تنوعاً ومرونة في العالم",
+    "descriptionSub": "بيئة أعمال صديقة مع بنية تحتية عالمية المستوى",
+    "driversTitle": "المحركات الاقتصادية الرئيسية",
+    "sector1Name": "السياحة والضيافة",
+    "sector1Desc": "وجهة عالمية تستقبل أكثر من 17 مليون زائر سنوياً",
+    "sector2Name": "التجارة والخدمات اللوجستية",
+    "sector2Desc": "مركز استراتيجي بين الشرق والغرب",
+    "sector3Name": "المال والمصرفية",
+    "sector3Desc": "مركز دبي المالي العالمي — من أبرز المراكز المالية العالمية",
+    "sector4Name": "التكنولوجيا والابتكار",
+    "sector4Desc": "منظومة تقنية متنامية واقتصاد رقمي",
+    "impactTitle": "الأثر على العقارات",
+    "economyBarLabel": "نمو الاقتصاد",
+    "realEstateBarLabel": "نمو العقارات",
+    "featureStability": "الاستقرار السياسي والاقتصادي",
+    "featureSecurity": "من أكثر مدن العالم أماناً",
+    "featureGlobalAppeal": "جاذبية عالمية لأسلوب الحياة",
+    "resultTitle": "القوة الاقتصادية = قيمة عقارية",
+    "resultHighlight": "اقتصاد مزدهر يخلق طلباً مستداماً على العقارات",
+    "resultGdp": "نمو الناتج المحلي: 4.4% في 2024",
+    "resultValues": "قيم العقارات: +15% سنوياً في المناطق الرئيسية",
+    "resultYields": "عوائد الإيجار: 6-10% صافٍ سنوياً"
+  },
+  "offPlan": {
+    "sectionTitle": "الاستثمار على الخارطة",
+    "sectionDescriptionMain": "اشترِ بسعر اليوم واستفد من قيمة الغد",
+    "sectionDescriptionSub": "عقارات الخارطة تقدم أسعار دخول لا تضاهى وخطط دفع مرنة",
+    "definitionTitle": "ما هو الشراء على الخارطة؟",
+    "definitionShort": "شراء عقار قبل أو أثناء الإنشاء بسعر ما قبل الإطلاق",
+    "definitionHighlight": "الدفع على مراحل أثناء البناء — ليس كله مقدماً",
+    "definitionNote": "منظم من قِبل RERA مع حماية حساب ضمان صارمة للمشترين",
+    "statPriceAdvantageLabel": "أقل من السوق عند الإطلاق",
+    "statRoiLabel": "عائد سنوي مستهدف",
+    "statTaxLabel": "ضريبة الأرباح الرأسمالية",
+    "benefitsTitle": "لماذا الشراء على الخارطة؟",
+    "benefit1Title": "سعر دخول أقل",
+    "benefit1Desc": "وصول لوحدات بأقل 15-30% من قيمة السوق عند الإطلاق",
+    "benefit2Title": "خطط دفع مرنة",
+    "benefit2Desc": "توزيع المدفوعات على مراحل البناء — 10/90 و40/60 وغيرها",
+    "benefit3Title": "نمو رأس المال",
+    "benefit3Desc": "تقدير قوي من الإطلاق حتى التسليم في المواقع عالية الطلب",
+    "timelineTitle": "رحلة الشراء على الخارطة",
+    "timelineStep1Title": "إطلاق المشروع",
+    "timelineStep1Desc": "المطور يطرح الوحدات بأسعار ما قبل الإطلاق",
+    "timelineStep2Title": "الحجز وعقد البيع",
+    "timelineStep2Desc": "احجز وحدتك بعربون وقّع عقد البيع والشراء",
+    "timelineStep3Title": "مرحلة الإنشاء",
+    "timelineStep3Desc": "الدفع بالتقسيط مرتبط بمراحل البناء",
+    "timelineStep4Title": "التسليم والعائد",
+    "timelineStep4Desc": "استلم مفاتيحك وابدأ تحقيق دخل إيجاري أو أعد البيع بربح",
+    "strategyText": "الشراء على الخارطة يكون أكثر فاعلية حين يكون المشروع في موقع جيد والمطور ذو سجل موثوق وخطة الدفع تتناسب مع تدفقك النقدي."
+  },
+  "portfolio": {
+    "headerTitle": "إدارة المحافظ",
+    "headerTagline": "بناء. نمو. استدامة.",
+    "growthTitle": "محفظتك العقارية، مُدارة باحتراف",
+    "growthSubtitle": "من الاستحواذ حتى الخروج — شراكة استثمارية متكاملة",
+    "philosophyObjectivesTitle": "فلسفتنا الاستثمارية",
+    "objective1": "الحفاظ على رأس المال عبر اختيار أصول عالية الجودة",
+    "objective2": "دخل ثابت من خلال إدارة تأجير استراتيجية",
+    "objective3": "تقدير طويل الأمد عبر خروج مدروس",
+    "managementTitle": "إدارة نشطة",
+    "managementStatement": "لا نساعدك فقط على الشراء — بل نساعدك على بناء محفظة تؤدي بشكل جيد على المدى البعيد.",
+    "managementHighlight": "مراقبة مستمرة للأداء وإعادة توازن استراتيجية",
+    "marketInsightsTitle": "رؤى السوق",
+    "card1Title": "محفظة الدخل",
+    "card1Category": "التركيز على العائد الإيجاري",
+    "card1Desc": "محسّنة لدخل شهري ثابت من عقارات جاهزة في مناطق عالية الطلب",
+    "card1Metrics": "عائد صافٍ 6-9%",
+    "card2Title": "محفظة النمو",
+    "card2Category": "تقدير رأس المال",
+    "card2Desc": "أصول على الخارطة في مناطق ناشئة لتحقيق مكاسب رأسمالية قوية عند التسليم",
+    "card2Metrics": "تقدير 15-25%",
+    "card3Title": "المحفظة المتوازنة",
+    "card3Category": "دخل + نمو",
+    "card3Desc": "مزيج من الأصول الجاهزة وعلى الخارطة لعوائد متنوعة ومخاطر مدارة",
+    "card3Metrics": "إجمالي عائد 8-12%",
+    "yearLabel": "السنة"
   }
 }

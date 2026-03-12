@@ -1,7 +1,7 @@
 // src/app/properties/page.jsx
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "@/styles/properties/properties.module.css";
 
@@ -20,12 +20,11 @@ const initialFilters = {
   minPrice: "", maxPrice: "", minSize: "", maxSize: "",
 };
 
-// ── Only 4 types allowed ──────────────────────────────────────
 const TYPE_TABS = [
-  { id: "all",              labelEn: "All",              labelAr: "الكل" },
-  { id: "off-plan",         labelEn: "Off-plan",         labelAr: "قيد الإنشاء" },
-  { id: "secondary",        labelEn: "Secondary",        labelAr: "ثانوي" },
-  { id: "sold-out",         labelEn: "Sold-out",         labelAr: "مباع" },
+  { id: "all",       labelEn: "All",        labelAr: "الكل" },
+  { id: "off-plan",  labelEn: "Off-plan",   labelAr: "قيد الإنشاء" },
+  { id: "secondary", labelEn: "Secondary",  labelAr: "ثانوي" },
+  { id: "sold-out",  labelEn: "Sold-out",   labelAr: "مباع" },
 ];
 
 function mulberry32(seed) {
@@ -37,6 +36,7 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
 function shuffleWithSeed(arr, seed) {
   const a = Array.isArray(arr) ? [...arr] : [];
   const rnd = mulberry32(seed || 1);
@@ -51,14 +51,15 @@ function filterByStatusTab(projects, activeTab) {
   if (activeTab === "all") return projects;
   return projects.filter((project) => {
     const status = (project?.status || project?.devStatus || "").toLowerCase();
-    if (activeTab === "off-plan")  return status.includes("off-plan") || status.includes("off plan") || status.includes("under construction") || status === "off-plan";
+    if (activeTab === "off-plan")  return status.includes("off-plan") || status.includes("off plan") || status.includes("under construction");
     if (activeTab === "secondary") return status.includes("secondary") || status.includes("resale");
     if (activeTab === "sold-out")  return status.includes("sold-out") || status.includes("sold out");
     return true;
   });
 }
 
-export default function PropertiesPage() {
+// ── Inner component that uses useSearchParams ─────────────────
+function PropertiesContent() {
   const { locale: ctxLocale, t } = useLanguage();
   const locale = ctxLocale || "en";
   const isRTL = locale === "ar";
@@ -86,17 +87,13 @@ export default function PropertiesPage() {
     filters.minPrice, filters.maxPrice, filters.minSize, filters.maxSize,
   ]);
 
-  // ── Exclude lands from properties page ──────────────────────
   const propertiesOnly = React.useMemo(
     () => (rawProjects || []).filter((p) => !p.isLand && p.category !== "lands"),
     [rawProjects]
   );
 
-  const allProjects = React.useMemo(
-    () => shuffleWithSeed(propertiesOnly, visitSeed),
-    [propertiesOnly, visitSeed]
-  );
-  const tabFiltered   = React.useMemo(() => filterByStatusTab(allProjects, activeTab), [allProjects, activeTab]);
+  const allProjects     = React.useMemo(() => shuffleWithSeed(propertiesOnly, visitSeed), [propertiesOnly, visitSeed]);
+  const tabFiltered     = React.useMemo(() => filterByStatusTab(allProjects, activeTab), [allProjects, activeTab]);
   const { filtered, hasActiveFilters } = React.useMemo(() => filterProjects(tabFiltered, filters), [tabFiltered, filters]);
 
   const visibleProjects = filtered.slice(0, visibleCount);
@@ -161,5 +158,17 @@ export default function PropertiesPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#888" }}>
+        Loading...
+      </div>
+    }>
+      <PropertiesContent />
+    </Suspense>
   );
 }

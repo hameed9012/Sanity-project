@@ -1,0 +1,105 @@
+/* ===========================
+   Related Projects Section
+   =========================== */
+
+.section {
+  background: #f8f8f6;
+  padding: 96px 0 80px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 60px);
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #c9a26a;
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+
+.heading {
+  font-size: clamp(32px, 3.5vw, 52px);
+  font-weight: 300;
+  color: #0d0d0d;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 16px;
+}
+
+.subheading {
+  font-size: 15px;
+  color: #666;
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── View All CTA ── */
+.viewAll {
+  display: flex;
+  justify-content: center;
+  margin-top: 56px;
+}
+
+.viewAllBtn {
+  display: inline-block;
+  border: 1px solid #111;
+  border-radius: 999px;
+  padding: 15px 52px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #111;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease,
+              box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.viewAllBtn:hover {
+  background: #111;
+  color: #fff;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.18);
+  transform: translateY(-2px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .section {
+    padding: 72px 0 64px;
+  }
+  .header {
+    margin-bottom: 40px;
+  }
+  .heading {
+    font-size: 32px;
+  }
+  .viewAll {
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 56px 0 48px;
+  }
+  .heading {
+    font-size: 28px;
+  }
+  .viewAllBtn {
+    padding: 14px 40px;
+  }
+}

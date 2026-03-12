@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import styles from "@/styles/properties/offplan.module.css";
 
 import ProjectCards from "@/components/projects/ProjectCards";
@@ -11,6 +12,11 @@ import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
 import { filterProjects } from "@/lib/projects/filterProjects";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
 
 const PAGE_SIZE = 9;
 
@@ -56,14 +62,23 @@ export default function OffplanPage() {
     filters.minPrice, filters.maxPrice,
   ]);
 
-  // ── Off-plan only, no lands ──────────────────────────────────
+  // Off-plan only
   const offplanProjects = React.useMemo(() => {
     return (rawProjects || []).filter((p) => {
       if (p.isLand || p.category === "lands") return false;
       const s = (p.status || p.devStatus || "").toLowerCase();
-      return s.includes("off-plan") || s.includes("off plan") || s.includes("under construction");
+      return s.includes("off-plan") || s.includes("off plan") || s.includes("offplan") || s.includes("under construction");
     });
   }, [rawProjects]);
+
+  // Collect unique hero images from offplan projects for the background slider
+  const heroImages = React.useMemo(() => {
+    const imgs = offplanProjects
+      .map((p) => p.heroImageUrl || p.image || p.heroImage)
+      .filter(Boolean)
+      .filter((src, i, arr) => arr.indexOf(src) === i);
+    return imgs.length > 0 ? imgs : null;
+  }, [offplanProjects]);
 
   const allProjects = React.useMemo(
     () => shuffleWithSeed(offplanProjects, visitSeed),
@@ -78,66 +93,131 @@ export default function OffplanPage() {
 
   return (
     <div className={styles.offplanPage} dir={isRTL ? "rtl" : "ltr"}>
-      {/* Page header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>
-          {isRTL ? "مشاريع قيد الإنشاء" : "Off-Plan Projects"}
-        </h1>
-        <p className={styles.pageSubtitle}>
-          {isRTL
-            ? "اكتشف أحدث مشاريع التطوير العقاري قبل اكتمالها"
-            : "Discover the latest developments before they're completed"}
-        </p>
+
+      {/* ── Cinematic animated hero background ───────────────── */}
+      <div className={styles.heroSection}>
+        {/* Swiper background — only when we have images */}
+        {heroImages && heroImages.length > 1 ? (
+          <Swiper
+            className={styles.heroSwiper}
+            modules={[Autoplay, EffectFade]}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            loop
+            speed={1400}
+            autoplay={{ delay: 2800, disableOnInteraction: false }}
+          >
+            {heroImages.map((src, idx) => (
+              <SwiperSlide key={`${src}-${idx}`} className={styles.heroSlide}>
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  priority={idx === 0}
+                  className={styles.heroBgImg}
+                  sizes="100vw"
+                  unoptimized
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : heroImages && heroImages.length === 1 ? (
+          <div className={styles.heroSlide}>
+            <Image
+              src={heroImages[0]}
+              alt=""
+              fill
+              priority
+              className={styles.heroBgImg}
+              sizes="100vw"
+              unoptimized
+            />
+          </div>
+        ) : (
+          <div className={styles.heroFallbackBg} />
+        )}
+
+        {/* Dark gradient overlay */}
+        <div className={styles.heroOverlay} />
+
+        {/* Text */}
+        <div className={styles.heroContent}>
+          <p className={styles.heroKicker}>
+            {isRTL ? "العقارات الفاخرة" : "Luxury Real Estate"}
+          </p>
+          <h1 className={styles.heroTitle}>
+            {isRTL ? "مشاريع قيد الإنشاء" : "Off-Plan Projects"}
+          </h1>
+          <p className={styles.heroSubtitle}>
+            {isRTL
+              ? "اكتشف أحدث مشاريع العقارات في دبي والإمارات"
+              : "Discover the latest off-plan real estate projects in Dubai & UAE"}
+          </p>
+          {!loading && (
+            <div className={styles.heroCount}>
+              <span className={styles.heroCountNum}>{offplanProjects.length}</span>
+              <span className={styles.heroCountLabel}>
+                {isRTL ? "مشروع متاح" : "Projects Available"}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Filters */}
-      <ProjectsFiltersBar
-        filters={filters}
-        setFilters={setFilters}
-        onOpenModal={() => setIsModalOpen(true)}
-        locale={locale}
-        t={t}
-      />
-
-      {isModalOpen && (
-        <ProjectsFiltersModal
+      {/* ── Content ──────────────────────────────────────────── */}
+      <div className={styles.contentArea}>
+        {/* Filters */}
+        <ProjectsFiltersBar
           filters={filters}
           setFilters={setFilters}
-          onClose={() => setIsModalOpen(false)}
+          onOpenModal={() => setIsModalOpen(true)}
           locale={locale}
           t={t}
         />
-      )}
 
-      {/* Results */}
-      {loading ? (
-        <div className={styles.loadingState}>
-          {isRTL ? "جاري التحميل..." : "Loading projects..."}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className={styles.emptyState}>
-          {isRTL ? "لا توجد مشاريع حالياً" : "No off-plan projects found"}
-        </div>
-      ) : (
-        <>
-          <div className={styles.resultsCount}>
-            {isRTL
-              ? `${filtered.length} مشروع`
-              : `${filtered.length} project${filtered.length !== 1 ? "s" : ""}`}
-          </div>
-          <ProjectCards projects={visibleProjects} locale={locale} t={t} />
-          {hasMore && (
-            <div className={styles.loadMoreWrap}>
-              <button
-                className={styles.loadMoreBtn}
-                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-              >
-                {isRTL ? "عرض المزيد" : "Load More"}
-              </button>
+        {isModalOpen && (
+          <ProjectsFiltersModal
+            filters={filters}
+            setFilters={setFilters}
+            onClose={() => setIsModalOpen(false)}
+            locale={locale}
+            t={t}
+          />
+        )}
+
+        {/* Results */}
+        {loading ? (
+          <div className={styles.loadingState}>
+            <div className={styles.loadingDots}>
+              <span /><span /><span />
             </div>
-          )}
-        </>
-      )}
+            <p>{isRTL ? "جاري التحميل..." : "Loading projects..."}</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>{isRTL ? "لا توجد مشاريع حالياً" : "No off-plan projects found"}</p>
+          </div>
+        ) : (
+          <>
+            <div className={styles.resultsCount}>
+              {isRTL
+                ? `${filtered.length} مشروع`
+                : `${filtered.length} project${filtered.length !== 1 ? "s" : ""}`}
+            </div>
+            <ProjectCards projects={visibleProjects} locale={locale} t={t} />
+            {hasMore && (
+              <div className={styles.loadMoreWrap}>
+                <button
+                  className={styles.loadMoreBtn}
+                  onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                >
+                  {isRTL ? "عرض المزيد" : "Load More"}
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

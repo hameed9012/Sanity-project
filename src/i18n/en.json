@@ -367,86 +367,9 @@
     }
   },
   "homeSlider": {
+    "subtitle": "Curated Luxury & Ultra-Luxury Properties in Dubai and the UAE",
     "mainTitle": "Curated Luxury & Ultra-Luxury Properties in Dubai and the UAE",
-    "discoverButton": "Discover",
-    "exploreButton": "Explore project",
-    "ariaLabels": {
-      "previousSlide": "Previous slide",
-      "nextSlide": "Next slide"
-    },
-    "seo": {
-      "ctaAriaTemplate": "Discover {title} by {developer} — luxury property in {location}",
-      "imageAltTemplate": "{title} by {developer} in {location} — luxury property Dubai / UAE"
-    },
-    "amenities": {
-      "infinityPool": "Infinity Pool",
-      "skyGardens": "Sky Gardens",
-      "burjKhalifaView": "Burj Khalifa View",
-      "marinaYacht": "Marina & Yacht Lifestyle",
-      "waterfrontLiving": "Waterfront Living",
-      "citySkylineView": "Skyline Views",
-      "luxuryInteriors": "Designer Interiors",
-      "premiumAmenities": "Five-Star Amenities",
-      "waterfrontPromenade": "Waterfront Promenade",
-      "skyDeck": "Private Sky Deck",
-      "waterfrontCommunity": "Waterfront Community",
-      "internationalSchools": "International Schools",
-      "greenSpaces": "Landscaped Green Spaces",
-      "privateBeach": "Private Beach Access",
-      "islandLiving": "Island Living",
-      "resortLifestyle": "Resort Lifestyle",
-      "forestCommunity": "Forest Community",
-      "cyclingTrack": "Cycling Track",
-      "familyParks": "Family Parks",
-      "waterfrontVillas": "Waterfront Villas",
-      "privateMarina": "Private Marina",
-      "retailBoulevard": "Retail Boulevard",
-      "diningDestination": "Dining Destination",
-      "signatureRetail": "Signature Retail",
-      "primeLocation": "Prime Location",
-      "architecturalLandmark": "Architectural Landmark",
-      "padelCourt": "Padel Court",
-      "yogaDeck": "Yoga Deck"
-    },
-    "projects": {
-      "skyparks": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
-      "aquaCrest": {
-        "category": "Luxury Apartments",
-        "location": "Dubai, UAE"
-      },
-      "central": {
-        "category": "Luxury Apartments",
-        "location": "Sheikh Zayed Road, Dubai"
-      },
-      "aquamont": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
-      "orbis": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
-      "verde": { "category": "Luxury Apartments", "location": "Dubai, UAE" },
-      "hartland": {
-        "category": "Signature Villas",
-        "location": "MBR City, Dubai"
-      },
-      "sobhaSiniyaIsland": {
-        "category": "Signature Villas",
-        "location": "Umm Al Quwain, UAE"
-      },
-      "massar": { "category": "Signature Villas", "location": "Sharjah, UAE" },
-      "damacIslands2": {
-        "category": "Signature Villas",
-        "location": "Dubai, UAE"
-      },
-      "rivieraRetails": {
-        "category": "Prime Commercial",
-        "location": "Dubai, UAE"
-      },
-      "lumenaAlta": {
-        "category": "Prime Commercial",
-        "location": "Dubai, UAE"
-      },
-      "seaHavenPenthouse": {
-        "category": "Sky Penthouses",
-        "location": "Dubai Harbour, Dubai"
-      }
-    }
+    "discoverButton": "Discover"
   },
   "artOfDetail": {
     "sloganPre": "Where",
@@ -498,67 +421,17 @@
     "brand": {
       "logoBar": "Mohamad Kodmane Real Estate Brokers",
       "corporateName": "MOHAMAD KODMANE",
-      "corporateTitle": "Real Estate Consultant & Investment Advisor",
+      "corporateTitle": "REAL ESTATE BROKER",
       "legal": {
         "tradeLicense": "TRADE LICENSE: 1192580",
         "advertisingPermit": "ADVERTISING PERMIT: 139532",
         "reraCertified": "RERA CERTIFIED"
       }
     },
-    "headers": {
-      "apartments": "APARTMENTS",
-      "villas": "VILLAS",
-      "penthouses": "PENTHOUSES",
-      "communities": "COMMUNITIES",
-      "mediaCenter": "INSIGHTS",
-      "aboutUs": "ABOUT",
-      "contact": "CONTACT"
-    },
-    "projects": {
-      "apartments": {
-        "sobhaSkyParks": "Sobha SkyParks",
-        "sobhaAquaCrest": "Sobha AquaCrest",
-        "sobhaCentral": "Sobha Central",
-        "sobhaAquamont": "Sobha Aquamont"
-      },
-      "villas": {
-        "sobhaHartlandVillas": "Sobha Hartland Villas",
-        "sobhaSiniyaIsland": "Sobha Al Sinniyyah Island",
-        "masaarByArada": "Masaar by Arada",
-        "damacIslands2": "Damac Islands 2"
-      },
-      "penthouses": {
-        "sobhaSeaHavenPenthouse": "Sobha SeaHaven"
-      }
-    },
-    "communities": {
-      "sobhaSkyParks": "Sobha SkyParks",
-      "sobhaCentral": "Sobha Central",
-      "sobhaHartland": "Sobha Hartland",
-      "alSinniyyahIsland": "Al Sinniyyah Island",
-      "masaarByArada": "Masaar by Arada",
-      "damacIslands2": "Damac Islands 2"
-    },
-    "mediaCenter": {
-      "mediaCenter": "Insights",
-      "blogs": "Articles",
-      "reports": "Reports"
-    },
-    "aboutUs": {
-      "aboutMohamadKodmane": "About Mohamad Kodmane",
-      "legacyExperience": "Legacy & Experience",
-      "thoughtfulAdvice": "Investment Advisory"
-    },
-    "contact": {
-      "contactUs": "Private Consultation",
-      "channelPartner": "Channel Partner",
-      "ourPresence": "Our Presence",
-      "faq": "FAQ"
-    },
     "address": {
       "title": "HEADQUARTERS",
-      "line1": "AZIZI RIVIERA 21",
-      "line2": "RETAIL 13, MEYDAN",
+      "line1": "22ND FLOOR, 22ND COURT TOWER",
+      "line2": "OFFICE B08, BUSINESS BAY",
       "line3": "DUBAI, UNITED ARAB EMIRATES",
       "poBox": "P.O. BOX 446097"
     },
@@ -567,6 +440,13 @@
       "directLabel": "DIRECT:",
       "officeLabel": "OFFICE:",
       "emailLabel": "EMAIL:"
+    },
+    "headers": {
+      "featuredProperties": "FEATURED PROPERTIES",
+      "aboutUs": "ABOUT",
+      "communities": "COMMUNITIES",
+      "contact": "CONTACT",
+      "mediaCenter": "MEDIA CENTER"
     },
     "meta": {
       "allRightsReserved": "All rights reserved."
@@ -612,7 +492,8 @@
         "label": "Targeted annual returns for structured strategies."
       }
     ],
-    "dividerAlt": "Decorative section divider"
+    "dividerAlt": "Decorative section divider",
+    "imageAlt": "Luxury property in Dubai"
   },
   "aboutBuildingExcellence": {
     "heading": "Real Estate Decisions Built for Wealth, Not Headlines",
@@ -664,7 +545,40 @@
         ]
       }
     ],
-    "footer": "With us, you gain a long-term investment partner who reads the market, protects your downside, and targets the <strong class=\"highlight\">highest possible outcome with controlled risk</strong>."
+    "footer": "With us, you gain a long-term investment partner who reads the market, protects your downside, and targets the <strong class=\"highlight\">highest possible outcome with controlled risk</strong>.",
+    "headerTitle": "Our Services",
+    "headerTagline": "End-to-end real estate advisory",
+    "servicesTitle": "How We Serve Investors",
+    "servicesSubtitle": "Comprehensive services from acquisition to exit",
+    "service1Title": "Off-Plan Advisory",
+    "service1Stage": "Pre-Purchase",
+    "service1Desc": "Strategic selection of off-plan projects with the strongest growth potential",
+    "service2Title": "Portfolio Building",
+    "service2Stage": "Strategy",
+    "service2Desc": "Designing a diversified property portfolio aligned with your investment goals",
+    "service3Title": "Rental Management",
+    "service3Stage": "Post-Purchase",
+    "service3Desc": "Full-service tenant management, pricing, and yield optimisation",
+    "service4Title": "Resale & Exit",
+    "service4Stage": "Exit Strategy",
+    "service4Desc": "Market-timed resale and exit planning to maximise your return",
+    "service5Title": "Furnishing & Staging",
+    "service5Stage": "Value Add",
+    "service5Desc": "Premium furnishing packages to maximise rental appeal and nightly rates",
+    "journeyTitle": "Your Investment Journey",
+    "journeySubtitle": "A structured process from discovery to delivery",
+    "journeyStep1Title": "Discovery Call",
+    "journeyStep1Desc": "Understand your goals, budget, and risk appetite",
+    "journeyStep2Title": "Market Analysis",
+    "journeyStep2Desc": "Research and shortlist the best opportunities for your profile",
+    "journeyStep3Title": "Acquisition",
+    "journeyStep3Desc": "Secure the right property at the right price with full legal support",
+    "promiseTitle": "Our Promise",
+    "promiseStatement": "We are your long-term real estate partner — not just a one-time transaction.",
+    "promiseHighlight": "Aligned incentives: we succeed only when your investment succeeds.",
+    "statsExperience": "18+ Years",
+    "statsManaged": "AED 650M+",
+    "statsSatisfaction": "98%"
   },
   "aboutServices": {
     "sectionTitle": "What We Deliver for Luxury Investors",
@@ -815,7 +729,8 @@
   "common": {
     "clear": "Clear",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "of": "of"
   },
   "developerHero": {
     "subtitle": "Developer Portfolio",
@@ -1256,7 +1171,6 @@
         "final": "Explore Binghatti developments selected for demand, visibility, and liquidity potential."
       }
     },
-
     "imtiaz": {
       "hero": {
         "title": "Imtiaz Developments",
@@ -1448,5 +1362,214 @@
       "coverAlt": "{developer} cover",
       "logoAlt": "{developer} logo"
     }
+  },
+  "relatedProjects": {
+    "eyebrow": "YOU MAY ALSO LIKE",
+    "heading": "Related Properties",
+    "subheading": "Handpicked properties that match your interests",
+    "viewAll": "View All Properties"
+  },
+  "video": {
+    "close": "Close",
+    "duration": "Duration",
+    "minutes": "min",
+    "playVideo": "Play Video",
+    "videoTitle": "Investment Strategy Video",
+    "views": "Views"
+  },
+  "capitalGrowth": {
+    "heroBadge": "CAPITAL GROWTH",
+    "heroTitle": "Where Your Capital Grows",
+    "heroSubtitle": "Strategic real estate investments in Dubai's most sought-after communities",
+    "galleryTitle": "Growth Metrics",
+    "gallerySubtitle": "Key performance indicators across our portfolio",
+    "metricLocationsValue": "20+",
+    "metricLocationsLabel": "Prime Locations",
+    "metricLocationsDesc": "Hand-selected addresses in Dubai's highest-demand districts",
+    "metricAmenitiesValue": "50+",
+    "metricAmenitiesLabel": "World-Class Amenities",
+    "metricAmenitiesDesc": "Premium amenities that command higher rental premiums",
+    "metricReturnsValue": "8%+",
+    "metricReturnsLabel": "Target Returns",
+    "metricReturnsDesc": "Consistent rental yields with long-term capital appreciation",
+    "metricCommunityValue": "15+",
+    "metricCommunityLabel": "Elite Communities",
+    "metricCommunityDesc": "Curated communities offering lifestyle and investment excellence",
+    "mixTitle": "Portfolio Mix",
+    "mixSubtitle": "Balanced exposure across property types",
+    "mixUnderConstructionLabel": "Under Construction",
+    "mixReadyLabel": "Ready",
+    "mixInsight": "Diversified portfolio reduces risk while maximising long-term returns",
+    "fundamentalsTitle": "Market Fundamentals",
+    "fundamentalsStat1Value": "400K+",
+    "fundamentalsStat1Label": "New Residents Annually",
+    "fundamentalsStat2Value": "$517B",
+    "fundamentalsStat2Label": "Real Estate Transactions 2024",
+    "fundamentalsStat3Value": "0%",
+    "fundamentalsStat3Label": "Capital Gains Tax",
+    "fundamentalsText": "Dubai's real estate market is underpinned by strong demand, population growth, and a tax-efficient environment.",
+    "fundamentalsSource": "Sources: DLD, Dubai Statistics Centre, UAE Central Bank",
+    "communitiesTitle": "Featured Communities",
+    "communitiesDesc": "Explore our curated selection of premium residential developments"
+  },
+  "whereToLivePage": {
+    "searchPlaceholder": "Search by area, location, ROI",
+    "showing": "Showing",
+    "areas": "areas",
+    "compareAreas": "Compare Areas",
+    "exitCompare": "Exit Compare",
+    "resetFilters": "Reset filters",
+    "loadMore": "LOAD MORE",
+    "endText": "You've reached the end.",
+    "noResults": "No areas match your search criteria.",
+    "pickOneMoreArea": "Pick 1 more area",
+    "remove": "Remove",
+    "selected": "Selected",
+    "select": "Select",
+    "selectToCompare": "Select to Compare",
+    "avgBuyLabel": "AVG. BUY",
+    "avgRentLabel": "AVG. RENT",
+    "roiLabel": "ROI",
+    "exploreArea": "Explore Area",
+    "compare": "Compare",
+    "selectedCta": "Compare Selected"
+  },
+  "Header": {
+    "title": "MOHAMAD KODMANE",
+    "companyName": "Mohamad Kodmane Real Estate",
+    "subtitle": "Luxury Real Estate Broker — Dubai, UAE",
+    "expertise": "Off-Plan · Luxury Villas · Investment Portfolios",
+    "introPrefix": "With",
+    "introSuffix": "years of experience in Dubai's luxury real estate market",
+    "portfolio": "View Portfolio"
+  },
+  "callback": {
+    "sectionTitleLine1": "Ready to",
+    "sectionTitleAccent": "Invest",
+    "sectionTitleLine2": "in Dubai?",
+    "subtitle": "Leave your details and we'll reach out within 24 hours.",
+    "nameLabel": "Full Name",
+    "phoneLabel": "Phone Number",
+    "interestLabel": "I am interested in",
+    "optionOffPlan": "Off-Plan Properties",
+    "optionReady": "Ready Properties",
+    "optionPortfolio": "Portfolio Management",
+    "optionConsultation": "Investment Consultation",
+    "submitIdle": "Request a Callback",
+    "submitSubmitting": "Sending...",
+    "successTitle": "Thank you!",
+    "successMessage": "We'll be in touch within 24 hours.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorNetwork": "Network error. Please check your connection.",
+    "bottomDecoration": "Private · Confidential · No Obligation"
+  },
+  "dubaiDemand": {
+    "badge": "MARKET DEMAND",
+    "title": "Dubai's Unstoppable Demand",
+    "description": "Three powerful demand drivers continue to fuel Dubai's real estate market growth",
+    "welcomesTitle": "Dubai Welcomes",
+    "visitorsTitle": "Global Visitors",
+    "visitorsDesc": "International tourists and business visitors annually",
+    "visitorsStat": "17M+ annually",
+    "investorsTitle": "Foreign Investors",
+    "investorsDesc": "High-net-worth individuals choosing Dubai as their investment base",
+    "investorsStat": "60% of buyers are international",
+    "corporationsTitle": "Global Corporations",
+    "corporationsDesc": "Multinational companies establishing regional headquarters in Dubai",
+    "corporationsStat": "50,000+ registered businesses",
+    "chartTitle": "Supply vs Demand",
+    "chartSubtitle": "Annual growth comparison",
+    "chartDemandLabel": "Demand",
+    "chartSupplyLabel": "Supply",
+    "chartDemandGrowth": "+18%",
+    "chartSupplyGrowth": "+8%",
+    "resultBadge": "RESULT",
+    "resultTitle": "Strong Market Fundamentals",
+    "resultHighlight": "Demand consistently outpaces supply",
+    "resultPriceGrowth": "Price Growth: +15–20% YoY in prime areas",
+    "resultRentalYield": "Rental Yields: 6–10% in high-demand districts",
+    "resultRoi": "Total ROI: 12–18% for well-located assets",
+    "resultConclusion": "Persistent demand excess creates the conditions for sustained capital appreciation."
+  },
+  "dubaiEconomy": {
+    "sectionTitle": "The Dubai Economic Advantage",
+    "descriptionMain": "Dubai's economy is one of the most diversified and resilient in the world",
+    "descriptionSub": "A business-friendly environment with world-class infrastructure",
+    "driversTitle": "Key Economic Drivers",
+    "sector1Name": "Tourism & Hospitality",
+    "sector1Desc": "Global destination with 17M+ annual visitors",
+    "sector2Name": "Trade & Logistics",
+    "sector2Desc": "Strategic hub between East and West",
+    "sector3Name": "Finance & Banking",
+    "sector3Desc": "DIFC — one of the world's top financial centres",
+    "sector4Name": "Technology & Innovation",
+    "sector4Desc": "Growing tech ecosystem and digital economy",
+    "impactTitle": "Real Estate Impact",
+    "economyBarLabel": "Economy Growth",
+    "realEstateBarLabel": "Real Estate Growth",
+    "featureStability": "Political & Economic Stability",
+    "featureSecurity": "World's Safest City",
+    "featureGlobalAppeal": "Global Lifestyle Appeal",
+    "resultTitle": "Economic Strength = Real Estate Value",
+    "resultHighlight": "A thriving economy creates sustained property demand",
+    "resultGdp": "GDP Growth: 4.4% in 2024",
+    "resultValues": "Property Values: +15% YoY in prime areas",
+    "resultYields": "Rental Yields: 6–10% net annually"
+  },
+  "offPlan": {
+    "sectionTitle": "Off-Plan Investment",
+    "sectionDescriptionMain": "Buy at today's price, benefit from tomorrow's value",
+    "sectionDescriptionSub": "Off-plan properties offer unmatched entry pricing and flexible payment plans",
+    "definitionTitle": "What is Off-Plan?",
+    "definitionShort": "Purchase a property before or during construction at a pre-launch price",
+    "definitionHighlight": "Pay in stages as the project is built — not all upfront",
+    "definitionNote": "RERA-regulated with strict escrow protection for buyers",
+    "statPriceAdvantageLabel": "Below Market at Launch",
+    "statRoiLabel": "Target Annual ROI",
+    "statTaxLabel": "Capital Gains Tax",
+    "benefitsTitle": "Why Buy Off-Plan?",
+    "benefit1Title": "Lower Entry Price",
+    "benefit1Desc": "Access units 15–30% below market value at launch",
+    "benefit2Title": "Flexible Payment Plans",
+    "benefit2Desc": "Spread payments across construction milestones — 10/90, 40/60, and more",
+    "benefit3Title": "Capital Growth",
+    "benefit3Desc": "Strong appreciation from launch to handover in high-demand locations",
+    "timelineTitle": "The Off-Plan Journey",
+    "timelineStep1Title": "Project Launch",
+    "timelineStep1Desc": "Developer releases units at pre-launch pricing",
+    "timelineStep2Title": "Reservation & SPA",
+    "timelineStep2Desc": "Secure your unit with a reservation deposit and sign the Sales Purchase Agreement",
+    "timelineStep3Title": "Construction Phase",
+    "timelineStep3Desc": "Pay in instalments tied to construction milestones",
+    "timelineStep4Title": "Handover & ROI",
+    "timelineStep4Desc": "Receive your keys and start generating rental income or resell at profit",
+    "strategyText": "Off-plan is most effective when the project is well-located, the developer has a proven track record, and the payment plan aligns with your cash flow."
+  },
+  "portfolio": {
+    "headerTitle": "Portfolio Management",
+    "headerTagline": "Build. Grow. Sustain.",
+    "growthTitle": "Your Real Estate Portfolio, Managed",
+    "growthSubtitle": "From acquisition to exit — a full-service investment partnership",
+    "philosophyObjectivesTitle": "Our Investment Philosophy",
+    "objective1": "Capital preservation through quality asset selection",
+    "objective2": "Consistent income via strategic rental management",
+    "objective3": "Long-term appreciation through market-timed exits",
+    "managementTitle": "Active Management",
+    "managementStatement": "We don't just help you buy — we help you build a portfolio that performs over time.",
+    "managementHighlight": "Ongoing performance monitoring and strategic rebalancing",
+    "marketInsightsTitle": "Market Insights",
+    "card1Title": "Income Portfolio",
+    "card1Category": "Rental Yield Focus",
+    "card1Desc": "Optimised for consistent monthly income from ready properties in high-demand areas",
+    "card1Metrics": "6–9% Net Yield",
+    "card2Title": "Growth Portfolio",
+    "card2Category": "Capital Appreciation",
+    "card2Desc": "Off-plan assets in emerging districts positioned for strong capital gains at handover",
+    "card2Metrics": "15–25% Appreciation",
+    "card3Title": "Balanced Portfolio",
+    "card3Category": "Income + Growth",
+    "card3Desc": "A blend of ready and off-plan assets for diversified returns and managed risk",
+    "card3Metrics": "8–12% Total Return",
+    "yearLabel": "Year"
   }
 }

@@ -1,193 +1,137 @@
-// =================================
-// CompareModal.jsx (FULL WORKING)
-// Sleek comparison + scroll hint
-// Removes: Projects + Post-handover (keeps only "From")
-// =================================
+// src/components/compare/CompareModal.jsx
+// Cinematic, fully responsive redesign
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import modal from "@/styles/compare/CompareModal.module.css";
-
 import { useCompare } from "./CompareProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { getWhereToLiveRegionLocalized } from "@/data/whereToLiveData/whereToLiveRegionDetails";
 
-/* -----------------------
-  Helpers (safe rendering)
------------------------- */
-function isPlainObject(v) {
-  return v && typeof v === "object" && !Array.isArray(v);
-}
-
-function safeText(v) {
+// ── Helpers ────────────────────────────────────────────────────
+function safe(v) {
   if (v == null) return "—";
   if (typeof v === "string" || typeof v === "number") return String(v);
-  if (isPlainObject(v)) {
-    if (typeof v.value === "string") return v.value;
-    if (typeof v.label === "string") return v.label;
-    if (typeof v.text === "string") return v.text;
-    return "—";
+  if (typeof v === "object") {
+    for (const k of ["value", "label", "text", "en"]) {
+      if (typeof v[k] === "string") return v[k];
+    }
   }
   return "—";
 }
+function safeNum(n) { const x = Number(n); return Number.isFinite(x) ? x : null; }
+function aed(n) { const x = safeNum(n); return x == null ? "—" : `AED ${x.toLocaleString("en-US")}`; }
+function pct(n) { const x = safeNum(n); return x == null ? "—" : `${x}%`; }
+function cap(s) { if (!s) return "—"; const t = String(s).trim(); return t.charAt(0).toUpperCase() + t.slice(1); }
 
-function safeNum(n) {
-  const x = Number(n);
-  return Number.isFinite(x) ? x : null;
-}
-
-function formatAED(n) {
-  const x = safeNum(n);
-  return x === null ? "—" : `AED ${x.toLocaleString("en-US")}`;
-}
-
-function formatPercent(n) {
-  const x = safeNum(n);
-  return x === null ? "—" : `${x}%`;
-}
-
-function capType(t) {
-  if (!t) return "—";
-  const s = String(t).trim();
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function moneyAED(n) {
-  const x = safeNum(n);
-  return x === null ? "—" : `AED ${x.toLocaleString("en-US")}`;
-}
-
-/* -----------------------
-  Projects stats (dynamic import)
-  We keep ONLY min starting price (From)
------------------------- */
 function pickProjectsArray(mod) {
   if (!mod) return [];
   if (Array.isArray(mod.default)) return mod.default;
-
   if (Array.isArray(mod.regionProjectsIndex)) return mod.regionProjectsIndex;
-  if (Array.isArray(mod.projectsIndex)) return mod.projectsIndex;
-  if (Array.isArray(mod.data)) return mod.data;
-
   const anyArr = Object.values(mod).find((v) => Array.isArray(v));
   return Array.isArray(anyArr) ? anyArr : [];
 }
 
-function computeProjectsStats(projectsIndex, slug) {
+function computeStats(projectsIndex, slug) {
   const items = (projectsIndex || []).filter((p) => p?.regionSlug === slug);
-
   const prices = items
     .map((p) => p?.startingPriceAED ?? p?.priceAED ?? null)
     .filter((v) => typeof v === "number" && !Number.isNaN(v));
-
-  const minPrice = prices.length ? Math.min(...prices) : null;
-
-  return {
-    minStartingPrice: minPrice,
-  };
+  return { count: items.length, minPrice: prices.length ? Math.min(...prices) : null };
 }
 
+// ── Component ─────────────────────────────────────────────────
 export default function CompareModal() {
   const compare = useCompare();
   const { locale } = useLanguage();
+  const isRTL = locale === "ar";
 
   const [projectsIndex, setProjectsIndex] = useState([]);
+  const [imgErrors, setImgErrors] = useState({});
 
   useEffect(() => {
     let mounted = true;
-
-    (async () => {
-      try {
-        const mod = await import("@/data/regionProjectsIndex");
-        const arr = pickProjectsArray(mod);
-        if (mounted) setProjectsIndex(arr);
-      } catch {
-        if (mounted) setProjectsIndex([]);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
+    import("@/data/regionProjectsIndex").then((mod) => {
+      if (mounted) setProjectsIndex(pickProjectsArray(mod));
+    }).catch(() => {});
+    return () => { mounted = false; };
   }, []);
 
-  // ✅ SAFE destructuring
   const [aSlug, bSlug] = compare?.selected || [];
+  const lang = locale || "en";
 
-  const a = useMemo(
-    () => (aSlug ? getWhereToLiveRegionLocalized(aSlug, locale || "en") : null),
-    [aSlug, locale]
-  );
+  const a = useMemo(() => aSlug ? getWhereToLiveRegionLocalized(aSlug, lang) : null, [aSlug, lang]);
+  const b = useMemo(() => bSlug ? getWhereToLiveRegionLocalized(bSlug, lang) : null, [bSlug, lang]);
+  const aStats = useMemo(() => aSlug ? computeStats(projectsIndex, aSlug) : null, [projectsIndex, aSlug]);
+  const bStats = useMemo(() => bSlug ? computeStats(projectsIndex, bSlug) : null, [projectsIndex, bSlug]);
 
-  const b = useMemo(
-    () => (bSlug ? getWhereToLiveRegionLocalized(bSlug, locale || "en") : null),
-    [bSlug, locale]
-  );
-
-  const aStats = useMemo(
-    () => (aSlug ? computeProjectsStats(projectsIndex, aSlug) : null),
-    [projectsIndex, aSlug]
-  );
-
-  const bStats = useMemo(
-    () => (bSlug ? computeProjectsStats(projectsIndex, bSlug) : null),
-    [projectsIndex, bSlug]
-  );
-
+  // Lock body scroll
   useEffect(() => {
     if (!compare?.isOpen) return;
-
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") compare.close();
-    };
-    document.addEventListener("keydown", onKeyDown);
-
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = prev;
-    };
+    const onKey = (e) => { if (e.key === "Escape") compare.close(); };
+    document.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; document.removeEventListener("keydown", onKey); };
   }, [compare?.isOpen, compare]);
 
   if (!compare?.isOpen) return null;
 
-  return (
-    <div className={modal.overlay} onClick={compare.close}>
-      <div className={modal.shell} onClick={(e) => e.stopPropagation()}>
-        <div className={modal.header}>
-          <div className={modal.headerLeft}>
-            <div className={modal.kicker}>Luxury Comparison</div>
-            <div className={modal.title}>Compare Areas</div>
-            <div className={modal.subTitle}>
-              {a?.name || aSlug} <span className={modal.vs}>VS</span>{" "}
-              {b?.name || bSlug}
-            </div>
-          </div>
+  const t = (en, ar) => (isRTL ? ar : en);
 
-          <div className={modal.headerActions}>
+  return (
+    <div className={modal.backdrop} onClick={compare.close} dir={isRTL ? "rtl" : "ltr"}>
+      <div className={modal.modal} onClick={(e) => e.stopPropagation()}>
+
+        {/* ── Header ── */}
+        <div className={modal.header}>
+          <div className={modal.headerMeta}>
+            <span className={modal.kicker}>{t("Area Comparison", "مقارنة المناطق")}</span>
+            <h2 className={modal.title}>
+              <span className={modal.titleA}>{a?.name || aSlug || "—"}</span>
+              <span className={modal.titleVs}>{t("vs", "مقابل")}</span>
+              <span className={modal.titleB}>{b?.name || bSlug || "—"}</span>
+            </h2>
+          </div>
+          <div className={modal.headerBtns}>
             <button className={modal.clearBtn} onClick={compare.clear}>
-              Clear
+              {t("Clear", "مسح")}
             </button>
-            <button className={modal.closeBtn} onClick={compare.close}>
-              Close
+            <button className={modal.closeBtn} onClick={compare.close} aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
             </button>
           </div>
         </div>
 
+        {/* ── Body ── */}
         {!a || !b ? (
           <div className={modal.empty}>
-            Pick <b>two areas</b> then hit Compare.
+            <div className={modal.emptyIcon}>⚖️</div>
+            <p>{t("Select two areas to compare", "اختر منطقتين للمقارنة")}</p>
           </div>
         ) : (
-          <div className={modal.grid}>
-            {/* ✅ Scroll indicator pill (CSS class exists in the new stylesheet) */}
-            <div className={modal.gridHint}>Scroll to compare</div>
-
-            <AreaPanel area={a} stats={aStats} />
-            <div className={modal.divider} />
-            <AreaPanel area={b} stats={bStats} />
+          <div className={modal.body}>
+            {/* Two panels side by side (stack on mobile) */}
+            <div className={modal.panels}>
+              <Panel
+                area={a} stats={aStats} slug={aSlug}
+                t={t} isRTL={isRTL}
+                imgErrors={imgErrors} setImgErrors={setImgErrors}
+                accent="a"
+              />
+              <div className={modal.panelDivider}>
+                <span className={modal.vsChip}>{t("VS", "مقابل")}</span>
+              </div>
+              <Panel
+                area={b} stats={bStats} slug={bSlug}
+                t={t} isRTL={isRTL}
+                imgErrors={imgErrors} setImgErrors={setImgErrors}
+                accent="b"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -195,113 +139,106 @@ export default function CompareModal() {
   );
 }
 
-function AreaPanel({ area, stats }) {
+// ── Single area panel ─────────────────────────────────────────
+function Panel({ area, stats, slug, t, isRTL, imgErrors, setImgErrors, accent }) {
   const summary = area?.summary || {};
-  const market = area?.market || {};
+  const market  = area?.market  || {};
+  const rental  = Array.isArray(market.rentalTrends) ? market.rentalTrends : [];
+  const sales   = Array.isArray(market.salesTrends)  ? market.salesTrends  : [];
+  const roiRows = Array.isArray(market.roiByType)     ? market.roiByType    : [];
 
-  const rental = Array.isArray(market.rentalTrends) ? market.rentalTrends : [];
-  const sales = Array.isArray(market.salesTrends) ? market.salesTrends : [];
-  const roiTypes = Array.isArray(market.roiByType) ? market.roiByType : [];
+  const imgSrc = area?.heroImage || null;
+  const imgOk  = imgSrc && !imgErrors[slug];
 
   return (
-    <div className={modal.panel}>
-      <div className={modal.hero}>
-        {area?.heroImage ? (
+    <div className={`${modal.panel} ${modal[`panel_${accent}`]}`}>
+      {/* Hero image */}
+      <div className={modal.panelHero}>
+        {imgOk ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            className={modal.heroImg}
-            src={area.heroImage}
-            alt={safeText(area?.name)}
+            src={imgSrc}
+            alt={safe(area?.name)}
+            className={modal.panelHeroImg}
+            onError={() => setImgErrors((p) => ({ ...p, [slug]: true }))}
           />
         ) : (
-          <div className={modal.heroFallback} />
+          <div className={modal.panelHeroFallback} />
         )}
-
-        <div className={modal.heroShade} />
-
-        <div className={modal.heroContent}>
-          <div className={modal.areaName}>{safeText(area?.name)}</div>
-          {area?.location ? (
-            <div className={modal.areaLocation}>{safeText(area.location)}</div>
-          ) : null}
+        <div className={modal.panelHeroShade} />
+        <div className={modal.panelHeroText}>
+          <div className={modal.panelName}>{safe(area?.name)}</div>
+          {area?.summary?.location && (
+            <div className={modal.panelLocation}>{safe(area.summary.location)}</div>
+          )}
         </div>
       </div>
 
-      <div className={modal.body}>
-        <div className={modal.block}>
-          <div className={modal.blockTitle}>Key Metrics</div>
-          <PillRow label="Avg Buy" value={safeText(summary?.avgBuy)} />
-          <PillRow label="Avg Rent" value={safeText(summary?.avgRent)} />
-          <PillRow label="ROI" value={safeText(summary?.roi)} />
-        </div>
+      {/* Stats */}
+      <div className={modal.panelBody}>
 
-        {/* ✅ Development (ONLY "From") */}
-        <div className={modal.block}>
-          <div className={modal.blockTitle}>Development</div>
-          <PillRow
-            label="From"
-            value={stats ? moneyAED(stats.minStartingPrice) : "—"}
-          />
-        </div>
+        {/* Key metrics */}
+        <Section title={t("Key Metrics", "المقاييس الرئيسية")}>
+          <Row label={t("Avg Buy", "متوسط الشراء")} value={safe(summary.avgBuy)} highlight />
+          <Row label={t("Avg Rent", "متوسط الإيجار")} value={safe(summary.avgRent)} />
+          <Row label={t("ROI", "العائد")} value={safe(summary.roi)} gold />
+        </Section>
 
-        <div className={modal.block}>
-          <div className={modal.blockTitle}>Market Mood</div>
+        {/* Projects */}
+        {stats && (
+          <Section title={t("Projects", "المشاريع")}>
+            <Row label={t("Count", "العدد")} value={stats.count > 0 ? String(stats.count) : "—"} />
+            <Row label={t("From", "ابتداءً من")} value={aed(stats.minPrice)} />
+          </Section>
+        )}
 
-          <div className={modal.group}>
-            <div className={modal.groupTitle}>Rental Trend</div>
-            {rental.length ? (
-              rental.map((x, i) => (
-                <PillRow
-                  key={`rent-${i}`}
-                  label={capType(x?.type)}
-                  value={formatAED(x?.averageRentAED)}
-                />
-              ))
-            ) : (
-              <PillRow label="—" value="—" />
-            )}
-          </div>
+        {/* Rental trends */}
+        {rental.length > 0 && (
+          <Section title={t("Rental Trends", "اتجاهات الإيجار")}>
+            {rental.map((x, i) => (
+              <Row key={i} label={cap(x?.type)} value={aed(x?.averageRentAED)} />
+            ))}
+          </Section>
+        )}
 
-          <div className={modal.group}>
-            <div className={modal.groupTitle}>Sales Trend</div>
-            {sales.length ? (
-              sales.map((x, i) => (
-                <PillRow
-                  key={`sale-${i}`}
-                  label={capType(x?.type)}
-                  value={formatAED(x?.averagePriceAED)}
-                />
-              ))
-            ) : (
-              <PillRow label="—" value="—" />
-            )}
-          </div>
+        {/* Sales trends */}
+        {sales.length > 0 && (
+          <Section title={t("Sales Trends", "اتجاهات المبيعات")}>
+            {sales.map((x, i) => (
+              <Row key={i} label={cap(x?.type)} value={aed(x?.averagePriceAED)} />
+            ))}
+          </Section>
+        )}
 
-          <div className={modal.group}>
-            <div className={modal.groupTitle}>ROI by Type</div>
-            {roiTypes.length ? (
-              roiTypes.map((x, i) => (
-                <PillRow
-                  key={`roi-${i}`}
-                  label={capType(x?.type)}
-                  value={formatPercent(x?.roiPercent)}
-                />
-              ))
-            ) : (
-              <PillRow label="—" value="—" />
-            )}
-          </div>
-        </div>
+        {/* ROI by type */}
+        {roiRows.length > 0 && (
+          <Section title={t("ROI by Type", "العائد حسب النوع")}>
+            {roiRows.map((x, i) => (
+              <Row key={i} label={cap(x?.type)} value={pct(x?.roiPercent)} gold />
+            ))}
+          </Section>
+        )}
       </div>
     </div>
   );
 }
 
-function PillRow({ label, value }) {
+function Section({ title, children }) {
   return (
-    <div className={modal.pillRow}>
-      <div className={modal.pillLabel}>{label}</div>
-      <div className={modal.pillValue}>{value}</div>
+    <div className={modal.section}>
+      <div className={modal.sectionTitle}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function Row({ label, value, highlight, gold }) {
+  return (
+    <div className={modal.row}>
+      <span className={modal.rowLabel}>{label}</span>
+      <span className={`${modal.rowValue} ${highlight ? modal.rowHighlight : ""} ${gold ? modal.rowGold : ""}`}>
+        {value}
+      </span>
     </div>
   );
 }

@@ -5,15 +5,6 @@ import styles from "@/styles/projects/MapDirections.module.css";
 import { getLocalizedText } from "@/lib/text-utils";
 import { useLanguage } from "@/components/LanguageProvider";
 
-/**
- * ✅ SAME behavior as your current version
- * ✅ Popup still auto-opens (marker.togglePopup)
- * ✅ Map still flyTo / fitBounds
- * ✅ ONLY:
- *   1) Remove Tabs UI
- *   2) Prevent page auto-scroll (focus) to map section
- */
-
 function toNumber(v) {
   const n = typeof v === "string" ? Number(v.trim()) : Number(v);
   return Number.isFinite(n) ? n : null;
@@ -23,34 +14,55 @@ function isValidLatLng(lat, lng) {
   return (
     typeof lat === "number" &&
     typeof lng === "number" &&
-    lat >= -90 &&
-    lat <= 90 &&
-    lng >= -180 &&
-    lng <= 180
+    lat >= -90 && lat <= 90 &&
+    lng >= -180 && lng <= 180
   );
 }
 
-function buildInlineMarkerEl({ isProject }) {
-  const el = document.createElement("div");
-  el.setAttribute("role", "button");
+// ─── Dark gold pin element ────────────────────────────────────
+function buildInlineMarkerEl({ isProject, label }) {
+  const wrap = document.createElement("div");
+  wrap.setAttribute("tabindex", "-1");
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.alignItems = "center";
+  wrap.style.gap = "6px";
+  wrap.style.cursor = "pointer";
 
-  // ✅ IMPORTANT: stop focus => stop page scrolling to map
-  // still clickable with mouse/touch
-  el.setAttribute("tabindex", "-1");
+  // Pin dot
+  const dot = document.createElement("div");
+  const size = isProject ? 22 : 16;
+  dot.style.width = `${size}px`;
+  dot.style.height = `${size}px`;
+  dot.style.borderRadius = "999px";
+  dot.style.background = isProject
+    ? "linear-gradient(135deg, #c9a26a 0%, #a27b43 100%)"
+    : "#c9a26a";
+  dot.style.border = `${isProject ? 3 : 2}px solid #f5e3b8`;
+  dot.style.boxShadow = isProject
+    ? "0 0 0 8px rgba(201,162,106,0.25), 0 4px 16px rgba(0,0,0,0.5)"
+    : "0 0 0 5px rgba(201,162,106,0.18), 0 2px 8px rgba(0,0,0,0.4)";
+  wrap.appendChild(dot);
 
-  const size = isProject ? 22 : 18;
+  // Label chip — only for the main project pin
+  if (isProject && label) {
+    const chip = document.createElement("div");
+    chip.textContent = label;
+    chip.style.background = "rgba(10,10,10,0.88)";
+    chip.style.color = "#c9a26a";
+    chip.style.border = "1px solid rgba(201,162,106,0.4)";
+    chip.style.padding = "4px 10px";
+    chip.style.borderRadius = "999px";
+    chip.style.fontSize = "11px";
+    chip.style.fontWeight = "600";
+    chip.style.letterSpacing = "0.08em";
+    chip.style.whiteSpace = "nowrap";
+    chip.style.backdropFilter = "blur(6px)";
+    chip.style.boxShadow = "0 4px 14px rgba(0,0,0,0.55)";
+    wrap.appendChild(chip);
+  }
 
-  el.style.width = `${size}px`;
-  el.style.height = `${size}px`;
-  el.style.borderRadius = "999px";
-  el.style.background = "#b89444";
-  el.style.border = "3px solid #f5e3b8";
-  el.style.boxShadow = isProject
-    ? "0 0 0 8px rgba(184, 148, 68, 0.28)"
-    : "0 0 0 6px rgba(184, 148, 68, 0.22)";
-  el.style.cursor = "pointer";
-
-  return el;
+  return wrap;
 }
 
 function buildInlinePopupEl({ title, desc, dirLabel, directionsUrl }) {
@@ -58,20 +70,24 @@ function buildInlinePopupEl({ title, desc, dirLabel, directionsUrl }) {
   wrap.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Arial";
   wrap.style.fontSize = "12px";
   wrap.style.lineHeight = "1.5";
-  wrap.style.color = "#111";
+  wrap.style.color = "#eee";
   wrap.style.maxWidth = "240px";
+  wrap.style.background = "#111";
+  wrap.style.borderRadius = "8px";
+  wrap.style.padding = "12px 14px";
 
   const h = document.createElement("div");
   h.textContent = title || "";
-  h.style.fontWeight = "600";
+  h.style.fontWeight = "700";
   h.style.marginBottom = "4px";
-
+  h.style.color = "#c9a26a";
+  h.style.fontSize = "13px";
   wrap.appendChild(h);
 
   if (desc) {
     const p = document.createElement("div");
     p.textContent = desc;
-    p.style.color = "#555";
+    p.style.color = "#aaa";
     wrap.appendChild(p);
   }
 
@@ -86,7 +102,7 @@ function buildInlinePopupEl({ title, desc, dirLabel, directionsUrl }) {
     a.style.fontSize = "11px";
     a.style.letterSpacing = "0.14em";
     a.style.textTransform = "uppercase";
-    a.style.color = "#b89444";
+    a.style.color = "#c9a26a";
     a.style.textDecoration = "none";
     a.onmouseenter = () => (a.style.textDecoration = "underline");
     a.onmouseleave = () => (a.style.textDecoration = "none");
@@ -107,19 +123,17 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
   const markersRef = useRef([]);
 
   const [mapbox, setMapbox] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [tokenError, setTokenError] = useState(false);
   const [coordError, setCoordError] = useState("");
 
-  // ✅ Normalize to a single structure (unchanged)
   const normalized = useMemo(() => {
     if (data && data.center && data.categories && data.points) return data;
 
     const lat = toNumber(data?.lat);
     const lng = toNumber(data?.lng);
 
-    if (lat === null || lng === null || !isValidLatLng(lat, lng)) {
-      return null;
-    }
+    if (lat === null || lng === null || !isValidLatLng(lat, lng)) return null;
 
     const title =
       typeof data?.title === "string"
@@ -146,9 +160,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       title,
       center: { lat, lng },
       zoom,
-      categories: [
-        { id: "all", label: { en: "All Nearby", ar: "كل الأماكن" } },
-      ],
+      categories: [{ id: "all", label: { en: "All Nearby", ar: "كل الأماكن" } }],
       points: [
         {
           id: "project",
@@ -163,7 +175,6 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
     };
   }, [data, projectData]);
 
-  // ✅ Keep same default category behavior (but we won't render tabs)
   const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
@@ -172,37 +183,27 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
     }
   }, [normalized?.categories]);
 
-  // ✅ Load mapbox on client (unchanged)
+  // Load mapbox
   useEffect(() => {
     let cancelled = false;
-
     (async () => {
       try {
         const mod = await import("mapbox-gl");
         if (cancelled) return;
-
         const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
-        if (!token) {
-          setTokenError(true);
-          return;
-        }
-
+        if (!token) { setTokenError(true); return; }
         mod.default.accessToken = token;
         setMapbox(mod.default);
       } catch {
         setTokenError(true);
       }
     })();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  // ✅ Init map once (unchanged)
+  // Init map — DARK style
   useEffect(() => {
-    if (!mapbox) return;
-    if (!mapContainerRef.current) return;
+    if (!mapbox || !mapContainerRef.current) return;
 
     if (!normalized?.center) {
       setCoordError(
@@ -219,26 +220,24 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
 
     const map = new mapbox.Map({
       container: mapContainerRef.current,
-      style: normalized.mapStyle || "mapbox://styles/mapbox/light-v11",
+      // ✅ Dark map style
+      style: "mapbox://styles/mapbox/dark-v11",
       center,
       zoom: normalized.zoom || 13,
     });
 
     map.addControl(new mapbox.NavigationControl(), "top-right");
+    map.once("load", () => setMapLoaded(true));
     mapRef.current = map;
 
     return () => {
-      try {
-        mapRef.current?.remove();
-      } finally {
-        mapRef.current = null;
-      }
+      try { mapRef.current?.remove(); } finally { mapRef.current = null; }
     };
   }, [mapbox, normalized, activeIsRTL]);
 
-  // ✅ Markers update (ONLY change: popup focusAfterOpen false)
+  // Markers update — only fires after map style has fully loaded
   useEffect(() => {
-    if (!mapRef.current || !mapbox || !normalized) return;
+    if (!mapRef.current || !mapbox || !normalized || !mapLoaded) return;
 
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
@@ -262,12 +261,11 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       if (lat === null || lng === null || !isValidLatLng(lat, lng)) return;
 
       const isProject = pt.id === "project";
-      const el = buildInlineMarkerEl({ isProject });
-
       const name = getLocalizedText(pt.name, activeLocale) || "";
-      const desc = pt.description
-        ? getLocalizedText(pt.description, activeLocale)
-        : "";
+      const desc = pt.description ? getLocalizedText(pt.description, activeLocale) : "";
+
+      // ✅ Pass project name to the pin label (only for main project pin)
+      const el = buildInlineMarkerEl({ isProject, label: isProject ? name : null });
 
       const dirLabel = activeIsRTL ? "الاتجاهات" : "Directions";
       const popupNode = buildInlinePopupEl({
@@ -277,13 +275,13 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
         directionsUrl: pt.directionsUrl,
       });
 
-      // ✅ IMPORTANT: prevent focus => prevent page scroll
       const popup = new mapbox.Popup({
-        offset: 16,
+        offset: 28,
         focusAfterOpen: false,
+        className: "dark-popup",
       }).setDOMContent(popupNode);
 
-      const marker = new mapbox.Marker(el)
+      const marker = new mapbox.Marker({ element: el })
         .setLngLat([lng, lat])
         .setPopup(popup)
         .addTo(mapRef.current);
@@ -291,7 +289,6 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       markersRef.current.push(marker);
       bounds.extend([lng, lat]);
 
-      // ✅ keep your auto-open behavior EXACTLY
       if (isProject) marker.togglePopup();
     });
 
@@ -300,11 +297,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       const lat = toNumber(only.lat);
       const lng = toNumber(only.lng);
       if (lat !== null && lng !== null) {
-        mapRef.current.flyTo({
-          center: [lng, lat],
-          zoom: normalized.zoom || 13,
-          essential: true,
-        });
+        mapRef.current.flyTo({ center: [lng, lat], zoom: normalized.zoom || 13, essential: true });
       }
       return;
     }
@@ -315,13 +308,11 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
         duration: 700,
       });
     }
-  }, [activeCategory, normalized, activeLocale, activeIsRTL, mapbox]);
+  }, [activeCategory, normalized, activeLocale, activeIsRTL, mapbox, mapLoaded]);
 
   const title = normalized?.title
     ? getLocalizedText(normalized.title, activeLocale)
-    : activeIsRTL
-    ? "موقع المشروع"
-    : "Project Location";
+    : activeIsRTL ? "موقع المشروع" : "Project Location";
 
   return (
     <section className={styles.mapSection} dir={activeIsRTL ? "rtl" : "ltr"}>
@@ -338,7 +329,6 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
 
         {coordError && <div className={styles.warning}>{coordError}</div>}
 
-        {/* ✅ Tabs REMOVED — nothing else changed */}
         <div className={styles.mapWrapper}>
           <div ref={mapContainerRef} className={styles.mapInner} />
         </div>
