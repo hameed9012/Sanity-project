@@ -10,11 +10,18 @@ export async function GET() {
         "slug": slug.current,
         description,
         descriptionAr,
-        mainImage,
+        "mainImage": coalesce(mainImageCdn.url, mainImage),
         category,
         publishedAt,
         readTime,
         featured,
+        sections,
+        body,
+        bodyAr,
+        hero{
+          ...,
+          "image": coalesce(imageCdn.url, image)
+        },
         seoTitle,
         seoDescription,
       }

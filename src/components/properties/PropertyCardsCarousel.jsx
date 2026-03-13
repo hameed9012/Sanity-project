@@ -16,7 +16,7 @@ const safeArr = (v) => (Array.isArray(v) ? v.filter(Boolean) : []);
 
 function fmtPriceShort(priceAED, isAr) {
   const fallback = isAr ? "السعر عند الطلب" : "Price on request";
-  const n = Number(priceAED);
+  const n = Number(String(priceAED ?? "").replace(/[^\d.]/g, ""));
   if (!Number.isFinite(n) || n <= 0) return fallback;
 
   try {
@@ -268,7 +268,7 @@ export default function PropertyCardsCarousel({ projects = [] }) {
                   {isAr ? "يبدأ من" : "RANGING FROM"}
                 </div>
                 <div className={styles.rangeValue}>
-                  {isAr ? "درهم" : "AED"} {fmtPriceShort(startingPrice, isAr)}*
+                  {fmtPriceShort(startingPrice, isAr)}
                 </div>
 
                 <div className={styles.toRow}>

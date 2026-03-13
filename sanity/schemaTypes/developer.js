@@ -25,6 +25,16 @@ export default defineType({
       type: 'url',
     }),
     defineField({
+      name: 'logoCdn',
+      title: 'Logo (BunnyCDN)',
+      type: 'cdnImage',
+    }),
+    defineField({
+      name: 'heroImageCdn',
+      title: 'Hero Image (BunnyCDN)',
+      type: 'cdnImage',
+    }),
+    defineField({
       name: 'about',
       title: 'About Paragraphs (English)',
       type: 'array',

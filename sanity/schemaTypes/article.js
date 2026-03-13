@@ -22,7 +22,13 @@ export default defineType({
     }),
     defineField({ name: 'description',   title: 'Short Description (EN)', type: 'text', rows: 3 }),
     defineField({ name: 'descriptionAr', title: 'Short Description (AR)', type: 'text', rows: 3 }),
-    defineField({ name: 'mainImage',     title: 'Cover Image URL (Bunny CDN or /public)', type: 'string' }),
+    defineField({ name: 'mainImage',     title: 'Cover Image URL (legacy)', type: 'string' }),
+    defineField({
+      name: 'mainImageCdn',
+      title: 'Cover Image (Bunny CDN)',
+      type: 'cdnImage',
+      description: 'Preferred BunnyCDN image field with preview',
+    }),
     defineField({
       name: 'category',
       title: 'Category',
@@ -48,7 +54,13 @@ export default defineType({
         defineField({ name: 'titleAr',  title: 'Hero Title (AR)',    type: 'string' }),
         defineField({ name: 'subtitle', title: 'Hero Subtitle (EN)', type: 'text', rows: 2 }),
         defineField({ name: 'subtitleAr',title:'Hero Subtitle (AR)', type: 'text', rows: 2 }),
-        defineField({ name: 'image',    title: 'Hero Image URL',     type: 'string' }),
+        defineField({ name: 'image',    title: 'Hero Image URL (legacy)',     type: 'string' }),
+        defineField({
+          name: 'imageCdn',
+          title: 'Hero Image (Bunny CDN)',
+          type: 'cdnImage',
+          description: 'Preferred BunnyCDN image field with preview',
+        }),
         defineField({
           name: 'stats',
           title: 'Hero Stats',

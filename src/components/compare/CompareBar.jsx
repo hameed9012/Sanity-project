@@ -5,7 +5,6 @@
 
 // import { useCompare } from "./CompareProvider";
 // import { useLanguage } from "@/components/LanguageProvider";
-// import { getWhereToLiveRegionLocalized } from "@/data/whereToLiveData/whereToLiveRegionDetails";
 
 // export default function CompareBar() {
 //   const compare = useCompare();

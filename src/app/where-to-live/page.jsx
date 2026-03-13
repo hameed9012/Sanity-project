@@ -12,8 +12,21 @@ import { useLanguage } from "@/components/LanguageProvider";
 
 const PAGE_SIZE = 9;
 const initialFilters = { search: "", avgBuy: "", avgRent: "", roi: "" };
+const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
 
 function buildAreaHref(slug) { return `/where-to-live/${slug}`; }
+function normalizeSearchText(value) {
+  return String(value || "")
+    .replace(ARABIC_DIACRITICS, "")
+    .replace(/أ|إ|آ/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى|ئ/g, "ي")
+    .replace(/ؤ/g, "و")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
 
 function sanityAreaToCard(doc, locale) {
   return {
@@ -207,8 +220,13 @@ function ChipInline({ label, img, onRemove, removeLabel }) {
 function filterWhereToLive(areas, filters) {
   let filtered = areas;
   if (filters.search) {
-    const term = filters.search.toLowerCase();
-    filtered = filtered.filter(a => (a.name?.toLowerCase() || "").includes(term) || (a.location?.toLowerCase() || "").includes(term));
+    const term = normalizeSearchText(filters.search);
+    filtered = filtered.filter((area) => {
+      const haystack = normalizeSearchText(
+        [area.name, area.location, area.description].filter(Boolean).join(" ")
+      );
+      return haystack.includes(term);
+    });
   }
   // Add other filter logic as needed
   const hasActiveFilters = filters.search || filters.avgBuy || filters.avgRent || filters.roi;

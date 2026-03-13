@@ -11,6 +11,7 @@ const SITE_SETTINGS_QUERY = `
     heroSlides[]{
       title, titleAr, subtitle, subtitleAr,
       backgroundUrl, 
+      cdnImage,
       image{
         asset->
       },
@@ -23,6 +24,7 @@ const SITE_SETTINGS_QUERY = `
       sloganMain, sloganMainAr,
       companyLine, companyLineAr,
       description, descriptionAr,
+      ownerImageCdn,
       ownerImage{
         asset->
       },
@@ -34,6 +36,7 @@ const SITE_SETTINGS_QUERY = `
         "_key": _key,
         title, titleAr,
         intro, introAr,
+        imageCdn,
         image{
           asset->
         },
@@ -49,6 +52,7 @@ const SITE_SETTINGS_QUERY = `
       badge, badgeAr,
       title, titleAr,
       subtitle, subtitleAr,
+      heroImageCdn,
       heroImage{
         asset->
       },
@@ -65,6 +69,7 @@ const HERO_SECTION_QUERY = `
     slides[]{
       titleEn,
       titleAr,
+      cdnImage,
       image{
         asset->
       },
@@ -104,7 +109,11 @@ export async function GET() {
       if (data.heroSlides) {
         data.heroSlides = data.heroSlides.map(slide => ({
           ...slide,
-          imageUrl: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : slide.backgroundUrl || null
+          imageUrl:
+            slide?.cdnImage?.url ||
+            (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null) ||
+            slide.backgroundUrl ||
+            null
         }));
       }
 
@@ -117,8 +126,9 @@ export async function GET() {
           subtitle: "",
           subtitleAr: "",
           backgroundUrl: null,
+          cdnImage: slide.cdnImage || null,
           image: slide.image || null,
-          imageUrl: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null,
+          imageUrl: slide?.cdnImage?.url || (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null),
           propertySlug: "",
           ctaLabel: "",
           ctaLabelAr: "",
@@ -128,19 +138,19 @@ export async function GET() {
       }
       
       // Transform art of detail owner image
-      if (data.artOfDetail?.ownerImage) {
-        data.artOfDetail.ownerImageUrl = urlFor(data.artOfDetail.ownerImage).width(800).height(1000).url();
+      if (data.artOfDetail?.ownerImageCdn?.url || data.artOfDetail?.ownerImage) {
+        data.artOfDetail.ownerImageUrl = data.artOfDetail?.ownerImageCdn?.url || urlFor(data.artOfDetail.ownerImage).width(800).height(1000).url();
       }
 
-      if (data.about?.heroImage) {
-        data.about.heroImageUrl = urlFor(data.about.heroImage).width(1600).height(1200).url();
+      if (data.about?.heroImageCdn?.url || data.about?.heroImage) {
+        data.about.heroImageUrl = data.about?.heroImageCdn?.url || urlFor(data.about.heroImage).width(1600).height(1200).url();
       }
       
       // Transform pillars images
       if (data.pillars?.items) {
         data.pillars.items = data.pillars.items.map(item => ({
           ...item,
-          imageUrl: item.image ? urlFor(item.image).width(600).height(800).url() : null
+          imageUrl: item?.imageCdn?.url || (item.image ? urlFor(item.image).width(600).height(800).url() : null)
         }));
       }
     }

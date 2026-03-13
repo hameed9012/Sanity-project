@@ -1,7 +1,4 @@
 import { notFound, redirect } from "next/navigation";
-import ArticleTemplate from "@/components/articles/ArticleTemplate";
-import articlesData from "@/data/articles/articles-data";
-import ArticleViewClient from "@/components/ArticleViewClient";
 import { getArticleBySlug, getAllArticles } from "@/lib/sanityQueries";
 import SanityArticleTemplate from "@/components/articles/SanityArticleTemplate";
 
@@ -9,30 +6,6 @@ import SanityArticleTemplate from "@/components/articles/SanityArticleTemplate";
 const slugAliases = {
   "dubai-off-plan-investment-guide": "off-plan-investment-dubai",
 };
-
-function tryCall(fn) {
-  try {
-    return fn();
-  } catch {
-    return null;
-  }
-}
-
-function getStaticArticle(slug) {
-  const get = articlesData?.getArticleBySlug;
-
-  const direct =
-    tryCall(() => get?.(slug, "en")) ||
-    tryCall(() => get?.(slug, "ar")) ||
-    tryCall(() => get?.(slug));
-
-  if (direct) return direct;
-
-  const listEn = tryCall(() => articlesData?.getAllArticles?.("en")) || [];
-  const listAr = tryCall(() => articlesData?.getAllArticles?.("ar")) || [];
-  const merged = [...listEn, ...listAr].filter(Boolean);
-  return merged.find((a) => a?.slug === slug) || null;
-}
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params;
@@ -48,17 +21,7 @@ export default async function ArticlePage({ params }) {
     return <SanityArticleTemplate article={sanityArticle} />;
   }
 
-  // 2. Fall back to static data
-  const article = getStaticArticle(resolved);
-  if (!article) return notFound();
-
-  const title = article.articleData?.hero?.title || "Article";
-
-  return (
-    <ArticleViewClient slug={resolved} title={title}>
-      <ArticleTemplate article={article} slug={resolved} />
-    </ArticleViewClient>
-  );
+  return notFound();
 }
 
 export async function generateStaticParams() {
@@ -67,13 +30,6 @@ export async function generateStaticParams() {
   // Add Sanity slugs
   const sanityArticles = await getAllArticles().catch(() => []);
   sanityArticles.forEach((a) => {
-    if (a?.slug) slugs.add(a.slug);
-  });
-
-  // Add static slugs
-  const en = tryCall(() => articlesData?.getAllArticles?.("en")) || [];
-  const ar = tryCall(() => articlesData?.getAllArticles?.("ar")) || [];
-  [...en, ...ar].forEach((a) => {
     if (a?.slug) slugs.add(a.slug);
   });
 
@@ -101,22 +57,5 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  // Fall back to static metadata
-  const article = getStaticArticle(resolved);
-  if (!article) return { title: "Article Not Found" };
-
-  const title = article.articleData?.hero?.title || "Article";
-  const description = article.articleData?.hero?.subtitle || "";
-  const image = article.image || article.articleData?.hero?.image;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: image ? [image] : [],
-      type: "article",
-    },
-  };
+  return { title: "Article Not Found" };
 }

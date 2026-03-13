@@ -142,6 +142,15 @@ export default defineType({
       group: 'media',
       description: 'Bunny CDN .mp4 URL. If set, plays instead of the image',
     }),
+    defineField({
+      name: 'heroImageUpload',
+      title: 'OR Hero / Main Image Upload',
+      type: 'image',
+      group: 'media',
+      description: 'Optional Sanity upload if you are not using BunnyCDN for this image',
+      options: {hotspot: true},
+      fields: [{name: 'alt', title: 'Alt text', type: 'string'}],
+    }),
 
     defineField({
       name: 'galleryImages',
@@ -154,6 +163,12 @@ export default defineType({
           type: 'object',
           fields: [
             defineField({name: 'url', title: 'Image URL', type: 'url'}),
+            defineField({
+              name: 'imageUpload',
+              title: 'OR Uploaded Image',
+              type: 'image',
+              options: {hotspot: true},
+            }),
           ],
           preview: {select: {title: 'url'}, prepare: ({title}) => ({title: title || 'Image'})},
         },

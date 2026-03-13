@@ -7,7 +7,6 @@ import Image from "next/image";
 import modal from "@/styles/compare/CompareModal.module.css";
 import { useCompare } from "./CompareProvider";
 import { useLanguage } from "@/components/LanguageProvider";
-import { getWhereToLiveRegionLocalized } from "@/data/whereToLiveData/whereToLiveRegionDetails";
 
 // ── Helpers ────────────────────────────────────────────────────
 function safe(v) {
@@ -48,6 +47,7 @@ export default function CompareModal() {
   const isRTL = locale === "ar";
 
   const [projectsIndex, setProjectsIndex] = useState([]);
+  const [areasIndex, setAreasIndex] = useState([]);
   const [imgErrors, setImgErrors] = useState({});
 
   useEffect(() => {
@@ -58,11 +58,32 @@ export default function CompareModal() {
     return () => { mounted = false; };
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/sanity-areas", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (mounted) setAreasIndex(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (mounted) setAreasIndex([]);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const [aSlug, bSlug] = compare?.selected || [];
   const lang = locale || "en";
 
-  const a = useMemo(() => aSlug ? getWhereToLiveRegionLocalized(aSlug, lang) : null, [aSlug, lang]);
-  const b = useMemo(() => bSlug ? getWhereToLiveRegionLocalized(bSlug, lang) : null, [bSlug, lang]);
+  const a = useMemo(
+    () => (aSlug ? getAreaFromSanity(areasIndex, aSlug, lang) : null),
+    [aSlug, areasIndex, lang]
+  );
+  const b = useMemo(
+    () => (bSlug ? getAreaFromSanity(areasIndex, bSlug, lang) : null),
+    [areasIndex, bSlug, lang]
+  );
   const aStats = useMemo(() => aSlug ? computeStats(projectsIndex, aSlug) : null, [projectsIndex, aSlug]);
   const bStats = useMemo(() => bSlug ? computeStats(projectsIndex, bSlug) : null, [projectsIndex, bSlug]);
 
@@ -241,4 +262,25 @@ function Row({ label, value, highlight, gold }) {
       </span>
     </div>
   );
+}
+
+function getAreaFromSanity(areas, slug, locale) {
+  const area = (areas || []).find((item) => item?.slug === slug);
+  if (!area) return null;
+
+  return {
+    name: locale === "ar" ? area.nameAr || area.name : area.name,
+    heroImage: area.heroImage || null,
+    summary: {
+      location: area.location || "",
+      avgBuy: area.avgBuyPrice || "—",
+      avgRent: area.avgRentPrice || "—",
+      roi: area.roi || "—",
+    },
+    market: {
+      rentalTrends: [],
+      salesTrends: [],
+      roiByType: [],
+    },
+  };
 }

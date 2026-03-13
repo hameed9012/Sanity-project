@@ -275,7 +275,7 @@ export default function GenerateSalesOfferButton({ projectData }) {
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const onImproveWithAI = null;
+  const on = null;
 
   const handleGenerateFromModal = async (prefs) => {
     try {
@@ -369,7 +369,7 @@ export default function GenerateSalesOfferButton({ projectData }) {
         projectData={projectData}
         locale={locale}
         onGenerate={handleGenerateFromModal}
-        onImproveWithAI={onImproveWithAI}
+        on={on}
       />
     </>
   );

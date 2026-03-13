@@ -139,8 +139,9 @@ const SimilarProjectsSwiper = ({
   }
 
   const formatPrice = (price) => {
-    if (!price) return "Price on request";
-    return `AED ${new Intl.NumberFormat().format(price)}`;
+    const amount = Number(String(price ?? "").replace(/[^\d.]/g, ""));
+    if (!Number.isFinite(amount) || amount <= 0) return "Price on request";
+    return `AED ${new Intl.NumberFormat().format(amount)}`;
   };
 
   const getStatusClass = (status) => {

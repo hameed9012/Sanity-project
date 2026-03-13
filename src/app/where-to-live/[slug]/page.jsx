@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { whereToLiveRegionDetails } from "@/data/whereToLiveData/whereToLiveRegionDetails";
 
 import AreaGuideHero from "@/components/where-to-live/AreaGuideHero";
 import AreaNarrative from "@/components/where-to-live/AreaNarrative";
@@ -239,10 +238,7 @@ export default function AreaDetailPage() {
     if (sanityArea) {
       return deepResolve(normalizeSanityArea(sanityArea, lang), lang);
     }
-
-    const raw = whereToLiveRegionDetails[slug];
-    if (!raw) return null;
-    return deepResolve(raw, lang);
+    return null;
   }, [sanityArea, slug, lang]);
 
   if (loading && !resolvedData) {

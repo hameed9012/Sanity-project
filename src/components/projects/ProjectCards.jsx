@@ -478,7 +478,15 @@ const ProjectCards = ({ projects, onResetFilters }) => {
 
     if (price === null || price === undefined || price === "") return fallback;
 
-    const absPrice = Number(price);
+    const rawPrice = String(price).trim().toLowerCase();
+    const numericPart = rawPrice.replace(/[^\d.]/g, "");
+    let absPrice = Number(numericPart);
+
+    if (Number.isFinite(absPrice)) {
+      if (/\bm\b/.test(rawPrice)) absPrice *= 1_000_000;
+      else if (/\bk\b/.test(rawPrice)) absPrice *= 1_000;
+    }
+
     if (!Number.isFinite(absPrice) || absPrice <= 0) return fallback;
 
     if (absPrice < 1_000_000) {

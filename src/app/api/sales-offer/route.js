@@ -17,6 +17,27 @@ function normalizePayload(payload) {
   const p = payload || {};
   const sections = p.sections || {};
   const preferences = p.preferences || {};
+  const displaySettings = preferences.displaySettings || {};
+
+  const normalizedFloorPlans = toArray(p.floorPlans).map((plan) => {
+    const originalSpecs =
+      plan?.specs && typeof plan.specs === "object" ? plan.specs : {};
+    const specs = Object.fromEntries(
+      Object.entries(originalSpecs).filter(([key]) => {
+        if (displaySettings.unitPrices === false) {
+          return !/price|السعر/i.test(String(key));
+        }
+        return true;
+      })
+    );
+
+    return {
+      ...plan,
+      title: safeStr(plan?.title || plan?.name || "Floor Plan"),
+      images: toArray(plan?.images).filter(Boolean),
+      specs,
+    };
+  });
 
   return {
     projectName: safeStr(p.projectName || "Sales Offer"),
@@ -45,16 +66,14 @@ function normalizePayload(payload) {
       iconUrl: a?.iconUrl || "",
     })),
 
-    floorPlans: toArray(p.floorPlans).map((plan) => ({
-      ...plan,
-      title: safeStr(plan?.title || plan?.name || "Floor Plan"),
-      images: toArray(plan?.images).filter(Boolean),
-      specs:
-        plan?.specs && typeof plan.specs === "object" ? plan.specs : {},
-    })),
+    floorPlans:
+      displaySettings.typicalUnits === false ? [] : normalizedFloorPlans,
 
     agent: p.agent || {},
-    facts: toArray(p.facts),
+    facts:
+      displaySettings.developer === false
+        ? toArray(p.facts).filter((fact) => !/developer|المطور/i.test(String(fact?.label || "")))
+        : toArray(p.facts),
     preferences,
     locale: p.locale || "en",
   };

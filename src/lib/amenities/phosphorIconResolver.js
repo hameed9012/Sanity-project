@@ -141,6 +141,68 @@ const AMENITY_ICON_MAP = {
   // Catchalls
   branded: "Crown", skyline: "Buildings", panoramic: "Binoculars",
   "high-speed": "Elevator",
+
+  // Arabic keywords
+  "مسبح": "SwimmingPool",
+  "حمام سباحة": "SwimmingPool",
+  "جاكوزي": "Bathtub",
+  "سبا": "Leaf",
+  "ساونا": "Fire",
+  "بخار": "Wind",
+  "نادي رياضي": "Barbell",
+  "جيم": "Barbell",
+  "لياقة": "Barbell",
+  "يوغا": "PersonSimple",
+  "تأمل": "Brain",
+  "تنس": "TennisBall",
+  "بادل": "TennisBall",
+  "كرة": "SoccerBall",
+  "سينما": "FilmStrip",
+  "مسرح": "FilmStrip",
+  "أطفال": "Baby",
+  "اطفال": "Baby",
+  "منطقة لعب": "Playground",
+  "مطعم": "ForkKnife",
+  "مقهى": "Coffee",
+  "شواء": "Hamburger",
+  "حديقة": "Tree",
+  "بارك": "Park",
+  "ممشى": "PersonSimpleWalk",
+  "جري": "PersonSimpleRun",
+  "دراجات": "Bicycle",
+  "مواقف": "Car",
+  "موقف": "Car",
+  "أمن": "ShieldCheck",
+  "امن": "ShieldCheck",
+  "حراسة": "ShieldCheck",
+  "كونسيرج": "Bellhop",
+  "استقبال": "Bell",
+  "مصعد": "Elevator",
+  "واي فاي": "WifiHigh",
+  "إنترنت": "WifiHigh",
+  "انترنت": "WifiHigh",
+  "مكتب": "Laptop",
+  "أعمال": "Briefcase",
+  "اعمال": "Briefcase",
+  "غرفة اجتماعات": "PresentationChart",
+  "شحن": "BatteryCharging",
+  "سيارات كهربائية": "Lightning",
+  "شاطئ": "Anchor",
+  "مارينا": "Anchor",
+  "يخت": "Anchor",
+  "تسوق": "Storefront",
+  "محلات": "Storefront",
+  "مدرسة": "GraduationCap",
+  "جامعة": "GraduationCap",
+  "مسجد": "Mosque",
+  "مجتمع": "UsersThree",
+  "فعاليات": "Calendar",
+  "ردهة": "Armchair",
+  "لوبي": "Door",
+  "تراس": "Plant",
+  "شرفة": "Plant",
+  "إطلالة": "Binoculars",
+  "اطلالة": "Binoculars",
 };
 
 function getIconByName(name) {
@@ -157,7 +219,14 @@ function getIconByName(name) {
 export function findIconForAmenity(label = "") {
   if (!label || typeof label !== "string") return PhosphorIcons.Buildings;
 
-  const text = label.toLowerCase().trim();
+  const text = label
+    .toLowerCase()
+    .trim()
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+    .replace(/أ|إ|آ/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى|ئ/g, "ي")
+    .replace(/ؤ/g, "و");
 
   // Phase 1: keyword map
   for (const [kw, iconName] of Object.entries(AMENITY_ICON_MAP)) {

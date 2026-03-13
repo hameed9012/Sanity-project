@@ -94,6 +94,12 @@ export default defineType({
                 },
               ],
             }),
+            defineField({
+              name: 'cdnImage',
+              title: 'OR BunnyCDN Image',
+              type: 'cdnImage',
+              description: 'Paste a BunnyCDN image URL here if you do not want to upload to Sanity',
+            }),
             // OPTION 2: Use external URL (Bunny CDN)
             defineField({ 
               name: 'backgroundUrl', 
@@ -171,6 +177,12 @@ export default defineType({
           options: { hotspot: true },
           fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
         }),
+        defineField({
+          name: 'ownerImageCdn',
+          title: 'OR Owner Photo (BunnyCDN)',
+          type: 'cdnImage',
+          description: 'Paste BunnyCDN image URL instead of uploading',
+        }),
         defineField({ name: 'discoverMoreUrl', title: 'Discover More Link', type: 'string' }),
       ],
     }),
@@ -204,6 +216,12 @@ export default defineType({
                   type: 'image',
                   options: { hotspot: true },
                   fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
+                }),
+                defineField({
+                  name: 'imageCdn',
+                  title: 'OR Pillar Image (BunnyCDN)',
+                  type: 'cdnImage',
+                  description: 'Paste BunnyCDN image URL instead of uploading',
                 }),
                 defineField({
                   name: 'points',
@@ -271,6 +289,12 @@ export default defineType({
           type: 'image',
           options: { hotspot: true },
           fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+        }),
+        defineField({
+          name: 'heroImageCdn',
+          title: 'OR Hero Image (BunnyCDN)',
+          type: 'cdnImage',
+          description: 'Paste BunnyCDN image URL instead of uploading',
         }),
         defineField({
           name: 'sections',

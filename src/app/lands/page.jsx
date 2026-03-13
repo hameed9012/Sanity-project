@@ -10,6 +10,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 9;
+const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
 
 function normalizeLocale(locale) {
   const s = String(locale || "en").toLowerCase();
@@ -20,6 +21,19 @@ function pickLang(obj, locale) {
   if (!obj) return "";
   if (typeof obj === "string") return obj;
   return obj[locale] || obj.en || "";
+}
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .replace(ARABIC_DIACRITICS, "")
+    .replace(/أ|إ|آ/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى|ئ/g, "ي")
+    .replace(/ؤ/g, "و")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
 }
 
 function getLandThumbnail(land) {
@@ -99,20 +113,21 @@ export default function LandsPage() {
         ? allLands
         : allLands.filter((x) => getTabType(x) === activeType);
 
-    const q = String(search || "").trim().toLowerCase();
+    const q = normalizeSearchText(search);
     if (!q) return base;
 
     return base.filter((land) => {
-      const haystack = [
-        pickLang(land.title, locale),
-        pickLang(land.subtitle, locale),
-        pickLang(land.description, locale),
-        land.developer,
-        land.slug,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+      const haystack = normalizeSearchText(
+        [
+          pickLang(land.title, locale),
+          pickLang(land.subtitle, locale),
+          pickLang(land.description, locale),
+          land.developer,
+          land.slug,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
       return haystack.includes(q);
     });
   }, [activeType, allLands, locale, search]);

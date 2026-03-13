@@ -11,7 +11,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 import styles from "@/styles/PressReleasesSlider.module.css";
-import articlesData from "@/data/articles/articles-data";
 import { useLanguage } from "@/components/LanguageProvider";
 
 function normalizeSanityArticle(article, locale) {
@@ -63,24 +62,12 @@ export default function PressReleasesSlider() {
     };
   }, []);
 
-  const fallbackArticles = useMemo(() => articlesData.getAllArticles(locale), [locale]);
-
   const articles = useMemo(() => {
-    if (sanityArticles.length > 0) {
-      const featuredArticles = sanityArticles.filter((article) => article?.featured !== false);
-      return featuredArticles.map((article) => normalizeSanityArticle(article, locale));
-    }
+    const featuredArticles = sanityArticles.filter((article) => article?.featured !== false);
+    return featuredArticles.map((article) => normalizeSanityArticle(article, locale));
+  }, [locale, sanityArticles]);
 
-    return fallbackArticles.map((article) => ({
-      id: article.id || article.slug,
-      slug: article.slug,
-      title: article.title,
-      image: article.image,
-      publishedOn: article.publishedOn || article.date || "",
-    }));
-  }, [fallbackArticles, locale, sanityArticles]);
-
-  if (!loaded && sanityArticles.length === 0 && fallbackArticles.length === 0) return null;
+  if (!loaded && sanityArticles.length === 0) return null;
   if (!articles.length) return null;
 
   return (

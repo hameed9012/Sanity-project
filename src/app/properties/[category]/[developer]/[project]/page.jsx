@@ -9,7 +9,6 @@ import AmenitiesShowcase from "@/components/projects/AmenitiesShowcase";
 import ContactFormFinal from "@/components/projects/ContactFormFinal";
 import MapDirections from "@/components/projects/MapDirections";
 import RelatedProjects from "@/components/projects/RelatedProjects";
-import { getProjectData } from "@/lib/project-data";
 import { useLanguage } from "@/components/LanguageProvider";
 
 function normalizeAmenities(raw) {
@@ -44,6 +43,13 @@ function developerToSlug(name) {
     .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "unknown";
+}
+
+function slugifyValue(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 
@@ -273,16 +279,35 @@ export default function ProjectPage({ params }) {
             return;
           }
         }
+
+        const fallbackRes = await fetch("/api/sanity-projects");
+        if (fallbackRes.ok) {
+          const allDocs = await fallbackRes.json();
+          const matchedDoc = (Array.isArray(allDocs) ? allDocs : []).find((doc) => {
+            const slugMatch =
+              doc?.slug === project ||
+              slugifyValue(doc?.title) === project ||
+              slugifyValue(doc?.name) === project;
+            const developerMatch =
+              !developer ||
+              slugifyValue(doc?.developer) === developer ||
+              slugifyValue(doc?.developerSlug) === developer;
+            const categoryMatch =
+              !category ||
+              slugifyValue(doc?.propertyType || doc?.unitTypes) === category ||
+              slugifyValue(doc?.type) === category;
+
+            return slugMatch && developerMatch && categoryMatch;
+          });
+
+          if (matchedDoc) {
+            setProjectData(buildSanityProjectData(matchedDoc, locale));
+            setLoading(false);
+            return;
+          }
+        }
       } catch (e) {
         console.error("Failed to load Sanity project data", e);
-      }
-
-      // 2. Fall back to the legacy static map only when Sanity has no matching document.
-      const staticData = await getProjectData(category, developer, project, locale);
-      if (staticData) {
-        setProjectData(normalizeStaticData(staticData, project, category, developer));
-        setLoading(false);
-        return;
       }
 
       setProjectData(null);
