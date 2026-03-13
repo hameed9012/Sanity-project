@@ -38,7 +38,6 @@ const getInitials = (name) => {
   return words.map((w) => w[0]).join("").substring(0, 3).toUpperCase();
 };
 
-// ✅ Sanity-only: no static getDevelopersFromTranslations needed
 export default function DevelopersClient({ sanityDevelopers = [] }) {
   const { locale: ctxLocale, t } = useLanguage();
   const locale = normalizeLocale(ctxLocale);
@@ -62,7 +61,6 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
   const clearSearchText = locale === "ar" ? "مسح البحث" : "Clear search";
   const tryDifferentFilter = locale === "ar" ? "حاول البحث باسم مطور" : "Try searching by developer name";
 
-  // ✅ Sanity-only — map Sanity docs to card shape
   const allDevs = useMemo(() => {
     if (!Array.isArray(sanityDevelopers) || sanityDevelopers.length === 0) return [];
     return sanityDevelopers
@@ -132,7 +130,6 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
       </div>
 
       <div className={styles.container}>
-        {/* Loading state when no Sanity data yet */}
         {allDevs.length === 0 && !query && (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>🏢</div>

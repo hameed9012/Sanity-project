@@ -1,8 +1,26 @@
-import { createClient } from "@sanity/client";
+import { createClient } from "next-sanity";
+
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-01-01";
+
+if (!projectId) {
+  throw new Error("Missing NEXT_PUBLIC_SANITY_PROJECT_ID in .env.local");
+}
 
 export const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  apiVersion: "2025-01-01",
+  projectId,
+  dataset,
+  apiVersion,
   useCdn: process.env.NODE_ENV === "production",
 });
+
+export const sanityWriteClient = process.env.SANITY_API_TOKEN
+  ? createClient({
+      projectId,
+      dataset,
+      apiVersion,
+      token: process.env.SANITY_API_TOKEN,
+      useCdn: false,
+    })
+  : null;

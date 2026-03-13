@@ -14,7 +14,6 @@ function normalizeType(raw) {
   if (s.includes("penthouse"))  return "penthouses";
   if (s.includes("commercial") || s.includes("retail") || s.includes("office")) return "commercial-retail";
   if (s.includes("apartment") || s.includes("flat") || s.includes("studio")) return "apartments";
-  // No "mixed use" — if something was tagged that way, default to apartments
   return VALID_TYPES.has(s) ? s : "apartments";
 }
 
@@ -27,9 +26,7 @@ function normalizeStatus(raw) {
   return "Off-plan";
 }
 
-// ─── Image/video resolution ───────────────────────────────────
 function resolveMediaUrl(p) {
-  // Priority: hero backgroundUrl → gallery slides → fallback
   const bg = p.en?.hero?.backgroundUrl || "";
   if (bg) return bg;
   const slides = p.en?.gallery?.slides;
@@ -40,7 +37,6 @@ function resolveMediaUrl(p) {
   return "";
 }
 
-// ─── Developer slug normalization ────────────────────────────
 function developerToSlug(name) {
   return (name || "")
     .toLowerCase()
@@ -49,7 +45,6 @@ function developerToSlug(name) {
     .replace(/^-|-$/g, "") || "unknown";
 }
 
-// ─── Main normalizer ──────────────────────────────────────────
 function sanityPropertyToEntry(p) {
   const slug       = p.slug || p._id;
   const nameEn     = p.en?.project?.name     || p.name     || "";
@@ -141,7 +136,6 @@ function sanityPropertyToEntry(p) {
   };
 }
 
-// Extract min/max bedrooms from floor plans if project fields don't have them
 function extractMinBedrooms(p) {
   const plans = p.en?.floorPlans?.plans;
   if (!Array.isArray(plans) || plans.length === 0) return null;
@@ -155,7 +149,6 @@ function extractMaxBedrooms(p) {
   return nums.length > 0 ? Math.max(...nums) : null;
 }
 
-// ─── Provider ────────────────────────────────────────────────
 export function SanityProjectsProvider({ children }) {
   const [sanityProjects, setSanityProjects] = useState([]);
   const [loading, setLoading] = useState(true);

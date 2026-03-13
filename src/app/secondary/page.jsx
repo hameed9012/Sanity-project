@@ -55,16 +55,15 @@ function filterSecondaryProjects(projects) {
     const statusLower = status.toLowerCase();
     const slug = (project?.slug || "").toLowerCase();
 
-    // Exclude specific projects that are not secondary
     if (SECONDARY_EXCLUDED_SLUGS.some((s) => slug.includes(s))) return false;
-
-    // Only true secondary/resale — not off-plan or under construction
     if (statusLower.includes("off-plan") || statusLower.includes("under construction")) return false;
 
     return (
       statusLower.includes("secondary") ||
       status === "Secondary" ||
-      statusLower.includes("resale")
+      statusLower.includes("resale") ||
+      statusLower.includes("ready to move") ||
+      statusLower === "ready"
     );
   });
 }
@@ -75,7 +74,6 @@ export default function SecondaryPage() {
   const isRTL = locale === "ar";
   const pathname = usePathname();
 
-  // ✅ Sanity-merged projects
   const { allProjects: sanityMergedProjects } = useAllProjects();
 
   const [visitSeed, setVisitSeed] = React.useState(() =>

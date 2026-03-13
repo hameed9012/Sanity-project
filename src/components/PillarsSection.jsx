@@ -11,7 +11,7 @@ const FALLBACK_PILLARS = [
   { id: 3, img: "/pillar-3-2.jpg",  titleKey: "pillarsSection.pillar3.title", introKey: "pillarsSection.pillar3.intro", pointKeys: ["pillarsSection.pillar3.point1","pillarsSection.pillar3.point2","pillarsSection.pillar3.point3"] },
 ];
 
-let _cachedPillars = undefined; // undefined = not fetched yet, null = fetched but empty
+let _cachedPillars = undefined;
 
 async function fetchPillarsSettings() {
   if (_cachedPillars !== undefined) return _cachedPillars;
@@ -41,12 +41,10 @@ export default function PillarsSection() {
     });
   }, []);
 
-  // Determine heading
   const heading =
     (isAr ? cms?.headingAr : cms?.heading) ||
     t("pillarsSection.heading");
 
-  // Use CMS pillars if available, otherwise fall back to i18n keys
   const hasCmsPillars = loaded && Array.isArray(cms?.items) && cms.items.length > 0;
 
   return (
@@ -54,7 +52,6 @@ export default function PillarsSection() {
       className={styles.newLaunchSection}
       dir={isAr ? "rtl" : "ltr"}
     >
-      {/* Header */}
       <div className={styles.titleSection}>
         <h2 className={`${styles.heading2} ${styles.linesOnSides}`}>
           {heading}
@@ -65,8 +62,7 @@ export default function PillarsSection() {
         <div className={styles.homeSlider}>
           <div className={styles.slidesWrapper}>
             {hasCmsPillars
-              ? // ── CMS pillar cards ────────────────────────
-                cms.items.map((pillar, index) => (
+              ? cms.items.map((pillar, index) => (
                   <div
                     key={pillar._key || index}
                     className={`${styles.slide} ${index === 1 ? styles.middleSlide : ""}`}
@@ -91,8 +87,7 @@ export default function PillarsSection() {
                     </div>
                   </div>
                 ))
-              : // ── i18n fallback cards ──────────────────────
-                FALLBACK_PILLARS.map((pillar, index) => (
+              : FALLBACK_PILLARS.map((pillar, index) => (
                   <div
                     key={pillar.id}
                     className={`${styles.slide} ${index === 1 ? styles.middleSlide : ""}`}

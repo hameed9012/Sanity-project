@@ -1,4 +1,3 @@
-// src/app/api/sanity-articles/route.js
 import { sanityClient } from "@/lib/sanityClient";
 
 export async function GET() {

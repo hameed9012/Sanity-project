@@ -1,4 +1,4 @@
-import {defineType, defineField} from 'sanity'
+```import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'heroSlide',
@@ -29,4 +29,4 @@ export default defineType({
   preview: {
     select: {title: 'title'},
   },
-})
+})```

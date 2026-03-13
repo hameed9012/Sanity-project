@@ -1,19 +1,19 @@
+// src/components/articles/SanityArticleTemplate.jsx
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "@/styles/ArticleTemplate.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import { PortableText } from "@portabletext/react";
 
-// Portable Text components for rendering Sanity rich text
+// ── Portable Text renderers ───────────────────────────────────
 const ptComponents = {
   block: {
-    normal: ({ children }) => <p className={styles.paragraph}>{children}</p>,
-    h1: ({ children }) => <h1 className={styles.heading1}>{children}</h1>,
-    h2: ({ children }) => <h2 className={styles.heading2}>{children}</h2>,
-    h3: ({ children }) => <h3 className={styles.heading3}>{children}</h3>,
+    normal:     ({ children }) => <p className={styles.paragraph}>{children}</p>,
+    h1:         ({ children }) => <h1 className={styles.heading1}>{children}</h1>,
+    h2:         ({ children }) => <h2 className={styles.heading2}>{children}</h2>,
+    h3:         ({ children }) => <h3 className={styles.heading3}>{children}</h3>,
     blockquote: ({ children }) => (
       <blockquote className={styles.expertQuote}>
         <em>{children}</em>
@@ -22,8 +22,8 @@ const ptComponents = {
   },
   marks: {
     strong: ({ children }) => <strong>{children}</strong>,
-    em: ({ children }) => <em>{children}</em>,
-    link: ({ value, children }) => (
+    em:     ({ children }) => <em>{children}</em>,
+    link:   ({ value, children }) => (
       <a href={value?.href} target="_blank" rel="noopener noreferrer">
         {children}
       </a>
@@ -33,20 +33,81 @@ const ptComponents = {
     image: ({ value }) =>
       value?.asset ? (
         <div className={styles.contentImage}>
-          <img src={value.asset.url} alt={value.alt || ""} />
+          <img src={value.asset.url} alt={value.alt || ""} loading="lazy" />
         </div>
       ) : null,
   },
 };
 
+// ── Hero image with Ken Burns scroll animation ────────────────
+function AnimatedHeroImage({ src, alt }) {
+  const imgRef = useRef(null);
+  const wrapRef = useRef(null);
+
+  // Ken Burns: slow continuous pan+zoom via CSS animation
+  // Scroll parallax: shift Y position as user scrolls
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    let rafId = null;
+    const onScroll = () => {
+      rafId = requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const rate    = 0.3; // parallax speed (0 = fixed, 1 = scroll with page)
+        if (imgRef.current) {
+          imgRef.current.style.transform = `translateY(${scrollY * rate}px) scale(1.08)`;
+        }
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return (
+    <div ref={wrapRef} className={styles.heroBackground}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className={styles.heroImage}
+        style={{
+          width: "100%",
+          height: "115%",          // extra height so parallax has room
+          objectFit: "cover",
+          opacity: 0.35,
+          transformOrigin: "center top",
+          willChange: "transform",
+          // Ken Burns base — CSS keyframes below override on first load
+          animation: "heroPanZoom 18s ease-in-out infinite alternate",
+        }}
+      />
+      {/* inline keyframes injected once */}
+      <style>{`
+        @keyframes heroPanZoom {
+          0%   { transform: scale(1.08) translate(0%, 0%);       }
+          33%  { transform: scale(1.12) translate(-1.5%, -0.5%); }
+          66%  { transform: scale(1.10) translate(1.5%, 0.5%);   }
+          100% { transform: scale(1.08) translate(0%, -1%);      }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────
 export default function SanityArticleTemplate({ article }) {
   const { locale } = useLanguage();
   const isRTL = locale === "ar";
 
-  const title = isRTL && article.titleAr ? article.titleAr : article.title;
-  const description =
-    isRTL && article.descriptionAr ? article.descriptionAr : article.description;
-  const body = isRTL && article.bodyAr ? article.bodyAr : article.body;
+  const title       = isRTL && article.titleAr       ? article.titleAr       : article.title;
+  const description = isRTL && article.descriptionAr ? article.descriptionAr : article.description;
+  const body        = isRTL && article.bodyAr        ? article.bodyAr        : article.body;
 
   const publishDate = article.publishedAt
     ? new Date(article.publishedAt).toLocaleDateString(
@@ -56,32 +117,23 @@ export default function SanityArticleTemplate({ article }) {
     : null;
 
   return (
-    <div
-      className={styles.articlePage}
-      dir={isRTL ? "rtl" : "ltr"}
-    >
-      {/* HERO */}
+    <div className={styles.articlePage} dir={isRTL ? "rtl" : "ltr"}>
+
+      {/* ── HERO ─────────────────────────────────────────────── */}
       <section className={styles.hero}>
         {article.mainImage && (
-          <div className={styles.heroBackground}>
-            <img
-              src={article.mainImage}
-              alt={title}
-              className={styles.heroImage}
-              style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }}
-            />
-          </div>
+          <AnimatedHeroImage src={article.mainImage} alt={title} />
         )}
 
         <div className={styles.heroContent}>
+          {/* Breadcrumb */}
           <div className={styles.breadcrumb}>
-            <Link href="/articles">
-              {isRTL ? "المقالات" : "Articles"}
-            </Link>
+            <Link href="/articles">{isRTL ? "المقالات" : "Articles"}</Link>
             <span> / </span>
             <span>{article.category || (isRTL ? "مقال" : "Article")}</span>
           </div>
 
+          {/* Meta row */}
           <div className={styles.metaRow}>
             {article.category && (
               <span className={styles.categoryTag}>{article.category}</span>
@@ -103,7 +155,7 @@ export default function SanityArticleTemplate({ article }) {
         </div>
       </section>
 
-      {/* ARTICLE BODY */}
+      {/* ── ARTICLE BODY ─────────────────────────────────────── */}
       <article className={styles.articleContent}>
         <div className={styles.contentWrapper}>
           {body && body.length > 0 ? (
@@ -116,7 +168,7 @@ export default function SanityArticleTemplate({ article }) {
         </div>
       </article>
 
-      {/* CTA */}
+      {/* ── CTA ──────────────────────────────────────────────── */}
       <section className={styles.consultationCTA}>
         <div className={styles.ctaContent}>
           <h2>{isRTL ? "هل أنت مستعد للاستثمار؟" : "Ready to Invest?"}</h2>

@@ -168,15 +168,43 @@ export default function DeveloperPage() {
   // Get projects for this developer from merged list
   const developerProjects = useMemo(() => {
     if (!developer) return [];
-    const nameVariants = [developer.name, developer.slug, formatSlugToName(profileKey)]
-      .filter(Boolean).map((n) => n.toLowerCase());
+
+    // Build a broad set of tokens from the developer identity
+    const rawVariants = [
+      developer.name,
+      developer.slug,
+      developer.displayName,
+      profileKey,
+      formatSlugToName(profileKey),
+      slug,                               // the URL slug itself
+    ].filter(Boolean);
+
+    // Normalize: lowercase, no punctuation, split into tokens
+    function normalize(s) {
+      return String(s || "").toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]/g, " ").trim();
+    }
+
+    // Key tokens: each word of each variant (min 3 chars)
+    const tokenSet = new Set();
+    for (const v of rawVariants) {
+      const n = normalize(v);
+      tokenSet.add(n);                    // whole phrase
+      n.split(/\s+/).filter((t) => t.length >= 3).forEach((t) => tokenSet.add(t));
+    }
+    const tokens = Array.from(tokenSet);
 
     return allProjects.filter((p) => {
-      const devName = (p.developer || "").toLowerCase();
-      const devSlug = (p.developerSlug || "").toLowerCase();
-      return nameVariants.some((n) => devName.includes(n) || devSlug.includes(n) || n.includes(devSlug));
+      const haystack = [
+        p.developer,
+        p.developerSlug,
+        p.developerNameEn,
+        p.developerNameAr,
+      ].filter(Boolean).map(normalize).join(" ");
+
+      // A project matches if ANY token from our developer appears in its haystack
+      return tokens.some((tok) => haystack.includes(tok));
     });
-  }, [developer, allProjects, profileKey]);
+  }, [developer, allProjects, profileKey, slug]);
 
   const filteredProjects = useMemo(() => {
     return developerProjects.filter((project) => {

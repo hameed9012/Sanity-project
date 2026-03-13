@@ -1,0 +1,1373 @@
+deskStructure.js:
+<code>
+export const structure = (S) =>
+  S.list()
+    .title('Content')
+    .items([
+      S.documentTypeListItem('property').title('Properties'),
+      S.divider(),
+      ...S.documentTypeListItems().filter(
+        (item) => !['property'].includes(item.getId()),
+      ),
+    ])
+</code>
+
+env.js:
+<code>
+export const apiVersion =
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2026-02-26'
+
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+
+</code>
+
+package.json:
+<code>
+{
+  "name": "mohamad-kodmani-real-estate-brokers-llc",
+  "private": true,
+  "version": "1.0.0",
+  "main": "package.json",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/vision": "^5.14.1",
+    "react": "^19.1",
+    "react-dom": "^19.1",
+    "sanity": "^5.14.1",
+    "styled-components": "^6.1.18"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "^6.0.0",
+    "@types/react": "^19.1",
+    "esbuild": "^0.27.3",
+    "eslint": "^9.28",
+    "prettier": "^3.5",
+    "typescript": "^5.8"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "bracketSpacing": false,
+    "singleQuote": true
+  }
+}
+
+</code>
+
+README.md:
+<code>
+# Sanity Clean Content Studio
+
+Congratulations, you have now installed the Sanity Content Studio, an open-source real-time content editing environment connected to the Sanity backend.
+
+Now you can do the following things:
+
+- [Read “getting started” in the docs](https://www.sanity.io/docs/introduction/getting-started?utm_source=readme)
+- [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
+- [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
+
+</code>
+
+sanity.cli.js:
+<code>
+import {defineCliConfig} from 'sanity/cli'
+
+export default defineCliConfig({
+  api: {
+    projectId: '20d53wo5',
+    dataset: 'production'
+  },
+  deployment: {
+    autoUpdates: false,
+    appId: ' s9q7hn5qo3lk4smgnk87vpe2 ',
+  }
+})
+</code>
+
+sanity.config.js:
+<code>
+import {defineConfig} from 'sanity'
+import {structureTool} from 'sanity/structure'
+import {visionTool} from '@sanity/vision'
+import {schemaTypes} from './schemaTypes/index.js'
+import {structure} from './deskStructure.js'
+
+export default defineConfig({
+  name: 'default',
+  title: 'Mohamad Kodmani Real Estate Brokers LLC',
+  projectId: '20d53wo5',
+  dataset: 'production',
+  plugins: [
+    structureTool({structure}),
+    visionTool(),
+  ],
+  schema: {
+    types: schemaTypes,
+  },
+})
+</code>
+
+structure.js:
+<code>
+// https://www.sanity.io/docs/structure-builder-cheat-sheet
+export const structure = (S) =>
+  S.list()
+    .title('Content')
+    .items(S.documentTypeListItems())
+
+</code>
+
+lib\client.js:
+<code>
+import { createClient } from 'next-sanity'
+
+import { apiVersion, dataset, projectId } from '../env'
+
+export const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
+})
+
+</code>
+
+lib\image.js:
+<code>
+import createImageUrlBuilder from '@sanity/image-url'
+
+import { dataset, projectId } from '../env'
+
+// https://www.sanity.io/docs/image-url
+const builder = createImageUrlBuilder({ projectId, dataset })
+
+export const urlFor = (source) => {
+  return builder.image(source)
+}
+
+</code>
+
+lib\live.js:
+<code>
+// Querying with "sanityFetch" will keep content automatically updated
+// Before using it, import and render "<SanityLive />" in your layout, see
+// https://github.com/sanity-io/next-sanity#live-content-api for more information.
+import { defineLive } from "next-sanity/live";
+import { client } from './client'
+
+export const { sanityFetch, SanityLive } = defineLive({
+  client,
+});
+
+</code>
+
+schemaTypes\area.js:
+<code>
+import {defineType, defineField} from 'sanity'
+
+export default defineType({
+  name: 'area',
+  title: 'Areas (Where to Live)',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Area Name (English)',
+      type: 'string',
+      validation: R => R.required(),
+    }),
+    defineField({
+      name: 'nameAr',
+      title: 'Area Name (Arabic)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      options: {source: 'name'},
+      validation: R => R.required(),
+    }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Image URL (Bunny CDN)',
+      type: 'url',
+    }),
+    defineField({
+      name: 'tagline',
+      title: 'Tagline (English)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'taglineAr',
+      title: 'Tagline (Arabic)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description (English)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'descriptionAr',
+      title: 'Description (Arabic)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'location',
+      title: 'Location Label (e.g. "Dubai Marina, Dubai")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'avgBuyPrice',
+      title: 'Avg. Buy Price (e.g. "AED 1.2M")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'avgRentPrice',
+      title: 'Avg. Rent Price (e.g. "AED 85K/yr")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'roi',
+      title: 'ROI (e.g. "7.2%")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'regionSlug',
+      title: 'Region Slug (must match property regionSlug)',
+      type: 'string',
+      description: 'Used to filter properties for this area. E.g. "dubai-marina"',
+    }),
+    defineField({
+      name: 'highlights',
+      title: 'Highlights (English)',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+    defineField({
+      name: 'highlightsAr',
+      title: 'Highlights (Arabic)',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+    defineField({
+      name: 'order',
+      title: 'Display Order (1 = first)',
+      type: 'number',
+      initialValue: 99,
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured',
+      type: 'boolean',
+      initialValue: false,
+    }),
+  ],
+  orderings: [
+    {title: 'Display Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]},
+  ],
+  preview: {
+    select: {title: 'name', subtitle: 'location'},
+  },
+})
+</code>
+
+schemaTypes\article.js:
+<code>
+// sanity/schemaTypes/article.js
+// Unified article schema — matches the sections used in ArticleTemplate.jsx
+// Works for both existing articles and new ones shown in PressReleasesSlider
+
+import { defineType, defineField } from 'sanity'
+
+export default defineType({
+  name: 'article',
+  title: 'Articles',
+  type: 'document',
+
+  fields: [
+    // ─── CORE ─────────────────────────────────────────────
+    defineField({ name: 'title',       title: 'Title (English)',      type: 'string', validation: R => R.required() }),
+    defineField({ name: 'titleAr',     title: 'Title (Arabic)',       type: 'string' }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      options: { source: 'title', maxLength: 96 },
+      validation: R => R.required(),
+    }),
+    defineField({ name: 'description',   title: 'Short Description (EN)', type: 'text', rows: 3 }),
+    defineField({ name: 'descriptionAr', title: 'Short Description (AR)', type: 'text', rows: 3 }),
+    defineField({ name: 'mainImage',     title: 'Cover Image URL (Bunny CDN or /public)', type: 'string' }),
+    defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: [
+          'Investment Strategy', 'Market Analysis', 'Data Insights',
+          'Rental Strategy', 'Market Trends', 'Case Studies', 'News',
+        ].map(v => ({ title: v, value: v })),
+      },
+    }),
+    defineField({ name: 'readTime',    title: 'Read Time (e.g. "8 min read")', type: 'string' }),
+    defineField({ name: 'publishedAt', title: 'Published At',  type: 'datetime' }),
+    defineField({ name: 'featured',    title: 'Featured on Homepage (PressReleases)', type: 'boolean', initialValue: true }),
+
+    // ─── HERO ─────────────────────────────────────────────
+    defineField({
+      name: 'hero',
+      title: 'Article Hero',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title',    title: 'Hero Title (EN)',    type: 'string' }),
+        defineField({ name: 'titleAr',  title: 'Hero Title (AR)',    type: 'string' }),
+        defineField({ name: 'subtitle', title: 'Hero Subtitle (EN)', type: 'text', rows: 2 }),
+        defineField({ name: 'subtitleAr',title:'Hero Subtitle (AR)', type: 'text', rows: 2 }),
+        defineField({ name: 'image',    title: 'Hero Image URL',     type: 'string' }),
+        defineField({
+          name: 'stats',
+          title: 'Hero Stats',
+          type: 'array',
+          of: [{
+            type: 'object',
+            fields: [
+              defineField({ name: 'number', title: 'Number (e.g. "15-30%")', type: 'string' }),
+              defineField({ name: 'label',  title: 'Label (EN)', type: 'string' }),
+              defineField({ name: 'labelAr',title: 'Label (AR)', type: 'string' }),
+            ],
+            preview: { select: { title: 'number', subtitle: 'label' } },
+          }],
+        }),
+      ],
+    }),
+
+    // ─── TABLE OF CONTENTS ────────────────────────────────
+    defineField({
+      name: 'tableOfContents',
+      title: 'Table of Contents (EN)',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
+      name: 'tableOfContentsAr',
+      title: 'Table of Contents (AR)',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+
+    // ─── BODY SECTIONS ────────────────────────────────────
+    defineField({
+      name: 'sections',
+      title: 'Article Sections',
+      description: 'Each section = a heading + body content. Supports text, key points, stats, quotes, market analysis.',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'articleSection',
+          title: 'Section',
+          fields: [
+            defineField({ name: 'id',      title: 'Section ID (for TOC anchor)', type: 'string' }),
+            defineField({ name: 'title',   title: 'Section Title (EN)',   type: 'string' }),
+            defineField({ name: 'titleAr', title: 'Section Title (AR)',   type: 'string' }),
+            // Main content as portable text (rich text)
+            defineField({
+              name: 'body',
+              title: 'Body Content (EN)',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  styles: [
+                    { title: 'Normal', value: 'normal' },
+                    { title: 'H2', value: 'h2' },
+                    { title: 'H3', value: 'h3' },
+                    { title: 'Quote', value: 'blockquote' },
+                  ],
+                  marks: {
+                    decorators: [
+                      { title: 'Strong', value: 'strong' },
+                      { title: 'Emphasis', value: 'em' },
+                    ],
+                    annotations: [
+                      { name: 'link', type: 'object', fields: [{ name: 'href', type: 'url' }] },
+                    ],
+                  },
+                },
+              ],
+            }),
+            defineField({
+              name: 'bodyAr',
+              title: 'Body Content (AR)',
+              type: 'array',
+              of: [{ type: 'block' }],
+            }),
+            // Key points
+            defineField({
+              name: 'keyPoints',
+              title: 'Key Points (EN)',
+              type: 'array',
+              of: [{ type: 'string' }],
+            }),
+            defineField({
+              name: 'keyPointsAr',
+              title: 'Key Points (AR)',
+              type: 'array',
+              of: [{ type: 'string' }],
+            }),
+            // Expert quote
+            defineField({
+              name: 'expertQuote',
+              title: 'Expert Quote',
+              type: 'object',
+              fields: [
+                defineField({ name: 'text',   title: 'Quote Text (EN)',   type: 'text', rows: 3 }),
+                defineField({ name: 'textAr', title: 'Quote Text (AR)',   type: 'text', rows: 3 }),
+                defineField({ name: 'author', title: 'Author',            type: 'string' }),
+              ],
+            }),
+            // Stats grid
+            defineField({
+              name: 'stats',
+              title: 'Stats Grid',
+              type: 'array',
+              of: [{
+                type: 'object',
+                fields: [
+                  defineField({ name: 'number',      title: 'Number',       type: 'string' }),
+                  defineField({ name: 'label',       title: 'Label (EN)',   type: 'string' }),
+                  defineField({ name: 'labelAr',     title: 'Label (AR)',   type: 'string' }),
+                  defineField({ name: 'description', title: 'Description',  type: 'string' }),
+                ],
+                preview: { select: { title: 'number', subtitle: 'label' } },
+              }],
+            }),
+            // Market analysis
+            defineField({
+              name: 'marketAnalysis',
+              title: 'Market Analysis Block',
+              type: 'object',
+              fields: [
+                defineField({ name: 'title',   title: 'Block Title (EN)', type: 'string' }),
+                defineField({ name: 'titleAr', title: 'Block Title (AR)', type: 'string' }),
+                defineField({
+                  name: 'metrics',
+                  title: 'Metrics',
+                  type: 'array',
+                  of: [{
+                    type: 'object',
+                    fields: [
+                      defineField({ name: 'title',       title: 'Metric Title',      type: 'string' }),
+                      defineField({ name: 'value',       title: 'Value',             type: 'string' }),
+                      defineField({ name: 'description', title: 'Description (EN)',  type: 'string' }),
+                      defineField({ name: 'descriptionAr',title:'Description (AR)',  type: 'string' }),
+                    ],
+                    preview: { select: { title: 'title', subtitle: 'value' } },
+                  }],
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: { title: 'title' },
+            prepare({ title }) { return { title: title || 'Untitled Section' } },
+          },
+        },
+      ],
+    }),
+
+    // ─── CTA BLOCK ────────────────────────────────────────
+    defineField({
+      name: 'cta',
+      title: 'Call to Action Block',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title',      title: 'CTA Title (EN)',    type: 'string' }),
+        defineField({ name: 'titleAr',    title: 'CTA Title (AR)',    type: 'string' }),
+        defineField({ name: 'description',title: 'CTA Text (EN)',     type: 'text', rows: 2 }),
+        defineField({ name: 'descriptionAr',title:'CTA Text (AR)',    type: 'text', rows: 2 }),
+        defineField({ name: 'buttonLabel',   title: 'Button Label (EN)', type: 'string' }),
+        defineField({ name: 'buttonLabelAr', title: 'Button Label (AR)', type: 'string' }),
+        defineField({ name: 'buttonUrl',     title: 'Button URL',        type: 'string' }),
+      ],
+    }),
+
+    // ─── SEO ──────────────────────────────────────────────
+    defineField({ name: 'seoTitle',       title: 'SEO Title',       type: 'string' }),
+    defineField({ name: 'seoDescription', title: 'SEO Description', type: 'text', rows: 2 }),
+    defineField({ name: 'seoKeywords',    title: 'SEO Keywords',    type: 'string' }),
+  ],
+
+  preview: {
+    select: { title: 'title', subtitle: 'category', media: 'mainImage' },
+    prepare({ title, subtitle }) {
+      return { title: title || 'Untitled Article', subtitle: subtitle || '' }
+    },
+  },
+})
+</code>
+
+schemaTypes\developer.js:
+<code>
+import {defineType, defineField} from 'sanity'
+
+export default defineType({
+  name: 'developer',
+  title: 'Developers',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'name',
+      title: 'Developer Name',
+      type: 'string',
+      validation: R => R.required(),
+    }),
+    defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      options: {source: 'name'},
+      validation: R => R.required(),
+    }),
+    defineField({name: 'tagline', title: 'Tagline', type: 'string'}),
+    defineField({
+      name: 'logoUrl',
+      title: 'Logo URL (Bunny CDN or local path)',
+      type: 'url',
+    }),
+    defineField({
+      name: 'about',
+      title: 'About Paragraphs (English)',
+      type: 'array',
+      of: [{type: 'text'}],
+    }),
+    defineField({
+      name: 'aboutAr',
+      title: 'About Paragraphs (Arabic)',
+      type: 'array',
+      of: [{type: 'text'}],
+    }),
+    defineField({
+      name: 'stats',
+      title: 'Stats',
+      type: 'object',
+      fields: [
+        defineField({name: 'projects', title: 'Total Projects (e.g. 80+)', type: 'string'}),
+        defineField({name: 'deliveredProjects', title: 'Delivered Projects', type: 'string'}),
+        defineField({name: 'underConstructionProjects', title: 'Under Construction', type: 'string'}),
+        defineField({name: 'communities', title: 'Communities', type: 'string'}),
+        defineField({name: 'sales2024', title: '2024 Sales (e.g. AED 18B+)', type: 'string'}),
+      ],
+    }),
+    defineField({
+      name: 'highlights',
+      title: 'Highlights',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+  ],
+  preview: {
+    select: {title: 'name'},
+  },
+})
+</code>
+
+schemaTypes\herosection.js:
+<code>
+export default {
+  name: 'heroSection',
+  title: 'Home Hero Slider',
+  type: 'document',
+  fields: [
+    {
+      name: 'slides',
+      title: 'Slides',
+      type: 'array',
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'titleEn', title: 'Title (EN)', type: 'string' },
+          { name: 'titleAr', title: 'Title (AR)', type: 'string' },
+          { name: 'image', title: 'Slide Image', type: 'image' },
+          { name: 'link', title: 'Target Link', type: 'string' }
+        ]
+      }]
+    }
+  ]
+}
+</code>
+
+schemaTypes\heroSlide.js:
+<code>
+```import {defineType, defineField} from 'sanity'
+
+export default defineType({
+  name: 'heroSlide',
+  title: 'Hero Slides',
+  type: 'document',
+  fields: [
+    defineField({name: 'title', title: 'Title (English)', type: 'string'}),
+    defineField({name: 'titleAr', title: 'Title (Arabic)', type: 'string'}),
+    defineField({name: 'subtitle', title: 'Subtitle (English)', type: 'string'}),
+    defineField({name: 'subtitleAr', title: 'Subtitle (Arabic)', type: 'string'}),
+    defineField({
+      name: 'backgroundUrl',
+      title: 'Background Image/Video URL (Bunny CDN)',
+      type: 'url',
+    }),
+    defineField({name: 'ctaLabel', title: 'Button Label (English)', type: 'string'}),
+    defineField({name: 'ctaLabelAr', title: 'Button Label (Arabic)', type: 'string'}),
+    defineField({name: 'ctaUrl', title: 'Button URL', type: 'url'}),
+    defineField({
+      name: 'order',
+      title: 'Display Order (1 = first)',
+      type: 'number',
+    }),
+  ],
+  orderings: [
+    {title: 'Display Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]},
+  ],
+  preview: {
+    select: {title: 'title'},
+  },
+})```
+</code>
+
+schemaTypes\index.js:
+<code>
+import property from './property'
+import article from './article'
+import heroSection from './heroSection'
+import developer from './developer'
+import navLink from './navLink'
+import area from './area'
+import siteSettings from './SiteSettingSchema'
+
+export const schemaTypes = [
+  property,
+  article,
+  heroSection,
+  developer,
+  navLink,
+  area,
+  siteSettings,
+]
+</code>
+
+schemaTypes\navLink.js:
+<code>
+import { defineType, defineField } from 'sanity'
+
+export default defineType({
+  name: 'navLink',
+  title: 'Nav Link',
+  type: 'object',
+  fields: [
+    defineField({ name: 'labelEn', title: 'Label (EN)', type: 'string', validation: R => R.required() }),
+    defineField({ name: 'labelAr', title: 'Label (AR)', type: 'string' }),
+    defineField({
+      name: 'type',
+      title: 'Link Type',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Internal Page', value: 'internal' },
+          { title: 'External URL', value: 'external' },
+          { title: 'Dropdown Trigger', value: 'dropdown' },
+          { title: 'Action: Search Properties', value: 'action_search' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'internal',
+    }),
+    defineField({ name: 'href', title: 'URL / Path', type: 'string' }),
+    defineField({ name: 'openInNewTab', title: 'Open in New Tab', type: 'boolean', initialValue: false }),
+  ],
+  preview: {
+    select: { title: 'labelEn', subtitle: 'href' },
+  },
+})
+</code>
+
+schemaTypes\property.js:
+<code>
+// sanity/schemaTypes/property.js
+// MINIMAL — only essential fields the sales team needs
+import {defineType, defineField} from 'sanity'
+
+export default defineType({
+  name: 'property',
+  title: 'Properties',
+  type: 'document',
+
+  groups: [
+    {name: 'basics',    title: '📋 Basics',       default: true},
+    {name: 'media',     title: '🖼️  Media'},
+    {name: 'details',   title: '📐 Details'},
+    {name: 'location',  title: '📍 Location'},
+    {name: 'arabic',    title: '🌐 Arabic'},
+  ],
+
+  fields: [
+    // ─── BASICS ───────────────────────────────────────────────
+    defineField({
+      name: 'title',
+      title: 'Project Name',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "Sobha Elwood", "Damac Islands"',
+      validation: (R) => R.required(),
+    }),
+
+    defineField({
+      name: 'slug',
+      title: 'URL Slug (auto-generated)',
+      type: 'slug',
+      group: 'basics',
+      options: {source: 'title'},
+      validation: (R) => R.required(),
+    }),
+
+    defineField({
+      name: 'developer',
+      title: 'Developer',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "Sobha Realty", "DAMAC Properties"',
+    }),
+
+    defineField({
+      name: 'location',
+      title: 'Area / Location',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "Dubai Hills", "Business Bay"',
+    }),
+
+    defineField({
+      name: 'status',
+      title: 'Type',
+      type: 'string',
+      group: 'basics',
+      options: {
+        list: [
+          {title: '🏗️  Off-Plan', value: 'offplan'},
+          {title: '🏠 Secondary', value: 'secondary'},
+          {title: '🌿 Land', value: 'land'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'offplan',
+      validation: (R) => R.required(),
+    }),
+
+    defineField({
+      name: 'startingPrice',
+      title: 'Starting Price',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "AED 1,200,000" or "From AED 2.5M"',
+    }),
+
+    defineField({
+      name: 'completionDate',
+      title: 'Completion Date',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "Q4 2026" or "Ready"',
+    }),
+
+    defineField({
+      name: 'paymentPlan',
+      title: 'Payment Plan',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "60/40", "1% Monthly"',
+    }),
+
+    defineField({
+      name: 'unitTypes',
+      title: 'Unit Types',
+      type: 'string',
+      group: 'basics',
+      description: 'e.g. "1–4 Bedroom Apartments & Villas"',
+    }),
+
+    defineField({
+      name: 'featured',
+      title: 'Featured on homepage?',
+      type: 'boolean',
+      group: 'basics',
+      initialValue: false,
+    }),
+
+    // ─── MEDIA ────────────────────────────────────────────────
+    defineField({
+      name: 'heroImage',
+      title: 'Hero / Main Image URL',
+      type: 'url',
+      group: 'media',
+      description: 'Paste Bunny CDN URL — this appears on cards and the page hero',
+    }),
+
+    defineField({
+      name: 'heroVideo',
+      title: 'Hero Video URL (optional)',
+      type: 'url',
+      group: 'media',
+      description: 'Bunny CDN .mp4 URL. If set, plays instead of the image',
+    }),
+
+    defineField({
+      name: 'galleryImages',
+      title: 'Gallery Images',
+      type: 'array',
+      group: 'media',
+      description: 'Add CDN image URLs for the gallery slideshow',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({name: 'url', title: 'Image URL', type: 'url'}),
+          ],
+          preview: {select: {title: 'url'}, prepare: ({title}) => ({title: title || 'Image'})},
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'brochureUrl',
+      title: 'Brochure PDF URL (optional)',
+      type: 'url',
+      group: 'media',
+      description: 'Bunny CDN .pdf link shown as a download button',
+    }),
+
+    // ─── DETAILS ──────────────────────────────────────────────
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 5,
+      group: 'details',
+      description: 'Short project description shown on the inner page',
+    }),
+
+    defineField({
+      name: 'amenities',
+      title: 'Amenities',
+      type: 'array',
+      group: 'details',
+      description: 'Add each amenity — label + icon name (e.g. "pool", "gym")',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({name: 'label', title: 'Amenity Name', type: 'string'}),
+            defineField({
+              name: 'icon',
+              title: 'Icon',
+              type: 'string',
+              description: 'e.g. "pool", "gym", "parking", "park", "mosque", "school"',
+            }),
+          ],
+          preview: {
+            select: {title: 'label', subtitle: 'icon'},
+          },
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'floorPlans',
+      title: 'Floor Plans',
+      type: 'array',
+      group: 'details',
+      description: 'One entry per bedroom type',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({name: 'title',   title: 'Label',         type: 'string', description: 'e.g. "1 Bedroom"'}),
+            defineField({name: 'bedrooms',title: 'Bedrooms',      type: 'number'}),
+            defineField({name: 'size',    title: 'Size Range',    type: 'string', description: 'e.g. "750–920 sqft"'}),
+            defineField({name: 'price',   title: 'Price Range',   type: 'string', description: 'e.g. "AED 1.2M–1.5M"'}),
+            defineField({
+              name: 'images',
+              title: 'Floor Plan Images',
+              type: 'array',
+              of: [{type: 'object', fields: [defineField({name: 'url', title: 'Image URL', type: 'url'})]}],
+            }),
+          ],
+          preview: {select: {title: 'title', subtitle: 'size'}},
+        },
+      ],
+    }),
+
+    // ─── LOCATION ─────────────────────────────────────────────
+    defineField({
+      name: 'lat',
+      title: 'Latitude',
+      type: 'number',
+      group: 'location',
+      description: 'e.g. 25.2048',
+    }),
+
+    defineField({
+      name: 'lng',
+      title: 'Longitude',
+      type: 'number',
+      group: 'location',
+      description: 'e.g. 55.2708',
+    }),
+
+    defineField({
+      name: 'nearbyPlaces',
+      title: 'Nearby Places',
+      type: 'array',
+      group: 'location',
+      description: 'Key landmarks near the project',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({name: 'name',     title: 'Place Name',    type: 'string'}),
+            defineField({name: 'distance', title: 'Distance',      type: 'string', description: 'e.g. "5 mins"'}),
+            defineField({name: 'icon',     title: 'Icon',          type: 'string', description: 'e.g. "mall", "airport", "beach"'}),
+          ],
+          preview: {select: {title: 'name', subtitle: 'distance'}},
+        },
+      ],
+    }),
+
+    // ─── ARABIC ───────────────────────────────────────────────
+    defineField({
+      name: 'titleAr',
+      title: 'Project Name (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'descriptionAr',
+      title: 'Description (Arabic)',
+      type: 'text',
+      rows: 5,
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'locationAr',
+      title: 'Area / Location (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+  ],
+
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'developer',
+      media: 'heroImage',
+    },
+    prepare({title, subtitle, media}) {
+      return {
+        title: title || 'Untitled',
+        subtitle: subtitle || '',
+        // Show hero image as thumbnail if available
+        media: media ? undefined : undefined,
+      }
+    },
+  },
+})
+</code>
+
+schemaTypes\SiteSettingSchema.js:
+<code>
+// sanity/schemaTypes/siteSettings.js
+import { defineType, defineField } from 'sanity'
+
+export default defineType({
+  name: 'siteSettings',
+  title: 'Site Settings',
+  type: 'document',
+  __experimental_actions: ['update', 'publish'],
+
+  fields: [
+    // ─────────────────────────────────────────────────────
+    // NAVBAR
+    // ─────────────────────────────────────────────────────
+    defineField({
+      name: 'navbar',
+      title: 'Navigation Bar',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'desktopLeft',
+          title: 'Desktop Left Links',
+          type: 'array',
+          of: [{ type: 'navLink' }],
+        }),
+        defineField({
+          name: 'desktopRight',
+          title: 'Desktop Right Links',
+          type: 'array',
+          of: [{ type: 'navLink' }],
+        }),
+        defineField({
+          name: 'mobileMenu',
+          title: 'Mobile Menu Links',
+          type: 'array',
+          of: [{ type: 'navLink' }],
+        }),
+        defineField({
+          name: 'hideSearch',
+          title: 'Hide Search from Navbar',
+          type: 'boolean',
+          initialValue: false,
+        }),
+      ],
+    }),
+
+    // ─────────────────────────────────────────────────────
+    // HERO SLIDES (HomeHeroSlider) - UPDATED WITH IMAGE UPLOAD
+    // ─────────────────────────────────────────────────────
+    defineField({
+      name: 'heroSlides',
+      title: 'Home Hero Slides',
+      description: 'Featured slides on the homepage hero carousel',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({ 
+              name: 'title',       
+              title: 'Title (EN)',       
+              type: 'string' 
+            }),
+            defineField({ 
+              name: 'titleAr',     
+              title: 'Title (AR)',       
+              type: 'string' 
+            }),
+            defineField({ 
+              name: 'subtitle',    
+              title: 'Subtitle (EN)',    
+              type: 'text', 
+              rows: 2 
+            }),
+            defineField({ 
+              name: 'subtitleAr',  
+              title: 'Subtitle (AR)',    
+              type: 'text', 
+              rows: 2 
+            }),
+            // OPTION 1: Upload image directly to Sanity
+            defineField({
+              name: 'image',
+              title: 'Slide Image (Upload)',
+              type: 'image',
+              description: 'Upload image directly to Sanity',
+              options: {
+                hotspot: true, // Enables cropping
+              },
+              fields: [
+                {
+                  name: 'alt',
+                  type: 'string',
+                  title: 'Alternative text',
+                },
+              ],
+            }),
+            // OPTION 2: Use external URL (Bunny CDN)
+            defineField({ 
+              name: 'backgroundUrl', 
+              title: 'OR External Image URL (Bunny CDN)', 
+              type: 'url',
+              description: 'Use this if you want to use Bunny CDN instead of uploading'
+            }),
+            defineField({ 
+              name: 'propertySlug', 
+              title: 'Link to Property Slug', 
+              type: 'string', 
+              description: 'e.g. skyparks — links card to that property page' 
+            }),
+            defineField({ 
+              name: 'ctaLabel',    
+              title: 'CTA Button Label (EN)', 
+              type: 'string' 
+            }),
+            defineField({ 
+              name: 'ctaLabelAr',  
+              title: 'CTA Button Label (AR)', 
+              type: 'string' 
+            }),
+            defineField({ 
+              name: 'ctaUrl',      
+              title: 'CTA URL',          
+              type: 'string' 
+            }),
+            defineField({ 
+              name: 'order',       
+              title: 'Order',            
+              type: 'number' 
+            }),
+          ],
+          preview: {
+            select: { 
+              title: 'title', 
+              media: 'image',
+              subtitle: 'subtitle' 
+            },
+            prepare({ title, media, subtitle }) { 
+              return { 
+                title: title || 'Untitled Slide',
+                subtitle: subtitle || '',
+                media: media 
+              } 
+            },
+          },
+        },
+      ],
+    }),
+
+    // ─────────────────────────────────────────────────────
+    // ART OF DETAIL SECTION
+    // ─────────────────────────────────────────────────────
+    defineField({
+      name: 'artOfDetail',
+      title: 'Art of Detail Section (Homepage)',
+      type: 'object',
+      fields: [
+        defineField({ name: 'sloganPre',    title: 'Slogan Pre-text (EN)',  type: 'string' }),
+        defineField({ name: 'sloganPreAr',  title: 'Slogan Pre-text (AR)',  type: 'string' }),
+        defineField({ name: 'sloganMain',   title: 'Slogan Main (EN)',      type: 'string' }),
+        defineField({ name: 'sloganMainAr', title: 'Slogan Main (AR)',      type: 'string' }),
+        defineField({ name: 'companyLine',  title: 'Company Line (EN)',     type: 'string' }),
+        defineField({ name: 'companyLineAr',title: 'Company Line (AR)',     type: 'string' }),
+        defineField({ name: 'description',  title: 'Description (EN)',      type: 'text', rows: 3 }),
+        defineField({ name: 'descriptionAr',title: 'Description (AR)',      type: 'text', rows: 3 }),
+        // Owner image upload
+        defineField({
+          name: 'ownerImage',
+          title: 'Owner Photo',
+          type: 'image',
+          description: 'Upload owner photo',
+          options: { hotspot: true },
+          fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
+        }),
+        defineField({ name: 'discoverMoreUrl', title: 'Discover More Link', type: 'string' }),
+      ],
+    }),
+
+    // ─────────────────────────────────────────────────────
+    // PILLARS SECTION
+    // ─────────────────────────────────────────────────────
+    defineField({
+      name: 'pillars',
+      title: 'Pillars Section (Homepage)',
+      type: 'object',
+      fields: [
+        defineField({ name: 'heading',   title: 'Section Heading (EN)', type: 'string' }),
+        defineField({ name: 'headingAr', title: 'Section Heading (AR)', type: 'string' }),
+        defineField({
+          name: 'items',
+          title: 'Pillar Cards',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                defineField({ name: 'title',   title: 'Title (EN)',   type: 'string' }),
+                defineField({ name: 'titleAr', title: 'Title (AR)',   type: 'string' }),
+                defineField({ name: 'intro',   title: 'Intro (EN)',   type: 'text', rows: 2 }),
+                defineField({ name: 'introAr', title: 'Intro (AR)',   type: 'text', rows: 2 }),
+                // Pillar image upload
+                defineField({
+                  name: 'image',
+                  title: 'Pillar Image',
+                  type: 'image',
+                  options: { hotspot: true },
+                  fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
+                }),
+                defineField({
+                  name: 'points',
+                  title: 'Bullet Points (EN)',
+                  type: 'array',
+                  of: [{ type: 'string' }],
+                }),
+                defineField({
+                  name: 'pointsAr',
+                  title: 'Bullet Points (AR)',
+                  type: 'array',
+                  of: [{ type: 'string' }],
+                }),
+              ],
+              preview: {
+                select: { 
+                  title: 'title', 
+                  media: 'image' 
+                },
+                prepare({ title, media }) { 
+                  return { 
+                    title: title || 'Untitled Pillar',
+                    media: media 
+                  } 
+                },
+              },
+            },
+          ],
+        }),
+      ],
+    }),
+
+    // ─────────────────────────────────────────────────────
+    // CONTACT FIELDS
+    // ─────────────────────────────────────────────────────
+    defineField({
+      name: 'contact',
+      title: 'Contact Info',
+      type: 'object',
+      fields: [
+        defineField({ name: 'whatsapp',   title: 'WhatsApp Number', type: 'string' }),
+        defineField({ name: 'phone',      title: 'Phone Display Text', type: 'string' }),
+        defineField({ name: 'email',      title: 'Email Address', type: 'string' }),
+        defineField({ name: 'instagram',  title: 'Instagram URL', type: 'url' }),
+        defineField({ name: 'linkedin',   title: 'LinkedIn URL', type: 'url' }),
+        defineField({ name: 'youtube',    title: 'YouTube URL', type: 'url' }),
+        defineField({ name: 'formTitle',  title: 'Contact Form Title (EN)', type: 'string' }),
+        defineField({ name: 'formTitleAr',title: 'Contact Form Title (AR)', type: 'string' }),
+      ],
+    }),
+  ],
+
+  preview: {
+    prepare() { return { title: 'Site Settings' } },
+  },
+})
+</code>
+
+schemaTypes\types\cdnImage.js:
+<code>
+import {defineType, defineField} from 'sanity'
+import CdnUrlImageInput from './CdnUrlImageInput'
+
+export default defineType({
+  name: 'cdnImage',
+  title: 'CDN Image (URL)',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'url',
+      title: 'Image URL (Bunny CDN)',
+      type: 'url',
+      components: {
+        input: CdnUrlImageInput,
+      },
+      validation: (R) => R.required(),
+    }),
+    defineField({
+      name: 'alt',
+      title: 'Alt text',
+      type: 'string',
+    }),
+    defineField({
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+    }),
+  ],
+  preview: {
+    select: {title: 'caption', subtitle: 'url'},
+    prepare({title, subtitle}) {
+      return {
+        title: title || 'CDN Image',
+        subtitle,
+      }
+    },
+  },
+})
+
+</code>
+
+schemaTypes\types\CdnUrlImageInput.jsx:
+<code>
+import React from 'react'
+
+export default function CdnUrlImageInput(props) {
+  const {value, elementProps} = props
+  const url = typeof value === 'string' ? value.trim() : ''
+
+  const showPreview = url && /^https?:\/\//i.test(url)
+
+  return (
+    <div style={{display: 'grid', gap: 12}}>
+      <input {...elementProps} />
+
+      {showPreview && (
+        <div
+          style={{
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 8,
+            padding: 10,
+            background: 'rgba(255,255,255,0.04)',
+          }}
+        >
+          <div style={{fontSize: 12, opacity: 0.8, marginBottom: 8}}>Preview (from URL)</div>
+
+          <img
+            src={url}
+            alt="CDN preview"
+            style={{
+              width: '100%',
+              maxHeight: 260,
+              objectFit: 'cover',
+              borderRadius: 8,
+              display: 'block',
+            }}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+</code>
+
+schemaTypes\types\seo.js:
+<code>
+import {defineType, defineField} from 'sanity'
+
+export default defineType({
+  name: 'seo',
+  title: 'SEO',
+  type: 'object',
+  fields: [
+    defineField({name: 'title', title: 'Title', type: 'string'}),
+    defineField({name: 'description', title: 'Description', type: 'text', rows: 3}),
+    defineField({name: 'keywords', title: 'Keywords', type: 'string'}),
+    defineField({name: 'canonical', title: 'Canonical', type: 'string'}),
+  ],
+})
+
+</code>
+

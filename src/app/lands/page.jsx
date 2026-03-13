@@ -6,7 +6,6 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 import styles from "@/styles/lands/lands.module.css";
-import { pickLang, getLandThumbnail } from "@/data/lands/landData";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
@@ -18,22 +17,20 @@ function normalizeLocale(locale) {
 }
 
 function sanityToLand(p) {
+  const slug = p.slug || p._id;
   const en = p.data?.en || {};
   const ar = p.data?.ar || {};
-  const project = en?.project || {};
-  const projectAr = ar?.project || {};
-  const slug = p.slug || p.data?._id;
   return {
     slug, _fromSanity: true,
-    type: (project?.type || "residential").toLowerCase(),
+    type: (p.type || "residential").toLowerCase(),
     status: "available",
-    title: { en: project?.name || slug, ar: projectAr?.name || project?.name || slug },
-    subtitle: { en: project?.location || "", ar: projectAr?.location || "" },
-    description: { en: en?.intro?.paragraphs?.[0] || "", ar: ar?.intro?.paragraphs?.[0] || "" },
-    area: { en: project?.units || "", ar: projectAr?.units || "" },
-    price: { en: project?.startingPrice || "", ar: projectAr?.startingPrice || "" },
-    developer: project?.developer || p.developer || "",
-    gallery: Array.isArray(en?.gallery?.slides)
+    title: { en: p.nameEn || slug, ar: p.nameAr || p.nameEn || slug },
+    subtitle: { en: p.location || "", ar: p.locationAr || p.location || "" },
+    description: { en: en.description || "", ar: ar.description || "" },
+    area: { en: en.project?.units || "", ar: ar.project?.units || "" },
+    price: { en: p.startingPrice || "", ar: p.startingPriceAr || "" },
+    developer: p.developer || "",
+    gallery: Array.isArray(en.gallery?.slides)
       ? en.gallery.slides.map((s) => s?.url || s).filter(Boolean) : [],
   };
 }
@@ -44,7 +41,6 @@ export default function LandsPage() {
   const isRTL = locale === "ar";
   const { allProjects, loading } = useAllProjects();
 
-  // ✅ Sanity-only — no static landsData fallback
   const allLands = React.useMemo(() => {
     return allProjects
       .filter((p) => {
@@ -201,4 +197,16 @@ function CardBody({ land, locale, isRTL }) {
       <div className={styles.cardCtaRow}><span className={styles.cardCta}>{isRTL ? "عرض التفاصيل" : "VIEW DETAILS"}</span></div>
     </div>
   );
+}
+
+// Helper functions (you can move these to a shared lib)
+function pickLang(obj, locale) {
+  if (!obj) return "";
+  if (typeof obj === "string") return obj;
+  return obj[locale] || obj.en || "";
+}
+
+function getLandThumbnail(land) {
+  if (land.gallery && land.gallery.length > 0) return land.gallery[0];
+  return "";
 }

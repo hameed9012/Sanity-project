@@ -1,12 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import styles from "@/styles/where-to-live/WhereToLive.module.css";
-import { filterWhereToLive } from "@/lib/whereToLive/filterWhereToLive";
 import { useCompare } from "@/components/compare/CompareProvider";
 import CompareModal from "@/components/compare/CompareModal";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -64,7 +63,6 @@ export default function WhereToLivePage() {
 
   React.useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filters.search, filters.avgBuy, filters.avgRent, filters.roi]);
 
-  // ✅ Sanity-only — no static fallback
   const allAreas = React.useMemo(() => sanityAreas.map((doc) => sanityAreaToCard(doc, locale)), [sanityAreas, locale]);
 
   const { filtered, hasActiveFilters } = React.useMemo(() => filterWhereToLive(allAreas, filters), [allAreas, filters]);
@@ -203,4 +201,16 @@ function ChipInline({ label, img, onRemove, removeLabel }) {
       <button type="button" className={styles.compareChipRemove} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove?.(); }} aria-label={removeLabel}>✕</button>
     </div>
   );
+}
+
+// Dummy filter function (replace with actual filtering)
+function filterWhereToLive(areas, filters) {
+  let filtered = areas;
+  if (filters.search) {
+    const term = filters.search.toLowerCase();
+    filtered = filtered.filter(a => (a.name?.toLowerCase() || "").includes(term) || (a.location?.toLowerCase() || "").includes(term));
+  }
+  // Add other filter logic as needed
+  const hasActiveFilters = filters.search || filters.avgBuy || filters.avgRent || filters.roi;
+  return { filtered, hasActiveFilters };
 }

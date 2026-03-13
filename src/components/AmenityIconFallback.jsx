@@ -6,6 +6,7 @@ import { findBestIconForAmenity } from "@/lib/amenities/phosphorIconResolver";
 
 export default function AmenityIconFallback({
   label,
+  iconKey,
   size = 33,
   stroke = 1.2,
   className = "text-[#B08D57]",
@@ -15,23 +16,26 @@ export default function AmenityIconFallback({
   useEffect(() => {
     const loadIcon = async () => {
       try {
-        const icon = findBestIconForAmenity(label);
+        // Use iconKey as primary lookup hint (if it's a plain string, not an emoji)
+        const searchLabel = (iconKey && !/\p{Emoji}/u.test(iconKey))
+          ? `${iconKey} ${label || ""}`.trim()
+          : (label || "");
+        const icon = findBestIconForAmenity(searchLabel);
         if (icon) {
           setIconComponent(() => icon);
         } else {
-          // Final fallback
-          const { Building } = await import("@phosphor-icons/react");
-          setIconComponent(() => Building);
+          const { Buildings } = await import("@phosphor-icons/react");
+          setIconComponent(() => Buildings);
         }
       } catch (error) {
         console.warn(`Could not load icon for: ${label}`, error);
-        const { Star } = await import("@phosphor-icons/react");
-        setIconComponent(() => Star);
+        const { Buildings } = await import("@phosphor-icons/react");
+        setIconComponent(() => Buildings);
       }
     };
 
     loadIcon();
-  }, [label]);
+  }, [label, iconKey]);
 
   if (!IconComponent) {
     return (

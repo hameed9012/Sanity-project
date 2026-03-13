@@ -1,24 +1,69 @@
 import { sanityClient } from "@/lib/sanityClient";
 
-export async function GET() {
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const slug = searchParams.get("slug");
+
   try {
-    const properties = await sanityClient.fetch(`
-      *[_type == "property"] {
+    let query;
+    if (slug) {
+      query = `*[_type == "property" && slug.current == $slug][0]{
         _id,
         "slug": slug.current,
-        status,
+        title,
+        titleAr,
         developer,
         location,
+        locationAr,
+        status,
+        startingPrice,
+        completionDate,
+        paymentPlan,
+        unitTypes,
         featured,
-        type,
-        regionSlug,
-        en,
-        ar,
-      }
-    `);
-    return Response.json(properties);
+        heroImage,
+        heroVideo,
+        galleryImages[],
+        brochureUrl,
+        description,
+        descriptionAr,
+        amenities[],
+        floorPlans[]{
+          title,
+          bedrooms,
+          size,
+          price,
+          images[],
+        },
+        lat,
+        lng,
+        nearbyPlaces[],
+      }`;
+    } else {
+      query = `*[_type == "property"] | order(_createdAt desc){
+        _id,
+        "slug": slug.current,
+        title,
+        titleAr,
+        developer,
+        location,
+        locationAr,
+        status,
+        startingPrice,
+        completionDate,
+        paymentPlan,
+        unitTypes,
+        featured,
+        heroImage,
+        galleryImages[],
+      }`;
+    }
+
+    const params = slug ? { slug } : {};
+    const data = await sanityClient.fetch(query, params);
+    return Response.json(data || (slug ? null : []));
   } catch (err) {
     console.error("sanity-projects API error:", err);
-    return Response.json([], { status: 500 });
+    return Response.json(slug ? null : [], { status: 500 });
   }
 }

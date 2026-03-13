@@ -1,24 +1,17 @@
-// sanity/schemaTypes/index.js
-import property   from './property'
-import article    from './article'
-import developer  from './developer'
-import heroSlide  from './heroSlide'
-import area       from './area'
-import siteSettings from './siteSettings'
-import navLink    from './types/navLink'
-import cdnImage   from './types/cdnImage'
-import seo        from './types/seo'
+import property from './property'
+import article from './article'
+import heroSection from './heroSection'
+import developer from './developer'
+import navLink from './navLink'
+import area from './area'
+import siteSettings from './SiteSettingSchema'
 
 export const schemaTypes = [
-  // Documents
   property,
   article,
+  heroSection,
   developer,
+  navLink,
   area,
   siteSettings,
-  // Reusable objects
-  heroSlide,
-  navLink,
-  cdnImage,
-  seo,
 ]

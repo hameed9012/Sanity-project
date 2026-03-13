@@ -1,7 +1,6 @@
-// src/app/offplan/page.jsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import styles from "@/styles/properties/offplan.module.css";
 
@@ -62,10 +61,13 @@ export default function OffplanPage() {
     filters.minPrice, filters.maxPrice,
   ]);
 
-  // Off-plan only
+  // Off-plan only — excluding Omniyat and Beyond projects
+  const OFFPLAN_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond"];
   const offplanProjects = React.useMemo(() => {
     return (rawProjects || []).filter((p) => {
       if (p.isLand || p.category === "lands") return false;
+      const devSlug = (p.developerSlug || p.developer || "").toLowerCase();
+      if (OFFPLAN_EXCLUDED_DEVELOPER_SLUGS.some((s) => devSlug.includes(s))) return false;
       const s = (p.status || p.devStatus || "").toLowerCase();
       return s.includes("off-plan") || s.includes("off plan") || s.includes("offplan") || s.includes("under construction");
     });
@@ -96,7 +98,6 @@ export default function OffplanPage() {
 
       {/* ── Cinematic animated hero background ───────────────── */}
       <div className={styles.heroSection}>
-        {/* Swiper background — only when we have images */}
         {heroImages && heroImages.length > 1 ? (
           <Swiper
             className={styles.heroSwiper}
@@ -137,10 +138,7 @@ export default function OffplanPage() {
           <div className={styles.heroFallbackBg} />
         )}
 
-        {/* Dark gradient overlay */}
         <div className={styles.heroOverlay} />
-
-        {/* Text */}
         <div className={styles.heroContent}>
           <p className={styles.heroKicker}>
             {isRTL ? "العقارات الفاخرة" : "Luxury Real Estate"}
@@ -164,9 +162,7 @@ export default function OffplanPage() {
         </div>
       </div>
 
-      {/* ── Content ──────────────────────────────────────────── */}
       <div className={styles.contentArea}>
-        {/* Filters */}
         <ProjectsFiltersBar
           filters={filters}
           setFilters={setFilters}
@@ -185,7 +181,6 @@ export default function OffplanPage() {
           />
         )}
 
-        {/* Results */}
         {loading ? (
           <div className={styles.loadingState}>
             <div className={styles.loadingDots}>

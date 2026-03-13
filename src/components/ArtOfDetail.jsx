@@ -9,7 +9,6 @@ import Link from "next/link";
 import styles from "@/styles/ArtOfDetail.module.css";
 import { useLanguage } from "./LanguageProvider";
 
-// Fetch once and cache at module level for the session
 let _cachedSettings = null;
 async function fetchArtOfDetailSettings() {
   if (_cachedSettings) return _cachedSettings;
@@ -34,7 +33,6 @@ export default function ArtOfDetail() {
     fetchArtOfDetailSettings().then(setCms);
   }, []);
 
-  // CMS-first, translation-key fallback
   const sloganPre   = (isAr ? cms?.sloganPreAr   : cms?.sloganPre)   || t("artOfDetail.sloganPre");
   const sloganMain  = (isAr ? cms?.sloganMainAr  : cms?.sloganMain)  || t("artOfDetail.sloganMain");
   const companyLine = (isAr ? cms?.companyLineAr : cms?.companyLine) || t("artOfDetail.companyLine");
@@ -42,7 +40,6 @@ export default function ArtOfDetail() {
   const discoverUrl = cms?.discoverMoreUrl || "/about";
   const ownerImage  = cms?.ownerImage || "/boss-nobg.png";
 
-  // ─── GSAP animations (original, untouched) ───────────────
   useEffect(() => {
     if (!sectionRef.current) return;
 
@@ -55,7 +52,6 @@ export default function ArtOfDetail() {
 
     const mm = gsap.matchMedia();
 
-    // Desktop animation
     mm.add("(min-width: 1000px)", () => {
       gsap.set(pill, {
         scale: 0.55,
@@ -119,7 +115,6 @@ export default function ArtOfDetail() {
       }
     });
 
-    // Mobile animation
     mm.add("(max-width: 999px)", () => {
       gsap.set(pill, {
         scale: 0.55,
@@ -198,9 +193,7 @@ export default function ArtOfDetail() {
         <div className={styles.container}>
           <div className={`${styles.row} ${styles.h100vh}`}>
 
-            {/* LEFT – content */}
             <div className={styles.artContentSec}>
-              {/* Slogan */}
               <div className={styles.sloganV1}>
                 <div className={styles.sloganArchitectural}>
                   <span className={styles.sloganPre}>{sloganPre}</span>
@@ -211,10 +204,7 @@ export default function ArtOfDetail() {
                 </div>
               </div>
 
-              {/* Company subtitle */}
               <p className={styles.companyLine}>{companyLine}</p>
-
-              {/* Paragraph */}
               <p className={styles.description}>{description}</p>
 
               <div className={styles.buttonMain}>
@@ -225,7 +215,6 @@ export default function ArtOfDetail() {
               </div>
             </div>
 
-            {/* RIGHT – desktop image */}
             <div className={`${styles.ownerImgWrapper} ${styles.onlyDesk}`}>
               <Image
                 src={ownerImage}
@@ -237,7 +226,6 @@ export default function ArtOfDetail() {
               />
             </div>
 
-            {/* Mobile image */}
             <div className={`${styles.ownerImgMobile} ${styles.onlyMob}`}>
               <Image
                 src={ownerImage}

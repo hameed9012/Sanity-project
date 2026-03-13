@@ -1,4 +1,3 @@
-// src/app/properties/page.jsx
 "use client";
 
 import React, { Suspense } from "react";
@@ -58,7 +57,6 @@ function filterByStatusTab(projects, activeTab) {
   });
 }
 
-// ── Inner component that uses useSearchParams ─────────────────
 function PropertiesContent() {
   const { locale: ctxLocale, t } = useLanguage();
   const locale = ctxLocale || "en";
@@ -101,7 +99,6 @@ function PropertiesContent() {
 
   return (
     <div className={styles.propertiesPage} dir={isRTL ? "rtl" : "ltr"}>
-      {/* Status tabs */}
       <div className={styles.tabsBar}>
         {TYPE_TABS.map((tab) => (
           <button
@@ -114,7 +111,6 @@ function PropertiesContent() {
         ))}
       </div>
 
-      {/* Filters */}
       <ProjectsFiltersBar
         filters={filters}
         setFilters={setFilters}
@@ -133,7 +129,6 @@ function PropertiesContent() {
         />
       )}
 
-      {/* Results */}
       {loading ? (
         <div className={styles.loadingState}>
           {isRTL ? "جاري التحميل..." : "Loading properties..."}
