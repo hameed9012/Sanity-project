@@ -1,10 +1,10 @@
 import { sanityClient } from "@/lib/sanityClient";
 
 export async function GET(request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
+  const { searchParams } = new URL(request.url);
+  const slug = searchParams.get("slug");
 
+  try {
     const filter = slug
       ? `*[_type == "developer" && slug.current == "${slug}"][0]`
       : `*[_type == "developer"] | order(_createdAt asc)`;
@@ -13,8 +13,10 @@ export async function GET(request) {
       ${filter} {
         _id,
         name,
+        nameAr,
         "slug": slug.current,
         tagline,
+        taglineAr,
         logoUrl,
         heroImageUrl,
         about,

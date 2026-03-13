@@ -6,32 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { useAllProjects } from "@/components/SanityProjectsContext";
 import { buildProjectsQuery } from "@/lib/search/projectsSearch";
 import styles from "@/styles/HeroProjectsSlider.module.css";
 
 const ROTATE_MS = 6000;
 const FADE_MS = 900;
-
-// Fallback images in case no projects are available
-const FALLBACK_SLIDES = [
-  {
-    id: "fallback-1",
-    title: "Luxury Real Estate",
-    image: "/hero-fallback-1.jpg",
-    href: "/properties",
-    developerName: "Mohamad Kodmani",
-    location: "Dubai"
-  },
-  {
-    id: "fallback-2",
-    title: "Premium Properties",
-    image: "/hero-fallback-2.jpg",
-    href: "/properties",
-    developerName: "Mohamad Kodmani",
-    location: "UAE"
-  }
-];
 
 function randInt(max) {
   if (max <= 0) return 0;
@@ -57,7 +36,7 @@ export default function LuxuryHeroSlider() {
   const router = useRouter();
   const isAr = locale === "ar" || String(locale || "").startsWith("ar");
 
-  const { allProjects: sanityProjects, loading } = useAllProjects();
+  const [cmsSlides, setCmsSlides] = useState([]);
 
   const [filters, setFilters] = useState({
     search: "", minPrice: "", maxPrice: "",
@@ -70,6 +49,27 @@ export default function LuxuryHeroSlider() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadCmsSlides() {
+      try {
+        const response = await fetch("/api/site-settings", { cache: "no-store" });
+        const data = response.ok ? await response.json() : null;
+        if (!alive) return;
+        setCmsSlides(Array.isArray(data?.data?.heroSlides) ? data.data.heroSlides : []);
+      } catch {
+        if (!alive) return;
+        setCmsSlides([]);
+      }
+    }
+
+    loadCmsSlides();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -87,35 +87,29 @@ export default function LuxuryHeroSlider() {
   }, []);
 
   const projects = useMemo(() => {
-    if (!sanityProjects?.length) return FALLBACK_SLIDES;
-    
-    const EXCLUDED = ["beyond", "omniyat", "imtiaz"];
-    const filtered = sanityProjects
-      .filter((p) => {
-        if (!p?.image || !p?.href || !p?.nameEn) return false;
-        const dev = (p.developerSlug || "").toLowerCase();
-        if (EXCLUDED.some((e) => dev.includes(e))) return false;
-        const status = (p.status || p.devStatus || "").toLowerCase();
-        if (status === "land") return false;
-        return true;
-      })
-      .map((p) => ({
-        id: p.slug,
-        title: (locale === "ar" && p.nameAr) ? p.nameAr : p.nameEn,
-        slug: p.slug,
-        image: p.image,
-        description: "",
-        developerName: p.developer || "",
-        developerSlug: p.developerSlug || "",
-        category: p.category || "apartments",
-        href: p.href,
-        location: p.location || "",
-        devStatus: p.devStatus || "Off-plan",
-        status: p.status || "Off-plan",
-      }));
-    
-    return filtered.length > 0 ? filtered : FALLBACK_SLIDES;
-  }, [sanityProjects, locale]);
+    const cmsDrivenSlides = cmsSlides
+      .slice()
+      .sort((a, b) => (a?.order || 0) - (b?.order || 0))
+      .map((slide, index) => ({
+        id: slide?._key || `cms-slide-${index}`,
+        title: (locale === "ar" && slide?.titleAr) ? slide.titleAr : slide?.title || slide?.titleAr || "Luxury Real Estate",
+        slug: slide?.propertySlug || `cms-slide-${index}`,
+        image: slide?.imageUrl || slide?.backgroundUrl || "",
+        description: (locale === "ar" && slide?.subtitleAr) ? slide.subtitleAr : slide?.subtitle || slide?.subtitleAr || "",
+        developerName: "Mohamad Kodmani",
+        developerSlug: "",
+        category: "apartments",
+        href: slide?.ctaUrl || "/properties",
+        location: "",
+        devStatus: "Off-plan",
+        status: "Off-plan",
+      }))
+      .filter((slide) => slide.image);
+
+    if (cmsDrivenSlides.length > 0) return cmsDrivenSlides;
+
+    return [];
+  }, [cmsSlides, locale]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(null);
@@ -288,7 +282,14 @@ export default function LuxuryHeroSlider() {
   if (!projects.length) {
     return (
       <section className={styles.hero} aria-label="Featured luxury properties">
-        <div className={styles.placeholder} style={{ height: '100vh', background: '#f5f5f5' }} />
+        <div
+          className={styles.placeholder}
+          style={{
+            height: "100vh",
+            background:
+              "linear-gradient(135deg, rgba(12,12,12,1) 0%, rgba(27,27,27,1) 55%, rgba(42,42,42,1) 100%)",
+          }}
+        />
       </section>
     );
   }

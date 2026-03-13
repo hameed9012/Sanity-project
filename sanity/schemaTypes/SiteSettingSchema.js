@@ -254,6 +254,42 @@ export default defineType({
         defineField({ name: 'formTitleAr',title: 'Contact Form Title (AR)', type: 'string' }),
       ],
     }),
+    defineField({
+      name: 'about',
+      title: 'About Page',
+      type: 'object',
+      fields: [
+        defineField({ name: 'badge', title: 'Badge (EN)', type: 'string' }),
+        defineField({ name: 'badgeAr', title: 'Badge (AR)', type: 'string' }),
+        defineField({ name: 'title', title: 'Title (EN)', type: 'string' }),
+        defineField({ name: 'titleAr', title: 'Title (AR)', type: 'string' }),
+        defineField({ name: 'subtitle', title: 'Subtitle (EN)', type: 'text', rows: 3 }),
+        defineField({ name: 'subtitleAr', title: 'Subtitle (AR)', type: 'text', rows: 3 }),
+        defineField({
+          name: 'heroImage',
+          title: 'Hero Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+        }),
+        defineField({
+          name: 'sections',
+          title: 'About Sections',
+          type: 'array',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                defineField({ name: 'heading', title: 'Heading (EN)', type: 'string' }),
+                defineField({ name: 'headingAr', title: 'Heading (AR)', type: 'string' }),
+                defineField({ name: 'body', title: 'Body (EN)', type: 'array', of: [{ type: 'text' }] }),
+                defineField({ name: 'bodyAr', title: 'Body (AR)', type: 'array', of: [{ type: 'text' }] }),
+              ],
+            },
+          ],
+        }),
+      ],
+    }),
   ],
 
   preview: {

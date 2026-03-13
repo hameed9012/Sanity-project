@@ -12,9 +12,11 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   const { locale } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
+  const [siteContact, setSiteContact] = useState(null);
 
   const isRTL = locale === "ar";
   const CDN = "https://luxury-real-estate-media.b-cdn.net";
+  const hasSanityArticles = sanityArticles.length > 0;
 
   // 🔹 Meta Pixel helper
   const track = (eventName, params = {}) => {
@@ -23,7 +25,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
     window.fbq("trackCustom", eventName, params);
   };
 
-  const heroImages = useMemo(
+  const fallbackHeroImages = useMemo(
     () => [
       {
         src: `${CDN}/sky-parks/exterior-night-01.jpg`,
@@ -55,6 +57,31 @@ export default function ArticlesClient({ sanityArticles = [] }) {
     [CDN, isRTL]
   );
 
+  const heroImages = useMemo(() => {
+    if (!hasSanityArticles) return fallbackHeroImages;
+
+    const slides = sanityArticles
+      .filter((article) => article?.mainImage || article?.hero?.image)
+      .slice(0, 3)
+      .map((article) => ({
+        src: article.mainImage || article.hero?.image,
+        alt:
+          isRTL
+            ? article.titleAr || article.title || "Article"
+            : article.title || article.titleAr || "Article",
+        title:
+          isRTL
+            ? article.titleAr || article.title || "Article"
+            : article.title || article.titleAr || "Article",
+        description:
+          isRTL
+            ? article.descriptionAr || article.description || ""
+            : article.description || article.descriptionAr || "",
+      }));
+
+    return slides.length > 0 ? slides : fallbackHeroImages;
+  }, [fallbackHeroImages, hasSanityArticles, isRTL, sanityArticles]);
+
   const trustStats = useMemo(
     () => [
       { number: "15+", label: isRTL ? "سنوات خبرة" : "Years Experience" },
@@ -69,6 +96,20 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) setSiteContact(json?.data?.contact || null);
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     setCurrentImage(0);
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
@@ -77,10 +118,46 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   }, [heroImages.length, locale]);
 
   // ── Use Sanity articles if available, otherwise fall back to static data ──
-  const listingData = articlesData.getListingData(locale);
+  const listingData = hasSanityArticles
+    ? {
+        sectionHeader: {
+          badge: isRTL ? "مركز الإعلام" : "Media Center",
+          title: isRTL ? "أحدث" : "Latest",
+          highlight: isRTL ? "المقالات" : "Articles",
+          subtitle: isRTL
+            ? "كل مقال جديد مضاف من النظام سيظهر هنا تلقائياً."
+            : "Every article added in Sanity appears here automatically.",
+        },
+        cta: {
+          badge: isRTL ? "تواصل" : "Get In Touch",
+          title: isRTL ? "هل تريد" : "Want",
+          highlight: isRTL ? "استشارة استثمارية؟" : "investment guidance?",
+          description: isRTL
+            ? "تواصل معنا لمساعدتك في اختيار المشروع أو المنطقة المناسبة."
+            : "Reach out and we will help you choose the right project or area.",
+          buttons: [
+            {
+              text: isRTL ? "واتساب" : "WhatsApp",
+              href: siteContact?.whatsapp
+                ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
+                : "https://wa.me/971568888906",
+              type: "primary",
+            },
+            {
+              text: isRTL ? "اتصل بنا" : "Contact Us",
+              href: "/contact-us",
+              type: "secondary",
+            },
+          ],
+          trustNote: isRTL
+            ? "مقالات ونشرات محدثة مباشرة من النظام"
+            : "Articles and releases updated directly from the CMS",
+        },
+      }
+    : articlesData.getListingData(locale);
 
   const articles =
-    sanityArticles.length > 0
+    hasSanityArticles
       ? sanityArticles.map((a) => ({
           id: a._id,
           slug: a.slug,

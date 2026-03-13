@@ -28,6 +28,24 @@ function normalizeAmenities(raw) {
   };
 }
 
+function normalizePropertyType(raw) {
+  const value = String(raw || "").toLowerCase().trim();
+  if (value.includes("villa")) return "villas";
+  if (value.includes("penthouse")) return "penthouses";
+  if (value.includes("commercial") || value.includes("retail") || value.includes("office")) {
+    return "commercial-retail";
+  }
+  return "apartments";
+}
+
+function developerToSlug(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "unknown";
+}
+
 
 function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
   if (!rawLocale) return null;
@@ -58,6 +76,7 @@ function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
 
 
 function buildSanityProjectData(sanityDoc, locale) {
+  if (sanityDoc?.en?.project || sanityDoc?.ar?.project) {
   const lang = locale === "ar" ? "ar" : "en";
   const content = sanityDoc?.[lang] || sanityDoc?.en || {};
   const project = content?.project || {};
@@ -85,6 +104,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     // ── standard fields ───────────────────────────────────────
     title: project?.name || sanityDoc?.name || "",
     developer: project?.developer || sanityDoc?.developer || "",
+    project,
     location: project?.location || sanityDoc?.location || "",
 
     hero: {
@@ -146,6 +166,83 @@ function buildSanityProjectData(sanityDoc, locale) {
     _raw: sanityDoc,
     _rawLocalized: content,
   };
+  }
+
+  const localizedLocation =
+    locale === "ar"
+      ? sanityDoc?.locationAr || sanityDoc?.location || ""
+      : sanityDoc?.location || "";
+  const localizedDescription =
+    locale === "ar"
+      ? sanityDoc?.descriptionAr || sanityDoc?.description || ""
+      : sanityDoc?.description || "";
+  const gallerySlides = Array.isArray(sanityDoc?.galleryImages)
+    ? sanityDoc.galleryImages.map((item) => item?.url).filter(Boolean)
+    : [];
+
+  return {
+    slug: sanityDoc?.slug || "",
+    category: normalizePropertyType(sanityDoc?.propertyType || sanityDoc?.unitTypes),
+    developerSlug: developerToSlug(sanityDoc?.developer || ""),
+    regionSlug: sanityDoc?.regionSlug || "",
+    startingPriceAED: sanityDoc?.startingPrice
+      ? parseInt(String(sanityDoc.startingPrice).replace(/[^0-9]/g, ""), 10) || null
+      : null,
+    title: sanityDoc?.title || "",
+    developer: sanityDoc?.developer || "",
+    project: {
+      name: sanityDoc?.title || "",
+      developer: sanityDoc?.developer || "",
+      location: localizedLocation,
+      startingPrice: sanityDoc?.startingPrice || "",
+      completionDate: sanityDoc?.completionDate || "",
+      paymentPlan: sanityDoc?.paymentPlan || "",
+      type: sanityDoc?.unitTypes || sanityDoc?.propertyType || "",
+      status: sanityDoc?.status || "",
+    },
+    hero: {
+      backgroundUrl:
+        sanityDoc?.heroVideo || sanityDoc?.heroImage || gallerySlides[0] || "",
+      squareImageUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
+      title: sanityDoc?.title || "",
+      companyName: sanityDoc?.developer || "",
+    },
+    intro: {
+      title: sanityDoc?.title || "",
+      description: localizedDescription,
+      paragraphs: localizedDescription ? [localizedDescription] : [],
+      brochures: sanityDoc?.brochureUrl
+        ? [{ title: "Download Brochure", url: sanityDoc.brochureUrl, type: "main" }]
+        : [],
+      imgUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
+      imgAlt: sanityDoc?.title || "",
+      stats: [],
+    },
+    gallery: {
+      images: gallerySlides.map((url) => ({ url, alt: sanityDoc?.title || "" })),
+      slides: gallerySlides,
+    },
+    floorPlans: {
+      plans: Array.isArray(sanityDoc?.floorPlans) ? sanityDoc.floorPlans : [],
+    },
+    amenities: normalizeAmenities({ title: "", amenities: sanityDoc?.amenities || [] }),
+    location: {
+      lat: sanityDoc?.lat || null,
+      lng: sanityDoc?.lng || null,
+      address: localizedLocation,
+      proximityFeatures: Array.isArray(sanityDoc?.nearbyPlaces)
+        ? sanityDoc.nearbyPlaces.map((item) => ({
+            icon: item?.icon || "location",
+            text: item?.distance
+              ? `${item?.name || ""} - ${item.distance}`
+              : item?.name || "",
+          }))
+        : [],
+    },
+    _sanity: true,
+    _raw: sanityDoc,
+    _rawLocalized: sanityDoc,
+  };
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -162,20 +259,14 @@ export default function ProjectPage({ params }) {
     async function loadData() {
       setLoading(true);
 
-      // 1. Try static data first (returns locale sub-object directly)
-      const staticData = await getProjectData(category, developer, project, locale);
-      if (staticData) {
-        setProjectData(normalizeStaticData(staticData, project, category, developer));
-        setLoading(false);
-        return;
-      }
-
-      // 2. Fall back to Sanity
+      // 1. Prefer live Sanity/API data so property pages stop drifting from backend content.
       try {
         const res = await fetch(`/api/sanity-projects?slug=${project}`);
         if (res.ok) {
-          const docs = await res.json();
-          const doc = docs.find((d) => d.slug === project) || docs[0];
+          const payload = await res.json();
+          const doc = Array.isArray(payload)
+            ? payload.find((d) => d.slug === project) || payload[0]
+            : payload;
           if (doc) {
             setProjectData(buildSanityProjectData(doc, locale));
             setLoading(false);
@@ -184,6 +275,14 @@ export default function ProjectPage({ params }) {
         }
       } catch (e) {
         console.error("Failed to load Sanity project data", e);
+      }
+
+      // 2. Fall back to the legacy static map only when Sanity has no matching document.
+      const staticData = await getProjectData(category, developer, project, locale);
+      if (staticData) {
+        setProjectData(normalizeStaticData(staticData, project, category, developer));
+        setLoading(false);
+        return;
       }
 
       setProjectData(null);

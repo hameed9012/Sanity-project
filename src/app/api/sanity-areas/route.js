@@ -1,16 +1,12 @@
 import { sanityClient } from "@/lib/sanityClient";
 
 export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const slug = searchParams.get("slug");
+
   try {
-    const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
-
-    const filter = slug
-      ? `*[_type == "area" && slug.current == "${slug}"][0]`
-      : `*[_type == "area"] | order(order asc)`;
-
-    const data = await sanityClient.fetch(`
-      ${filter} {
+    const query = slug
+      ? `*[_type == "area" && slug.current == $slug][0] {
         _id,
         name,
         nameAr,
@@ -28,9 +24,30 @@ export async function GET(request) {
         highlights,
         highlightsAr,
         order,
-        featured,
-      }
-    `);
+        featured
+      }`
+      : `*[_type == "area"] | order(order asc) {
+        _id,
+        name,
+        nameAr,
+        "slug": slug.current,
+        heroImage,
+        tagline,
+        taglineAr,
+        description,
+        descriptionAr,
+        location,
+        avgBuyPrice,
+        avgRentPrice,
+        roi,
+        regionSlug,
+        highlights,
+        highlightsAr,
+        order,
+        featured
+      }`;
+
+    const data = await sanityClient.fetch(query, { slug });
     return Response.json(data || (slug ? null : []));
   } catch (err) {
     console.error("sanity-areas API error:", err);

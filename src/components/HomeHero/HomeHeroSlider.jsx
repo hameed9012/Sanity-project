@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { client } from "@/sanity/lib/client";
 import styles from "./HomeHeroSlider.module.css";
 
 export default function HomeHeroSlider({ locale = "en" }) {
@@ -14,20 +13,19 @@ export default function HomeHeroSlider({ locale = "en" }) {
 
     async function loadSlides() {
       try {
-        const query = `*[_type == "heroSection"][0]{
-          slides[]{
-            titleEn,
-            titleAr,
-            link,
-            "image": image.asset->url
-          }
-        }`;
-
-        const data = await client.fetch(query);
+        const response = await fetch("/api/site-settings", { cache: "no-store" });
+        const siteSettingsResponse = response.ok ? await response.json() : null;
 
         if (!mounted) return;
 
-        const normalized = (data?.slides || []).filter(
+        const siteSettingSlides = (siteSettingsResponse?.data?.heroSlides || []).map((slide) => ({
+          titleEn: slide?.title,
+          titleAr: slide?.titleAr,
+          link: slide?.ctaUrl || "/properties",
+          image: slide?.imageUrl || slide?.backgroundUrl,
+        }));
+
+        const normalized = siteSettingSlides.filter(
           (slide) => slide?.image
         );
 

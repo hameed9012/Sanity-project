@@ -1,104 +1,147 @@
 import { sanityClient } from "./sanityClient";
 
-// ─────────────────────────────────────────────────────
-// PROPERTIES
-// ─────────────────────────────────────────────────────
+const PROPERTY_PROJECTION = `
+  _id,
+  _createdAt,
+  _updatedAt,
+  "slug": slug.current,
+  "name": coalesce(name, en.project.name, project.name),
+  "nameEn": coalesce(name, en.project.name, project.name),
+  "nameAr": coalesce(nameAr, ar.project.name),
+  "description": coalesce(description, en.description, en.overview),
+  "descriptionAr": coalesce(descriptionAr, ar.description, ar.overview),
+  status,
+  listingStatus,
+  propertyType,
+  type,
+  category,
+  featured,
+  isLand,
+  developer,
+  developerName,
+  developerSlug,
+  regionSlug,
+  areaSlug,
+  location,
+  handover,
+  handoverQuarter,
+  completionDate,
+  completionYear,
+  priceAED,
+  startingPrice,
+  startingPriceAED,
+  sizeSqft,
+  sizeSqftMin,
+  sizeSqftMax,
+  minBedrooms,
+  maxBedrooms,
+  bedrooms,
+  bathrooms,
+  heroImage,
+  heroImageUrl,
+  image,
+  heroVideo,
+  brochureUrl,
+  videoUrl,
+  video,
+  amenities,
+  floorPlans,
+  paymentPlan,
+  nearbyPlaces,
+  coordinates,
+  lat,
+  lng,
+  gallery,
+  hero,
+  project,
+  en,
+  ar
+`;
+
+const ARTICLE_PROJECTION = `
+  _id,
+  _createdAt,
+  _updatedAt,
+  title,
+  titleAr,
+  "slug": slug.current,
+  description,
+  descriptionAr,
+  mainImage,
+  category,
+  publishedAt,
+  readTime,
+  featured,
+  hero,
+  body,
+  bodyAr,
+  tableOfContents,
+  tableOfContentsAr,
+  sections[]{
+    ...,
+    expertQuote{
+      ...,
+      text,
+      textAr
+    }
+  },
+  cta,
+  seoTitle,
+  seoDescription,
+  seoKeywords
+`;
 
 export async function getSanityPropertyBySlug(slug) {
   return sanityClient.fetch(
-    `*[_type == "property" && slug.current == $slug][0] {
-      _id,
-      "slug": slug.current,
-      status,
-      developer,
-      location,
-      featured,
-      en,
-      ar,
-    }`,
+    `*[_type == "property" && slug.current == $slug][0]{${PROPERTY_PROJECTION}}`,
     { slug }
   );
 }
 
 export async function getAllProperties(statusFilter) {
+  const params = {};
   const filter = statusFilter
-    ? `*[_type == "property" && status == "${statusFilter}"]`
+    ? `*[_type == "property" && coalesce(status, listingStatus) == $statusFilter]`
     : `*[_type == "property"]`;
 
-  return sanityClient.fetch(`
-    ${filter} {
-      _id,
-      "slug": slug.current,
-      status,
-      developer,
-      location,
-      featured,
-      "name": en.project.name,
-      "startingPrice": en.project.startingPrice,
-      "heroImage": en.hero.backgroundUrl,
-      "developerLogo": en.hero.squareImageUrl,
-    }
-  `);
+  if (statusFilter) params.statusFilter = statusFilter;
+
+  return sanityClient.fetch(
+    `${filter} | order(featured desc, _updatedAt desc){${PROPERTY_PROJECTION}}`,
+    params
+  );
 }
 
-// ─────────────────────────────────────────────────────
-// ARTICLES
-// ─────────────────────────────────────────────────────
-
 export async function getAllArticles() {
-  return sanityClient.fetch(`
-    *[_type == "article"] | order(publishedAt desc) {
-      _id,
-      title,
-      titleAr,
-      "slug": slug.current,
-      description,
-      descriptionAr,
-      mainImage,
-      category,
-      publishedAt,
-      readTime,
-      seoTitle,
-      seoDescription,
-    }
-  `);
+  return sanityClient.fetch(
+    `*[_type == "article"] | order(featured desc, publishedAt desc, _updatedAt desc){${ARTICLE_PROJECTION}}`
+  );
 }
 
 export async function getArticleBySlug(slug) {
   return sanityClient.fetch(
-    `*[_type == "article" && slug.current == $slug][0] {
-      _id,
-      title,
-      titleAr,
-      "slug": slug.current,
-      description,
-      descriptionAr,
-      mainImage,
-      category,
-      publishedAt,
-      readTime,
-      body,
-      bodyAr,
-      seoTitle,
-      seoDescription,
-      seoKeywords,
-    }`,
+    `*[_type == "article" && slug.current == $slug][0]{${ARTICLE_PROJECTION}}`,
     { slug }
   );
 }
 
-// ─────────────────────────────────────────────────────
-// DEVELOPERS
-// ─────────────────────────────────────────────────────
-
 export async function getAllDevelopers() {
   return sanityClient.fetch(`
-    *[_type == "developer"] {
+    *[_type == "developer"] | order(name asc) {
       _id,
+      _updatedAt,
       name,
+      nameAr,
       "slug": slug.current,
       tagline,
+      taglineAr,
       logoUrl,
+      coverImage,
+      coverImageUrl,
+      about,
+      aboutAr,
+      stats,
+      highlights
     }
   `);
 }
@@ -107,36 +150,93 @@ export async function getDeveloperBySlug(slug) {
   return sanityClient.fetch(
     `*[_type == "developer" && slug.current == $slug][0] {
       _id,
+      _updatedAt,
       name,
+      nameAr,
       "slug": slug.current,
       tagline,
+      taglineAr,
       logoUrl,
+      coverImage,
+      coverImageUrl,
       about,
       aboutAr,
       stats,
-      highlights,
+      highlights
     }`,
     { slug }
   );
 }
 
-// ─────────────────────────────────────────────────────
-// HERO SLIDES
-// ─────────────────────────────────────────────────────
+export async function getAllAreas() {
+  return sanityClient.fetch(`
+    *[_type == "area"] | order(order asc, name asc) {
+      _id,
+      _updatedAt,
+      name,
+      nameAr,
+      "slug": slug.current,
+      heroImage,
+      heroImageUrl,
+      tagline,
+      taglineAr,
+      description,
+      descriptionAr,
+      location,
+      avgBuyPrice,
+      avgRentPrice,
+      roi,
+      regionSlug,
+      highlights,
+      highlightsAr,
+      order,
+      featured
+    }
+  `);
+}
+
+export async function getAreaBySlug(slug) {
+  return sanityClient.fetch(
+    `*[_type == "area" && slug.current == $slug][0] {
+      _id,
+      _updatedAt,
+      name,
+      nameAr,
+      "slug": slug.current,
+      heroImage,
+      heroImageUrl,
+      tagline,
+      taglineAr,
+      description,
+      descriptionAr,
+      location,
+      avgBuyPrice,
+      avgRentPrice,
+      roi,
+      regionSlug,
+      highlights,
+      highlightsAr,
+      order,
+      featured
+    }`,
+    { slug }
+  );
+}
 
 export async function getHeroSlides() {
   return sanityClient.fetch(`
-    *[_type == "heroSlide"] | order(order asc) {
+    *[_type == "heroSlide"] | order(order asc, _updatedAt desc) {
       _id,
       title,
       titleAr,
       subtitle,
       subtitleAr,
       backgroundUrl,
+      image,
       ctaLabel,
       ctaLabelAr,
       ctaUrl,
-      order,
+      order
     }
   `);
 }

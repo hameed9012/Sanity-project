@@ -91,6 +91,7 @@ export default function ContactFormFinal({
 }) {
   const { locale } = useLanguage();
   const isRTL = locale === "ar";
+  const [siteContact, setSiteContact] = useState(null);
 
   // ✅ project name
   const projectName =
@@ -148,6 +149,20 @@ export default function ContactFormFinal({
   const fileInputRef = useRef(null);
 
   const showToast = (message, type = "success") => setToast({ message, type });
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) setSiteContact(json?.data?.contact || null);
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // ✅ Reset form when tab changes
   useEffect(() => {
@@ -550,6 +565,23 @@ export default function ContactFormFinal({
   // ✅ Determine which form data to use
   const currentFormData =
     activeTab === "BUY_PROPERTY" ? buyFormData : careersFormData;
+  const contactHeadline = isRTL
+    ? siteContact?.formTitleAr || "Hear From You"
+    : siteContact?.formTitle || "Hear From You";
+  const whatsappHref = siteContact?.whatsapp
+    ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
+    : null;
+  const contactLinks = [
+    siteContact?.phone
+      ? { key: "phone", href: `tel:${siteContact.phone}`, label: "Call", value: siteContact.phone }
+      : null,
+    siteContact?.email
+      ? { key: "email", href: `mailto:${siteContact.email}`, label: "Email", value: siteContact.email }
+      : null,
+    whatsappHref
+      ? { key: "whatsapp", href: whatsappHref, label: "WhatsApp", value: siteContact?.whatsapp }
+      : null,
+  ].filter(Boolean);
 
   return (
     <section className={styles.section} dir={isRTL ? "rtl" : "ltr"}>
@@ -564,7 +596,11 @@ export default function ContactFormFinal({
       <div className={styles.container}>
         <div className={styles.grid}>
           {/* LEFT */}
-          <div className={styles.left}>
+          <div
+            className={styles.left}
+            data-contact-headline={contactHeadline}
+            data-contact-links={contactLinks.length}
+          >
             <div className={styles.kicker}>
               {isRTL ? "نود أن" : "WE'D LOVE TO"}
             </div>

@@ -53,7 +53,7 @@ export default defineType({
 
     defineField({
       name: 'status',
-      title: 'Type',
+      title: 'Listing Status',
       type: 'string',
       group: 'basics',
       options: {
@@ -61,6 +61,7 @@ export default defineType({
           {title: '🏗️  Off-Plan', value: 'offplan'},
           {title: '🏠 Secondary', value: 'secondary'},
           {title: '🌿 Land', value: 'land'},
+          {title: '🔑 Rental', value: 'rental'},
         ],
         layout: 'radio',
       },
@@ -98,6 +99,23 @@ export default defineType({
       type: 'string',
       group: 'basics',
       description: 'e.g. "1–4 Bedroom Apartments & Villas"',
+    }),
+
+    defineField({
+      name: 'propertyType',
+      title: 'Property Type',
+      type: 'string',
+      group: 'basics',
+      description: 'Used for Properties page categories and project routing',
+      options: {
+        list: [
+          {title: 'Apartments', value: 'apartments'},
+          {title: 'Commercial / Retail', value: 'commercial-retail'},
+          {title: 'Penthouses', value: 'penthouses'},
+          {title: 'Villas', value: 'villas'},
+        ],
+        layout: 'radio',
+      },
     }),
 
     defineField({
@@ -245,6 +263,14 @@ export default defineType({
           preview: {select: {title: 'name', subtitle: 'distance'}},
         },
       ],
+    }),
+
+    defineField({
+      name: 'regionSlug',
+      title: 'Area Slug',
+      type: 'string',
+      group: 'location',
+      description: 'Optional. Match this to the Where to Live area slug, e.g. "business-bay"',
     }),
 
     // ─── ARABIC ───────────────────────────────────────────────

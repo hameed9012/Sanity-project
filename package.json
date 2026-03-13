@@ -10,7 +10,8 @@
     "lint": "eslint",
     "dev:production": "NODE_ENV=production next dev",
     "build:production": "NODE_ENV=production next build",
-    "start:production": "NODE_ENV=production next start"
+    "start:production": "NODE_ENV=production next start",
+    "sanity:import:json": "node mjs-scrips/import-json-to-sanity.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

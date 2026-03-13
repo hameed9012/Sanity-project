@@ -3,7 +3,7 @@ import { createClient } from "@sanity/client";
 import imageUrlBuilder from '@sanity/image-url'
 
 const SITE_SETTINGS_QUERY = `
-  *[_type == "siteSettings" && _id == "siteSettings"][0]{
+  *[_type == "siteSettings"] | order(_updatedAt desc)[0]{
     "hideSearch": navbar.hideSearch,
     "desktopLeft":  navbar.desktopLeft[]{labelEn,labelAr,type,href,openInNewTab},
     "desktopRight": navbar.desktopRight[]{labelEn,labelAr,type,href,openInNewTab},
@@ -44,6 +44,32 @@ const SITE_SETTINGS_QUERY = `
       whatsapp, phone, email,
       instagram, linkedin, youtube,
       formTitle, formTitleAr
+    },
+    about{
+      badge, badgeAr,
+      title, titleAr,
+      subtitle, subtitleAr,
+      heroImage{
+        asset->
+      },
+      sections[]{
+        heading, headingAr,
+        body, bodyAr
+      }
+    }
+  }
+`;
+
+const HERO_SECTION_QUERY = `
+  *[_type == "heroSection"] | order(_updatedAt desc)[0]{
+    slides[]{
+      titleEn,
+      titleAr,
+      image{
+        asset->
+      },
+      link,
+      "_key": _key
     }
   }
 `;
@@ -65,7 +91,12 @@ function urlFor(source) {
 
 export async function GET() {
   try {
-    const data = await client.fetch(SITE_SETTINGS_QUERY);
+    const [siteSettings, heroSection] = await Promise.all([
+      client.fetch(SITE_SETTINGS_QUERY),
+      client.fetch(HERO_SECTION_QUERY),
+    ]);
+
+    const data = siteSettings || {};
     
     // Transform image references to URLs
     if (data) {
@@ -76,10 +107,33 @@ export async function GET() {
           imageUrl: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : slide.backgroundUrl || null
         }));
       }
+
+      // Backfill homepage hero from the legacy Home Hero Slider document type when Site Settings is empty.
+      if ((!data.heroSlides || data.heroSlides.length === 0) && heroSection?.slides?.length) {
+        data.heroSlides = heroSection.slides.map((slide, index) => ({
+          _key: slide._key || `hero-section-${index}`,
+          title: slide.titleEn || "",
+          titleAr: slide.titleAr || "",
+          subtitle: "",
+          subtitleAr: "",
+          backgroundUrl: null,
+          image: slide.image || null,
+          imageUrl: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null,
+          propertySlug: "",
+          ctaLabel: "",
+          ctaLabelAr: "",
+          ctaUrl: slide.link || "/properties",
+          order: index,
+        })).filter((slide) => slide.imageUrl);
+      }
       
       // Transform art of detail owner image
       if (data.artOfDetail?.ownerImage) {
         data.artOfDetail.ownerImageUrl = urlFor(data.artOfDetail.ownerImage).width(800).height(1000).url();
+      }
+
+      if (data.about?.heroImage) {
+        data.about.heroImageUrl = urlFor(data.about.heroImage).width(1600).height(1200).url();
       }
       
       // Transform pillars images

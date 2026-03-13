@@ -1,15 +1,54 @@
-// src/components/where-to-live/RegionProjectsSection.jsx
 "use client";
 
 import React, { useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getProjectsForRegion } from "@/data/regionProjectsIndex";
-import { propertiesData } from "@/data/propertiesData/propertiesData";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import styles from "@/styles/where-to-live/RegionProjectsSection.module.css";
 
-// ---------- PURE FILTER FUNCTION ----------
+function normalizeSlug(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\u0600-\u06FF]+/g, " ")
+    .trim();
+}
+
+function formatRegionName(slug) {
+  return String(slug || "")
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function projectMatchesArea(project, regionSlug) {
+  const targetSlug = normalizeSlug(regionSlug);
+  if (!targetSlug) return false;
+
+  const projectRegion = normalizeSlug(project?.regionSlug);
+  if (projectRegion && projectRegion === targetSlug) return true;
+
+  const locationParts = String(project?.location || "")
+    .split(",")
+    .map((part) => normalizeSlug(part))
+    .filter(Boolean);
+
+  if (locationParts.includes(targetSlug)) return true;
+
+  const targetText = normalizeText(targetSlug.replace(/-/g, " "));
+  const locationText = normalizeText(project?.location || "");
+  return !!targetText && locationText.includes(targetText);
+}
+
 function projectMatchesFilters(project, filters) {
   if (!filters) return true;
 
@@ -27,14 +66,13 @@ function projectMatchesFilters(project, filters) {
     minPostHandoverMonths,
   } = filters;
 
-  // 1) Search
   if (search && search.trim()) {
     const term = search.trim().toLowerCase();
     const haystack = [
-      project.name,
-      project.developer,
-      project.location,
-      project.slug,
+      project?.name,
+      project?.developer,
+      project?.location,
+      project?.slug,
     ]
       .filter(Boolean)
       .join(" ")
@@ -43,57 +81,45 @@ function projectMatchesFilters(project, filters) {
     if (!haystack.includes(term)) return false;
   }
 
-  // 2) Price (dummy properties use priceAED)
-  const price = project.priceAED;
+  const price = project?.priceAED;
   if (minPrice && price && price < minPrice) return false;
   if (maxPrice && price && price > maxPrice) return false;
 
-  // 3) Size (dummy properties use sizeSqft)
-  const size = project.sizeSqft;
-  if (minSize && size && size < minSize) return false;
-  if (maxSize && size && size > maxSize) return false;
+  const minProjectSize = project?.sizeSqftMin;
+  const maxProjectSize = project?.sizeSqftMax ?? minProjectSize;
+  if (minSize && maxProjectSize && maxProjectSize < minSize) return false;
+  if (maxSize && minProjectSize && minProjectSize > maxSize) return false;
 
-  // 4) Dev status (devStatus or fallback status)
   if (devStatus.length > 0) {
-    const projStatus = (
-      project.devStatus ||
-      project.status ||
-      ""
-    ).toLowerCase();
-    const wanted = devStatus.map((s) => s.toLowerCase());
-    if (!wanted.some((s) => projStatus.includes(s))) return false;
+    const projectStatus = String(project?.devStatus || project?.status || "").toLowerCase();
+    const wanted = devStatus.map((status) => String(status).toLowerCase());
+    if (!wanted.some((status) => projectStatus.includes(status))) return false;
   }
 
-  // 5) Unit type (unitType or fallback type)
   if (unitTypes.length > 0) {
-    const projType = (project.unitType || project.type || "").toLowerCase();
-    const wanted = unitTypes.map((t) => t.toLowerCase());
-    if (!wanted.some((t) => projType.includes(t))) return false;
+    const typeText = String(project?.unitType || project?.type || "").toLowerCase();
+    const wanted = unitTypes.map((type) => String(type).toLowerCase());
+    if (!wanted.some((type) => typeText.includes(type))) return false;
   }
 
-  // 6) Bedrooms (dummy minBedrooms / maxBedrooms)
-  if (bedrooms.length > 0 && project.minBedrooms != null) {
-    const minB = project.minBedrooms;
-    const maxB = project.maxBedrooms;
-
-    const matchesAny = bedrooms.some((b) => {
-      if (b === 5) return maxB >= 5; // 5+ BR
-      return minB <= b && maxB >= b;
+  if (bedrooms.length > 0 && project?.minBedrooms != null) {
+    const minBedroomsValue = project.minBedrooms;
+    const maxBedroomsValue = project.maxBedrooms ?? minBedroomsValue;
+    const matchesBedroom = bedrooms.some((bedroom) => {
+      if (bedroom === 5) return maxBedroomsValue >= 5;
+      return minBedroomsValue <= bedroom && maxBedroomsValue >= bedroom;
     });
-
-    if (!matchesAny) return false;
+    if (!matchesBedroom) return false;
   }
 
-  // 7) Completion year
-  if (completionYears.length > 0 && project.completionYear) {
+  if (completionYears.length > 0 && project?.completionYear) {
     if (!completionYears.includes(project.completionYear)) return false;
   }
 
-  // 8) Post-handover
   if (postHandoverOnly) {
-    if (!project.hasPostHandover) return false;
+    if (!project?.hasPostHandover) return false;
     if (
-      typeof project.postHandoverMonths === "number" &&
+      typeof project?.postHandoverMonths === "number" &&
       project.postHandoverMonths < (minPostHandoverMonths || 1)
     ) {
       return false;
@@ -103,31 +129,35 @@ function projectMatchesFilters(project, filters) {
   return true;
 }
 
-// ---------- MAIN COMPONENT ----------
 export default function RegionProjectsSection({
   regionSlug,
   locale = "en",
   filters,
   onResultsCountChange,
 }) {
-  const allRegionProjects = getProjectsForRegion(regionSlug);
+  const { allProjects, loading } = useAllProjects();
 
-  // Apply filters in memory (REAL TIME)
-  const filteredProjects = useMemo(
-    () => allRegionProjects.filter((p) => projectMatchesFilters(p, filters)),
-    [allRegionProjects, filters]
-  );
+  const regionProjects = useMemo(() => {
+    return (allProjects || []).filter(
+      (project) => !project?.isLand && projectMatchesArea(project, regionSlug)
+    );
+  }, [allProjects, regionSlug]);
 
-  // Lift result count up to the page (for modal button text)
+  const filteredProjects = useMemo(() => {
+    return regionProjects.filter((project) => projectMatchesFilters(project, filters));
+  }, [regionProjects, filters]);
+
   useEffect(() => {
     if (typeof onResultsCountChange === "function") {
       onResultsCountChange(filteredProjects.length);
     }
   }, [filteredProjects.length, onResultsCountChange]);
 
-  const { categories } = propertiesData("", null, locale);
+  if (loading && filteredProjects.length === 0) {
+    return null;
+  }
 
-  if (!filteredProjects || filteredProjects.length === 0) {
+  if (!filteredProjects.length) {
     return (
       <section className={styles.projectsSection}>
         <div className={styles.container}>
@@ -142,126 +172,72 @@ export default function RegionProjectsSection({
     );
   }
 
-  const getProjectDetails = (projectSlug) => {
-    for (const category of categories) {
-      for (const developer of category.developers) {
-        for (const project of developer.projects) {
-          if (project.slug === projectSlug) {
-            return {
-              ...project,
-              developer: developer.name,
-              propertyType: category.name,
-              categorySlug: category.slug,
-              developerSlug: developer.slug,
-            };
-          }
-        }
-      }
-    }
-    return null;
-  };
-
-  const formatRegionName = (slug) =>
-    slug
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-
   return (
     <section className={styles.projectsSection}>
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Featured Projects</h2>
           <p className={styles.sectionSubtitle}>
-            Exclusive properties in {formatRegionName(regionSlug)} (
-            {filteredProjects.length})
+            Exclusive properties in {formatRegionName(regionSlug)} ({filteredProjects.length})
           </p>
         </div>
 
         <div className={styles.projectsGrid}>
-          {filteredProjects.map((regionProject) => {
-            const projectDetails = getProjectDetails(regionProject.slug);
+          {filteredProjects.map((project) => (
+            <div key={project.slug} className={styles.projectCard}>
+              <Link href={project.href} className={styles.cardLink}>
+                <div className={styles.imageContainer}>
+                  <Image
+                    src={project.image || "/images/project-placeholder.jpg"}
+                    alt={project.name || project.slug}
+                    fill
+                    className={styles.projectImage}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div className={styles.imageOverlay} />
 
-            if (!projectDetails) {
-              return (
-                <div
-                  key={regionProject.slug}
-                  className={styles.projectCardFallback}
-                >
-                  <h3>{regionProject.name}</h3>
-                  <p>{regionProject.location}</p>
+                  {project.startingPrice && (
+                    <div className={styles.priceBadge}>{project.startingPrice}</div>
+                  )}
                 </div>
-              );
-            }
 
-            return (
-              <div key={regionProject.slug} className={styles.projectCard}>
-                <Link href={regionProject.href} className={styles.cardLink}>
-                  <div className={styles.imageContainer}>
-                    <Image
-                      src={
-                        projectDetails.image ||
-                        regionProject.image ||
-                        "/images/project-placeholder.jpg"
-                      }
-                      alt={projectDetails.title}
-                      fill
-                      className={styles.projectImage}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className={styles.imageOverlay} />
-
-                    {regionProject.startingPrice && (
-                      <div className={styles.priceBadge}>
-                        {regionProject.startingPrice}
-                      </div>
-                    )}
+                <div className={styles.cardContent}>
+                  <div className={styles.projectHeader}>
+                    <h3 className={styles.projectName}>{project.name}</h3>
+                    <p className={styles.projectLocation}>
+                      {project.location || formatRegionName(regionSlug)}
+                    </p>
                   </div>
 
-                  <div className={styles.cardContent}>
-                    <div className={styles.projectHeader}>
-                      <h3 className={styles.projectName}>
-                        {projectDetails.title}
-                      </h3>
-                      <p className={styles.projectLocation}>
-                        {regionProject.location || formatRegionName(regionSlug)}
-                      </p>
-                    </div>
+                  <div className={styles.developerInfo}>
+                    <span className={styles.developerLabel}>
+                      {locale === "ar" ? "المطور" : "Developer"}
+                    </span>
+                    <span className={styles.developerName}>{project.developer}</span>
+                  </div>
 
-                    <div className={styles.developerInfo}>
-                      <span className={styles.developerLabel}>Developer</span>
-                      <span className={styles.developerName}>
-                        {projectDetails.developer}
+                  <div className={styles.detailsGrid}>
+                    <div className={styles.detailItem}>
+                      <span className={styles.detailLabel}>
+                        {locale === "ar" ? "النوع" : "Property Type"}
                       </span>
+                      <span className={styles.detailValue}>{project.unitType || project.type}</span>
                     </div>
-
-                    <div className={styles.detailsGrid}>
-                      <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>
-                          Property Type
-                        </span>
-                        <span className={styles.detailValue}>
-                          {projectDetails.propertyType}
-                        </span>
-                      </div>
-                      <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Bedroom</span>
-                        <span className={styles.detailValue}>
-                          {regionProject.bedrooms}
-                        </span>
-                      </div>
+                    <div className={styles.detailItem}>
+                      <span className={styles.detailLabel}>
+                        {locale === "ar" ? "التسليم" : "Handover"}
+                      </span>
+                      <span className={styles.detailValue}>{project.handover || "TBA"}</span>
                     </div>
-
-                    {regionProject.status && (
-                      <div className={styles.statusBadge}>
-                        {regionProject.status}
-                      </div>
-                    )}
                   </div>
-                </Link>
-              </div>
-            );
-          })}
+
+                  {project.status && (
+                    <div className={styles.statusBadge}>{project.status}</div>
+                  )}
+                </div>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </section>

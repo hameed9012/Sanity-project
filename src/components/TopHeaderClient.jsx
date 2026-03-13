@@ -176,28 +176,7 @@ export default function TopHeader() {
     const text = labelFor(item, locale);
     if (!text) return null;
 
-    if (item.type === "action_search") {
-      if (hideSearch) return null;
-      return (
-        <li key={`d-act-${idx}`} className={styles.searchPropsItem}>
-          <button
-            type="button"
-            className={`${styles.level1Menu} ${styles.searchPropsBtn} ${
-              activeCurtain === "SEARCH_PROPERTIES" ? styles.active : ""
-            }`}
-            onClick={() =>
-              activeCurtain === "SEARCH_PROPERTIES"
-                ? closeCurtain()
-                : openCurtain("SEARCH_PROPERTIES")
-            }
-            aria-haspopup="dialog"
-            aria-expanded={activeCurtain === "SEARCH_PROPERTIES"}
-          >
-            {text}
-          </button>
-        </li>
-      );
-    }
+    if (item.type === "action_search") return null;
 
     const href   = safeHref(item.href);
     const newTab = Boolean(item.openInNewTab);
@@ -219,19 +198,7 @@ export default function TopHeader() {
     const text = labelFor(item, locale);
     if (!text) return null;
 
-    if (item.type === "action_search") {
-      if (hideSearch) return null;
-      return (
-        <button
-          key={`m-act-${idx}`}
-          type="button"
-          className={styles.mobileNavLink}
-          onClick={() => { closeAllMobileMenus(); openCurtain("SEARCH_PROPERTIES"); }}
-        >
-          {text}
-        </button>
-      );
-    }
+    if (item.type === "action_search") return null;
 
     const href   = safeHref(item.href);
     const newTab = Boolean(item.openInNewTab);

@@ -14,6 +14,7 @@ import DeveloperFounder from "@/components/developer/DeveloperFounder";
 
 import { useAllProjects } from "@/components/SanityProjectsContext";
 import { useLanguage } from "@/components/LanguageProvider";
+import { filterProjects } from "@/lib/projects/filterProjects";
 
 import styles from "@/styles/developer/DeveloperPage.module.css";
 
@@ -207,25 +208,14 @@ export default function DeveloperPage() {
   }, [developer, allProjects, profileKey, slug]);
 
   const filteredProjects = useMemo(() => {
-    return developerProjects.filter((project) => {
-      if (filters.search?.trim()) {
-        const s = filters.search.toLowerCase().trim();
-        const fields = [project.name, project.developer, project.location, project.unitType].filter(Boolean).map((f) => f.toLowerCase());
-        if (!fields.some((f) => f.includes(s))) return false;
+    const { filtered } = filterProjects(developerProjects, filters);
+    return filtered.filter((project) => {
+      if (
+        filters.completionYears.length &&
+        !filters.completionYears.includes(project.completionYear)
+      ) {
+        return false;
       }
-      const p = project.priceAED || 0;
-      if (filters.minPrice && p < Number(filters.minPrice)) return false;
-      if (filters.maxPrice && p > Number(filters.maxPrice)) return false;
-      if (filters.devStatus.length && !filters.devStatus.includes(project.devStatus)) return false;
-      if (filters.unitTypes.length && !filters.unitTypes.includes(project.unitType)) return false;
-      if (filters.bedrooms.length) {
-        const match = filters.bedrooms.some((br) => {
-          const min = project.minBedrooms || 0; const max = project.maxBedrooms || min;
-          if (br === 5) return min >= 5; return br >= min && br <= max;
-        });
-        if (!match) return false;
-      }
-      if (filters.completionYears.length && !filters.completionYears.includes(project.completionYear)) return false;
       if (filters.postHandoverOnly && !project.hasPostHandover) return false;
       return true;
     });
