@@ -25,6 +25,18 @@
   text-align: center;
 }
 
+.heroMedia,
+.heroSwiper,
+.heroSlide {
+  position: absolute;
+  inset: 0;
+}
+
+.heroBgImg {
+  object-fit: cover;
+  filter: brightness(0.82) saturate(1.05);
+}
+
 .heroOverlay {
   position: absolute;
   inset: 0;

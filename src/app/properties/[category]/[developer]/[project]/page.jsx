@@ -52,6 +52,28 @@ function slugifyValue(value) {
     .replace(/^-|-$/g, "");
 }
 
+function parsePriceToAED(value) {
+  if (value === null || value === undefined) return null;
+
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return null;
+
+  const numericPart = raw.replace(/[^\d.]/g, "");
+  let parsed = Number(numericPart);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+
+  const compact = raw.replace(/\s+/g, "");
+  if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) {
+    parsed *= 1_000_000;
+  } else if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) {
+    parsed *= 1_000;
+  }
+
+  parsed = Math.round(parsed);
+  return parsed > 0 ? parsed : null;
+}
+
 
 function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
   if (!rawLocale) return null;
@@ -68,9 +90,7 @@ function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
     category: category || "apartments",
     developerSlug: developerSlug || "unknown",
     regionSlug: rawLocale.location?.regionSlug || "",
-    startingPriceAED: rawLocale.project?.startingPrice
-      ? parseInt(String(rawLocale.project.startingPrice).replace(/[^0-9]/g, ""), 10) || null
-      : null,
+    startingPriceAED: parsePriceToAED(rawLocale.project?.startingPrice),
 
     // ── pass through everything else ─────────────────────────
     ...rawLocale,
@@ -103,9 +123,7 @@ function buildSanityProjectData(sanityDoc, locale) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "") || "unknown",
     regionSlug: sanityDoc?.regionSlug || "",
-    startingPriceAED: project?.startingPrice
-      ? parseInt(String(project.startingPrice).replace(/[^0-9]/g, ""), 10) || null
-      : null,
+    startingPriceAED: parsePriceToAED(project?.startingPrice),
 
     // ── standard fields ───────────────────────────────────────
     title: project?.name || sanityDoc?.name || "",
@@ -191,9 +209,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     category: normalizePropertyType(sanityDoc?.propertyType || sanityDoc?.unitTypes),
     developerSlug: developerToSlug(sanityDoc?.developer || ""),
     regionSlug: sanityDoc?.regionSlug || "",
-    startingPriceAED: sanityDoc?.startingPrice
-      ? parseInt(String(sanityDoc.startingPrice).replace(/[^0-9]/g, ""), 10) || null
-      : null,
+    startingPriceAED: parsePriceToAED(sanityDoc?.startingPrice),
     title: sanityDoc?.title || "",
     developer: sanityDoc?.developer || "",
     project: {

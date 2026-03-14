@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/FloatingWhatsApp.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import * as ga from "@/lib/ga";
@@ -8,13 +8,34 @@ import * as ga from "@/lib/ga";
 export default function WhatsappFloatingButton() {
   const { locale, t } = useLanguage?.() || { locale: "en" };
   const isRTL = locale === "ar";
+  const [siteContact, setSiteContact] = useState(null);
 
   const label = t?.("cta.whatsapp") || (isRTL ? "واتساب" : "WHATSAPP");
 
-  // Default WhatsApp base (we will build the final link on click)
-  const whatsappBase = "https://wa.me/971568888906";
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) {
+          setSiteContact(json?.data?.contact || null);
+        }
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const whatsappBase = useMemo(() => {
+    const digits = String(siteContact?.whatsapp || "").replace(/\D/g, "");
+    return digits ? `https://wa.me/${digits}` : null;
+  }, [siteContact]);
 
   const handleClick = () => {
+    if (!whatsappBase) return;
+
     // ✅ Always accurate URL at click time
     const fullUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -54,6 +75,8 @@ export default function WhatsappFloatingButton() {
       window.open(whatsappHref, "_blank", "noopener,noreferrer");
     }
   };
+
+  if (!whatsappBase) return null;
 
   return (
     <div className={`${styles.whatsappWrapper} ${isRTL ? styles.rtl : ""}`}>

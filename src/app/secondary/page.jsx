@@ -2,7 +2,12 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import styles from "@/styles/properties/secondary.module.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
 
 import ProjectCards from "@/components/projects/ProjectCards";
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
@@ -48,14 +53,17 @@ function shuffleWithSeed(arr, seed) {
 
 // Slugs that must be excluded from secondary — not actually resale/secondary
 const SECONDARY_EXCLUDED_SLUGS = ["sobha-one", "riviera-reve"];
+const SECONDARY_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
 
 function filterSecondaryProjects(projects) {
   return projects.filter((project) => {
     const status = project?.status || project?.devStatus || "";
     const statusLower = status.toLowerCase();
     const slug = (project?.slug || "").toLowerCase();
+    const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
 
     if (SECONDARY_EXCLUDED_SLUGS.some((s) => slug.includes(s))) return false;
+    if (SECONDARY_EXCLUDED_DEVELOPER_SLUGS.some((s) => developerSlug.includes(s))) return false;
     if (statusLower.includes("off-plan") || statusLower.includes("under construction")) return false;
 
     return (
@@ -115,6 +123,13 @@ export default function SecondaryPage() {
     return filterSecondaryProjects(allProjects);
   }, [allProjects]);
 
+  const heroImages = React.useMemo(() => {
+    return secondaryProjects
+      .map((project) => project.heroImageUrl || project.image || project.heroImage)
+      .filter(Boolean)
+      .filter((src, index, arr) => arr.indexOf(src) === index);
+  }, [secondaryProjects]);
+
   const { filtered, hasActiveFilters } = React.useMemo(() => {
     return filterProjects(secondaryProjects, filters);
   }, [secondaryProjects, filters]);
@@ -132,7 +147,7 @@ export default function SecondaryPage() {
 
   return (
     <div className={styles.page}>
-      <Hero isRTL={isRTL} />
+      <Hero isRTL={isRTL} images={heroImages} />
       <div className={styles.container}>
         <InlineSearch
           isRTL={isRTL}
@@ -215,9 +230,48 @@ export default function SecondaryPage() {
   );
 }
 
-function Hero({ isRTL }) {
+function Hero({ isRTL, images }) {
   return (
     <div className={styles.hero}>
+      <div className={styles.heroMedia}>
+        {images?.length > 1 ? (
+          <Swiper
+            className={styles.heroSwiper}
+            modules={[Autoplay, EffectFade]}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            loop
+            speed={1200}
+            autoplay={{ delay: 2600, disableOnInteraction: false }}
+          >
+            {images.map((src, index) => (
+              <SwiperSlide key={`${src}-${index}`} className={styles.heroSlide}>
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  priority={index === 0}
+                  className={styles.heroBgImg}
+                  sizes="100vw"
+                  unoptimized
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : images?.[0] ? (
+          <div className={styles.heroSlide}>
+            <Image
+              src={images[0]}
+              alt=""
+              fill
+              priority
+              className={styles.heroBgImg}
+              sizes="100vw"
+              unoptimized
+            />
+          </div>
+        ) : null}
+      </div>
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>

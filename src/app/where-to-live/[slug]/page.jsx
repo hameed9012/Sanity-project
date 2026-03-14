@@ -18,11 +18,31 @@ function pickLocalized(enValue, arValue, locale) {
   return locale === "ar" ? arValue || enValue || "" : enValue || arValue || "";
 }
 
+function normalizeMoneyLabel(value, locale, fallback) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+  return raw
+    .replace(/^average price:\s*/i, "")
+    .replace(/^properties from\s*/i, "")
+    .replace(/^from\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeRoiLabel(value, fallback) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+  return raw
+    .replace(/^return on investment\s*:?/i, "ROI ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildFaqsFromArea(area) {
   const location = area?.location || "Dubai";
-  const avgBuy = area?.avgBuyPrice || "Market dependent";
-  const avgRent = area?.avgRentPrice || "Market dependent";
-  const roi = area?.roi || "Market dependent";
+  const avgBuy = normalizeMoneyLabel(area?.avgBuyPrice, "en", "Market dependent");
+  const avgRent = normalizeMoneyLabel(area?.avgRentPrice, "en", "Market dependent");
+  const roi = normalizeRoiLabel(area?.roi, "Market dependent");
 
   return [
     {
@@ -73,9 +93,9 @@ function normalizeSanityArea(area, locale) {
     summary: {
       name,
       location: area.location || "",
-      avgBuy: area.avgBuyPrice || "",
-      avgRent: area.avgRentPrice || "",
-      roi: area.roi || "",
+      avgBuy: normalizeMoneyLabel(area.avgBuyPrice, locale, ""),
+      avgRent: normalizeMoneyLabel(area.avgRentPrice, locale, ""),
+      roi: normalizeRoiLabel(area.roi, ""),
     },
     highlights: {
       about: {
@@ -127,8 +147,8 @@ function normalizeSanityArea(area, locale) {
         },
       })),
       conclusion: {
-        en: `Average buy price: ${area.avgBuyPrice || "N/A"} ✓ Average rent: ${area.avgRentPrice || "N/A"} ✓ ROI: ${area.roi || "N/A"}`,
-        ar: `متوسط الشراء: ${area.avgBuyPrice || "N/A"} ✓ متوسط الإيجار: ${area.avgRentPrice || "N/A"} ✓ العائد: ${area.roi || "N/A"}`,
+        en: `Average buy price: ${normalizeMoneyLabel(area.avgBuyPrice, locale, "N/A")} ✓ Average rent: ${normalizeMoneyLabel(area.avgRentPrice, locale, "N/A")} ✓ ROI: ${normalizeRoiLabel(area.roi, "N/A")}`,
+        ar: `متوسط الشراء: ${normalizeMoneyLabel(area.avgBuyPrice, locale, "N/A")} ✓ متوسط الإيجار: ${normalizeMoneyLabel(area.avgRentPrice, locale, "N/A")} ✓ العائد: ${normalizeRoiLabel(area.roi, "N/A")}`,
       },
     },
     translations: {

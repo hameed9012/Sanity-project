@@ -18,14 +18,7 @@ import { filterProjects } from "@/lib/projects/filterProjects";
 
 import styles from "@/styles/developer/DeveloperPage.module.css";
 
-const CDN = "https://luxury-real-estate-media.b-cdn.net";
-const ASSETS_BY_PROFILE = {
-  sobha: { heroImage: `${CDN}/aquamont/intro-main.png`, logo: "/Sobha-Realty-Square-Logo.jpg" },
-  arada: { heroImage: `${CDN}/massar-3/hero-bg.jpg`, logo: "/arada-developer.avif" },
-  damac: { heroImage: `${CDN}/damac-island-2/WhatsApp%20Image%202025-11-19%20at%2013.26.51%20(1).jpeg`, logo: "/damac-logo.png" },
-  azizi: { heroImage: `${CDN}/riviera/hero-bg.jpg`, logo: "/azizi.jpg" },
-  omniyat: { heroImage: `${CDN}/lumena-alta/hero-bg.jpg`, logo: "/omniyat-logo.avif" },
-};
+const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 function formatSlugToName(slug) {
   if (!slug) return "";
@@ -65,19 +58,19 @@ function buildAutoStats(projects, isRTL) {
 
   return [
     {
-      label: isRTL ? "Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹" : "Projects",
+      label: isRTL ? "المشاريع" : "Projects",
       value: String(projects.length),
     },
     {
-      label: isRTL ? "Ø§Ù„Ù…Ù†Ø§Ø·Ù‚" : "Areas",
+      label: isRTL ? "المناطق" : "Areas",
       value: String(regions.size),
     },
     {
-      label: isRTL ? "Ø§Ù„Ø£Ø³Ø¹Ø§Ø± Ù…Ù†" : "Prices From",
+      label: isRTL ? "الأسعار من" : "Prices From",
       value: minPrice
         ? `AED ${new Intl.NumberFormat("en-US").format(minPrice)}`
         : isRTL
-        ? "Ø­Ø³Ø¨ Ø§Ù„Ø·Ù„Ø¨"
+        ? "حسب الطلب"
         : "On request",
     },
   ];
@@ -112,6 +105,8 @@ export default function DeveloperPage() {
   }, [slug]);
 
   const profileKey = useMemo(() => String(slug || "").trim().toLowerCase(), [slug]);
+
+  const isExcludedDeveloper = EXCLUDED_DEVELOPER_SLUGS.has(profileKey);
 
   const matchedProjects = useMemo(() => {
     const tokens = new Set([
@@ -152,15 +147,13 @@ export default function DeveloperPage() {
         description: sanityDeveloper.tagline || "",
         heroImage:
           sanityDeveloper.heroImageUrl ||
-          ASSETS_BY_PROFILE[profileKey]?.heroImage ||
           extractProjectImage(matchedProjects[0]),
         logo:
-          sanityDeveloper.logoUrl ||
-          ASSETS_BY_PROFILE[profileKey]?.logo ||
-          null,
+          sanityDeveloper.logoUrl || null,
         about,
         stats: sanityDeveloper.stats || buildAutoStats(matchedProjects, isRTL),
         highlights: sanityDeveloper.highlights || [],
+        founder: sanityDeveloper.founder || null,
         _fromSanity: true,
       };
     }
@@ -184,29 +177,28 @@ export default function DeveloperPage() {
       name: derivedName,
       displayName: derivedName,
       tagline: isRTL
-        ? `Ù…Ø´Ø§Ø±ÙŠØ¹ Ù…Ø®ØªØ§Ø±Ø© Ù…Ù† ${derivedName}`
+        ? `مشاريع مختارة من ${derivedName}`
         : `Curated projects by ${derivedName}`,
       description: isRTL
-        ? `Ù…Ø¬Ù…ÙˆØ¹Ø© Ù…Ø´Ø§Ø±ÙŠØ¹ Ù…Ø±ØªØ¨Ø·Ø© Ø¨Ø§Ù„Ù…Ø·ÙˆØ± ${derivedName}.`
+        ? `مجموعة مشاريع مرتبطة بالمطور ${derivedName}.`
         : `A curated collection of projects linked to ${derivedName}.`,
-      heroImage:
-        ASSETS_BY_PROFILE[profileKey]?.heroImage ||
-        extractProjectImage(matchedProjects[0]),
-      logo: ASSETS_BY_PROFILE[profileKey]?.logo || null,
+      heroImage: extractProjectImage(matchedProjects[0]),
+      logo: null,
       about: [
         isRTL
-          ? `ØªÙ… Ø±Ø¨Ø· Ù‡Ø°Ù‡ Ø§Ù„ØµÙØ­Ø© ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ù…Ù† Ø®Ù„Ø§Ù„ Ø§Ù„Ù…Ø´Ø§Ø±ÙŠØ¹ Ø§Ù„Ù…Ø³Ù†Ø¯Ø© Ø¥Ù„Ù‰ ${derivedName} ÙÙŠ Ø³Ø§Ù†ÙŠØªÙŠ.`
+          ? `تم ربط هذه الصفحة تلقائياً من خلال المشاريع المسندة إلى ${derivedName} في سانيتي.`
           : `This page is generated automatically from projects scoped to ${derivedName} in Sanity.`,
         regionNames.length
           ? isRTL
-            ? `ØªØ¸Ù‡Ø± Ù…Ø´Ø§Ø±ÙŠØ¹Ù‡ Ù‡Ù†Ø§ Ø¨Ø­Ø³Ø¨ Ø§Ù„Ù…Ù†Ø§Ø·Ù‚: ${regionNames.join("ØŒ ")}.`
+            ? `تظهر مشاريعه هنا بحسب المناطق: ${regionNames.join("، ")}.`
             : `Projects currently appear here across areas such as ${regionNames.join(", ")}.`
           : isRTL
-          ? "ÙŠØªÙ… ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ø­ØªÙˆÙ‰ Ù…Ø¨Ø§Ø´Ø±Ø© Ù…Ù† Ø§Ù„Ù†Ø¸Ø§Ù…."
+          ? "يتم تحديث المحتوى مباشرة من النظام."
           : "Content updates here directly from the CMS.",
       ],
       stats: buildAutoStats(matchedProjects, isRTL),
       highlights: [],
+      founder: null,
       _fromProjects: true,
     };
   }, [isRTL, matchedProjects, profileKey, sanityDeveloper]);
@@ -282,7 +274,7 @@ export default function DeveloperPage() {
     return count;
   }, [filters]);
 
-  if (sanityLoaded && !developer) {
+  if (sanityLoaded && (isExcludedDeveloper || !developer)) {
     return (
       <div className={styles.notFound}>
         <div className={styles.notFoundContent}>
@@ -379,7 +371,7 @@ export default function DeveloperPage() {
               <ProjectCards projects={filteredProjects} onResetFilters={handleResetFilters} />
             ) : (
               <div className={styles.noProjects}>
-                <div className={styles.noProjectsIcon}>ðŸ—ï¸</div>
+                <div className={styles.noProjectsIcon}>🏗️</div>
                 <h3>No Projects Found</h3>
                 <p>No projects match your current filters for {developer.name}.</p>
                 <button onClick={handleResetFilters} className={styles.resetFiltersBtn}>

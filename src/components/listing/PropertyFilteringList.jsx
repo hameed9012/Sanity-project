@@ -5,12 +5,13 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 import {
   parseProjectsFilters,
   buildProjectsQuery,
-  filterProjects,
 } from "@/lib/search/projectsSearch";
+import { filterProjects } from "@/lib/projects/filterProjects";
 
 const formatMoney = (n) => {
   if (!Number.isFinite(n)) return "Price on request";
@@ -134,6 +135,7 @@ export default function PropertyFilteringList() {
   const router = useRouter();
   const sp = useSearchParams();
   const pathname = usePathname();
+  const { allProjects } = useAllProjects();
 
   const parsed = useMemo(() => parseProjectsFilters(sp), [sp]);
 
@@ -154,8 +156,8 @@ export default function PropertyFilteringList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const allFiltered = useMemo(() => {
-    return filterProjects(parsed);
-  }, [parsed]);
+    return filterProjects(allProjects || [], parsed).filtered;
+  }, [allProjects, parsed]);
 
   const total = allFiltered.length;
 

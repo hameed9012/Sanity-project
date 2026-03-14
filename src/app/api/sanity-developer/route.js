@@ -23,6 +23,18 @@ export async function GET(request) {
         aboutAr,
         stats,
         highlights,
+        founder{
+          name,
+          nameAr,
+          title,
+          titleAr,
+          bio,
+          bioAr,
+          ctaLabel,
+          ctaLabelAr,
+          ctaUrl,
+          "imageUrl": coalesce(imageCdn.url, imageUrl)
+        }
       }
     `);
     return Response.json(data || (slug ? null : []));

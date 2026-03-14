@@ -9,8 +9,8 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { buildProjectsQuery } from "@/lib/search/projectsSearch";
 import styles from "@/styles/HeroProjectsSlider.module.css";
 
-const ROTATE_MS = 6000;
-const FADE_MS = 900;
+const ROTATE_MS = 3400;
+const FADE_MS = 650;
 
 function randInt(max) {
   if (max <= 0) return 0;
@@ -177,6 +177,11 @@ export default function LuxuryHeroSlider() {
     } catch { loadedImagesRef.current.add(imgUrl); }
   }, [projects, isClient]);
 
+  useEffect(() => {
+    if (!isClient || !projects.length) return;
+    projects.slice(0, 6).forEach((_, index) => preloadImage(index));
+  }, [projects, isClient, preloadImage]);
+
   const startFadeTransition = useCallback(() => {
     if (isTransitioningRef.current) return;
     isTransitioningRef.current = true;
@@ -218,7 +223,7 @@ export default function LuxuryHeroSlider() {
     } else {
       fadeTimerRef.current = setTimeout(() => {
         if (!isFadingRef.current && nextIndexRef.current === nextIdx) startFadeTransition();
-      }, 3000);
+      }, Math.max(FADE_MS, 500));
     }
   }, [projects, getNextFromDeck, preloadImage, scheduleNextSlide, startFadeTransition]);
 

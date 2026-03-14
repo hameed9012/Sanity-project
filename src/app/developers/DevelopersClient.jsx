@@ -4,8 +4,10 @@ import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import styles from "@/styles/developer/developers-2.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 12;
+const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 function normalizeLocale(locale) {
   return String(locale || "en").toLowerCase().startsWith("ar") ? "ar" : "en";
@@ -40,6 +42,7 @@ const getInitials = (name) => {
 
 export default function DevelopersClient({ sanityDevelopers = [] }) {
   const { locale: ctxLocale, t } = useLanguage();
+  const { allProjects } = useAllProjects();
   const locale = normalizeLocale(ctxLocale);
   const isRTL = locale === "ar";
   const safeT = useMemo(() => safeTFactory(t), [t]);
@@ -63,8 +66,31 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
 
   const allDevs = useMemo(() => {
     if (!Array.isArray(sanityDevelopers) || sanityDevelopers.length === 0) return [];
+
+    const activeDeveloperTokens = new Set(
+      (allProjects || [])
+        .flatMap((project) => [
+          String(project?.developerSlug || "").toLowerCase(),
+          String(project?.developer || "").toLowerCase(),
+          String(project?.developerName || "").toLowerCase(),
+        ])
+        .filter(Boolean)
+    );
+
     return sanityDevelopers
-      .filter((s) => s && s.slug)
+      .filter((s) => {
+        if (!s || !s.slug) return false;
+        const slug = String(s.slug).toLowerCase();
+        if (EXCLUDED_DEVELOPER_SLUGS.has(slug)) return false;
+
+        const nameToken = String(s.name || "").toLowerCase();
+        const arabicNameToken = String(s.nameAr || "").toLowerCase();
+        return (
+          activeDeveloperTokens.has(slug) ||
+          activeDeveloperTokens.has(nameToken) ||
+          activeDeveloperTokens.has(arabicNameToken)
+        );
+      })
       .map((s) => ({
         slug: s.slug,
         name: s.name || s.slug,
@@ -74,7 +100,7 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
         logo: s.logoUrl || "",
         _fromSanity: true,
       }));
-  }, [sanityDevelopers]);
+  }, [sanityDevelopers, allProjects]);
 
   const handleLogoError = useCallback((slug) => setLogoErrors((prev) => ({ ...prev, [slug]: true })), []);
 

@@ -64,6 +64,32 @@ export default defineType({
       type: 'array',
       of: [{type: 'string'}],
     }),
+    defineField({
+      name: 'founder',
+      title: 'Founder Section',
+      type: 'object',
+      fields: [
+        defineField({name: 'name', title: 'Founder Name', type: 'string'}),
+        defineField({name: 'nameAr', title: 'Founder Name (Arabic)', type: 'string'}),
+        defineField({name: 'title', title: 'Founder Title', type: 'string'}),
+        defineField({name: 'titleAr', title: 'Founder Title (Arabic)', type: 'string'}),
+        defineField({
+          name: 'imageUrl',
+          title: 'Founder Image URL (Bunny CDN or external)',
+          type: 'url',
+        }),
+        defineField({
+          name: 'imageCdn',
+          title: 'Founder Image (BunnyCDN)',
+          type: 'cdnImage',
+        }),
+        defineField({name: 'bio', title: 'Founder Bio (English)', type: 'text', rows: 6}),
+        defineField({name: 'bioAr', title: 'Founder Bio (Arabic)', type: 'text', rows: 6}),
+        defineField({name: 'ctaLabel', title: 'CTA Label', type: 'string'}),
+        defineField({name: 'ctaLabelAr', title: 'CTA Label (Arabic)', type: 'string'}),
+        defineField({name: 'ctaUrl', title: 'CTA URL', type: 'url'}),
+      ],
+    }),
   ],
   preview: {
     select: {title: 'name'},

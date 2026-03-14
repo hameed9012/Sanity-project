@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "@/styles/TopHeader.module.css";
 import { useLanguage } from "./LanguageProvider";
@@ -34,7 +34,7 @@ export default function TopHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCurtain, setActiveCurtain] = useState(null);
 
-  const { locale, switchLanguage, isTransitioning, t } = useLanguage();
+  const { locale, switchLanguage, isTransitioning } = useLanguage();
   const pathname = usePathname();
   const isMounted = useSafeDOM();
   const isRTL = locale === "ar";
@@ -50,34 +50,45 @@ export default function TopHeader() {
     hideSearch: false,
   });
 
-  const defaultLeft = useMemo(() => [
-    { type: "link", href: "/about",        labelEn: "ABOUT",        labelAr: "من نحن"       },
-    { type: "link", href: "/properties",   labelEn: "PROPERTIES",   labelAr: "العقارات"     },
-    { type: "link", href: "/offplan",      labelEn: "OFFPLAN",      labelAr: "على الخارطة"  },
-    { type: "link", href: "/secondary",    labelEn: "SECONDARY",    labelAr: "الثانوي"      },
-    { type: "link", href: "/lands",        labelEn: "LANDS",        labelAr: "الأراضي"      },
-    { type: "link", href: "/where-to-live",labelEn: "WHERE TO LIVE",labelAr: "أين تسكن"     },
-  ], []);
+  const defaultLeft = useMemo(
+    () => [
+      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "من نحن" },
+      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "العقارات" },
+      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "على الخارطة" },
+      { type: "link", href: "/secondary", labelEn: "SECONDARY", labelAr: "الثانوي" },
+      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "الإيجار" },
+      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "الأراضي" },
+      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "أين تسكن" },
+    ],
+    []
+  );
 
-  const defaultRight = useMemo(() => [
-    { type: "link", href: "/developers",     labelEn: "DEVELOPERS",     labelAr: "المطورون"        },
-    { type: "link", href: "/market-analysis",labelEn: "MARKET ANALYSIS",labelAr: "تحليل السوق"     },
-    { type: "link", href: "/articles/",      labelEn: "MEDIA CENTER",   labelAr: "المركز الإعلامي" },
-    { type: "link", href: "/contact-us/",    labelEn: "CONTACT US",     labelAr: "تواصل معنا"      },
-  ], []);
+  const defaultRight = useMemo(
+    () => [
+      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "المطورون" },
+      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "تحليل السوق" },
+      { type: "link", href: "/articles/", labelEn: "MEDIA CENTER", labelAr: "المركز الإعلامي" },
+      { type: "link", href: "/contact-us/", labelEn: "CONTACT US", labelAr: "تواصل معنا" },
+    ],
+    []
+  );
 
-  const defaultMobile = useMemo(() => [
-    { type: "link", href: "/about",          labelEn: "ABOUT",          labelAr: "من نحن"          },
-    { type: "link", href: "/properties",     labelEn: "PROPERTIES",     labelAr: "العقارات"        },
-    { type: "link", href: "/offplan",        labelEn: "OFFPLAN",        labelAr: "على الخارطة"     },
-    { type: "link", href: "/secondary",      labelEn: "SECONDARY",      labelAr: "الثانوي"         },
-    { type: "link", href: "/lands",          labelEn: "LANDS",          labelAr: "الأراضي"         },
-    { type: "link", href: "/where-to-live",  labelEn: "WHERE TO LIVE",  labelAr: "أين تسكن"        },
-    { type: "link", href: "/developers",     labelEn: "DEVELOPERS",     labelAr: "المطورون"        },
-    { type: "link", href: "/market-analysis",labelEn: "MARKET ANALYSIS",labelAr: "تحليل السوق"     },
-    { type: "link", href: "/articles",       labelEn: "MEDIA CENTER",   labelAr: "المركز الإعلامي" },
-    { type: "link", href: "/contact-us",     labelEn: "CONTACT US",     labelAr: "تواصل معنا"      },
-  ], []);
+  const defaultMobile = useMemo(
+    () => [
+      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "من نحن" },
+      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "العقارات" },
+      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "على الخارطة" },
+      { type: "link", href: "/secondary", labelEn: "SECONDARY", labelAr: "الثانوي" },
+      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "الإيجار" },
+      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "الأراضي" },
+      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "أين تسكن" },
+      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "المطورون" },
+      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "تحليل السوق" },
+      { type: "link", href: "/articles", labelEn: "MEDIA CENTER", labelAr: "المركز الإعلامي" },
+      { type: "link", href: "/contact-us", labelEn: "CONTACT US", labelAr: "تواصل معنا" },
+    ],
+    []
+  );
 
   useEffect(() => {
     let alive = true;
@@ -85,27 +96,27 @@ export default function TopHeader() {
       try {
         const res = await fetch("/api/site-settings", { cache: "no-store" });
         const json = await res.json();
-        if (!json.ok) return;
+        if (!json?.ok || !alive) return;
         const data = json.data;
-        if (!alive) return;
         setExtras({
-          desktopLeft:  (data?.desktopLeft  || []).filter(isValidNavItem),
+          desktopLeft: (data?.desktopLeft || []).filter(isValidNavItem),
           desktopRight: (data?.desktopRight || []).filter(isValidNavItem),
-          mobileMenu:   (data?.mobileMenu   || []).filter(isValidNavItem),
+          mobileMenu: (data?.mobileMenu || []).filter(isValidNavItem),
           hideSearch: Boolean(data?.navbar?.hideSearch ?? data?.hideSearch),
         });
       } catch {}
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  const leftLinks   = extras.desktopLeft.length  > 0 ? extras.desktopLeft  : defaultLeft;
-  const rightLinks  = extras.desktopRight.length > 0 ? extras.desktopRight : defaultRight;
-  const mobileLinks = extras.mobileMenu.length   > 0 ? extras.mobileMenu   : defaultMobile;
-  const hideSearch = extras.hideSearch;
+  const leftLinks = extras.desktopLeft.length > 0 ? extras.desktopLeft : defaultLeft;
+  const rightLinks = extras.desktopRight.length > 0 ? extras.desktopRight : defaultRight;
+  const mobileLinks = extras.mobileMenu.length > 0 ? extras.mobileMenu : defaultMobile;
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted) return undefined;
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -113,43 +124,54 @@ export default function TopHeader() {
   }, [isMounted]);
 
   useEffect(() => {
-    if (!isMounted) return;
-    const el = headerRef.current;
-    if (!el) return;
+    if (!isMounted) return undefined;
+    const element = headerRef.current;
+    if (!element) return undefined;
+
     const update = () => {
-      const h = el.getBoundingClientRect?.().height || el.offsetHeight || 80;
-      setHeaderHeight(Math.max(60, Math.round(h)));
+      const height = element.getBoundingClientRect?.().height || element.offsetHeight || 80;
+      setHeaderHeight(Math.max(60, Math.round(height)));
     };
+
     update();
-    let ro = null;
+    let observer = null;
     if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(update);
-      ro.observe(el);
+      observer = new ResizeObserver(update);
+      observer.observe(element);
     }
     window.addEventListener("resize", update);
-    return () => { window.removeEventListener("resize", update); ro?.disconnect(); };
+    return () => {
+      window.removeEventListener("resize", update);
+      observer?.disconnect();
+    };
   }, [isMounted]);
 
-  const openCurtain  = (name) => setActiveCurtain(name);
   const closeCurtain = () => setActiveCurtain(null);
-  const toggleMobileMenu = () => { closeCurtain(); setIsMobileMenuOpen((p) => !p); };
+  const toggleMobileMenu = () => {
+    closeCurtain();
+    setIsMobileMenuOpen((prev) => !prev);
+  };
   const closeAllMobileMenus = () => setIsMobileMenuOpen(false);
-  const toggleLanguage = () => { if (!isMounted) return; switchLanguage(locale === "en" ? "ar" : "en"); };
+  const toggleLanguage = () => {
+    if (!isMounted) return;
+    switchLanguage(locale === "en" ? "ar" : "en");
+  };
 
   useEffect(() => {
-    if (!isMounted || !activeCurtain) return;
-    const onOutside = (e) => {
-      if (!headerRef.current?.contains(e.target) && !curtainRef.current?.contains(e.target))
+    if (!isMounted || !activeCurtain) return undefined;
+    const onOutside = (event) => {
+      if (!headerRef.current?.contains(event.target) && !curtainRef.current?.contains(event.target)) {
         closeCurtain();
+      }
     };
     document.addEventListener("pointerdown", onOutside);
     return () => document.removeEventListener("pointerdown", onOutside);
   }, [activeCurtain, isMounted]);
 
   useEffect(() => {
-    if (!isMounted) return;
-    const onKey = (e) => {
-      if (e.key !== "Escape") return;
+    if (!isMounted) return undefined;
+    const onKey = (event) => {
+      if (event.key !== "Escape") return;
       closeCurtain();
       setIsMobileMenuOpen(false);
     };
@@ -164,21 +186,23 @@ export default function TopHeader() {
   }, [pathname, isMounted]);
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted) return undefined;
     const body = document.body;
     const shouldLock = isMobileMenuOpen || Boolean(activeCurtain);
     body.style.overflow = shouldLock ? "hidden" : "";
     body.style.touchAction = shouldLock ? "none" : "";
-    return () => { body.style.overflow = ""; body.style.touchAction = ""; };
+    return () => {
+      body.style.overflow = "";
+      body.style.touchAction = "";
+    };
   }, [isMobileMenuOpen, activeCurtain, isMounted]);
 
   const renderDesktop = (item, idx) => {
     const text = labelFor(item, locale);
     if (!text) return null;
-
     if (item.type === "action_search") return null;
 
-    const href   = safeHref(item.href);
+    const href = safeHref(item.href);
     const newTab = Boolean(item.openInNewTab);
     return (
       <li key={`d-link-${idx}`}>
@@ -197,10 +221,9 @@ export default function TopHeader() {
   const renderMobile = (item, idx) => {
     const text = labelFor(item, locale);
     if (!text) return null;
-
     if (item.type === "action_search") return null;
 
-    const href   = safeHref(item.href);
+    const href = safeHref(item.href);
     const newTab = Boolean(item.openInNewTab);
     return (
       <a
@@ -229,9 +252,7 @@ export default function TopHeader() {
       >
         <div className={styles.container}>
           <div className={styles.menuLeft}>
-            <ul className={styles.navLinks}>
-              {leftLinks.map(renderDesktop)}
-            </ul>
+            <ul className={styles.navLinks}>{leftLinks.map(renderDesktop)}</ul>
           </div>
 
           <div className={styles.logoSec}>
@@ -249,7 +270,6 @@ export default function TopHeader() {
           <div className={styles.menuRight}>
             <ul className={styles.navLinks}>
               {rightLinks.map(renderDesktop)}
-
               <li className={styles.languageToggle}>
                 <button
                   type="button"
@@ -284,7 +304,9 @@ export default function TopHeader() {
                 onClick={toggleMobileMenu}
                 aria-label="Toggle menu"
               >
-                <span /><span /><span />
+                <span />
+                <span />
+                <span />
               </button>
             </div>
           </div>
@@ -364,9 +386,7 @@ export default function TopHeader() {
               </button>
             </div>
 
-            <div className={styles.mobileNavItems}>
-              {mobileLinks.map(renderMobile)}
-            </div>
+            <div className={styles.mobileNavItems}>{mobileLinks.map(renderMobile)}</div>
           </div>
         </div>
       </div>

@@ -288,6 +288,23 @@ export default defineType({
       description: 'Optional. Match this to the Where to Live area slug, e.g. "business-bay"',
     }),
 
+    defineField({
+      name: 'areaSlug',
+      title: 'Area Slug (Alias)',
+      type: 'string',
+      group: 'location',
+      description: 'Optional alias used by some imported records. Usually matches Area Slug.',
+    }),
+
+    defineField({
+      name: 'hasPostHandover',
+      title: 'Has Post-Handover Plan',
+      type: 'boolean',
+      group: 'details',
+      description: 'Auto-imported helper flag for projects with post-handover payment plans.',
+      initialValue: false,
+    }),
+
     // ─── ARABIC ───────────────────────────────────────────────
     defineField({
       name: 'titleAr',

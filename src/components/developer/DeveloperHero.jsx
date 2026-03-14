@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "@/styles/developer/DeveloperHero.module.css";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { propertiesData } from "@/data/propertiesData/propertiesData";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
@@ -38,6 +38,7 @@ function isProbablyValidImageUrl(url) {
 
 export default function DeveloperHero({ developer }) {
   const { locale, t } = useLanguage();
+  const { allProjects } = useAllProjects();
 
   const safeT = (key, values, fallback) => {
     try {
@@ -74,8 +75,6 @@ export default function DeveloperHero({ developer }) {
   const { images, projectsCount } = useMemo(() => {
     if (!developer) return { images: [hardFallback], projectsCount: 0 };
 
-    const data = propertiesData(CDN, t, locale);
-
     const devSlug = String(developer.slug || "")
       .trim()
       .toLowerCase();
@@ -86,29 +85,32 @@ export default function DeveloperHero({ developer }) {
     const allImages = [];
     const projectImages = [];
 
-    data?.categories?.forEach((cat) => {
-      cat?.developers?.forEach((dev) => {
-        const slug = String(dev?.slug || "")
-          .trim()
-          .toLowerCase();
-        const name = String(dev?.name || "")
-          .trim()
-          .toLowerCase();
+    allProjects?.forEach((project) => {
+      const projectDevSlug = String(
+        project?.developerSlug || project?.developer || ""
+      )
+        .trim()
+        .toLowerCase();
+      const projectDevName = String(project?.developer || "")
+        .trim()
+        .toLowerCase();
 
-        const match =
-          (devSlug && slug === devSlug) || (devName && name === devName);
-        if (!match) return;
+      const match =
+        (devSlug && projectDevSlug === devSlug) ||
+        (devName && projectDevName === devName);
 
-        if (dev?.image) allImages.push(dev.image);
+      if (!match) return;
 
-        if (Array.isArray(dev?.projects)) {
-          dev.projects.forEach((p) => {
-            if (p?.image) {
-              projectImages.push(p.image);
-              allImages.push(p.image);
-            }
-          });
-        }
+      const projectImagesForCard = [
+        project?.image,
+        project?.data?.hero?.backgroundUrl,
+        project?.data?.hero?.squareImageUrl,
+        ...(project?.data?.gallery?.slides || []),
+      ].filter(Boolean);
+
+      projectImagesForCard.forEach((src) => {
+        projectImages.push(src);
+        allImages.push(src);
       });
     });
 
@@ -132,7 +134,7 @@ export default function DeveloperHero({ developer }) {
       images: finalImages,
       projectsCount: uniqueProjectImages.length,
     };
-  }, [developer, CDN, t, locale, hardFallback]);
+  }, [developer, CDN, hardFallback, allProjects]);
 
   const useSwiper = projectsCount > 1 && images.length > 1;
 

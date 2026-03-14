@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "@/styles/properties/properties.module.css";
 
 import ProjectCards from "@/components/projects/ProjectCards";
@@ -13,23 +13,32 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 9;
+const EXCLUDED_DEVELOPER_SLUGS = ["beyond", "omniyat", "imtiaz"];
 
 const initialFilters = {
-  search: "", devStatus: [], unitTypes: [], bedrooms: [],
-  minPrice: "", maxPrice: "", minSize: "", maxSize: "",
+  search: "",
+  devStatus: [],
+  unitTypes: [],
+  bedrooms: [],
+  minPrice: "",
+  maxPrice: "",
+  minSize: "",
+  maxSize: "",
 };
 
 const TYPE_TABS = [
-  { id: "all",       labelEn: "All",        labelAr: "الكل" },
-  { id: "off-plan",  labelEn: "Off-plan",   labelAr: "قيد الإنشاء" },
-  { id: "secondary", labelEn: "Secondary",  labelAr: "ثانوي" },
-  { id: "sold-out",  labelEn: "Sold-out",   labelAr: "مباع" },
+  { id: "all", labelEn: "All", labelAr: "الكل" },
+  { id: "off-plan", labelEn: "Off-plan", labelAr: "قيد الإنشاء" },
+  { id: "secondary", labelEn: "Secondary", labelAr: "الثانوي" },
+  { id: "rental", labelEn: "Rental", labelAr: "الإيجار" },
+  { id: "sold-out", labelEn: "Sold-out", labelAr: "مباع" },
 ];
 
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
-    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -37,22 +46,32 @@ function mulberry32(seed) {
 }
 
 function shuffleWithSeed(arr, seed) {
-  const a = Array.isArray(arr) ? [...arr] : [];
-  const rnd = mulberry32(seed || 1);
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rnd() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  const copy = Array.isArray(arr) ? [...arr] : [];
+  const random = mulberry32(seed || 1);
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return a;
+  return copy;
 }
 
 function filterByStatusTab(projects, activeTab) {
   if (activeTab === "all") return projects;
+
   return projects.filter((project) => {
-    const status = (project?.status || project?.devStatus || "").toLowerCase();
-    if (activeTab === "off-plan")  return status.includes("off-plan") || status.includes("off plan") || status.includes("under construction");
-    if (activeTab === "secondary") return status.includes("secondary") || status.includes("resale");
-    if (activeTab === "sold-out")  return status.includes("sold-out") || status.includes("sold out");
+    const status = String(project?.status || project?.devStatus || "").toLowerCase();
+    if (activeTab === "off-plan") {
+      return status.includes("off-plan") || status.includes("off plan") || status.includes("under construction");
+    }
+    if (activeTab === "secondary") {
+      return status.includes("secondary") || status.includes("resale") || status.includes("ready to move");
+    }
+    if (activeTab === "rental") {
+      return status.includes("rental") || status.includes("rent");
+    }
+    if (activeTab === "sold-out") {
+      return status.includes("sold-out") || status.includes("sold out");
+    }
     return true;
   });
 }
@@ -69,7 +88,8 @@ function PropertiesContent() {
     const params = new URLSearchParams(searchParams.toString());
     if (tab === "all") params.delete("tab");
     else params.set("tab", tab);
-    router.replace(`/properties?${params.toString()}`, { scroll: false });
+    const query = params.toString();
+    router.replace(query ? `/properties?${query}` : "/properties", { scroll: false });
   };
 
   const { allProjects: rawProjects, loading } = useAllProjects();
@@ -79,20 +99,42 @@ function PropertiesContent() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
 
-  React.useEffect(() => { setVisibleCount(PAGE_SIZE); }, [
-    activeTab, filters.search, JSON.stringify(filters.devStatus),
-    JSON.stringify(filters.unitTypes), JSON.stringify(filters.bedrooms),
-    filters.minPrice, filters.maxPrice, filters.minSize, filters.maxSize,
+  React.useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [
+    activeTab,
+    filters.search,
+    JSON.stringify(filters.devStatus),
+    JSON.stringify(filters.unitTypes),
+    JSON.stringify(filters.bedrooms),
+    filters.minPrice,
+    filters.maxPrice,
+    filters.minSize,
+    filters.maxSize,
   ]);
 
   const propertiesOnly = React.useMemo(
-    () => (rawProjects || []).filter((p) => !p.isLand && p.category !== "lands"),
+    () =>
+      (rawProjects || []).filter((project) => {
+        if (project?.isLand || project?.category === "lands") return false;
+        const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
+        return !EXCLUDED_DEVELOPER_SLUGS.some((slug) => developerSlug.includes(slug));
+      }),
     [rawProjects]
   );
 
-  const allProjects     = React.useMemo(() => shuffleWithSeed(propertiesOnly, visitSeed), [propertiesOnly, visitSeed]);
-  const tabFiltered     = React.useMemo(() => filterByStatusTab(allProjects, activeTab), [allProjects, activeTab]);
-  const { filtered, hasActiveFilters } = React.useMemo(() => filterProjects(tabFiltered, filters), [tabFiltered, filters]);
+  const allProjects = React.useMemo(
+    () => shuffleWithSeed(propertiesOnly, visitSeed),
+    [propertiesOnly, visitSeed]
+  );
+  const tabFiltered = React.useMemo(
+    () => filterByStatusTab(allProjects, activeTab),
+    [allProjects, activeTab]
+  );
+  const { filtered } = React.useMemo(
+    () => filterProjects(tabFiltered, filters),
+    [tabFiltered, filters]
+  );
 
   const visibleProjects = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -144,7 +186,7 @@ function PropertiesContent() {
             <div className={styles.loadMoreWrap}>
               <button
                 className={styles.loadMoreBtn}
-                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
               >
                 {isRTL ? "عرض المزيد" : "Load More"}
               </button>
@@ -158,11 +200,21 @@ function PropertiesContent() {
 
 export default function PropertiesPage() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#888" }}>
-        Loading...
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#888",
+          }}
+        >
+          Loading...
+        </div>
+      }
+    >
       <PropertiesContent />
     </Suspense>
   );

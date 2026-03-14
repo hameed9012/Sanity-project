@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { injectAmenityIcons } from "@/lib/amenities/phosphorIconResolver";
 import { useLanguage } from "@/components/LanguageProvider";
 import SalesOfferPreferencesModal from "@/components/projects/SalesOfferPreferencesModal";
@@ -85,7 +85,7 @@ function maybeConvertMoneyString(value, currency, fxRate, locale) {
   return formatCurrency(converted, currency, locale);
 }
 
-function buildSalesOfferPayload(projectData, prefs, currentLocale) {
+function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) {
   const pdfLocale = prefs?.pdfLang || currentLocale;
   const d = pickLocaleBlock(projectData, pdfLocale) || {};
 
@@ -252,8 +252,8 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale) {
     agent: {
       name: "Mohamad Kodmani",
       company: "Mohamad Kodmani Real Estate Brokers LLC",
-      phone: "+971568888906",
-      email: "mohamadkodmani@gmail.com",
+      phone: siteContact?.whatsapp || siteContact?.phone || "",
+      email: siteContact?.email || "",
       avatar: "https://luxury-real-estate-media.b-cdn.net/agents/mohamad.jpg",
     },
     sections: {
@@ -274,15 +274,32 @@ export default function GenerateSalesOfferButton({ projectData }) {
   const { locale } = useLanguage();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
+  const [siteContact, setSiteContact] = useState(null);
 
   const on = null;
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) {
+          setSiteContact(json?.data?.contact || null);
+        }
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleGenerateFromModal = async (prefs) => {
     try {
       setOpen(false);
       setBusy(true);
 
-      const payload = buildSalesOfferPayload(projectData, prefs, locale);
+      const payload = buildSalesOfferPayload(projectData, prefs, locale, siteContact);
 
       const res = await fetch("/api/sales-offer", {
         method: "POST",

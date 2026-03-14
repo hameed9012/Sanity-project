@@ -15,6 +15,26 @@ const initialFilters = { search: "", avgBuy: "", avgRent: "", roi: "" };
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
 
 function buildAreaHref(slug) { return `/where-to-live/${slug}`; }
+function normalizeMoneyLabel(value, locale, fallback) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+  return raw
+    .replace(/^average price:\s*/i, "")
+    .replace(/^properties from\s*/i, "")
+    .replace(/^from\s*/i, "")
+    .replace(/\/\s*year/gi, locale === "ar" ? " سنوياً" : " yearly")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeRoiLabel(value, fallback) {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+  return raw
+    .replace(/^return on investment\s*:?/i, "ROI ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 function normalizeSearchText(value) {
   return String(value || "")
     .replace(ARABIC_DIACRITICS, "")
@@ -33,9 +53,9 @@ function sanityAreaToCard(doc, locale) {
     slug: doc.slug, id: doc.slug,
     name: locale === "ar" ? (doc.nameAr || doc.name) : doc.name,
     location: doc.location || "",
-    roi: doc.roi || "ROI varies",
-    avgBuy: doc.avgBuyPrice || "Avg. buy varies",
-    avgRent: doc.avgRentPrice || "Avg. rent varies",
+    roi: normalizeRoiLabel(doc.roi, "ROI varies"),
+    avgBuy: normalizeMoneyLabel(doc.avgBuyPrice, locale, locale === "ar" ? "الأسعار حسب السوق" : "Market-based pricing"),
+    avgRent: normalizeMoneyLabel(doc.avgRentPrice, locale, locale === "ar" ? "الإيجار حسب السوق" : "Market-based rent"),
     image: doc.heroImage || "",
     description: locale === "ar" ? (doc.descriptionAr || doc.description || "") : (doc.description || ""),
     _fromSanity: true,

@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
 import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 import {
   buildProjectsQuery,
-  filterProjects,
 } from "@/lib/search/projectsSearch";
+import { filterProjects } from "@/lib/projects/filterProjects";
 
 import styles from "@/styles/search/ProjectsHeroSearch.module.css";
 
@@ -52,22 +53,24 @@ export default function ProjectsHeroSearch({
   initialTab = 0,
 }) {
   const router = useRouter();
+  const { allProjects: contextProjects } = useAllProjects();
 
   const [activeTab, setActiveTab] = useState(initialTab);
 
   // ✅ Source of truth
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const projectsSource = Array.isArray(allProjects) && allProjects.length ? allProjects : contextProjects;
 
   // ✅ Count projects based on current filters (for modal + UX)
   const filteredProjectsCount = useMemo(() => {
-    if (!Array.isArray(allProjects)) return 0;
+    if (!Array.isArray(projectsSource)) return 0;
     try {
-      return filterProjects(allProjects, normalizeForSearch(filters)).length;
+      return filterProjects(projectsSource, normalizeForSearch(filters)).filtered.length;
     } catch {
       return 0;
     }
-  }, [allProjects, filters]);
+  }, [projectsSource, filters]);
 
   const goToResults = (nextFilters) => {
     const merged = normalizeForSearch({ ...nextFilters, page: 1 });

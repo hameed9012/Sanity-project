@@ -62,7 +62,7 @@ export default function OffplanPage() {
   ]);
 
   // Off-plan only — excluding Omniyat and Beyond projects
-  const OFFPLAN_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond"];
+  const OFFPLAN_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
   const offplanProjects = React.useMemo(() => {
     return (rawProjects || []).filter((p) => {
       if (p.isLand || p.category === "lands") return false;

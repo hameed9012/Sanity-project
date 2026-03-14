@@ -144,7 +144,19 @@ export async function getAllDevelopers() {
       about,
       aboutAr,
       stats,
-      highlights
+      highlights,
+      founder{
+        name,
+        nameAr,
+        title,
+        titleAr,
+        bio,
+        bioAr,
+        ctaLabel,
+        ctaLabelAr,
+        ctaUrl,
+        "imageUrl": coalesce(imageCdn.url, imageUrl)
+      }
     }
   `);
 }
@@ -165,7 +177,19 @@ export async function getDeveloperBySlug(slug) {
       about,
       aboutAr,
       stats,
-      highlights
+      highlights,
+      founder{
+        name,
+        nameAr,
+        title,
+        titleAr,
+        bio,
+        bioAr,
+        ctaLabel,
+        ctaLabelAr,
+        ctaUrl,
+        "imageUrl": coalesce(imageCdn.url, imageUrl)
+      }
     }`,
     { slug }
   );

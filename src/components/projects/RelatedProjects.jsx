@@ -7,6 +7,28 @@ import { useLanguage } from "@/components/LanguageProvider";
 import ProjectCards from "@/components/projects/ProjectCards";
 import styles from "@/styles/projects/RelatedProjects.module.css";
 
+function parsePriceToAED(value) {
+  if (value === null || value === undefined) return null;
+
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return null;
+
+  const numericPart = raw.replace(/[^\d.]/g, "");
+  let parsed = Number(numericPart);
+  const compact = raw.replace(/\s+/g, "");
+
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+
+  if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) {
+    parsed *= 1_000_000;
+  } else if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) {
+    parsed *= 1_000;
+  }
+
+  parsed = Math.round(parsed);
+  return parsed > 0 ? parsed : null;
+}
+
 /**
  * Scores a candidate project against the current project.
  * Higher score = more related. Returns 0 if candidate is the current project.
@@ -58,10 +80,7 @@ export default function RelatedProjects({ projectData, currentSlug }) {
     regionSlug: projectData?.regionSlug || "",
     startingPriceAED:
       projectData?.startingPriceAED ||
-      parseInt(
-        String(projectData?.intro?.stats?.[0]?.value || projectData?.hero?.startingPrice || "0").replace(/[^0-9]/g, ""),
-        10
-      ) || null,
+      parsePriceToAED(projectData?.intro?.stats?.[0]?.value || projectData?.hero?.startingPrice),
   }), [currentSlug, projectData]);
 
   const related = useMemo(() => {

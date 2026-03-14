@@ -28,25 +28,25 @@ export default function ArticlesClient({ sanityArticles = [] }) {
       {
         src: `${CDN}/sky-parks/exterior-night-01.jpg`,
         alt: isRTL ? "Dubai articles" : "Dubai Real Estate Market Insights",
-        title: isRTL ? "Ø¯Ù„ÙŠÙ„ Ø§Ù„Ø§Ø³ØªØ«Ù…Ø§Ø±" : "Investment Guides",
+        title: isRTL ? "دليل الاستثمار" : "Investment Guides",
         description: isRTL
-          ? "Ù…Ù‚Ø§Ù„Ø§Øª ÙˆØªØ­Ù„ÙŠÙ„Ø§Øª Ø­Ø¯ÙŠØ«Ø© Ø¹Ù† Ø³ÙˆÙ‚ Ø§Ù„Ø¹Ù‚Ø§Ø± ÙÙŠ Ø¯Ø¨ÙŠ."
+          ? "مقالات وتحليلات حديثة عن سوق العقار في دبي."
           : "Fresh market intelligence and investment guidance from Dubai real estate.",
       },
       {
         src: `${CDN}/hartland/hero-bg.jpg`,
         alt: isRTL ? "Market analysis" : "Investment Strategies",
-        title: isRTL ? "ØªØ­Ù„ÙŠÙ„ Ø§Ù„Ø³ÙˆÙ‚" : "Market Analysis",
+        title: isRTL ? "تحليل السوق" : "Market Analysis",
         description: isRTL
-          ? "ØªØºØ·ÙŠØ© Ù„Ù„Ø§ØªØ¬Ø§Ù‡Ø§Øª ÙˆØ§Ù„ÙØ±Øµ Ø§Ù„Ø¹Ù‚Ø§Ø±ÙŠØ© Ø§Ù„Ø£ÙƒØ«Ø± Ø£Ù‡Ù…ÙŠØ©."
+          ? "تغطية للاتجاهات والفرص العقارية الأكثر أهمية."
           : "Coverage of the trends, launches, and opportunities shaping the market.",
       },
       {
         src: `${CDN}/lumena-alta/hero-bg.jpg`,
         alt: isRTL ? "Development news" : "Property Development",
-        title: isRTL ? "Ø£Ø®Ø¨Ø§Ø± Ø§Ù„ØªØ·ÙˆÙŠØ±" : "Development News",
+        title: isRTL ? "أخبار التطوير" : "Development News",
         description: isRTL
-          ? "ÙƒÙ„ Ù…Ù‚Ø§Ù„ Ø¬Ø¯ÙŠØ¯ Ù…Ù† Ø³Ø§Ù†ÙŠØªÙŠ Ø³ÙŠØ¸Ù‡Ø± Ù‡Ù†Ø§ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹."
+          ? "كل مقال جديد من سانيتي سيظهر هنا تلقائياً."
           : "Every new article published in Sanity appears here automatically.",
       },
     ],
@@ -75,9 +75,9 @@ export default function ArticlesClient({ sanityArticles = [] }) {
 
   const trustStats = useMemo(
     () => [
-      { number: "15+", label: isRTL ? "Ø³Ù†ÙˆØ§Øª Ø®Ø¨Ø±Ø©" : "Years Experience" },
-      { number: "500+", label: isRTL ? "Ù…Ø´Ø±ÙˆØ¹ Ù…ÙƒØªÙ…Ù„" : "Projects Completed" },
-      { number: "98%", label: isRTL ? "Ø±Ø¶Ø§ Ø§Ù„Ø¹Ù…Ù„Ø§Ø¡" : "Client Satisfaction" },
+      { number: "15+", label: isRTL ? "سنوات خبرة" : "Years Experience" },
+      { number: "500+", label: isRTL ? "مشروع مكتمل" : "Projects Completed" },
+      { number: "98%", label: isRTL ? "رضا العملاء" : "Client Satisfaction" },
     ],
     [isRTL]
   );
@@ -85,36 +85,36 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   const listingData = useMemo(
     () => ({
       sectionHeader: {
-        badge: isRTL ? "Ù…Ø±ÙƒØ² Ø§Ù„Ø¥Ø¹Ù„Ø§Ù…" : "Media Center",
-        title: isRTL ? "Ø£Ø­Ø¯Ø«" : "Latest",
-        highlight: isRTL ? "Ø§Ù„Ù…Ù‚Ø§Ù„Ø§Øª" : "Articles",
+        badge: isRTL ? "مركز الإعلام" : "Media Center",
+        title: isRTL ? "أحدث" : "Latest",
+        highlight: isRTL ? "المقالات" : "Articles",
         subtitle: isRTL
-          ? "ÙƒÙ„ Ù…Ù‚Ø§Ù„ Ø¬Ø¯ÙŠØ¯ Ù…Ù† Ø³Ø§Ù†ÙŠØªÙŠ Ø³ÙŠØ¸Ù‡Ø± Ù‡Ù†Ø§ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹."
+          ? "كل مقال جديد من سانيتي سيظهر هنا تلقائياً."
           : "Every article added in Sanity appears here automatically.",
       },
       cta: {
-        badge: isRTL ? "ØªÙˆØ§ØµÙ„" : "Get In Touch",
-        title: isRTL ? "Ù‡Ù„ ØªØ±ÙŠØ¯" : "Want",
-        highlight: isRTL ? "Ø§Ø³ØªØ´Ø§Ø±Ø© Ø§Ø³ØªØ«Ù…Ø§Ø±ÙŠØ©ØŸ" : "investment guidance?",
+        badge: isRTL ? "تواصل" : "Get In Touch",
+        title: isRTL ? "هل تريد" : "Want",
+        highlight: isRTL ? "استشارة استثمارية؟" : "investment guidance?",
         description: isRTL
-          ? "ØªÙˆØ§ØµÙ„ Ù…Ø¹Ù†Ø§ Ù„Ù…Ø³Ø§Ø¹Ø¯ØªÙƒ ÙÙŠ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø´Ø±ÙˆØ¹ Ø£Ùˆ Ø§Ù„Ù…Ù†Ø·Ù‚Ø© Ø§Ù„Ù…Ù†Ø§Ø³Ø¨Ø©."
+          ? "تواصل معنا لمساعدتك في اختيار المشروع أو المنطقة المناسبة."
           : "Reach out and we will help you choose the right project or area.",
         buttons: [
           {
-            text: isRTL ? "ÙˆØ§ØªØ³Ø§Ø¨" : "WhatsApp",
+            text: isRTL ? "واتساب" : "WhatsApp",
             href: siteContact?.whatsapp
               ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-              : "https://wa.me/971568888906",
+              : "/contact-us",
             type: "primary",
           },
           {
-            text: isRTL ? "Ø§ØªØµÙ„ Ø¨Ù†Ø§" : "Contact Us",
+            text: isRTL ? "اتصل بنا" : "Contact Us",
             href: "/contact-us",
             type: "secondary",
           },
         ],
         trustNote: isRTL
-          ? "Ù…Ù‚Ø§Ù„Ø§Øª ÙˆÙ†Ø´Ø±Ø§Øª Ù…Ø­Ø¯Ø«Ø© Ù…Ø¨Ø§Ø´Ø±Ø© Ù…Ù† Ø§Ù„Ù†Ø¸Ø§Ù…"
+          ? "مقالات ونشرات محدّثة مباشرة من النظام"
           : "Articles and releases updated directly from the CMS",
       },
     }),
@@ -135,7 +135,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
         image: article.mainImage || fallbackHeroImages[0]?.src || "",
         readTime: article.readTime || "5 min read",
         category: article.category || "Investment",
-        cta: locale === "ar" ? "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù…Ù‚Ø§Ù„" : "Read Article",
+        cta: locale === "ar" ? "اقرأ المقال" : "Read Article",
       })),
     [fallbackHeroImages, locale, sanityArticles]
   );
@@ -214,12 +214,12 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                 <div className={styles.heroContent}>
                   <div className={styles.heroContentInner}>
                     <div className={styles.heroBadge}>
-                      <span>{isRTL ? "Ø±Ø¤Ù‰ Ø§Ù„Ø®Ø¨Ø±Ø§Ø¡" : "Expert Insights"}</span>
+                      <span>{isRTL ? "رؤى الخبراء" : "Expert Insights"}</span>
                       <div className={styles.badgeLine} />
                     </div>
 
                     <h1 className={styles.heroTitle}>
-                      {isRTL ? "Ø§Ù„Ø¹Ù‚Ø§Ø±Ø§Øª ÙÙŠ Ø¯Ø¨ÙŠ" : "Dubai Real Estate"}{" "}
+                      {isRTL ? "العقارات في دبي" : "Dubai Real Estate"}{" "}
                       <span className={styles.highlight}>{image.title}</span>
                     </h1>
 
@@ -304,9 +304,9 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   </div>
                   <div className={styles.cardHover}>
                     <div className={styles.hoverContent}>
-                      <span>{isRTL ? "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù…Ù‚Ø§Ù„" : "Read Article"}</span>
+                      <span>{isRTL ? "اقرأ المقال" : "Read Article"}</span>
                       <div className={styles.arrowIcon}>
-                        {isRTL ? "â†" : "â†’"}
+                        {isRTL ? "←" : "→"}
                       </div>
                     </div>
                   </div>
@@ -335,7 +335,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           {!articles.length && (
             <p className={styles.sectionSubtitle}>
               {isRTL
-                ? "Ù„Ù… ÙŠØªÙ… Ø¥Ø¶Ø§ÙØ© Ù…Ù‚Ø§Ù„Ø§Øª Ø¨Ø¹Ø¯."
+                ? "لم يتم إضافة مقالات بعد."
                 : "No articles have been published yet."}
             </p>
           )}

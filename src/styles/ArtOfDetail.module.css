@@ -11,10 +11,10 @@
   width: 100%;
 
   /* overlap */
-  margin-top: clamp(-160px, -15vh, -90px);
+  margin-top: clamp(-96px, -9vh, -40px);
 
   /* keep above previous sections but NOT insane */
-  z-index: 2;
+  z-index: 1;
 
   /* ✅ IMPORTANT: allow clicks to pass through for the overlapped transparent area */
   pointer-events: none;
@@ -141,7 +141,7 @@
   justify-content: center;
 
   padding: 80px 0;
-  top: 36px;
+  top: 18px;
 }
 
 .ownerImg {
@@ -455,7 +455,7 @@
 
 @media (max-width: 1000px) {
   .artOfDetailSec {
-    margin-top: 0;
+    margin-top: 24px;
   }
 
   .artAnimSec {

@@ -218,7 +218,6 @@ function mapPropertyDocument(property, developerLookup) {
   const developer = developerLookup.get(developerKey);
   const location = firstNonEmpty(enProject.location, property.region_slug?.replace(/-/g, " "));
   const locationAr = firstNonEmpty(arProject.location, ar.location?.address);
-  const propertyType = mapPropertyType(property.category, enProject.type || enProject.units);
   const paymentPlan = enProject.paymentPlan || "";
 
   return {
@@ -231,8 +230,6 @@ function mapPropertyDocument(property, developerLookup) {
     location,
     locationAr,
     status: mapListingStatus(property.sanity_status || enProject.statusLabel || enProject.market),
-    propertyType,
-    regionSlug: property.region_slug || slugify(location),
     startingPrice: enProject.startingPrice || "",
     completionDate: enProject.completionDate || "",
     paymentPlan,
@@ -249,7 +246,6 @@ function mapPropertyDocument(property, developerLookup) {
     lat: typeof en.location?.lat === "number" ? en.location.lat : undefined,
     lng: typeof en.location?.lng === "number" ? en.location.lng : undefined,
     nearbyPlaces: mapNearbyPlaces(en.location?.proximityFeatures),
-    hasPostHandover: parsePostHandover(paymentPlan),
   };
 }
 

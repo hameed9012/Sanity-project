@@ -1,140 +1,135 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-import menuData from "@/data/menuData";
+import { useEffect, useMemo, useState } from "react";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import styles from "@/styles/projects/ProjectsFooter.module.css";
 
-export default function ProjectsFooter({ title = "" }) {
-  const [activeCategory, setActiveCategory] = useState(null);
+function shuffleCopy(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
-  const hrefFor = (categorySlug, developerSlug, projectSlug) =>
-    `/properties/${categorySlug}/${developerSlug}/${projectSlug}`;
+export default function ProjectsFooter({ title = "" }) {
+  const { allProjects } = useAllProjects();
+  const [siteContact, setSiteContact] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) {
+          setSiteContact(json?.data?.contact || null);
+        }
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const featuredProjects = useMemo(() => {
+    const valid = (allProjects || []).filter(
+      (project) => !project?.isLand && project?.href && project?.nameEn
+    );
+    return shuffleCopy(valid).slice(0, 8);
+  }, [allProjects]);
+
+  const whatsappHref = siteContact?.whatsapp
+    ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
+    : null;
 
   return (
     <footer className={styles.luxuryFooter}>
-      {/* Luxury Background */}
       <div className={styles.backgroundLuxury}>
         <div className={styles.goldGrid}></div>
         <div className={styles.goldGlow}></div>
       </div>
 
       <div className={styles.container}>
-        {/* Elegant Header */}
         <div className={styles.header}>
-          <h2 className={styles.mainTitle}>{title}</h2>
+          <h2 className={styles.mainTitle}>{title || "Featured Projects"}</h2>
           <div className={styles.titleLine}></div>
         </div>
 
-        {/* Premium Navigation Grid */}
         <div className={styles.navigationGrid}>
-          {menuData.categories.map((category) => (
-            <div
-              key={category.id}
-              className={`${styles.categoryCard} ${
-                activeCategory === category.id ? styles.cardActive : ""
-              }`}
-              onMouseEnter={() => setActiveCategory(category.id)}
-              onMouseLeave={() => setActiveCategory(null)}
-            >
-              {/* Category Header */}
+          {featuredProjects.map((project) => (
+            <Link key={project.slug} href={project.href} className={styles.categoryCard}>
               <div className={styles.categoryHeader}>
-                <div className={styles.categoryIcon}>
-                  {category.id === 1 && "🏢"}
-                  {category.id === 2 && "🏡"}
-                  {category.id === 3 && "🏬"}
-                  {category.id === 4 && "🏔️"}
-                </div>
-                <h3 className={styles.categoryTitle}>{category.name}</h3>
+                <div className={styles.categoryTitle}>{project.nameEn}</div>
                 <p className={styles.categoryDescription}>
-                  {category.description}
+                  {project.developer || project.location || "Dubai, UAE"}
                 </p>
               </div>
 
-              {/* Projects List */}
               <div className={styles.projectsContainer}>
-                {category.developers.map((developer) => (
-                  <div key={developer.id} className={styles.developerSection}>
-                    {/* Developer Name - Only show if multiple developers */}
-                    {category.developers.length > 1 && (
-                      <div className={styles.developerName}>
-                        {developer.name}
-                        {developer.slug === "sobha" && (
-                          <span className={styles.premiumTag}>PREMIUM</span>
-                        )}
+                <div className={styles.projectsList}>
+                  <div className={styles.projectItem}>
+                    <div className={styles.projectImage}>
+                      {project.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={project.image}
+                          alt={project.nameEn}
+                          className={styles.image}
+                        />
+                      ) : (
+                        <div className={styles.imageOverlay}></div>
+                      )}
+                      <div className={styles.imageOverlay}></div>
+                    </div>
+                    <div className={styles.projectInfo}>
+                      <span className={styles.projectTitle}>{project.nameEn}</span>
+                      <div className={styles.projectMeta}>
+                        <span className={styles.projectType}>
+                          {project.type || project.category || "Property"}
+                        </span>
+                        <span className={styles.projectArrow}>-></span>
                       </div>
-                    )}
-
-                    {/* Projects */}
-                    <div className={styles.projectsList}>
-                      {developer.projects.map((project) => (
-                        <Link
-                          key={project.id}
-                          href={hrefFor(
-                            category.slug,
-                            developer.slug,
-                            project.slug,
-                          )}
-                          className={styles.projectItem}
-                        >
-                          <div className={styles.projectImage}>
-                            <Image
-                              src={project.image}
-                              alt={project.title}
-                              fill
-                              sizes="(max-width: 768px) 60px, 70px"
-                              className={styles.image}
-                            />
-                            <div className={styles.imageOverlay}></div>
-                          </div>
-                          <div className={styles.projectInfo}>
-                            <span className={styles.projectTitle}>
-                              {project.title}
-                            </span>
-                            <div className={styles.projectMeta}>
-                              <span className={styles.projectType}>
-                                {category.name}
-                              </span>
-                              <span className={styles.projectArrow}>→</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
 
-              {/* Gold Accent */}
               <div className={styles.cardAccent}></div>
-            </div>
+            </Link>
           ))}
         </div>
 
-        {/* Luxury Contact Section */}
         <div className={styles.contactSection}>
           <div className={styles.contactLine}></div>
           <div className={styles.contactGrid}>
             <div className={styles.contactItem}>
-              <div className={styles.contactIcon}>📞</div>
+              <div className={styles.contactIcon}>Call</div>
               <div className={styles.contactDetails}>
                 <div className={styles.contactLabel}>Direct Consultation</div>
-                <div className={styles.contactValue}>+971 56 888 8906</div>
+                <div className={styles.contactValue}>
+                  {siteContact?.phone || siteContact?.whatsapp || "Add consultation phone"}
+                </div>
               </div>
             </div>
             <div className={styles.contactItem}>
-              <div className={styles.contactIcon}>💬</div>
+              <div className={styles.contactIcon}>Mail</div>
               <div className={styles.contactDetails}>
-                <div className={styles.contactLabel}>Instant Response</div>
-                <div className={styles.contactValue}>WhatsApp Available</div>
+                <div className={styles.contactLabel}>Email</div>
+                <div className={styles.contactValue}>
+                  {siteContact?.email || "Add contact email"}
+                </div>
               </div>
             </div>
             <div className={styles.contactItem}>
-              <div className={styles.contactIcon}>📍</div>
+              <div className={styles.contactIcon}>WA</div>
               <div className={styles.contactDetails}>
-                <div className={styles.contactLabel}>Prime Locations</div>
-                <div className={styles.contactValue}>Dubai & UAE</div>
+                <div className={styles.contactLabel}>WhatsApp</div>
+                <div className={styles.contactValue}>
+                  {whatsappHref ? "Available" : "Contact team"}
+                </div>
               </div>
             </div>
           </div>

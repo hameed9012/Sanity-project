@@ -5,7 +5,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y, Keyboard } from "swiper/modules";
 import styles from "@/styles/where-to-live/SimiliarProjects.module.css";
-import { regionProjectsIndex } from "@/data/regionProjectsIndex";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 // Import Swiper styles
 import "swiper/css";
@@ -17,6 +17,7 @@ const SimilarProjectsSwiper = ({
   maxProjects = 12,
 }) => {
   const [mounted, setMounted] = useState(false);
+  const { allProjects } = useAllProjects();
 
   useEffect(() => {
     setMounted(true);
@@ -26,13 +27,13 @@ const SimilarProjectsSwiper = ({
   const allSimilarProjects = useMemo(() => {
     if (!currentProject && !currentRegion) return [];
 
-    const allProjects = regionProjectsIndex.filter(
+    const eligibleProjects = allProjects.filter(
       (project) => project.regionSlug !== null // Only show projects with regions
     );
 
     // If we have a current project, find similar ones
     if (currentProject) {
-      return allProjects
+      return eligibleProjects
         .filter((project) => {
           // Exclude the current project
           if (project.slug === currentProject.slug) return false;
@@ -102,13 +103,13 @@ const SimilarProjectsSwiper = ({
 
     // If we only have a region, show other projects from the same region
     if (currentRegion) {
-      return allProjects
+      return eligibleProjects
         .filter((project) => project.regionSlug === currentRegion)
         .slice(0, maxProjects);
     }
 
     return [];
-  }, [currentProject, currentRegion, maxProjects]);
+  }, [currentProject, currentRegion, maxProjects, allProjects]);
 
   if (!mounted) {
     return (

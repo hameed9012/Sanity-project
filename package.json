@@ -11,7 +11,8 @@
     "dev:production": "NODE_ENV=production next dev",
     "build:production": "NODE_ENV=production next build",
     "start:production": "NODE_ENV=production next start",
-    "sanity:import:json": "node mjs-scrips/import-json-to-sanity.mjs"
+    "sanity:import:json": "node mjs-scrips/import-json-to-sanity.mjs",
+    "sanity:sync:workbook": "node mjs-scrips/sync-workbook-to-sanity.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -41,7 +42,8 @@
     "sanity": "^4.22.0",
     "sharp": "^0.34.5",
     "styled-components": "^6.3.11",
-    "swiper": "^12.1.2"
+    "swiper": "^12.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

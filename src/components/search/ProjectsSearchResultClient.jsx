@@ -14,12 +14,13 @@ import { useLanguage } from "@/components/LanguageProvider";
 import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
 import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
 import ProjectResultCard from "@/components/search/ProjectResultCard";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 import {
-  filterProjects,
   parseSearchParams,
   buildSearchQuery,
 } from "@/lib/search/unifiedProjectsSearch";
+import { filterProjects } from "@/lib/projects/filterProjects";
 
 import styles from "@/styles/search/ProjectsSearchResults.module.css";
 
@@ -43,6 +44,7 @@ function ProjectsSearchResultsContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { t, locale } = useLanguage();
+  const { allProjects } = useAllProjects();
   const isAr = locale === "ar" || String(locale || "").startsWith("ar");
 
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -72,8 +74,8 @@ function ProjectsSearchResultsContent() {
   // Apply filters and get results
   const allResults = useMemo(() => {
     if (!isInitialized) return [];
-    return filterProjects(filters);
-  }, [filters, isInitialized]);
+    return filterProjects(allProjects || [], filters).filtered;
+  }, [allProjects, filters, isInitialized]);
 
   // Pagination
   const page = filters.page || 1;
@@ -86,8 +88,8 @@ function ProjectsSearchResultsContent() {
 
   // Draft results count (for modal)
   const draftResults = useMemo(() => {
-    return filterProjects(draft);
-  }, [draft]);
+    return filterProjects(allProjects || [], draft).filtered;
+  }, [allProjects, draft]);
 
   // Update URL with new filters
   const updateFilters = useCallback(

@@ -30,6 +30,29 @@ function formatRegionName(slug) {
     .join(" ");
 }
 
+function parsePriceToAED(value) {
+  if (value === null || value === undefined) return null;
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return null;
+
+  const numericPart = raw.replace(/[^\d.]/g, "");
+  let parsed = Number(numericPart);
+  const compact = raw.replace(/\s+/g, "");
+
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) parsed *= 1_000_000;
+  if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) parsed *= 1_000;
+  parsed = Math.round(parsed);
+  return parsed > 0 ? parsed : null;
+}
+
+function formatPriceBadge(value) {
+  const amount = parsePriceToAED(value);
+  if (!amount) return "";
+  if (amount < 1_000_000) return `AED ${Math.round(amount / 1_000)}K`;
+  return `AED ${(amount / 1_000_000).toFixed(1)}M`;
+}
+
 function projectMatchesArea(project, regionSlug) {
   const targetSlug = normalizeSlug(regionSlug);
   if (!targetSlug) return false;
@@ -187,17 +210,21 @@ export default function RegionProjectsSection({
             <div key={project.slug} className={styles.projectCard}>
               <Link href={project.href} className={styles.cardLink}>
                 <div className={styles.imageContainer}>
-                  <Image
-                    src={project.image || "/images/project-placeholder.jpg"}
-                    alt={project.name || project.slug}
-                    fill
-                    className={styles.projectImage}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
+                  {project.image ? (
+                    <Image
+                      src={project.image}
+                      alt={project.name || project.slug}
+                      fill
+                      className={styles.projectImage}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  ) : null}
                   <div className={styles.imageOverlay} />
 
-                  {project.startingPrice && (
-                    <div className={styles.priceBadge}>{project.startingPrice}</div>
+                  {formatPriceBadge(project.startingPriceAED || project.priceAED || project.startingPrice) && (
+                    <div className={styles.priceBadge}>
+                      {formatPriceBadge(project.startingPriceAED || project.priceAED || project.startingPrice)}
+                    </div>
                   )}
                 </div>
 

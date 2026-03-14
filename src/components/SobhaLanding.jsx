@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/SobhaLanding.module.css";
-import { regionProjectsIndex } from "@/data/regionProjectsIndex";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 export default function SobhaLanding() {
   const [showModal, setShowModal] = useState(false);
+  const { allProjects } = useAllProjects();
 
   // 🔹 Auto-open ADIB modal once
   useEffect(() => {
@@ -18,8 +19,12 @@ export default function SobhaLanding() {
 
   // 🔹 Pull ALL Sobha projects automatically
   const sobhaProjects = useMemo(() => {
-    return regionProjectsIndex.filter((p) => p.developerSlug === "sobha");
-  }, []);
+    return allProjects.filter((p) => {
+      const developerSlug = String(p?.developerSlug || "").toLowerCase();
+      const developerName = String(p?.developer || "").toLowerCase();
+      return developerSlug === "sobha" || developerName.includes("sobha");
+    });
+  }, [allProjects]);
 
   return (
     <>
@@ -74,20 +79,20 @@ export default function SobhaLanding() {
         {sobhaProjects.map((project) => (
           <a
             key={project.slug}
-            href={`/projects/${project.slug}`}
+            href={project.href || `/properties/${project.type || "apartments"}/${project.developerSlug || "sobha"}/${project.slug}`}
             className={styles.card}
           >
             <div
               className={styles.cardImage}
               style={{
-                backgroundImage: `url(${project.heroImage})`,
+                backgroundImage: `url(${project.image || project.data?.hero?.backgroundUrl || ""})`,
               }}
             />
 
             <div className={styles.cardBody}>
-              <h3>{project.title}</h3>
+              <h3>{project.title || project.name || project.nameEn}</h3>
               <p>{project.location}</p>
-              {project.startingPrice && (
+              {project.startingPrice && project.startingPrice !== "0" && (
                 <span>Starting from {project.startingPrice}</span>
               )}
             </div>

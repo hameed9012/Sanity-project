@@ -541,7 +541,7 @@ export default function ContactFormSimplified({
     activeTab === "BUY_PROPERTY" ? handleContactSubmit : handleCareersSubmit;
 
   const contactHeadline = isRTL
-    ? siteContact?.formTitleAr || "Ù†Ø³Ù…Ø¹ Ù…Ù†Ùƒ"
+    ? siteContact?.formTitleAr || "نسمع منك"
     : siteContact?.formTitle || "Hear From You";
   const whatsappHref = siteContact?.whatsapp
     ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`

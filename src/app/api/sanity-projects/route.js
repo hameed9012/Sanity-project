@@ -45,6 +45,28 @@ const PROPERTY_QUERY = `
   nearbyPlaces[],
 `;
 
+function parsePriceToAED(value) {
+  if (value === null || value === undefined) return null;
+
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return null;
+
+  const numericPart = raw.replace(/[^\d.]/g, "");
+  let parsed = Number(numericPart);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+
+  const compact = raw.replace(/\s+/g, "");
+  if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) {
+    parsed *= 1_000_000;
+  } else if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) {
+    parsed *= 1_000;
+  }
+
+  parsed = Math.round(parsed);
+  return parsed >= 10_000 ? parsed : null;
+}
+
 function normalizeProperty(item) {
   if (!item) return item;
 
@@ -62,6 +84,8 @@ function normalizeProperty(item) {
     ...item,
     heroImage: item?.heroImage || item?.heroImageUpload?.asset?.url || "",
     galleryImages,
+    priceAED: parsePriceToAED(item?.startingPrice),
+    startingPriceAED: parsePriceToAED(item?.startingPrice),
   };
 }
 

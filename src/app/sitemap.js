@@ -1,6 +1,6 @@
 // src/app/sitemap.js
 import { SITE_URL } from "@/lib/site";
-import { getAllProjectCanonicalPaths } from "@/lib/project-data-sitemap"; // create this helper below
+import { getAllProjectCanonicalPaths } from "@/lib/project-data-sitemap";
 
 export default async function sitemap() {
   const now = new Date();
@@ -25,10 +25,52 @@ export default async function sitemap() {
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/contact`,
+      url: `${SITE_URL}/contact-us`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${SITE_URL}/properties`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/offplan`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/secondary`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/rental`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/lands`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/where-to-live`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/developers`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
   ];
 

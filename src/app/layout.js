@@ -6,7 +6,6 @@ import Script from "next/script";
 
 import TopHeader from "@/components/TopHeader";
 import FooterFinal from "@/components/FooterFinal";
-import { menuData } from "@/data/menuData";
 
 import LanguageProvider from "@/components/LanguageProvider";
 import WhatsappFloatingButton from "@/components/FloatingWhatsApp";
@@ -203,7 +202,7 @@ export default function RootLayout({ children }) {
                 {children}
                 {/* <ChatWidget /> */}
                 <WhatsappFloatingButton />
-                <FooterFinal menuData={menuData} />
+                <FooterFinal />
               </DirectionWrapper>
             </CompareProvider>
           </SanityProjectsProvider>

@@ -4,26 +4,9 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/components/LanguageProvider";
 import styles from "./about.module.css";
-import SobhaLegacyHero from "@/components/about/SobhaLegacyHero";
-import ServicesSection from "./ServicesSection";
-import BuildingExcellenceSection from "@/components/about/BuildingExcellenceSection";
-import BrandPillarsAccordion from "@/components/about/BrandPillarsAccordion";
-import JourneyTimeline from "@/components/about/JourneyTimeline";
 
 function localized(locale, enValue, arValue) {
   return locale === "ar" ? arValue || enValue || "" : enValue || arValue || "";
-}
-
-function FallbackAbout() {
-  return (
-    <>
-      <SobhaLegacyHero />
-      <BuildingExcellenceSection />
-      <ServicesSection />
-      <BrandPillarsAccordion />
-      <JourneyTimeline />
-    </>
-  );
 }
 
 export default function AboutPage() {
@@ -57,7 +40,24 @@ export default function AboutPage() {
   const sections = Array.isArray(about?.sections) ? about.sections : [];
 
   if (!loaded) return null;
-  if (!title && sections.length === 0) return <FallbackAbout />;
+  if (!title && sections.length === 0) {
+    return (
+      <main className={styles.page} dir={isRTL ? "rtl" : "ltr"}>
+        <section className={styles.hero}>
+          <div className={styles.container}>
+            <div className={styles.missionContent}>
+              <h1>{isRTL ? "عن الشركة" : "About Us"}</h1>
+              <p>
+                {isRTL
+                  ? "سيتم إدارة محتوى صفحة من نحن بالكامل من Sanity وإضافته هنا قريباً."
+                  : "This About page is now controlled from Sanity. Content will appear here once it is populated."}
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className={styles.page} dir={isRTL ? "rtl" : "ltr"}>

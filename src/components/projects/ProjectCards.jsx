@@ -481,13 +481,17 @@ const ProjectCards = ({ projects, onResetFilters }) => {
     const rawPrice = String(price).trim().toLowerCase();
     const numericPart = rawPrice.replace(/[^\d.]/g, "");
     let absPrice = Number(numericPart);
+    const compact = rawPrice.replace(/\s+/g, "");
 
     if (Number.isFinite(absPrice)) {
-      if (/\bm\b/.test(rawPrice)) absPrice *= 1_000_000;
-      else if (/\bk\b/.test(rawPrice)) absPrice *= 1_000;
+      if (/million/.test(rawPrice) || /\d(?:\.\d+)?m\b/.test(compact)) {
+        absPrice *= 1_000_000;
+      } else if (/thousand/.test(rawPrice) || /\d(?:\.\d+)?k\b/.test(compact)) {
+        absPrice *= 1_000;
+      }
     }
 
-    if (!Number.isFinite(absPrice) || absPrice <= 0) return fallback;
+    if (!Number.isFinite(absPrice) || absPrice < 10_000) return fallback;
 
     if (absPrice < 1_000_000) {
       const value = Math.round(absPrice / 1_000);
@@ -500,6 +504,45 @@ const ProjectCards = ({ projects, onResetFilters }) => {
       maximumFractionDigits: 1,
     });
     return isAr ? `${pretty} مليون` : `${pretty}M`;
+  };
+
+  const parsePositivePrice = (value) => {
+    if (value === null || value === undefined) return null;
+
+    const raw = String(value).trim().toLowerCase();
+    if (!raw) return null;
+
+    const numericPart = raw.replace(/[^\d.]/g, "");
+    let parsed = Number(numericPart);
+    const compact = raw.replace(/\s+/g, "");
+
+    if (!Number.isFinite(parsed) || parsed <= 0) return null;
+
+    if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) {
+      parsed *= 1_000_000;
+    } else if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) {
+      parsed *= 1_000;
+    }
+
+    return Number.isFinite(parsed) && parsed >= 10_000 ? parsed : null;
+  };
+
+  const getDisplayPrice = (project) => {
+    const candidates = [
+      project?.priceAED,
+      project?.startingPriceAED,
+      project?.startingPrice,
+      project?.price,
+      project?.project?.startingPrice,
+      project?.project?.price,
+    ];
+
+    for (const candidate of candidates) {
+      const parsed = parsePositivePrice(candidate);
+      if (parsed !== null) return parsed;
+    }
+
+    return null;
   };
 
   // --------- completion (NO commas + supports Q format) ----------
@@ -644,6 +687,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
               bedsLabel={bedsLabel}
               sqftLabel={sqftLabel}
               formatPrice={formatPrice}
+              getDisplayPrice={getDisplayPrice}
               formatCompletion={formatCompletion}
               unitTypeLabel={unitTypeLabel}
               styles={styles}
@@ -708,6 +752,7 @@ function ProjectCardInner({
   bedsLabel,
   sqftLabel,
   formatPrice,
+  getDisplayPrice,
   formatCompletion,
   unitTypeLabel,
   styles,
@@ -783,11 +828,7 @@ function ProjectCardInner({
               )}
             </span>
             <span className={`${styles.detailValue} ${styles.price}`}>
-              {formatPrice(
-                project?.priceAED ||
-                  project?.startingPriceAED ||
-                  project?.startingPrice,
-              )}
+              {formatPrice(getDisplayPrice(project))}
             </span>
           </div>
 

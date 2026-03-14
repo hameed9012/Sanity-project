@@ -3,10 +3,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import modal from "@/styles/compare/CompareModal.module.css";
 import { useCompare } from "./CompareProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 
 // ── Helpers ────────────────────────────────────────────────────
 function safe(v) {
@@ -24,14 +24,6 @@ function aed(n) { const x = safeNum(n); return x == null ? "—" : `AED ${x.toLo
 function pct(n) { const x = safeNum(n); return x == null ? "—" : `${x}%`; }
 function cap(s) { if (!s) return "—"; const t = String(s).trim(); return t.charAt(0).toUpperCase() + t.slice(1); }
 
-function pickProjectsArray(mod) {
-  if (!mod) return [];
-  if (Array.isArray(mod.default)) return mod.default;
-  if (Array.isArray(mod.regionProjectsIndex)) return mod.regionProjectsIndex;
-  const anyArr = Object.values(mod).find((v) => Array.isArray(v));
-  return Array.isArray(anyArr) ? anyArr : [];
-}
-
 function computeStats(projectsIndex, slug) {
   const items = (projectsIndex || []).filter((p) => p?.regionSlug === slug);
   const prices = items
@@ -44,19 +36,11 @@ function computeStats(projectsIndex, slug) {
 export default function CompareModal() {
   const compare = useCompare();
   const { locale } = useLanguage();
+  const { allProjects } = useAllProjects();
   const isRTL = locale === "ar";
 
-  const [projectsIndex, setProjectsIndex] = useState([]);
   const [areasIndex, setAreasIndex] = useState([]);
   const [imgErrors, setImgErrors] = useState({});
-
-  useEffect(() => {
-    let mounted = true;
-    import("@/data/regionProjectsIndex").then((mod) => {
-      if (mounted) setProjectsIndex(pickProjectsArray(mod));
-    }).catch(() => {});
-    return () => { mounted = false; };
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -84,8 +68,8 @@ export default function CompareModal() {
     () => (bSlug ? getAreaFromSanity(areasIndex, bSlug, lang) : null),
     [areasIndex, bSlug, lang]
   );
-  const aStats = useMemo(() => aSlug ? computeStats(projectsIndex, aSlug) : null, [projectsIndex, aSlug]);
-  const bStats = useMemo(() => bSlug ? computeStats(projectsIndex, bSlug) : null, [projectsIndex, bSlug]);
+  const aStats = useMemo(() => aSlug ? computeStats(allProjects, aSlug) : null, [allProjects, aSlug]);
+  const bStats = useMemo(() => bSlug ? computeStats(allProjects, bSlug) : null, [allProjects, bSlug]);
 
   // Lock body scroll
   useEffect(() => {

@@ -48,8 +48,25 @@ function normalizeStatus(raw) {
 }
 
 function parsePrice(raw) {
-  const digits = String(raw || "").replace(/[^0-9]/g, "");
-  return digits ? parseInt(digits, 10) : null;
+  if (raw === null || raw === undefined) return null;
+
+  const value = String(raw).trim().toLowerCase();
+  if (!value) return null;
+
+  const numericPart = value.replace(/[^\d.]/g, "");
+  let parsed = Number(numericPart);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+
+  const compact = value.replace(/\s+/g, "");
+  if (/million/.test(value) || /\d(?:\.\d+)?m\b/.test(compact)) {
+    parsed *= 1_000_000;
+  } else if (/thousand/.test(value) || /\d(?:\.\d+)?k\b/.test(compact)) {
+    parsed *= 1_000;
+  }
+
+  parsed = Math.round(parsed);
+  return parsed >= 10_000 ? parsed : null;
 }
 
 function parseYear(raw) {
@@ -225,7 +242,14 @@ function normalizeLegacyProperty(property) {
   const hero = property?.en?.hero || {};
   const gallerySlides = getLegacyGallerySlides(property);
   const floorPlans = property?.en?.floorPlans?.plans || [];
-  const price = parsePrice(project?.startingPrice);
+  const price =
+    (Number.isFinite(property?.priceAED) && property.priceAED > 0
+      ? property.priceAED
+      : null) ||
+    (Number.isFinite(property?.startingPriceAED) && property.startingPriceAED > 0
+      ? property.startingPriceAED
+      : null) ||
+    parsePrice(project?.startingPrice);
   const bedrooms = extractBedroomRangeFromPlans(floorPlans);
   const sizes = extractSizeRangeFromPlans(floorPlans);
   const developer = project?.developer || property?.developer || "";
@@ -314,7 +338,14 @@ function normalizeFlatProperty(property) {
     gallerySlides[0] ||
     "";
   const squareImageUrl = property?.heroImage || gallerySlides[0] || "";
-  const price = parsePrice(property?.startingPrice);
+  const price =
+    (Number.isFinite(property?.priceAED) && property.priceAED > 0
+      ? property.priceAED
+      : null) ||
+    (Number.isFinite(property?.startingPriceAED) && property.startingPriceAED > 0
+      ? property.startingPriceAED
+      : null) ||
+    parsePrice(property?.startingPrice);
   const bedrooms = extractBedroomRangeFromPlans(property?.floorPlans);
   const sizes = extractSizeRangeFromPlans(property?.floorPlans);
 

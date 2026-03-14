@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getSiteContactSettings } from "@/lib/server/siteContactSettings";
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
@@ -96,13 +97,17 @@ export async function POST(request) {
 
     console.log("✅ Form validation passed");
 
+    const siteContact = await getSiteContactSettings();
+    const senderEmail = siteContact.email || process.env.EMAIL_USER || "no-reply@example.com";
+    const adminEmail = siteContact.email || process.env.ADMIN_EMAIL || senderEmail;
+
     // Create transporter with your credentials
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || "smtp.hostinger.com",
       port: parseInt(process.env.EMAIL_PORT || "465"),
       secure: true,
       auth: {
-        user: process.env.EMAIL_USER || "info@mohamadkodmani.ae",
+        user: senderEmail,
         pass: process.env.EMAIL_PASS,
       },
       tls: {
@@ -136,7 +141,8 @@ export async function POST(request) {
         transporter,
         formData,
         t,
-        isRTL
+        isRTL,
+        { senderEmail, adminEmail }
       );
 
       // 2. Send auto-reply to user
@@ -145,7 +151,8 @@ export async function POST(request) {
         transporter,
         formData,
         t,
-        isRTL
+        isRTL,
+        { senderEmail }
       );
 
       // 3. Send to respond.io
@@ -193,7 +200,7 @@ export async function POST(request) {
 }
 
 // Send email to admin
-async function sendAdminEmail(transporter, data, t, isRTL) {
+async function sendAdminEmail(transporter, data, t, isRTL, mailConfig) {
   try {
     const emailHtml = `
 <!DOCTYPE html>
@@ -342,10 +349,8 @@ ${new Date().toLocaleString("en-US", {
     `;
 
     const mailOptions = {
-      from: `"Mohamad Kodmani Real Estate" <${
-        process.env.EMAIL_USER || "info@mohamadkodmani.ae"
-      }>`,
-      to: process.env.ADMIN_EMAIL || "info@mohamadkodmani.ae",
+      from: `"Mohamad Kodmani Real Estate" <${mailConfig.senderEmail}>`,
+      to: mailConfig.adminEmail,
       subject: `${t.adminSubject} - ${data.firstName} ${data.lastName}`,
       text: emailText,
       html: emailHtml,
@@ -362,7 +367,7 @@ ${new Date().toLocaleString("en-US", {
 }
 
 // Send auto-reply to user
-async function sendUserAutoReply(transporter, data, t, isRTL) {
+async function sendUserAutoReply(transporter, data, t, isRTL, mailConfig) {
   try {
     const emailHtml = `
 <!DOCTYPE html>
@@ -461,9 +466,7 @@ ${t.footer}
     `;
 
     const mailOptions = {
-      from: `"Mohamad Kodmani Real Estate" <${
-        process.env.EMAIL_USER || "info@mohamadkodmani.ae"
-      }>`,
+      from: `"Mohamad Kodmani Real Estate" <${mailConfig.senderEmail}>`,
       to: data.email,
       subject: t.userSubject,
       text: emailText,

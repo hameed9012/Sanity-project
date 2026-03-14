@@ -21,6 +21,13 @@ const SOCIAL_ICONS = {
       <path d="M13.5 21v-7h2.4l.4-3h-2.8V8.3C13.5 7.4 13.8 7 15 7h1.4V4.3C16 4.1 15 4 14.1 4 11.8 4 10.2 5.4 10.2 8v3H7.8v3h2.4v7h3.3z" fill="currentColor" />
     </svg>
   ),
+  linkedin: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="9" width="3" height="11" fill="currentColor" />
+      <circle cx="5.5" cy="5.5" r="1.7" fill="currentColor" />
+      <path d="M10 9h2.9v1.6h.1c.4-.8 1.4-1.9 3-1.9 3.2 0 3.8 2.1 3.8 4.9V20h-3v-5.7c0-1.4 0-3.1-1.9-3.1s-2.2 1.5-2.2 3V20h-3V9z" fill="currentColor" />
+    </svg>
+  ),
   youtube: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M21 8.2c-.1-.8-.6-1.5-1.4-1.7C18.1 6 15 6 12 6s-6.1 0-7.6.5C3.6 6.7 3.1 7.4 3 8.2 2.8 9.7 2.8 11.3 2.8 12.8s0 3.1.2 4.6c.1.8.6 1.5 1.4 1.7C5.9 19.6 9 19.6 12 19.6s6.1 0 7.6-.5c.8-.2 1.3-.9 1.4-1.7.2-1.5.2-3.1.2-4.6s0-3.1-.2-4.6z" fill="none" stroke="currentColor" strokeWidth="1.4" />
@@ -28,6 +35,8 @@ const SOCIAL_ICONS = {
     </svg>
   ),
 };
+
+const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 // ─── helpers ──────────────────────────────────────────────────
 function shuffleCopy(arr) {
@@ -83,11 +92,31 @@ export default function FooterFinal() {
   const { allProjects } = useAllProjects();
 
   const [cards, setCards] = useState([]);
+  const [siteContact, setSiteContact] = useState(null);
   useEffect(() => {
     if (!allProjects?.length) return;
-    const pool = allProjects.filter((p) => !p.isLand && p.image);
+    const pool = allProjects.filter((p) => {
+      const developerSlug = String(p?.developerSlug || p?.developer || "").toLowerCase();
+      return !p.isLand && p.image && !EXCLUDED_DEVELOPER_SLUGS.has(developerSlug);
+    });
     setCards(pickRandom(pool, 9));
   }, [pathname, allProjects]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-settings", { cache: "no-store" });
+        const json = await res.json();
+        if (active && json?.ok) {
+          setSiteContact(json?.data?.contact || null);
+        }
+      } catch {}
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const year = new Date().getFullYear();
 
@@ -112,10 +141,21 @@ export default function FooterFinal() {
   };
 
   const socials = [
-    { id: "instagram", href: "https://www.instagram.com/mohamadkodmane/", label: "Instagram" },
-    { id: "youtube",   href: "https://www.youtube.com/@Mohamad.Kodmane",  label: "YouTube"   },
-    { id: "facebook",  href: "https://www.facebook.com/mo.kodmane/",      label: "Facebook"  },
-  ];
+    siteContact?.instagram ? { id: "instagram", href: siteContact.instagram, label: "Instagram" } : null,
+    siteContact?.youtube ? { id: "youtube", href: siteContact.youtube, label: "YouTube" } : null,
+    siteContact?.linkedin ? { id: "linkedin", href: siteContact.linkedin, label: "LinkedIn" } : null,
+  ].filter(Boolean);
+
+  const phoneHref = siteContact?.phone
+    ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}`
+    : null;
+  const officeHref = siteContact?.phone
+    ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}`
+    : null;
+  const emailHref = siteContact?.email ? `mailto:${siteContact.email}` : null;
+  const phoneLabel = siteContact?.whatsapp || siteContact?.phone || (isRTL ? "أضف رقم واتساب" : "Add WhatsApp number");
+  const officeLabel = siteContact?.phone || (isRTL ? "أضف رقم المكتب" : "Add office phone");
+  const emailLabel = (siteContact?.email || (isRTL ? "أضف البريد الإلكتروني" : "Add email")).toUpperCase();
 
   return (
     <footer className={`${styles.footer} ${isRTL ? styles.rtl : ""}`} dir={isRTL ? "rtl" : "ltr"}>
@@ -176,17 +216,29 @@ export default function FooterFinal() {
               <div className={styles.contactDetails}>
                 <div className={styles.contactLine}>
                   <span className={styles.contactType}>{copy.direct}</span>
-                  <Link href="tel:+971568888906" className={styles.contactNumber}>+971 56 888 8906</Link>
+                  {phoneHref ? (
+                    <Link href={phoneHref} className={styles.contactNumber}>{phoneLabel}</Link>
+                  ) : (
+                    <span className={styles.contactNumber}>{phoneLabel}</span>
+                  )}
                 </div>
                 <div className={styles.contactLine}>
                   <span className={styles.contactType}>{copy.office}</span>
-                  <Link href="tel:+97145859279" className={styles.contactNumber}>+971 4 585 9279</Link>
+                  {officeHref ? (
+                    <Link href={officeHref} className={styles.contactNumber}>{officeLabel}</Link>
+                  ) : (
+                    <span className={styles.contactNumber}>{officeLabel}</span>
+                  )}
                 </div>
                 <div className={styles.contactLine}>
                   <span className={styles.contactType}>{copy.email}</span>
-                  <Link href="mailto:info@mohamadkodmani.ae" className={styles.contactEmail}>
-                    INFO@MOHAMADKODMANI.AE
-                  </Link>
+                  {emailHref ? (
+                    <Link href={emailHref} className={styles.contactEmail}>
+                      {emailLabel}
+                    </Link>
+                  ) : (
+                    <span className={styles.contactEmail}>{emailLabel}</span>
+                  )}
                 </div>
               </div>
             </div>
