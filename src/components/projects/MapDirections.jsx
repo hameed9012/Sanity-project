@@ -121,6 +121,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const lastViewportKeyRef = useRef("");
 
   const [mapbox, setMapbox] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -220,10 +221,12 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
 
     const map = new mapbox.Map({
       container: mapContainerRef.current,
-      // ✅ Dark map style
       style: "mapbox://styles/mapbox/dark-v11",
       center,
       zoom: normalized.zoom || 13,
+      attributionControl: false,
+      fadeDuration: 0,
+      renderWorldCopies: false,
     });
 
     map.addControl(new mapbox.NavigationControl(), "top-right");
@@ -289,7 +292,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       markersRef.current.push(marker);
       bounds.extend([lng, lat]);
 
-      if (isProject) marker.togglePopup();
+      if (isProject && visiblePoints.length === 1) marker.togglePopup();
     });
 
     if (visiblePoints.length === 1) {
@@ -302,10 +305,15 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       return;
     }
 
-    if (!bounds.isEmpty()) {
+    const viewportKey = visiblePoints
+      .map((point) => `${point.id}:${point.lat}:${point.lng}`)
+      .join("|");
+
+    if (!bounds.isEmpty() && lastViewportKeyRef.current !== viewportKey) {
+      lastViewportKeyRef.current = viewportKey;
       mapRef.current.fitBounds(bounds, {
         padding: { top: 60, bottom: 60, left: 80, right: 80 },
-        duration: 700,
+        duration: 450,
       });
     }
   }, [activeCategory, normalized, activeLocale, activeIsRTL, mapbox, mapLoaded]);

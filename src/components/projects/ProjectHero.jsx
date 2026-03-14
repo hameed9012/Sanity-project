@@ -35,8 +35,9 @@ export default function ProjectHero({
   const companyName = getLocalizedText(heroData.companyName, activeLocale);
   const locationName = getLocalizedText(projectInfo.location, activeLocale);
 
-  const bgUrl = heroData.backgroundUrl;
+  const bgUrl = heroData.backgroundUrl || heroData.squareImageUrl || "";
   const isBgVideo = isVideo(bgUrl);
+  const logoSrc = heroData.squareImageUrl || heroData.backgroundUrl || "";
 
   const scrollToContent = () => {
     const secondWrapper = document.querySelector(`.${styles.secondWrapper}`);
@@ -60,7 +61,7 @@ export default function ProjectHero({
               playsInline
               preload="auto"
             />
-          ) : (
+          ) : bgUrl ? (
             <Image
               src={bgUrl}
               alt={projectName}
@@ -69,12 +70,14 @@ export default function ProjectHero({
               sizes="100vw"
               className={styles.heroImage}
             />
+          ) : (
+            <div className={styles.heroImage} />
           )}
 
           <div className={styles.overlayContent}>
             <h1 className={styles.title}>{projectName}</h1>
             <p className={styles.subtitle}>
-              {companyName} • {locationName}
+              {companyName} / {locationName}
             </p>
 
             {projectInfo.startingPrice && (
@@ -108,13 +111,15 @@ export default function ProjectHero({
         <div className={styles.innerRow}>
           <div className={styles.detLogoContent}>
             <div className={styles.logoCard}>
-              <Image
-                src={heroData.squareImageUrl}
-                alt={`${projectName} logo`}
-                width={260}
-                height={140}
-                className={styles.logoImg}
-              />
+              {logoSrc ? (
+                <Image
+                  src={logoSrc}
+                  alt={`${projectName} logo`}
+                  width={260}
+                  height={140}
+                  className={styles.logoImg}
+                />
+              ) : null}
             </div>
           </div>
 

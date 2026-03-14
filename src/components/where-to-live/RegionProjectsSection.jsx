@@ -43,7 +43,7 @@ function parsePriceToAED(value) {
   if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) parsed *= 1_000_000;
   if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) parsed *= 1_000;
   parsed = Math.round(parsed);
-  return parsed > 0 ? parsed : null;
+  return parsed >= 10_000 ? parsed : null;
 }
 
 function formatPriceBadge(value) {
@@ -57,7 +57,7 @@ function projectMatchesArea(project, regionSlug) {
   const targetSlug = normalizeSlug(regionSlug);
   if (!targetSlug) return false;
 
-  const projectRegion = normalizeSlug(project?.regionSlug);
+  const projectRegion = normalizeSlug(project?.regionSlug || project?.areaSlug);
   if (projectRegion && projectRegion === targetSlug) return true;
 
   const locationParts = String(project?.location || "")
@@ -104,7 +104,7 @@ function projectMatchesFilters(project, filters) {
     if (!haystack.includes(term)) return false;
   }
 
-  const price = project?.priceAED;
+  const price = project?.priceAED || project?.startingPriceAED;
   if (minPrice && price && price < minPrice) return false;
   if (maxPrice && price && price > maxPrice) return false;
 
@@ -185,9 +185,13 @@ export default function RegionProjectsSection({
       <section className={styles.projectsSection}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Featured Projects</h2>
+            <h2 className={styles.sectionTitle}>
+              {locale === "ar" ? "مشاريع مميزة" : "Featured Projects"}
+            </h2>
             <p className={styles.sectionSubtitle}>
-              No projects match the selected filters.
+              {locale === "ar"
+                ? "لا توجد مشاريع تطابق الفلاتر المختارة."
+                : "No projects match the selected filters."}
             </p>
           </div>
         </div>
@@ -199,9 +203,13 @@ export default function RegionProjectsSection({
     <section className={styles.projectsSection}>
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Featured Projects</h2>
+          <h2 className={styles.sectionTitle}>
+            {locale === "ar" ? "مشاريع مميزة" : "Featured Projects"}
+          </h2>
           <p className={styles.sectionSubtitle}>
-            Exclusive properties in {formatRegionName(regionSlug)} ({filteredProjects.length})
+            {locale === "ar"
+              ? `عقارات مميزة في ${formatRegionName(regionSlug)} (${filteredProjects.length})`
+              : `Exclusive properties in ${formatRegionName(regionSlug)} (${filteredProjects.length})`}
           </p>
         </div>
 
@@ -221,9 +229,13 @@ export default function RegionProjectsSection({
                   ) : null}
                   <div className={styles.imageOverlay} />
 
-                  {formatPriceBadge(project.startingPriceAED || project.priceAED || project.startingPrice) && (
+                  {formatPriceBadge(
+                    project.startingPriceAED || project.priceAED || project.startingPrice
+                  ) && (
                     <div className={styles.priceBadge}>
-                      {formatPriceBadge(project.startingPriceAED || project.priceAED || project.startingPrice)}
+                      {formatPriceBadge(
+                        project.startingPriceAED || project.priceAED || project.startingPrice
+                      )}
                     </div>
                   )}
                 </div>
@@ -254,7 +266,9 @@ export default function RegionProjectsSection({
                       <span className={styles.detailLabel}>
                         {locale === "ar" ? "التسليم" : "Handover"}
                       </span>
-                      <span className={styles.detailValue}>{project.handover || "TBA"}</span>
+                      <span className={styles.detailValue}>
+                        {project.handover || (locale === "ar" ? "قريباً" : "TBA")}
+                      </span>
                     </div>
                   </div>
 

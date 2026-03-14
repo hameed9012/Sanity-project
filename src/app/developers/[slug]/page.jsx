@@ -91,7 +91,7 @@ export default function DeveloperPage() {
         const res = await fetch(`/api/sanity-developer?slug=${slug}`);
         if (res.ok) {
           const data = await res.json();
-          if (data && data._id) {
+          if (data && (data._id || data.slug || data.name)) {
             setSanityDeveloper(data);
           }
         }
@@ -118,7 +118,7 @@ export default function DeveloperPage() {
       sanityDeveloper?.nameAr,
     ].filter(Boolean).map(normalize));
 
-    return allProjects.filter((project) => {
+    const directMatches = allProjects.filter((project) => {
       const haystack = [
         project.developer,
         project.developerSlug,
@@ -131,6 +131,12 @@ export default function DeveloperPage() {
 
       return Array.from(tokens).some((token) => token && haystack.includes(token));
     });
+
+    if (directMatches.length > 0) return directMatches;
+    if (Array.isArray(sanityDeveloper?.projects) && sanityDeveloper.projects.length > 0) {
+      return sanityDeveloper.projects;
+    }
+    return [];
   }, [allProjects, profileKey, sanityDeveloper, slug]);
 
   const developer = useMemo(() => {

@@ -38,6 +38,10 @@ export default function AmenitiesShowcase({
     };
   }, [data, activeLocale]);
 
+  if (!Array.isArray(amenitiesData?.amenities) || amenitiesData.amenities.length === 0) {
+    return null;
+  }
+
   // ✅ JSON-LD (SEO)
   const jsonLd = useMemo(() => {
     const projectName = getLocalizedText(

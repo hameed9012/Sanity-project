@@ -69,6 +69,7 @@ const HERO_SECTION_QUERY = `
     slides[]{
       titleEn,
       titleAr,
+      backgroundUrl,
       cdnImage,
       image{
         asset->
@@ -125,10 +126,14 @@ export async function GET() {
           titleAr: slide.titleAr || "",
           subtitle: "",
           subtitleAr: "",
-          backgroundUrl: null,
+          backgroundUrl: slide.backgroundUrl || null,
           cdnImage: slide.cdnImage || null,
           image: slide.image || null,
-          imageUrl: slide?.cdnImage?.url || (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null),
+          imageUrl:
+            slide?.cdnImage?.url ||
+            (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null) ||
+            slide?.backgroundUrl ||
+            null,
           propertySlug: "",
           ctaLabel: "",
           ctaLabelAr: "",

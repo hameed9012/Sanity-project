@@ -26,34 +26,30 @@ function parsePriceToAED(value) {
   }
 
   parsed = Math.round(parsed);
-  return parsed > 0 ? parsed : null;
+  return parsed >= 10_000 ? parsed : null;
 }
 
-/**
- * Scores a candidate project against the current project.
- * Higher score = more related. Returns 0 if candidate is the current project.
- */
 function scoreRelatedness(current, candidate) {
   if (!candidate || candidate.slug === current.slug) return 0;
 
   let score = 0;
 
-  // Same developer → strongest signal
   const curDev = (current.developerSlug || current.developer || "").toLowerCase();
   const canDev = (candidate.developerSlug || candidate.developer || "").toLowerCase();
   if (curDev && canDev && curDev === canDev) score += 40;
 
-  // Same category (apartments / villas / penthouses)
   const curCat = (current.category || current.type || "").toLowerCase();
   const canCat = (candidate.category || candidate.type || "").toLowerCase();
   if (curCat && canCat && curCat === canCat) score += 20;
 
-  // Same region
+  const curStatus = (current.status || current.devStatus || "").toLowerCase();
+  const canStatus = (candidate.status || candidate.devStatus || "").toLowerCase();
+  if (curStatus && canStatus && curStatus === canStatus) score += 18;
+
   const curRegion = (current.regionSlug || "").toLowerCase();
   const canRegion = (candidate.regionSlug || "").toLowerCase();
   if (curRegion && canRegion && curRegion === canRegion) score += 15;
 
-  // Similar price range (within 30%)
   const curPrice = current.startingPriceAED || current.priceAED;
   const canPrice = candidate.startingPriceAED || candidate.priceAED;
   if (curPrice && canPrice && curPrice > 0 && canPrice > 0) {
@@ -69,31 +65,32 @@ export default function RelatedProjects({ projectData, currentSlug }) {
   const { locale, t } = useLanguage();
   const isAr = locale === "ar";
 
-  // Build a normalised "current" object from projectData for scoring
-  const current = useMemo(() => ({
-    slug: currentSlug || projectData?.slug || "",
-    developerSlug:
-      projectData?.developerSlug ||
-      (projectData?.developer || "").toLowerCase().replace(/\s+/g, "-"),
-    developer: projectData?.developer || "",
-    category: projectData?.category || projectData?.type || "",
-    regionSlug: projectData?.regionSlug || "",
-    startingPriceAED:
-      projectData?.startingPriceAED ||
-      parsePriceToAED(projectData?.intro?.stats?.[0]?.value || projectData?.hero?.startingPrice),
-  }), [currentSlug, projectData]);
+  const current = useMemo(
+    () => ({
+      slug: currentSlug || projectData?.slug || "",
+      developerSlug:
+        projectData?.developerSlug ||
+        (projectData?.developer || "").toLowerCase().replace(/\s+/g, "-"),
+      developer: projectData?.developer || "",
+      category: projectData?.category || projectData?.type || "",
+      regionSlug: projectData?.regionSlug || "",
+      status: projectData?.status || projectData?.devStatus || "",
+      startingPriceAED:
+        projectData?.startingPriceAED ||
+        parsePriceToAED(projectData?.intro?.stats?.[0]?.value || projectData?.hero?.startingPrice),
+    }),
+    [currentSlug, projectData]
+  );
 
   const related = useMemo(() => {
     if (!allProjects?.length) return [];
 
-    const scored = allProjects
-      .map((p) => ({ project: p, score: scoreRelatedness(current, p) }))
+    return allProjects
+      .map((project) => ({ project, score: scoreRelatedness(current, project) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 6)
       .map(({ project }) => project);
-
-    return scored;
   }, [allProjects, current]);
 
   if (loading || related.length === 0) return null;
@@ -111,7 +108,9 @@ export default function RelatedProjects({ projectData, currentSlug }) {
             {t?.("relatedProjects.eyebrow") || (isAr ? "اكتشف المزيد" : "DISCOVER MORE")}
           </p>
           <h2 className={styles.heading}>{t?.("relatedProjects.heading") || heading}</h2>
-          <p className={styles.subheading}>{t?.("relatedProjects.subheading") || subheading}</p>
+          <p className={styles.subheading}>
+            {t?.("relatedProjects.subheading") || subheading}
+          </p>
         </div>
 
         <ProjectCards projects={related} />

@@ -42,192 +42,35 @@ function mulberry32(seed) {
 }
 
 function shuffleWithSeed(arr, seed) {
-  const a = Array.isArray(arr) ? [...arr] : [];
-  const rnd = mulberry32(seed || 1);
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rnd() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  const copy = Array.isArray(arr) ? [...arr] : [];
+  const random = mulberry32(seed || 1);
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
   }
-  return a;
+  return copy;
 }
 
-// Slugs that must be excluded from secondary — not actually resale/secondary
 const SECONDARY_EXCLUDED_SLUGS = ["sobha-one", "riviera-reve"];
 const SECONDARY_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
 
 function filterSecondaryProjects(projects) {
   return projects.filter((project) => {
-    const status = project?.status || project?.devStatus || "";
-    const statusLower = status.toLowerCase();
-    const slug = (project?.slug || "").toLowerCase();
+    const status = String(project?.status || project?.devStatus || "").toLowerCase();
+    const slug = String(project?.slug || "").toLowerCase();
     const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
 
-    if (SECONDARY_EXCLUDED_SLUGS.some((s) => slug.includes(s))) return false;
-    if (SECONDARY_EXCLUDED_DEVELOPER_SLUGS.some((s) => developerSlug.includes(s))) return false;
-    if (statusLower.includes("off-plan") || statusLower.includes("under construction")) return false;
+    if (SECONDARY_EXCLUDED_SLUGS.some((item) => slug.includes(item))) return false;
+    if (SECONDARY_EXCLUDED_DEVELOPER_SLUGS.some((item) => developerSlug.includes(item))) return false;
+    if (status.includes("off-plan") || status.includes("under construction")) return false;
 
     return (
-      statusLower.includes("secondary") ||
-      status === "Secondary" ||
-      statusLower.includes("resale") ||
-      statusLower.includes("ready to move") ||
-      statusLower === "ready"
+      status.includes("secondary") ||
+      status.includes("resale") ||
+      status.includes("ready to move") ||
+      status === "ready"
     );
   });
-}
-
-export default function SecondaryPage() {
-  const { locale: ctxLocale, t } = useLanguage();
-  const locale = ctxLocale || "en";
-  const isRTL = locale === "ar";
-  const pathname = usePathname();
-
-  const { allProjects: sanityMergedProjects } = useAllProjects();
-
-  const [visitSeed, setVisitSeed] = React.useState(() =>
-    Math.floor(Date.now() % 2147483647)
-  );
-
-  React.useEffect(() => {
-    if (pathname !== "/secondary") return;
-    const newSeed = Math.floor(
-      (Date.now() + Math.random() * 1e9) % 2147483647 || 1
-    );
-    setVisitSeed(newSeed);
-    setFilters(initialFilters);
-    setVisibleCount(PAGE_SIZE);
-  }, [pathname]);
-
-  const allProjects = React.useMemo(() => {
-    return shuffleWithSeed(sanityMergedProjects || [], visitSeed);
-  }, [sanityMergedProjects, visitSeed]);
-
-  const [filters, setFilters] = React.useState(initialFilters);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
-
-  React.useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [
-    filters.search,
-    JSON.stringify(filters.devStatus),
-    JSON.stringify(filters.unitTypes),
-    JSON.stringify(filters.bedrooms),
-    filters.minPrice,
-    filters.maxPrice,
-    filters.minSize,
-    filters.maxSize,
-  ]);
-
-  const secondaryProjects = React.useMemo(() => {
-    return filterSecondaryProjects(allProjects);
-  }, [allProjects]);
-
-  const heroImages = React.useMemo(() => {
-    return secondaryProjects
-      .map((project) => project.heroImageUrl || project.image || project.heroImage)
-      .filter(Boolean)
-      .filter((src, index, arr) => arr.indexOf(src) === index);
-  }, [secondaryProjects]);
-
-  const { filtered, hasActiveFilters } = React.useMemo(() => {
-    return filterProjects(secondaryProjects, filters);
-  }, [secondaryProjects, filters]);
-
-  const visibleProjects = React.useMemo(() => {
-    return filtered.slice(0, visibleCount);
-  }, [filtered, visibleCount]);
-
-  const canLoadMore = visibleCount < filtered.length;
-
-  const onResetAll = React.useCallback(() => {
-    setFilters(initialFilters);
-    setVisibleCount(PAGE_SIZE);
-  }, []);
-
-  return (
-    <div className={styles.page}>
-      <Hero isRTL={isRTL} images={heroImages} />
-      <div className={styles.container}>
-        <InlineSearch
-          isRTL={isRTL}
-          value={filters.search}
-          onChange={(v) => setFilters((prev) => ({ ...prev, search: v }))}
-          onClear={() => setFilters((prev) => ({ ...prev, search: "" }))}
-        />
-        <ProjectsFiltersBar
-          filters={filters}
-          onChange={setFilters}
-          onOpenFullFilters={() => setIsModalOpen(true)}
-        />
-        <ProjectsFiltersModal
-          isOpen={isModalOpen}
-          filters={filters}
-          onChange={setFilters}
-          onClose={() => setIsModalOpen(false)}
-          onReset={onResetAll}
-          totalProjects={filtered.length}
-        />
-        <div className={styles.metaRow}>
-          <div className={styles.metaText}>
-            {isRTL ? (
-              <>
-                عرض <b>{Math.min(visibleCount, filtered.length)}</b> من{" "}
-                <b>{filtered.length}</b> عقار جاهز
-              </>
-            ) : (
-              <>
-                Showing <b>{Math.min(visibleCount, filtered.length)}</b> of{" "}
-                <b>{filtered.length}</b> ready to move in properties
-              </>
-            )}
-          </div>
-          {hasActiveFilters && (
-            <button type="button" className={styles.resetBtn} onClick={onResetAll}>
-              {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
-            </button>
-          )}
-        </div>
-        <div className={styles.cardsSection}>
-          <ProjectCards projects={visibleProjects} onResetFilters={onResetAll} />
-        </div>
-        {canLoadMore && (
-          <div className={styles.loadMoreWrap}>
-            <button
-              type="button"
-              className={styles.loadMoreBtn}
-              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-            >
-              {isRTL ? "تحميل المزيد" : "LOAD MORE"}
-            </button>
-          </div>
-        )}
-        {!canLoadMore && filtered.length > 0 && (
-          <div className={styles.endText}>
-            {isRTL ? "وصلت إلى النهاية." : "You've reached the end."}
-          </div>
-        )}
-        {filtered.length === 0 && (
-          <div className={styles.noResults}>
-            <div className={styles.noResultsIcon}>🏠</div>
-            <h3 className={styles.noResultsTitle}>
-              {isRTL ? "لا توجد عقارات مطابقة" : "No properties found"}
-            </h3>
-            <p className={styles.noResultsText}>
-              {isRTL
-                ? "لم نتمكن من العثور على عقارات جاهزة تطابق معايير البحث."
-                : "We couldn't find any ready to move in properties matching your search criteria."}
-            </p>
-            {hasActiveFilters && (
-              <button type="button" className={styles.noResultsButton} onClick={onResetAll}>
-                {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 function Hero({ isRTL, images }) {
@@ -272,15 +115,16 @@ function Hero({ isRTL, images }) {
           </div>
         ) : null}
       </div>
+
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
-          {isRTL ? "العقارات الجاهزة للبيع" : "Ready To Move In"}
+          {isRTL ? "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0627\u0644\u062c\u0627\u0647\u0632\u0629 \u0644\u0644\u0628\u064a\u0639" : "Ready To Move"}
         </h1>
         <p className={styles.heroSubtitle}>
           {isRTL
-            ? "اكتشف العقارات الجاهزة للبيع الفوري في دبي والإمارات العربية المتحدة"
-            : "Discover properties that are ready to move in — resale and completed projects available now"}
+            ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0627\u0644\u062c\u0627\u0647\u0632\u0629 \u0644\u0644\u0628\u064a\u0639 \u0627\u0644\u0641\u0648\u0631\u064a \u0641\u064a \u062f\u0628\u064a \u0648\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0645\u062a\u062d\u062f\u0629"
+            : "Discover properties that are ready to move - resale and completed projects available now"}
         </p>
       </div>
     </div>
@@ -292,20 +136,185 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
     <div className={styles.inlineSearchWrap}>
       <input
         value={value || ""}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={(event) => onChange?.(event.target.value)}
         placeholder={
           isRTL
-            ? "ابحث عن عقارات جاهزة حسب الاسم، المطور، أو المنطقة"
-            : "Search ready to move in properties by name, developer, or location"
+            ? "\u0627\u0628\u062d\u062b \u0639\u0646 \u0639\u0642\u0627\u0631\u0627\u062a \u062c\u0627\u0647\u0632\u0629 \u062d\u0633\u0628 \u0627\u0644\u0627\u0633\u0645\u060c \u0627\u0644\u0645\u0637\u0648\u0631\u060c \u0623\u0648 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+            : "Search ready to move properties by name, developer, or location"
         }
         className={styles.inlineSearchInput}
         dir={isRTL ? "rtl" : "ltr"}
       />
       {value && (
         <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
-          ×
+          X
         </button>
       )}
+    </div>
+  );
+}
+
+export default function SecondaryPage() {
+  const { locale: ctxLocale } = useLanguage();
+  const locale = ctxLocale || "en";
+  const isRTL = locale === "ar";
+  const pathname = usePathname();
+  const { allProjects: sanityMergedProjects } = useAllProjects();
+
+  const [visitSeed, setVisitSeed] = React.useState(() =>
+    Math.floor(Date.now() % 2147483647)
+  );
+  const [filters, setFilters] = React.useState(initialFilters);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
+
+  React.useEffect(() => {
+    if (pathname !== "/secondary") return;
+    const newSeed = Math.floor((Date.now() + Math.random() * 1e9) % 2147483647 || 1);
+    setVisitSeed(newSeed);
+    setFilters(initialFilters);
+    setVisibleCount(PAGE_SIZE);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [
+    filters.search,
+    JSON.stringify(filters.devStatus),
+    JSON.stringify(filters.unitTypes),
+    JSON.stringify(filters.bedrooms),
+    filters.minPrice,
+    filters.maxPrice,
+    filters.minSize,
+    filters.maxSize,
+  ]);
+
+  const allProjects = React.useMemo(
+    () => shuffleWithSeed(sanityMergedProjects || [], visitSeed),
+    [sanityMergedProjects, visitSeed]
+  );
+
+  const secondaryProjects = React.useMemo(
+    () => filterSecondaryProjects(allProjects),
+    [allProjects]
+  );
+
+  const heroImages = React.useMemo(
+    () =>
+      secondaryProjects
+        .map((project) => project.heroImageUrl || project.image || project.heroImage)
+        .filter(Boolean)
+        .filter((src, index, arr) => arr.indexOf(src) === index),
+    [secondaryProjects]
+  );
+
+  const { filtered, hasActiveFilters } = React.useMemo(
+    () => filterProjects(secondaryProjects, filters),
+    [secondaryProjects, filters]
+  );
+
+  const visibleProjects = React.useMemo(
+    () => filtered.slice(0, visibleCount),
+    [filtered, visibleCount]
+  );
+
+  const canLoadMore = visibleCount < filtered.length;
+
+  const onResetAll = React.useCallback(() => {
+    setFilters(initialFilters);
+    setVisibleCount(PAGE_SIZE);
+  }, []);
+
+  return (
+    <div className={styles.page}>
+      <Hero isRTL={isRTL} images={heroImages} />
+
+      <div className={styles.container}>
+        <InlineSearch
+          isRTL={isRTL}
+          value={filters.search}
+          onChange={(value) => setFilters((prev) => ({ ...prev, search: value }))}
+          onClear={() => setFilters((prev) => ({ ...prev, search: "" }))}
+        />
+
+        <ProjectsFiltersBar
+          filters={filters}
+          onChange={setFilters}
+          onOpenFullFilters={() => setIsModalOpen(true)}
+        />
+
+        <ProjectsFiltersModal
+          isOpen={isModalOpen}
+          filters={filters}
+          onChange={setFilters}
+          onClose={() => setIsModalOpen(false)}
+          onReset={onResetAll}
+          totalProjects={filtered.length}
+        />
+
+        <div className={styles.metaRow}>
+          <div className={styles.metaText}>
+            {isRTL ? (
+              <>
+                \u0639\u0631\u0636 <b>{Math.min(visibleCount, filtered.length)}</b> \u0645\u0646{" "}
+                <b>{filtered.length}</b> \u0639\u0642\u0627\u0631 \u062c\u0627\u0647\u0632
+              </>
+            ) : (
+              <>
+                Showing <b>{Math.min(visibleCount, filtered.length)}</b> of{" "}
+                <b>{filtered.length}</b> ready to move properties
+              </>
+            )}
+          </div>
+
+          {hasActiveFilters && (
+            <button type="button" className={styles.resetBtn} onClick={onResetAll}>
+              {isRTL ? "\u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0641\u0644\u0627\u062a\u0631" : "Reset filters"}
+            </button>
+          )}
+        </div>
+
+        <div className={styles.cardsSection}>
+          <ProjectCards projects={visibleProjects} onResetFilters={onResetAll} />
+        </div>
+
+        {canLoadMore && (
+          <div className={styles.loadMoreWrap}>
+            <button
+              type="button"
+              className={styles.loadMoreBtn}
+              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+            >
+              {isRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0632\u064a\u062f" : "LOAD MORE"}
+            </button>
+          </div>
+        )}
+
+        {!canLoadMore && filtered.length > 0 && (
+          <div className={styles.endText}>
+            {isRTL ? "\u0648\u0635\u0644\u062a \u0625\u0644\u0649 \u0627\u0644\u0646\u0647\u0627\u064a\u0629." : "You've reached the end."}
+          </div>
+        )}
+
+        {filtered.length === 0 && (
+          <div className={styles.noResults}>
+            <div className={styles.noResultsIcon}>Home</div>
+            <h3 className={styles.noResultsTitle}>
+              {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0642\u0627\u0631\u0627\u062a \u0645\u0637\u0627\u0628\u0642\u0629" : "No properties found"}
+            </h3>
+            <p className={styles.noResultsText}>
+              {isRTL
+                ? "\u0644\u0645 \u0646\u062a\u0645\u0643\u0646 \u0645\u0646 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0639\u0642\u0627\u0631\u0627\u062a \u062c\u0627\u0647\u0632\u0629 \u062a\u0637\u0627\u0628\u0642 \u0645\u0639\u0627\u064a\u064a\u0631 \u0627\u0644\u0628\u062d\u062b."
+                : "We couldn't find any ready to move properties matching your search criteria."}
+            </p>
+            {hasActiveFilters && (
+              <button type="button" className={styles.noResultsButton} onClick={onResetAll}>
+                {isRTL ? "\u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0641\u0644\u0627\u062a\u0631" : "Reset filters"}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -38,8 +38,13 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
     }
     if (data.imgUrl) images.push(data.imgUrl);
 
-    if (images.length === 0)
-      images.push(`${CDN}/sky-parks/exterior-day-01.jpg`);
+    if (images.length === 0) {
+      const fallbackImage =
+        projectData?.hero?.squareImageUrl ||
+        projectData?.hero?.backgroundUrl ||
+        "";
+      if (fallbackImage) images.push(fallbackImage);
+    }
 
     return images;
   }, [galleryData, data]);
@@ -86,7 +91,10 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
   // Create current gallery set of 4 images (loops if less)
   const currentGallerySet = useMemo(() => {
     const set = [];
-    const fallback = `${CDN}/sky-parks/exterior-day-01.jpg`;
+    const fallback =
+      projectData?.hero?.squareImageUrl ||
+      projectData?.hero?.backgroundUrl ||
+      `${CDN}/sky-parks/exterior-day-01.jpg`;
 
     if (!galleryImages || galleryImages.length === 0) {
       return [fallback, fallback, fallback, fallback];

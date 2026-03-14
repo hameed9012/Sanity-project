@@ -92,6 +92,10 @@ export default function OffplanPage() {
   );
   const visibleProjects = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+  const onResetAll = React.useCallback(() => {
+    setFilters(initialFilters);
+    setVisibleCount(PAGE_SIZE);
+  }, []);
 
   return (
     <div className={styles.offplanPage} dir={isRTL ? "rtl" : "ltr"}>
@@ -165,21 +169,18 @@ export default function OffplanPage() {
       <div className={styles.contentArea}>
         <ProjectsFiltersBar
           filters={filters}
-          setFilters={setFilters}
-          onOpenModal={() => setIsModalOpen(true)}
-          locale={locale}
-          t={t}
+          onChange={setFilters}
+          onOpenFullFilters={() => setIsModalOpen(true)}
         />
 
-        {isModalOpen && (
-          <ProjectsFiltersModal
-            filters={filters}
-            setFilters={setFilters}
-            onClose={() => setIsModalOpen(false)}
-            locale={locale}
-            t={t}
-          />
-        )}
+        <ProjectsFiltersModal
+          isOpen={isModalOpen}
+          filters={filters}
+          onChange={setFilters}
+          onClose={() => setIsModalOpen(false)}
+          onReset={onResetAll}
+          totalProjects={filtered.length}
+        />
 
         {loading ? (
           <div className={styles.loadingState}>
@@ -194,10 +195,19 @@ export default function OffplanPage() {
           </div>
         ) : (
           <>
-            <div className={styles.resultsCount}>
-              {isRTL
-                ? `${filtered.length} مشروع`
-                : `${filtered.length} project${filtered.length !== 1 ? "s" : ""}`}
+            <div className={styles.resultsMeta}>
+              <div className={styles.resultsCount}>
+                {isRTL
+                  ? `\u0639\u0631\u0636 ${Math.min(visibleCount, filtered.length)} \u0645\u0646 ${filtered.length} \u0645\u0634\u0631\u0648\u0639`
+                  : `Showing ${Math.min(visibleCount, filtered.length)} of ${filtered.length} project${
+                      filtered.length !== 1 ? "s" : ""
+                    }`}
+              </div>
+              {hasActiveFilters && (
+                <button type="button" className={styles.resetBtn} onClick={onResetAll}>
+                  {isRTL ? "\u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0641\u0644\u0627\u062a\u0631" : "Reset filters"}
+                </button>
+              )}
             </div>
             <ProjectCards projects={visibleProjects} locale={locale} t={t} />
             {hasMore && (

@@ -1,8 +1,12 @@
 import { sanityClient } from "@/lib/sanityClient";
+import {
+  getFallbackArticles,
+  mergeArticleWithLocalData,
+} from "@/lib/server/localContentOverlay";
 
 export async function GET() {
   try {
-    const articles = await sanityClient.fetch(`
+    const rawArticles = await sanityClient.fetch(`
       *[_type == "article"] | order(publishedAt desc) {
         _id,
         title,
@@ -26,9 +30,17 @@ export async function GET() {
         seoDescription,
       }
     `);
+    const articles = Array.isArray(rawArticles)
+      ? rawArticles.map(mergeArticleWithLocalData)
+      : [];
+
+    if (!articles.length) {
+      return Response.json(getFallbackArticles());
+    }
+
     return Response.json(articles);
   } catch (err) {
     console.error("sanity-articles API error:", err);
-    return Response.json([], { status: 500 });
+    return Response.json(getFallbackArticles(), { status: 200 });
   }
 }

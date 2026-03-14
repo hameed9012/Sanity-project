@@ -138,12 +138,13 @@ export default defineType({
             select: { 
               title: 'title', 
               media: 'image',
-              subtitle: 'subtitle' 
+              subtitle: 'subtitle',
+              cdnUrl: 'cdnImage.url',
             },
-            prepare({ title, media, subtitle }) { 
+            prepare({ title, media, subtitle, cdnUrl }) { 
               return { 
                 title: title || 'Untitled Slide',
-                subtitle: subtitle || '',
+                subtitle: subtitle || cdnUrl || '',
                 media: media 
               } 
             },

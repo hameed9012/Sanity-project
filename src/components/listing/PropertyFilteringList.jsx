@@ -14,7 +14,7 @@ import {
 import { filterProjects } from "@/lib/projects/filterProjects";
 
 const formatMoney = (n) => {
-  if (!Number.isFinite(n)) return "Price on request";
+  if (!Number.isFinite(n) || n < 10_000) return "Price on request";
   return `AED ${new Intl.NumberFormat().format(n)}`;
 };
 

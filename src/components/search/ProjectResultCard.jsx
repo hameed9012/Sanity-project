@@ -379,7 +379,7 @@ export default function ProjectResultCard({ project, view = "list" }) {
     }
 
     const absPrice = Number(price);
-    if (!Number.isFinite(absPrice) || absPrice <= 0) {
+    if (!Number.isFinite(absPrice) || absPrice < 10_000) {
       return safeT(
         "projects.cards.priceOnRequest",
         undefined,

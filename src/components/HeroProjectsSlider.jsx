@@ -9,8 +9,8 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { buildProjectsQuery } from "@/lib/search/projectsSearch";
 import styles from "@/styles/HeroProjectsSlider.module.css";
 
-const ROTATE_MS = 3400;
-const FADE_MS = 650;
+const ROTATE_MS = 5200;
+const FADE_MS = 900;
 
 function randInt(max) {
   if (max <= 0) return 0;

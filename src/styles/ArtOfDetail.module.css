@@ -11,7 +11,7 @@
   width: 100%;
 
   /* overlap */
-  margin-top: clamp(-96px, -9vh, -40px);
+  margin-top: clamp(-56px, -6vh, -20px);
 
   /* keep above previous sections but NOT insane */
   z-index: 1;

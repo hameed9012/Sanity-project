@@ -138,37 +138,77 @@ function PropertiesContent() {
 
   const visibleProjects = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+  const tabCounts = React.useMemo(
+    () => ({
+      all: allProjects.length,
+      "off-plan": filterByStatusTab(allProjects, "off-plan").length,
+      secondary: filterByStatusTab(allProjects, "secondary").length,
+      rental: filterByStatusTab(allProjects, "rental").length,
+      "sold-out": filterByStatusTab(allProjects, "sold-out").length,
+    }),
+    [allProjects]
+  );
 
   return (
     <div className={styles.propertiesPage} dir={isRTL ? "rtl" : "ltr"}>
+      <section className={styles.heroPanel}>
+        <div className={styles.heroInner}>
+          <p className={styles.eyebrow}>
+            {isRTL ? "عقارات محمد كودماني" : "Mohamad Kodmani Properties"}
+          </p>
+          <h1 className={styles.pageTitle}>
+            {isRTL ? "اكتشف العقارات المناسبة لك" : "Find the right property faster"}
+          </h1>
+          <p className={styles.pageSubtitle}>
+            {isRTL
+              ? "تصفّح المشاريع حسب الحالة والسعر والمساحة ونوع الوحدة من مصدر بيانات واحد."
+              : "Browse projects by status, price, size, and unit type from one clean source of truth."}
+          </p>
+        </div>
+      </section>
+
       <div className={styles.tabsBar}>
         {TYPE_TABS.map((tab) => (
           <button
             key={tab.id}
             className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ""}`}
             onClick={() => setActiveTab(tab.id)}
+            type="button"
           >
-            {isRTL ? tab.labelAr : tab.labelEn}
+            <span>{isRTL ? tab.labelAr : tab.labelEn}</span>
+            <span className={styles.tabCount}>{tabCounts[tab.id] ?? 0}</span>
           </button>
         ))}
       </div>
 
       <ProjectsFiltersBar
         filters={filters}
-        setFilters={setFilters}
-        onOpenModal={() => setIsModalOpen(true)}
-        locale={locale}
-        t={t}
+        onChange={setFilters}
+        onOpenFullFilters={() => setIsModalOpen(true)}
       />
 
-      {isModalOpen && (
-        <ProjectsFiltersModal
-          filters={filters}
-          setFilters={setFilters}
-          onClose={() => setIsModalOpen(false)}
-          locale={locale}
-          t={t}
-        />
+      <ProjectsFiltersModal
+        isOpen={isModalOpen}
+        filters={filters}
+        onChange={setFilters}
+        onClose={() => setIsModalOpen(false)}
+        onReset={() => setFilters(initialFilters)}
+        totalProjects={filtered.length}
+      />
+
+      {!loading && (
+        <div className={styles.resultsMeta}>
+          <div className={styles.resultsCopy}>
+            {isRTL
+              ? `عرض ${Math.min(visibleCount, filtered.length)} من أصل ${filtered.length} مشروع`
+              : `Showing ${Math.min(visibleCount, filtered.length)} of ${filtered.length} projects`}
+          </div>
+          {filters.search ? (
+            <div className={styles.resultsSearchChip}>
+              {isRTL ? `البحث: ${filters.search}` : `Search: ${filters.search}`}
+            </div>
+          ) : null}
+        </div>
       )}
 
       {loading ? (
@@ -177,7 +217,7 @@ function PropertiesContent() {
         </div>
       ) : filtered.length === 0 ? (
         <div className={styles.emptyState}>
-          {isRTL ? "لا توجد نتائج" : "No properties found"}
+          {isRTL ? "لا توجد نتائج مطابقة حالياً" : "No properties found"}
         </div>
       ) : (
         <>
@@ -187,6 +227,7 @@ function PropertiesContent() {
               <button
                 className={styles.loadMoreBtn}
                 onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+                type="button"
               >
                 {isRTL ? "عرض المزيد" : "Load More"}
               </button>

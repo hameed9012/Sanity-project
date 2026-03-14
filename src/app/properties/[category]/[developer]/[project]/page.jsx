@@ -37,6 +37,71 @@ function normalizePropertyType(raw) {
   return "apartments";
 }
 
+function normalizeDeveloperName(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const slug = text
+    .toLowerCase()
+    .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  const map = {
+    sobha: "Sobha Realty",
+    azizi: "Azizi Developments",
+    danube: "Danube Properties",
+    damac: "DAMAC Properties",
+    tiger: "Tiger Properties",
+    arada: "Arada",
+    binghatti: "Binghatti",
+  };
+  return map[slug] || text;
+}
+
+function normalizeLocation(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  const labels = {
+    "business bay": "Business Bay, Dubai, UAE",
+    downtown: "Downtown Dubai, UAE",
+    "dubai harbour": "Dubai Harbour, Dubai, UAE",
+    "dubai south": "Dubai South, Dubai, UAE",
+    "ras al khor": "Ras Al Khor, Dubai, UAE",
+    "mbr city": "Mohammed Bin Rashid City, Dubai, UAE",
+    sharjah: "Sharjah, UAE",
+    jlt: "Jumeirah Lake Towers, Dubai, UAE",
+    jvc: "Jumeirah Village Circle, Dubai, UAE",
+    jvt: "Jumeirah Village Triangle, Dubai, UAE",
+    difc: "DIFC, Dubai, UAE",
+  };
+  return labels[text.toLowerCase()] || text;
+}
+
+function normalizeListingStatus(value) {
+  const text = String(value || "").toLowerCase().trim();
+  if (!text) return "Off-plan";
+  if (text.includes("rent")) return "Rental";
+  if (text.includes("secondary") || text.includes("resale") || text.includes("ready")) {
+    return "Ready To Move";
+  }
+  if (text.includes("sold")) return "Sold-out";
+  return "Off-plan";
+}
+
+function normalizeUnitTypes(value) {
+  return String(value || "")
+    .replace(/\b1BR\b/gi, "1 Bedroom")
+    .replace(/\b1\.5BR\b/gi, "1.5 Bedroom")
+    .replace(/\b2BR\b/gi, "2 Bedroom")
+    .replace(/\b3BR\b/gi, "3 Bedroom")
+    .replace(/\b4BR\b/gi, "4 Bedroom")
+    .replace(/\b5BR\b/gi, "5 Bedroom")
+    .replace(/\b6BR\b/gi, "6 Bedroom")
+    .replace(/\b7BR\b/gi, "7 Bedroom")
+    .replace(/\b8BR\b/gi, "8 Bedroom")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function developerToSlug(name) {
   return String(name || "")
     .toLowerCase()
@@ -127,20 +192,20 @@ function buildSanityProjectData(sanityDoc, locale) {
 
     // ── standard fields ───────────────────────────────────────
     title: project?.name || sanityDoc?.name || "",
-    developer: project?.developer || sanityDoc?.developer || "",
+    developer: normalizeDeveloperName(project?.developer || sanityDoc?.developer || ""),
     project,
-    location: project?.location || sanityDoc?.location || "",
+    location: normalizeLocation(project?.location || sanityDoc?.location || ""),
 
     hero: {
       backgroundUrl: hero?.backgroundUrl || "",
       squareImageUrl: hero?.squareImageUrl || "",
       title: project?.name || "",
-      developer: project?.developer || "",
-      location: project?.location || "",
+      developer: normalizeDeveloperName(project?.developer || ""),
+      location: normalizeLocation(project?.location || ""),
       startingPrice: project?.startingPrice || "",
       completionDate: project?.completionDate || "",
-      status: project?.status || sanityDoc?.status || "",
-      type: project?.type || "",
+      status: normalizeListingStatus(project?.status || sanityDoc?.status || ""),
+      type: normalizeUnitTypes(project?.type || ""),
     },
 
     intro: {
@@ -180,7 +245,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     location: {
       lat: location?.lat || null,
       lng: location?.lng || null,
-      address: project?.location || "",
+      address: normalizeLocation(project?.location || ""),
       proximityFeatures: Array.isArray(location?.proximityFeatures)
         ? location.proximityFeatures
         : [],
@@ -214,20 +279,20 @@ function buildSanityProjectData(sanityDoc, locale) {
     developer: sanityDoc?.developer || "",
     project: {
       name: sanityDoc?.title || "",
-      developer: sanityDoc?.developer || "",
-      location: localizedLocation,
+      developer: normalizeDeveloperName(sanityDoc?.developer || ""),
+      location: normalizeLocation(localizedLocation),
       startingPrice: sanityDoc?.startingPrice || "",
       completionDate: sanityDoc?.completionDate || "",
       paymentPlan: sanityDoc?.paymentPlan || "",
-      type: sanityDoc?.unitTypes || sanityDoc?.propertyType || "",
-      status: sanityDoc?.status || "",
+      type: normalizeUnitTypes(sanityDoc?.unitTypes || sanityDoc?.propertyType || ""),
+      status: normalizeListingStatus(sanityDoc?.status || ""),
     },
     hero: {
       backgroundUrl:
         sanityDoc?.heroVideo || sanityDoc?.heroImage || gallerySlides[0] || "",
       squareImageUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
       title: sanityDoc?.title || "",
-      companyName: sanityDoc?.developer || "",
+      companyName: normalizeDeveloperName(sanityDoc?.developer || ""),
     },
     intro: {
       title: sanityDoc?.title || "",
@@ -251,7 +316,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     location: {
       lat: sanityDoc?.lat || null,
       lng: sanityDoc?.lng || null,
-      address: localizedLocation,
+      address: normalizeLocation(localizedLocation),
       proximityFeatures: Array.isArray(sanityDoc?.nearbyPlaces)
         ? sanityDoc.nearbyPlaces.map((item) => ({
             icon: item?.icon || "location",
