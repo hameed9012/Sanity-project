@@ -7,6 +7,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import AreaGuideHero from "@/components/where-to-live/AreaGuideHero";
 import AreaNarrative from "@/components/where-to-live/AreaNarrative";
 import MarketInsights from "@/components/where-to-live/MarketInsights";
+import AreaConnections from "@/components/where-to-live/AreaConnections";
 import LocationFAQ from "@/components/where-to-live/LocationFAQ";
 import RegionProjectsSection from "@/components/where-to-live/RegionProjectsSection";
 import styles from "@/styles/where-to-live/AreaDetailPage.module.css";
@@ -105,6 +106,30 @@ function normalizeSanityArea(area, locale) {
     area.highlights ||
     area.highlightsAr ||
     [];
+  const nearbyLandmarks = Array.isArray(area.nearbyLandmarks)
+    ? area.nearbyLandmarks.map((item) => ({
+        name: {
+          en: item?.name || "",
+          ar: item?.nameAr || item?.name || "",
+        },
+        distance: item?.distance || "",
+        icon: item?.icon || "",
+        lat: item?.lat ?? null,
+        lng: item?.lng ?? null,
+        directionsUrl: item?.directionsUrl || "",
+      }))
+    : [];
+  const nearbyAreas = Array.isArray(area.nearbyAreas)
+    ? area.nearbyAreas.map((item) => ({
+        name: {
+          en: item?.name || "",
+          ar: item?.nameAr || item?.name || "",
+        },
+        distance: item?.distance || "",
+        icon: item?.icon || "",
+        slug: item?.slug || "",
+      }))
+    : [];
 
   return {
     slug: area.slug,
@@ -190,6 +215,8 @@ function normalizeSanityArea(area, locale) {
       salesTrends: [],
       roiByType: [],
     },
+    nearbyLandmarks,
+    nearbyAreas,
     locationCards: {},
     faqs: buildFaqsFromArea(area),
     regionSlug: area.regionSlug || area.slug,
@@ -322,6 +349,7 @@ export default function AreaDetailPage() {
       <AreaGuideHero regionData={resolvedData} />
       <AreaNarrative regionData={resolvedData} />
       <MarketInsights regionData={resolvedData} />
+      <AreaConnections regionData={resolvedData} />
       <LocationFAQ regionData={resolvedData} />
       <RegionProjectsSection regionSlug={resolvedData.regionSlug || slug} locale={lang} />
       <div className={styles.backBar} dir={isRTL ? "rtl" : "ltr"}>

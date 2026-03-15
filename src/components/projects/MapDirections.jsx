@@ -5,9 +5,56 @@ import styles from "@/styles/projects/MapDirections.module.css";
 import { getLocalizedText } from "@/lib/text-utils";
 import { useLanguage } from "@/components/LanguageProvider";
 
-function toNumber(value) {
-  const parsed = typeof value === "string" ? Number(value.trim()) : Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
+function parseCompactDms(value, axis = "lat") {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+
+  const sign = /[SW-]/i.test(raw) ? -1 : 1;
+  const cleaned = raw.replace(/[NSEW+\-\s]/gi, "").trim();
+  if (!cleaned) return null;
+
+  const parts = cleaned.match(/^(\d+)(?:\.(\d+))?$/);
+  if (!parts) return null;
+
+  const integerPart = parts[1];
+  const fractionPart = parts[2] || "";
+  const degDigits =
+    axis === "lat"
+      ? 2
+      : integerPart.length >= 7
+      ? 3
+      : 2;
+
+  if (integerPart.length < degDigits + 2) return null;
+
+  const degrees = Number(integerPart.slice(0, degDigits));
+  const minutes = Number(integerPart.slice(degDigits, degDigits + 2));
+  const secondsWhole = integerPart.slice(degDigits + 2) || "0";
+  const seconds = Number(`${secondsWhole}${fractionPart ? `.${fractionPart}` : ""}`);
+
+  if (![degrees, minutes, seconds].every(Number.isFinite)) return null;
+  if (minutes >= 60 || seconds >= 60) return null;
+
+  return sign * (degrees + minutes / 60 + seconds / 3600);
+}
+
+function toNumber(value, axis = "lat") {
+  const raw = typeof value === "string" ? value.trim() : value;
+  const parsed = Number(raw);
+  if (Number.isFinite(parsed)) {
+    if (
+      typeof parsed === "number" &&
+      ((axis === "lat" && Math.abs(parsed) <= 90) ||
+        (axis === "lng" && Math.abs(parsed) <= 180))
+    ) {
+      return parsed;
+    }
+
+    const compact = parseCompactDms(String(raw), axis);
+    return Number.isFinite(compact) ? compact : null;
+  }
+
+  return parseCompactDms(String(raw || ""), axis);
 }
 
 function isValidLatLng(lat, lng) {
@@ -122,6 +169,29 @@ function slugifyCategory(value) {
     .replace(/^-|-$/g, "");
 }
 
+function looksLikeEmoji(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  return /[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/u.test(text);
+}
+
+function getLandmarkIconDisplay(icon, categoryId, text = "") {
+  const raw = String(icon || "").trim();
+  if (looksLikeEmoji(raw)) return raw;
+
+  const combined = `${raw} ${categoryId || ""} ${text || ""}`.toLowerCase();
+  if (combined.includes("airport") || combined.includes("plane") || combined.includes("flight")) return "✈️";
+  if (combined.includes("mall") || combined.includes("shopping") || combined.includes("retail")) return "🛍️";
+  if (combined.includes("beach") || combined.includes("sea") || combined.includes("waterfront")) return "🌊";
+  if (combined.includes("school") || combined.includes("education") || combined.includes("university")) return "🎓";
+  if (combined.includes("metro") || combined.includes("transit") || combined.includes("transport")) return "🚇";
+  if (combined.includes("hospital") || combined.includes("clinic") || combined.includes("medical")) return "🏥";
+  if (combined.includes("park") || combined.includes("garden")) return "🌳";
+  if (combined.includes("business") || combined.includes("tower") || combined.includes("office") || combined.includes("range")) return "🏙️";
+  if (combined.includes("landmark") || combined.includes("burj") || combined.includes("downtown")) return "📍";
+  return "📍";
+}
+
 function inferLandmarkCategory(icon, text, locale = "en") {
   const combined = `${icon || ""} ${text || ""}`.toLowerCase();
   const categories = [
@@ -193,14 +263,14 @@ function parseLandmarkFeature(item, locale = "en") {
     : rawText;
 
   const category = inferLandmarkCategory(item.icon, rawText, locale);
-  const lat = toNumber(item.lat ?? item.latitude);
-  const lng = toNumber(item.lng ?? item.longitude);
+  const lat = toNumber(item.lat ?? item.latitude, "lat");
+  const lng = toNumber(item.lng ?? item.longitude, "lng");
 
   return {
     id: item.id || `${category.id}-${slugifyCategory(name || rawText)}`,
     categoryId: category.id,
     categoryLabel: category.label,
-    icon: item.icon || "📍",
+    icon: getLandmarkIconDisplay(item.icon, category.id, rawText),
     name: name || rawText,
     description: distance ? distance : rawText,
     distance,
@@ -233,8 +303,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
   const normalized = useMemo(() => {
     if (data?.center && data?.categories && data?.points) return data;
 
-    const lat = toNumber(data?.lat);
-    const lng = toNumber(data?.lng);
+    const lat = toNumber(data?.lat, "lat");
+    const lng = toNumber(data?.lng, "lng");
 
     if (lat === null || lng === null || !isValidLatLng(lat, lng)) return null;
 
@@ -419,8 +489,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
     const bounds = new mapbox.LngLatBounds();
 
     visiblePoints.forEach((point) => {
-      const lat = toNumber(point.lat);
-      const lng = toNumber(point.lng);
+      const lat = toNumber(point.lat, "lat");
+      const lng = toNumber(point.lng, "lng");
       if (lat === null || lng === null || !isValidLatLng(lat, lng)) return;
 
       const isProject = point.id === "project";
@@ -464,8 +534,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
 
     if (visiblePoints.length === 1) {
       const only = visiblePoints[0];
-      const lat = toNumber(only.lat);
-      const lng = toNumber(only.lng);
+      const lat = toNumber(only.lat, "lat");
+      const lng = toNumber(only.lng, "lng");
       if (lat !== null && lng !== null) {
         mapRef.current.flyTo({
           center: [lng, lat],

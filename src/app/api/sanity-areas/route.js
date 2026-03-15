@@ -27,6 +27,22 @@ export async function GET(request) {
         regionSlug,
         highlights,
         highlightsAr,
+        nearbyLandmarks[]{
+          name,
+          nameAr,
+          distance,
+          icon,
+          lat,
+          lng,
+          directionsUrl
+        },
+        nearbyAreas[]{
+          name,
+          nameAr,
+          distance,
+          icon,
+          slug
+        },
         order,
         featured
       }`
@@ -47,6 +63,22 @@ export async function GET(request) {
         regionSlug,
         highlights,
         highlightsAr,
+        nearbyLandmarks[]{
+          name,
+          nameAr,
+          distance,
+          icon,
+          lat,
+          lng,
+          directionsUrl
+        },
+        nearbyAreas[]{
+          name,
+          nameAr,
+          distance,
+          icon,
+          slug
+        },
         order,
         featured
       }`;
