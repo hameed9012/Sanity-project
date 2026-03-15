@@ -1,0 +1,165 @@
+{
+    "ok":  true,
+    "data":  {
+                 "desktopLeft":  [
+                                     {
+                                         "href":  "/about",
+                                         "labelAr":  "Ù\u0085Ù? Ù?Ø­Ù?",
+                                         "labelEn":  "ABOUT",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     },
+                                     {
+                                         "href":  "/properties",
+                                         "labelAr":  "Ø§Ù?Ø¹Ù?Ø§Ø±Ø§Øª",
+                                         "labelEn":  "PROPERTIES",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     },
+                                     {
+                                         "href":  "/offplan",
+                                         "labelAr":  "Ø¹Ù?Ù? Ø§Ù?Ø®Ø§Ø±Ø·Ø©",
+                                         "labelEn":  "OFFPLAN",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     },
+                                     {
+                                         "href":  "/secondary",
+                                         "labelAr":  "Ø§Ù?Ø«Ø§Ù?Ù?Ù?",
+                                         "labelEn":  "SECONDARY",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     },
+                                     {
+                                         "href":  "/lands",
+                                         "labelAr":  "Ø§Ù?Ø£Ø±Ø§Ø¶Ù?",
+                                         "labelEn":  "LANDS",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     },
+                                     {
+                                         "href":  "/where-to-live",
+                                         "labelAr":  "Ø£Ù?Ù? ØªØ³Ù?Ù?",
+                                         "labelEn":  "WHERE TO LIVE",
+                                         "openInNewTab":  false,
+                                         "type":  "link"
+                                     }
+                                 ],
+                 "desktopRight":  [
+                                      {
+                                          "href":  "/developers",
+                                          "labelAr":  "Ø§Ù?Ù\u0085Ø·Ù?Ø±Ù?Ù?",
+                                          "labelEn":  "DEVELOPERS",
+                                          "openInNewTab":  false,
+                                          "type":  "link"
+                                      },
+                                      {
+                                          "href":  "/market-analysis",
+                                          "labelAr":  "ØªØ­Ù?Ù?Ù? Ø§Ù?Ø³Ù?Ù?",
+                                          "labelEn":  "MARKET ANALYSIS",
+                                          "openInNewTab":  false,
+                                          "type":  "link"
+                                      },
+                                      {
+                                          "href":  "",
+                                          "labelAr":  "Ø¨Ø­Ø«",
+                                          "labelEn":  "Search",
+                                          "openInNewTab":  false,
+                                          "type":  "action_search"
+                                      },
+                                      {
+                                          "href":  "/articles/",
+                                          "labelAr":  "Ø§Ù?Ù\u0085Ø±Ù?Ø² Ø§Ù?Ø¥Ø¹Ù?Ø§Ù\u0085Ù?",
+                                          "labelEn":  "MEDIA CENTER",
+                                          "openInNewTab":  false,
+                                          "type":  "link"
+                                      },
+                                      {
+                                          "href":  "/contact-us/",
+                                          "labelAr":  "ØªÙ?Ø§ØµÙ? Ù\u0085Ø¹Ù?Ø§",
+                                          "labelEn":  "CONTACT US",
+                                          "openInNewTab":  false,
+                                          "type":  "link"
+                                      }
+                                  ],
+                 "mobileMenu":  [
+                                    {
+                                        "href":  "/about",
+                                        "labelAr":  "Ù\u0085Ù? Ù?Ø­Ù?",
+                                        "labelEn":  "ABOUT",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "",
+                                        "labelAr":  "Ø¨Ø­Ø« Ø¹Ù? Ø¹Ù?Ø§Ø±Ø§Øª",
+                                        "labelEn":  "SEARCH PROPERTIES",
+                                        "openInNewTab":  false,
+                                        "type":  "action_search"
+                                    },
+                                    {
+                                        "href":  "/properties",
+                                        "labelAr":  "Ø§Ù?Ø¹Ù?Ø§Ø±Ø§Øª",
+                                        "labelEn":  "PROPERTIES",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/offplan",
+                                        "labelAr":  "Ø¹Ù?Ù? Ø§Ù?Ø®Ø§Ø±Ø·Ø©",
+                                        "labelEn":  "OFFPLAN",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/secondary",
+                                        "labelAr":  "Ø§Ù?Ø«Ø§Ù?Ù?Ù?",
+                                        "labelEn":  "SECONDARY",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/lands",
+                                        "labelAr":  "Ø§Ù?Ø£Ø±Ø§Ø¶Ù?",
+                                        "labelEn":  "LANDS",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/where-to-live",
+                                        "labelAr":  "Ø£Ù?Ù? ØªØ³Ù?Ù?",
+                                        "labelEn":  "WHERE TO LIVE",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/developers",
+                                        "labelAr":  "Ø§Ù?Ù\u0085Ø·Ù?Ø±Ù?Ù?",
+                                        "labelEn":  "DEVELOPERS",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/market-analysis",
+                                        "labelAr":  "ØªØ­Ù?Ù?Ù? Ø§Ù?Ø³Ù?Ù?",
+                                        "labelEn":  "MARKET ANALYSIS",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/articles",
+                                        "labelAr":  "Ø§Ù?Ù\u0085Ø±Ù?Ø² Ø§Ù?Ø¥Ø¹Ù?Ø§Ù\u0085Ù?",
+                                        "labelEn":  "MEDIA CENTER",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    },
+                                    {
+                                        "href":  "/contact-us",
+                                        "labelAr":  "ØªÙ?Ø§ØµÙ? Ù\u0085Ø¹Ù?Ø§",
+                                        "labelEn":  "CONTACT US",
+                                        "openInNewTab":  false,
+                                        "type":  "link"
+                                    }
+                                ]
+             }
+}

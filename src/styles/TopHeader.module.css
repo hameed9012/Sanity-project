@@ -2,7 +2,7 @@
 
 :root {
   --header-pad-y: 14px;
-  --container-max: 1385px;
+  --container-max: 1440px;
 
   --header-gutter-mobile: 16px;
   --header-gutter-desktop: 28px;
@@ -52,9 +52,9 @@
   margin: 0 auto;
   padding-inline: var(--header-gutter);
   display: grid;
-  grid-template-columns: 366px 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
+  gap: clamp(10px, 1.1vw, 20px);
   position: relative;
 }
 
@@ -66,29 +66,43 @@
 }
 
 .menuLeft {
-  justify-content: flex-start;
+  justify-content: flex-end;
 }
 
 .menuRight {
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .logoSec {
   display: flex;
   justify-content: center;
+  align-items: center;
   min-width: 0;
+  padding-inline: clamp(8px, 1vw, 16px);
 }
 
 .logoLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: clamp(108px, 8.8vw, 148px);
+  height: clamp(40px, 3.4vw, 52px);
+  max-width: 100%;
+  flex: 0 0 auto;
+  overflow: hidden;
 }
 
 .logoImage {
-  height: 45px;
-  width: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: center;
+}
+
+.logoImageCustom {
+  transform: scale(var(--navbar-logo-scale-desktop, 1));
+  transform-origin: center center;
 }
 
 .navLinks {
@@ -97,7 +111,16 @@
   padding: 0;
   display: none;
   align-items: center;
-  gap: 20px;
+  width: 100%;
+  gap: clamp(12px, 1vw, 18px);
+}
+
+.menuLeft .navLinks {
+  justify-content: flex-end;
+}
+
+.menuRight .navLinks {
+  justify-content: flex-start;
 }
 
 .level1Menu {
@@ -112,8 +135,9 @@
   text-decoration: none;
   color: #ffffff;
   font-weight: 800;
-  font-size: 12px;
-  letter-spacing: 0.18em;
+  font-size: clamp(10px, 0.74vw, 11px);
+  letter-spacing: 0.14em;
+  line-height: 1;
   text-transform: uppercase;
   transition:
     opacity 0.2s ease,
@@ -813,12 +837,20 @@
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  width: min(160px, 100%);
 }
 
 .mobileBrandLogo {
-  height: 44px;
-  width: auto;
+  display: block;
+  width: 100%;
+  height: 48px;
   object-fit: contain;
+  object-position: center;
+}
+
+.mobileBrandLogoCustom {
+  transform: scale(var(--navbar-logo-scale-mobile, 1));
+  transform-origin: center center;
 }
 
 .mobileClose {
@@ -1201,11 +1233,14 @@
     display: none !important;
   }
   .logoImage {
-    height: 38px;
-    width: auto;
-    max-width: 160px;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    max-width: none;
     filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+  }
+
+  .logoImageCustom {
+    transform: scale(var(--navbar-logo-scale-mobile, 1));
   }
   .mobileActions {
     display: flex;
@@ -1840,21 +1875,25 @@
 /* Desktop (≥1024px) - Your custom 3-column layout */
 @media (min-width: 1024px) {
   .container {
-    grid-template-columns: 366px 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
 }
 
 /* Tablet (768px - 1023px) - Responsive 3-column */
 @media (min-width: 768px) and (max-width: 1023px) {
   .container {
-    grid-template-columns: 280px 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     gap: 12px;
   }
 
   /* Adjust logo size for tablet */
   .logoImage {
-    height: 40px;
-    max-width: 140px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .logoImageCustom {
+    transform: scale(var(--navbar-logo-scale-mobile, 1));
   }
 
   /* Adjust navigation spacing for tablet */
@@ -1878,8 +1917,12 @@
 
   /* Adjust logo size for phones */
   .logoImage {
-    height: 36px;
-    max-width: 130px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .logoImageCustom {
+    transform: scale(var(--navbar-logo-scale-mobile, 1));
   }
 
   /* Adjust mobile actions spacing for phones */
@@ -1909,8 +1952,8 @@
   }
 
   .logoImage {
-    height: 32px;
-    max-width: 120px;
+    width: 100%;
+    height: 100%;
   }
 
   .burger {

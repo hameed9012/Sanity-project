@@ -53,6 +53,20 @@ export default defineType({
           type: 'cdnImage',
           description: 'Paste a BunnyCDN logo URL instead of uploading',
         }),
+        defineField({
+          name: 'logoScaleDesktop',
+          title: 'Navbar Logo Scale (Desktop)',
+          type: 'number',
+          description: 'Use 1 for normal size. Example: 1.1 slightly bigger, 0.9 slightly smaller.',
+          initialValue: 1,
+        }),
+        defineField({
+          name: 'logoScaleMobile',
+          title: 'Navbar Logo Scale (Mobile)',
+          type: 'number',
+          description: 'Use 1 for normal size on mobile.',
+          initialValue: 1,
+        }),
       ],
     }),
 

@@ -301,7 +301,8 @@ export default function LuxuryHeroSlider() {
 
   const currentProject = projects[currentIndex];
   const nextProject = nextIndex !== null ? projects[nextIndex] : null;
-  const displayProject = nextProject || currentProject;
+  const displayProject = currentProject;
+  const displayLocation = String(displayProject?.location || "").trim();
 
   const mainTitle = t?.("homeSlider.mainTitle") || "Discover Extraordinary Living";
   const subtitle = t?.("homeSlider.subtitle") || "Curated Collection of the World's Finest Properties";
@@ -341,7 +342,7 @@ export default function LuxuryHeroSlider() {
   };
 
   return (
-    <section className={styles.hero} aria-label={mainTitle}>
+    <section className={`${styles.hero} notranslate`} aria-label={mainTitle} translate="no">
       <h1 style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}>
         {mainTitle} - Luxury Real Estate in Dubai & UAE
       </h1>
@@ -362,13 +363,13 @@ export default function LuxuryHeroSlider() {
 
       <div className={styles.overlay}>
         <div className={styles.contentContainer}>
-          <div key={displayProject.id} className={styles.textBlock}>
-            <p className={styles.kicker}><span>{displayProject.developerName}</span></p>
-            <h2 className={styles.heading}>
+          <div key={displayProject.id} className={`${styles.textBlock} notranslate`} translate="no">
+            <p className={`${styles.kicker} notranslate`} translate="no"><span>{displayProject.developerName}</span></p>
+            <h2 className={`${styles.heading} notranslate`} translate="no">
               {displayProject.title}
-              <span>{displayProject.location}</span>
+              {displayLocation ? <span>{displayLocation}</span> : null}
             </h2>
-            <p className={styles.subheading}>{displayProject.description || subtitle}</p>
+            <p className={`${styles.subheading} notranslate`} translate="no">{displayProject.description || subtitle}</p>
           </div>
 
           <div className={styles.searchContainer}>

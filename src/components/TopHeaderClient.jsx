@@ -57,6 +57,8 @@ export default function TopHeader() {
     hideSearch: false,
     logoUrl: "",
     logoAlt: "Mohamad Kodmani Real Estate",
+    logoScaleDesktop: 1,
+    logoScaleMobile: 1,
   });
 
   const defaultLeft = useMemo(
@@ -114,6 +116,8 @@ export default function TopHeader() {
           hideSearch: Boolean(data?.navbar?.hideSearch ?? data?.hideSearch),
           logoUrl: data?.navbar?.logoUrl || "",
           logoAlt: data?.navbar?.logoAlt || "Mohamad Kodmani Real Estate",
+          logoScaleDesktop: Number(data?.navbar?.logoScaleDesktop) || 1,
+          logoScaleMobile: Number(data?.navbar?.logoScaleMobile) || Number(data?.navbar?.logoScaleDesktop) || 1,
         });
       } catch {}
     })();
@@ -125,6 +129,13 @@ export default function TopHeader() {
   const leftLinks = extras.desktopLeft.length > 0 ? extras.desktopLeft : defaultLeft;
   const rightLinks = extras.desktopRight.length > 0 ? extras.desktopRight : defaultRight;
   const mobileLinks = extras.mobileMenu.length > 0 ? extras.mobileMenu : defaultMobile;
+  const hasCustomLogo = Boolean(extras.logoUrl);
+  const logoStyle = hasCustomLogo
+    ? {
+        "--navbar-logo-scale-desktop": String(extras.logoScaleDesktop || 1),
+        "--navbar-logo-scale-mobile": String(extras.logoScaleMobile || extras.logoScaleDesktop || 1),
+      }
+    : undefined;
 
   useEffect(() => {
     if (!isMounted) return undefined;
@@ -271,9 +282,10 @@ export default function TopHeader() {
               <img
                 src={extras.logoUrl || "/logo-transparent.png"}
                 alt={extras.logoAlt || "Mohamad Kodmani Real Estate"}
-                className={styles.logoImage}
+                className={`${styles.logoImage} ${hasCustomLogo ? styles.logoImageCustom : ""}`}
                 width={125}
                 height={45}
+                style={logoStyle}
               />
             </Link>
           </div>
@@ -368,9 +380,10 @@ export default function TopHeader() {
               <img
                 src={extras.logoUrl || "/logo-transparent.png"}
                 alt={extras.logoAlt || "Mohamad Kodmani Real Estate"}
-                className={styles.mobileBrandLogo}
+                className={`${styles.mobileBrandLogo} ${hasCustomLogo ? styles.mobileBrandLogoCustom : ""}`}
                 width={150}
                 height={54}
+                style={logoStyle}
               />
             </Link>
             <button

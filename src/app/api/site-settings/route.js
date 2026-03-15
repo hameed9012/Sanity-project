@@ -6,6 +6,8 @@ const SITE_SETTINGS_QUERY = `
   *[_type == "siteSettings"] | order(_updatedAt desc)[0]{
     "hideSearch": navbar.hideSearch,
     "logoCdn": navbar.logoCdn,
+    "logoScaleDesktop": navbar.logoScaleDesktop,
+    "logoScaleMobile": navbar.logoScaleMobile,
     "logo": navbar.logo{
       asset->,
       alt
@@ -69,22 +71,6 @@ const SITE_SETTINGS_QUERY = `
   }
 `;
 
-const HERO_SECTION_QUERY = `
-  *[_type == "heroSection"] | order(_updatedAt desc)[0]{
-    slides[]{
-      titleEn,
-      titleAr,
-      backgroundUrl,
-      cdnImage,
-      image{
-        asset->
-      },
-      link,
-      "_key": _key
-    }
-  }
-`;
-
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: "production",
@@ -102,12 +88,7 @@ function urlFor(source) {
 
 export async function GET() {
   try {
-    const [siteSettings, heroSection] = await Promise.all([
-      client.fetch(SITE_SETTINGS_QUERY),
-      client.fetch(HERO_SECTION_QUERY),
-    ]);
-
-    const data = siteSettings || {};
+    const data = (await client.fetch(SITE_SETTINGS_QUERY)) || {};
     
     // Transform image references to URLs
     if (data) {
@@ -120,6 +101,16 @@ export async function GET() {
         logoAlt:
           data?.logo?.alt ||
           "Mohamad Kodmani Real Estate",
+        logoScaleDesktop:
+          typeof data?.logoScaleDesktop === "number" && Number.isFinite(data.logoScaleDesktop)
+            ? data.logoScaleDesktop
+            : 1,
+        logoScaleMobile:
+          typeof data?.logoScaleMobile === "number" && Number.isFinite(data.logoScaleMobile)
+            ? data.logoScaleMobile
+            : (typeof data?.logoScaleDesktop === "number" && Number.isFinite(data.logoScaleDesktop)
+              ? data.logoScaleDesktop
+              : 1),
       };
 
       // Transform hero slides images
@@ -134,30 +125,6 @@ export async function GET() {
         }));
       }
 
-      // Backfill homepage hero from the legacy Home Hero Slider document type when Site Settings is empty.
-      if ((!data.heroSlides || data.heroSlides.length === 0) && heroSection?.slides?.length) {
-        data.heroSlides = heroSection.slides.map((slide, index) => ({
-          _key: slide._key || `hero-section-${index}`,
-          title: slide.titleEn || "",
-          titleAr: slide.titleAr || "",
-          subtitle: "",
-          subtitleAr: "",
-          backgroundUrl: slide.backgroundUrl || null,
-          cdnImage: slide.cdnImage || null,
-          image: slide.image || null,
-          imageUrl:
-            slide?.cdnImage?.url ||
-            (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null) ||
-            slide?.backgroundUrl ||
-            null,
-          propertySlug: "",
-          ctaLabel: "",
-          ctaLabelAr: "",
-          ctaUrl: slide.link || "/properties",
-          order: index,
-        })).filter((slide) => slide.imageUrl);
-      }
-      
       // Transform art of detail owner image
       if (data.artOfDetail?.ownerImageCdn?.url || data.artOfDetail?.ownerImage) {
         data.artOfDetail.ownerImageUrl = data.artOfDetail?.ownerImageCdn?.url || urlFor(data.artOfDetail.ownerImage).width(800).height(1000).url();
