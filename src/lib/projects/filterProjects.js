@@ -328,6 +328,58 @@ function buildProjectHaystack(project) {
   };
 }
 
+function normalizeStatusValue(value) {
+  const raw = String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (!raw) return "";
+  if (
+    raw.includes("off-plan") ||
+    raw.includes("off plan") ||
+    raw.includes("offplan")
+  ) {
+    return "off-plan";
+  }
+  if (
+    raw.includes("ready to move") ||
+    raw === "ready" ||
+    raw.includes("secondary") ||
+    raw.includes("resale")
+  ) {
+    return "ready-to-move";
+  }
+  if (raw.includes("ready & off-plan") || raw.includes("ready and off-plan")) {
+    return "ready-and-off-plan";
+  }
+  if (raw.includes("under construction")) return "under-construction";
+  if (raw.includes("pre-sale") || raw.includes("presale")) return "presale";
+  if (raw.includes("on sale")) return "on-sale";
+  if (raw.includes("completed")) return "completed";
+  if (raw.includes("announced")) return "announced";
+  if (raw.includes("available")) return "available";
+  if (raw.includes("sold")) return "sold-out";
+  return raw.replace(/[^a-z0-9]+/g, "-");
+}
+
+function normalizeUnitTypeValue(value) {
+  const raw = String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (!raw) return "";
+  if (
+    raw.includes("commercial") ||
+    raw.includes("retail") ||
+    raw.includes("office")
+  ) {
+    return "commercial/retail";
+  }
+  if (
+    raw.includes("villa") ||
+    raw.includes("townhouse") ||
+    raw.includes("mansion")
+  ) {
+    return "villas";
+  }
+  if (raw.includes("penthouse")) return "penthouses";
+  return "apartments";
+}
+
 export function matchSearch(project, search) {
   const raw = String(search || "");
   const qNorm = normalizeText(raw);
@@ -368,8 +420,12 @@ export function filterProjects(projects, filters) {
   const f = filters || {};
 
   const search = f.search || "";
-  const devStatus = Array.isArray(f.devStatus) ? f.devStatus : [];
-  const unitTypes = Array.isArray(f.unitTypes) ? f.unitTypes : [];
+    const devStatus = Array.isArray(f.devStatus)
+      ? f.devStatus.map(normalizeStatusValue).filter(Boolean)
+      : [];
+  const unitTypes = Array.isArray(f.unitTypes)
+    ? f.unitTypes.map(normalizeUnitTypeValue).filter(Boolean)
+    : [];
   const bedrooms = Array.isArray(f.bedrooms) ? f.bedrooms : [];
 
   const minPrice = Number(toWesternDigits(f.minPrice)) || 0;
@@ -381,12 +437,12 @@ export function filterProjects(projects, filters) {
     if (!matchSearch(p, search)) return false;
 
     if (devStatus.length) {
-      const rawStatus = String(p?.devStatus || p?.status || "");
+      const rawStatus = normalizeStatusValue(p?.devStatus || p?.status || "");
       if (!devStatus.includes(rawStatus)) return false;
     }
 
     if (unitTypes.length) {
-      const rawType = String(p?.unitType || p?.type || "");
+      const rawType = normalizeUnitTypeValue(p?.unitType || p?.type || p?.propertyType || "");
       if (!unitTypes.includes(rawType)) return false;
     }
 

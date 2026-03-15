@@ -27,16 +27,16 @@ const initialFilters = {
 };
 
 const TYPE_TABS = [
-  { id: "all", labelEn: "All", labelAr: "الكل" },
-  { id: "off-plan", labelEn: "Off-plan", labelAr: "قيد الإنشاء" },
-  { id: "secondary", labelEn: "Secondary", labelAr: "الثانوي" },
-  { id: "rental", labelEn: "Rental", labelAr: "الإيجار" },
-  { id: "sold-out", labelEn: "Sold-out", labelAr: "مباع" },
+  { id: "all", labelEn: "All", labelAr: "\u0627\u0644\u0643\u0644" },
+  { id: "off-plan", labelEn: "Off-plan", labelAr: "\u0642\u064a\u062f \u0627\u0644\u0625\u0646\u0634\u0627\u0621" },
+  { id: "secondary", labelEn: "Ready To Move", labelAr: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+  { id: "rental", labelEn: "Rental", labelAr: "\u0627\u0644\u0625\u064a\u062c\u0627\u0631" },
+  { id: "sold-out", labelEn: "Sold-out", labelAr: "\u0645\u0628\u0627\u0639" },
 ];
 
 function mulberry32(seed) {
   let a = seed >>> 0;
-  return function () {
+  return function random() {
     a |= 0;
     a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
@@ -127,10 +127,12 @@ function PropertiesContent() {
     () => shuffleWithSeed(propertiesOnly, visitSeed),
     [propertiesOnly, visitSeed]
   );
+
   const tabFiltered = React.useMemo(
     () => filterByStatusTab(allProjects, activeTab),
     [allProjects, activeTab]
   );
+
   const { filtered } = React.useMemo(
     () => filterProjects(tabFiltered, filters),
     [tabFiltered, filters]
@@ -138,6 +140,7 @@ function PropertiesContent() {
 
   const visibleProjects = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+
   const tabCounts = React.useMemo(
     () => ({
       all: allProjects.length,
@@ -154,14 +157,14 @@ function PropertiesContent() {
       <section className={styles.heroPanel}>
         <div className={styles.heroInner}>
           <p className={styles.eyebrow}>
-            {isRTL ? "عقارات محمد كودماني" : "Mohamad Kodmani Properties"}
+            {isRTL ? "\u0639\u0642\u0627\u0631\u0627\u062a \u0645\u062d\u0645\u062f \u0643\u0648\u062f\u0645\u0627\u0646\u064a" : "Mohamad Kodmani Properties"}
           </p>
           <h1 className={styles.pageTitle}>
-            {isRTL ? "اكتشف العقارات المناسبة لك" : "Find the right property faster"}
+            {isRTL ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0639\u0642\u0627\u0631 \u0627\u0644\u0645\u0646\u0627\u0633\u0628 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629" : "Find the right property faster"}
           </h1>
           <p className={styles.pageSubtitle}>
             {isRTL
-              ? "تصفّح المشاريع حسب الحالة والسعر والمساحة ونوع الوحدة من مصدر بيانات واحد."
+              ? "\u062a\u0635\u0641\u062d \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639 \u062d\u0633\u0628 \u0627\u0644\u062d\u0627\u0644\u0629 \u0648\u0627\u0644\u0633\u0639\u0631 \u0648\u0627\u0644\u0645\u0633\u0627\u062d\u0629 \u0648\u0646\u0648\u0639 \u0627\u0644\u0648\u062d\u062f\u0629 \u0645\u0646 \u0645\u0635\u062f\u0631 \u0628\u064a\u0627\u0646\u0627\u062a \u0648\u0627\u062d\u062f."
               : "Browse projects by status, price, size, and unit type from one clean source of truth."}
           </p>
         </div>
@@ -200,12 +203,12 @@ function PropertiesContent() {
         <div className={styles.resultsMeta}>
           <div className={styles.resultsCopy}>
             {isRTL
-              ? `عرض ${Math.min(visibleCount, filtered.length)} من أصل ${filtered.length} مشروع`
+              ? `\u0639\u0631\u0636 ${Math.min(visibleCount, filtered.length)} \u0645\u0646 \u0623\u0635\u0644 ${filtered.length} \u0645\u0634\u0631\u0648\u0639`
               : `Showing ${Math.min(visibleCount, filtered.length)} of ${filtered.length} projects`}
           </div>
           {filters.search ? (
             <div className={styles.resultsSearchChip}>
-              {isRTL ? `البحث: ${filters.search}` : `Search: ${filters.search}`}
+              {isRTL ? `\u0627\u0644\u0628\u062d\u062b: ${filters.search}` : `Search: ${filters.search}`}
             </div>
           ) : null}
         </div>
@@ -213,11 +216,11 @@ function PropertiesContent() {
 
       {loading ? (
         <div className={styles.loadingState}>
-          {isRTL ? "جاري التحميل..." : "Loading properties..."}
+          {isRTL ? "\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a..." : "Loading properties..."}
         </div>
       ) : filtered.length === 0 ? (
         <div className={styles.emptyState}>
-          {isRTL ? "لا توجد نتائج مطابقة حالياً" : "No properties found"}
+          {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0642\u0627\u0631\u0627\u062a \u0645\u0637\u0627\u0628\u0642\u0629 \u062d\u0627\u0644\u064a\u0627\u064b" : "No properties found"}
         </div>
       ) : (
         <>
@@ -229,7 +232,7 @@ function PropertiesContent() {
                 onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
                 type="button"
               >
-                {isRTL ? "عرض المزيد" : "Load More"}
+                {isRTL ? "\u0639\u0631\u0636 \u0627\u0644\u0645\u0632\u064a\u062f" : "Load More"}
               </button>
             </div>
           )}

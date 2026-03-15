@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 const SanityProjectsContext = createContext({ allProjects: [], loading: true });
 
 const VALID_TYPES = new Set(["apartments", "villas", "penthouses", "commercial-retail"]);
+const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 function slugify(value) {
   return String(value || "")
@@ -39,7 +40,7 @@ function normalizeStatus(raw) {
     return "Off-plan";
   }
   if (["secondary", "resale", "ready", "ready to move", "ready to move in"].includes(s)) {
-    return "Secondary";
+    return "Ready To Move";
   }
   if (["sold-out", "sold out", "soldout"].includes(s)) return "Sold-out";
   if (["land", "lands"].includes(s)) return "Land";
@@ -135,6 +136,11 @@ function developerToSlug(name) {
       ""
     )
   ) || "unknown";
+}
+
+function shouldExcludeDeveloper(value) {
+  const token = String(value || "").toLowerCase();
+  return Array.from(EXCLUDED_DEVELOPER_SLUGS).some((slug) => token.includes(slug));
 }
 
 function inferRegionSlug(location, fallback = "dubai") {
@@ -423,7 +429,18 @@ export function SanityProjectsProvider({ children }) {
       if (!res.ok) throw new Error("Failed to fetch");
 
       const data = await res.json();
-      setSanityProjects(Array.isArray(data) ? data.map(sanityPropertyToEntry) : []);
+      setSanityProjects(
+        Array.isArray(data)
+          ? data
+              .map(sanityPropertyToEntry)
+              .filter(
+                (project) =>
+                  !shouldExcludeDeveloper(project?.developerSlug) &&
+                  !shouldExcludeDeveloper(project?.developer) &&
+                  !shouldExcludeDeveloper(project?.developerNameEn)
+              )
+          : []
+      );
     } catch (error) {
       console.error("SanityProjectsContext: failed to fetch", error);
     } finally {

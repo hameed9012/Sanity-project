@@ -40,8 +40,6 @@ function getDefaultLogo(slug) {
     damac: "/damac-logo.png",
     azizi:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/azizi.jpg",
-    omniyat:
-      "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/omniyat.png",
     danube:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/Danube_Properties.png",
     "gulf-land-property":
@@ -55,8 +53,6 @@ function getDefaultLogo(slug) {
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/ajmal-makan.png",
     ellington:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/ellington.png",
-    imtiaz:
-      "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/imtiaz.png",
     tiger:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/tiger.png",
     reportage:
@@ -67,8 +63,6 @@ function getDefaultLogo(slug) {
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/prestige-one.png",
     evolutions:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/evolutions.jpg",
-    beyond:
-      "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/beyond.webp",
     lazord:
       "https://luxury-real-estate-media.b-cdn.net/projects-profile-pictures/lazord-logo.webp",
   };

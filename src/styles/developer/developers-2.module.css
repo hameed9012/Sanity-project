@@ -105,12 +105,12 @@
   background: transparent;
   color: #111;
   padding: 0;
-  padding-right: 40px;
+  padding-right: 120px;
 }
 
 .page[dir="rtl"] .searchInput {
   padding-right: 0;
-  padding-left: 40px;
+  padding-left: 120px;
 }
 
 .searchIcon {
@@ -118,8 +118,15 @@
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
-  font-size: 16px;
+  color: #8e7a48;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(212, 176, 91, 0.14);
+  border: 1px solid rgba(212, 176, 91, 0.18);
 }
 
 .page[dir="rtl"] .searchIcon {
@@ -129,22 +136,24 @@
 
 .searchClear {
   position: absolute;
-  right: 48px;
+  right: 84px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: #999;
   font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
   transition: all 0.2s ease;
 }
 
 .page[dir="rtl"] .searchClear {
   right: auto;
-  left: 48px;
+  left: 84px;
 }
 
 .searchClear:hover {
@@ -241,9 +250,12 @@
 }
 
 .emptyIcon {
-  font-size: 64px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   margin-bottom: 24px;
-  opacity: 0.3;
+  opacity: 0.45;
 }
 
 .emptyTitle {
@@ -333,283 +345,6 @@
   }
 }
 
-/* =========================
-   CARD
-========================= */
-.card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  border-radius: 20px;
-  overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #eee;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 100%;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-}
-
-/* Cover */
-.media {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-  background: #f5f5f5;
-}
-
-.cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.card:hover .cover {
-  transform: scale(1.05);
-}
-
-.mediaOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-}
-
-/* LOGO */
-.developerLogo {
-  position: absolute;
-  bottom: -24px;
-  left: 20px;
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #ffffff;
-  border: 3px solid #ffffff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.page[dir="rtl"] .developerLogo {
-  left: auto;
-  right: 20px;
-}
-
-.developerLogo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.2s ease;
-}
-
-.card:hover .developerLogo img {
-  transform: scale(1.05);
-}
-
-/* Special logo types */
-.developerLogo.whiteLogo img {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) contrast(1.2)
-    brightness(0.9);
-}
-
-.developerLogo.blackLogo img {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) contrast(1.05);
-}
-
-.developerLogo.transparentLogo {
-  background: rgba(255, 255, 255, 0.98);
-}
-
-.developerLogo.noLogo {
-  background: linear-gradient(135deg, #d4b05b, #b08d57);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
-  color: white;
-}
-
-/* Card Body */
-.body {
-  padding: 40px 20px 20px;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 200px);
-}
-
-.top {
-  margin-bottom: 16px;
-}
-
-.name {
-  margin: 0 0 8px;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #111;
-}
-
-.tagline {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.4;
-  min-height: 20px;
-}
-
-/* Stats */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.stat {
-  border: 1px solid #eee;
-  background: #fafafa;
-  border-radius: 10px;
-  padding: 12px;
-  transition: all 0.2s ease;
-}
-
-.card:hover .stat {
-  border-color: #d4b05b;
-  background: #fffaf0;
-}
-
-.statNum {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.statLbl {
-  font-size: 11px;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-/* Description */
-.desc {
-  margin: 12px 0 16px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #555;
-  flex-grow: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Chips */
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0 20px;
-}
-
-.chip {
-  font-size: 11px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #eee;
-  background: #f8f8f8;
-  color: #555;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.2s ease;
-}
-
-.chip:hover {
-  border-color: #d4b05b;
-  background: #fffaf0;
-  color: #333;
-}
-
-.more {
-  border-color: #d4b05b;
-  background: rgba(212, 176, 91, 0.1);
-  color: #b08d57;
-}
-
-.muted {
-  opacity: 0.6;
-  font-style: italic;
-}
-
-/* CTA */
-.ctaRow {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.page[dir="rtl"] .ctaRow {
-  justify-content: flex-start;
-}
-
-.cta {
-  font-size: 14px;
-  font-weight: 700;
-  color: #d4b05b;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: gap 0.2s ease;
-}
-
-.page[dir="rtl"] .cta {
-  flex-direction: row-reverse;
-}
-
-.card:hover .cta {
-  gap: 10px;
-}
-
-/* =========================
-   LOAD MORE
-========================= */
-.loadMoreWrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 60px;
-}
-
-.loadMoreButton {
-  padding: 16px 32px;
-  background: #ffffff;
-  color: #111;
-  border: 2px solid #111;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.loadMoreButton:hover {
-  background: #111;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
 /* =========================
    CARD (White background with premium logo)
 ========================= */

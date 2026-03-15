@@ -27,6 +27,11 @@ function normalizeAmenities(raw) {
   };
 }
 
+function toNumber(value) {
+  const parsed = typeof value === "string" ? Number(value.trim()) : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function normalizePropertyType(raw) {
   const value = String(raw || "").toLowerCase().trim();
   if (value.includes("villa")) return "villas";
@@ -102,6 +107,21 @@ function normalizeUnitTypes(value) {
     .trim();
 }
 
+function isLikelyGarbledText(value) {
+  const text = String(value || "");
+  if (!text) return false;
+  return /Ã|â|Ø|Ù|ï¿½|�/.test(text);
+}
+
+function cleanLocalizedText(primary, fallback = "") {
+  const value = String(primary || "").trim();
+  if (!value || isLikelyGarbledText(value)) {
+    return String(fallback || "").trim();
+  }
+  return value;
+}
+
+
 function developerToSlug(name) {
   return String(name || "")
     .toLowerCase()
@@ -157,10 +177,10 @@ function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
     regionSlug: rawLocale.location?.regionSlug || "",
     startingPriceAED: parsePriceToAED(rawLocale.project?.startingPrice),
 
-    // ── pass through everything else ─────────────────────────
+    // Pass through the remaining localized sections.
     ...rawLocale,
 
-    // ── normalize amenities shape ─────────────────────────────
+    // Normalize amenities into a predictable shape.
     amenities: normalizeAmenities(rawLocale.amenities),
   };
 }
@@ -179,7 +199,7 @@ function buildSanityProjectData(sanityDoc, locale) {
   const intro = content?.intro || {};
 
   return {
-    // ── identity for RelatedProjects scoring ─────────────────
+    // Identity fields used by RelatedProjects scoring.
     slug: sanityDoc?.slug || "",
     category: sanityDoc?.type || "apartments",
     developerSlug: (project?.developer || "")
@@ -190,7 +210,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     regionSlug: sanityDoc?.regionSlug || "",
     startingPriceAED: parsePriceToAED(project?.startingPrice),
 
-    // ── standard fields ───────────────────────────────────────
+    // Standard fields for the project page.
     title: project?.name || sanityDoc?.name || "",
     developer: normalizeDeveloperName(project?.developer || sanityDoc?.developer || ""),
     project,
@@ -233,7 +253,7 @@ function buildSanityProjectData(sanityDoc, locale) {
       plans: Array.isArray(floorPlans?.plans) ? floorPlans.plans : [],
     },
 
-    // ── amenities: always normalised ──────────────────────────
+    // Amenities are always normalized.
     amenities: normalizeAmenities(
       Array.isArray(amenities?.items)
         ? { ...amenities, amenities: amenities.items }
@@ -275,12 +295,12 @@ function buildSanityProjectData(sanityDoc, locale) {
     developerSlug: developerToSlug(sanityDoc?.developer || ""),
     regionSlug: sanityDoc?.regionSlug || "",
     startingPriceAED: parsePriceToAED(sanityDoc?.startingPrice),
-    title: sanityDoc?.title || "",
-    developer: sanityDoc?.developer || "",
+    title: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
+    developer: cleanLocalizedText(sanityDoc?.developer, sanityDoc?.developerEn || ""),
     project: {
-      name: sanityDoc?.title || "",
-      developer: normalizeDeveloperName(sanityDoc?.developer || ""),
-      location: normalizeLocation(localizedLocation),
+      name: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
+      developer: normalizeDeveloperName(cleanLocalizedText(sanityDoc?.developer, sanityDoc?.developerEn || "")),
+      location: normalizeLocation(cleanLocalizedText(localizedLocation, sanityDoc?.location || "")),
       startingPrice: sanityDoc?.startingPrice || "",
       completionDate: sanityDoc?.completionDate || "",
       paymentPlan: sanityDoc?.paymentPlan || "",
@@ -296,13 +316,13 @@ function buildSanityProjectData(sanityDoc, locale) {
     },
     intro: {
       title: sanityDoc?.title || "",
-      description: localizedDescription,
-      paragraphs: localizedDescription ? [localizedDescription] : [],
+      description: cleanLocalizedText(localizedDescription, sanityDoc?.description || ""),
+      paragraphs: cleanLocalizedText(localizedDescription, sanityDoc?.description || "") ? [cleanLocalizedText(localizedDescription, sanityDoc?.description || "")] : [],
       brochures: sanityDoc?.brochureUrl
         ? [{ title: "Download Brochure", url: sanityDoc.brochureUrl, type: "main" }]
         : [],
       imgUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
-      imgAlt: sanityDoc?.title || "",
+      imgAlt: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
       stats: [],
     },
     gallery: {
@@ -316,13 +336,26 @@ function buildSanityProjectData(sanityDoc, locale) {
     location: {
       lat: sanityDoc?.lat || null,
       lng: sanityDoc?.lng || null,
-      address: normalizeLocation(localizedLocation),
+      address: normalizeLocation(cleanLocalizedText(localizedLocation, sanityDoc?.location || "")),
       proximityFeatures: Array.isArray(sanityDoc?.nearbyPlaces)
         ? sanityDoc.nearbyPlaces.map((item) => ({
             icon: item?.icon || "location",
-            text: item?.distance
-              ? `${item?.name || ""} - ${item.distance}`
-              : item?.name || "",
+            name: {
+              en: item?.name || "",
+              ar: item?.nameAr || item?.name || "",
+            },
+            text: {
+              en: item?.distance
+                ? `${item?.name || ""} - ${item.distance}`
+                : item?.name || "",
+              ar: item?.distance
+                ? `${item?.nameAr || item?.name || ""} - ${item.distance}`
+                : item?.nameAr || item?.name || "",
+            },
+            distance: item?.distance || "",
+            lat: toNumber(item?.lat),
+            lng: toNumber(item?.lng),
+            directionsUrl: item?.directionsUrl || "",
           }))
         : [],
     },
@@ -332,9 +365,7 @@ function buildSanityProjectData(sanityDoc, locale) {
   };
 }
 
-/* ─────────────────────────────────────────────────────────────────
-   ProjectPage
-───────────────────────────────────────────────────────────────── */
+/* ProjectPage */
 export default function ProjectPage({ params }) {
   const { locale } = useLanguage();
   const { category, developer, project } = use(params);
@@ -398,7 +429,7 @@ export default function ProjectPage({ params }) {
     loadData();
   }, [category, developer, project, locale]);
 
-  /* ── Loading state ─────────────────────────────────────── */
+  /* Loading state */
   if (loading) {
     return (
       <div style={{
@@ -420,7 +451,7 @@ export default function ProjectPage({ params }) {
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
           backgroundClip: "text",
         }}>
-          {locale === "ar" ? "جاري التحميل..." : "Loading..."}
+          {locale === "ar" ? "جارٍ تحميل المشروع..." : "Loading..."}
         </h2>
         <style jsx global>{`
           @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -429,7 +460,7 @@ export default function ProjectPage({ params }) {
     );
   }
 
-  /* ── Not found ─────────────────────────────────────────── */
+  /* Not found */
   if (!projectData) {
     return (
       <div style={{

@@ -151,6 +151,13 @@ export default defineType({
       options: {hotspot: true},
       fields: [{name: 'alt', title: 'Alt text', type: 'string'}],
     }),
+    defineField({
+      name: 'heroImageCdn',
+      title: 'OR Hero / Main Image (BunnyCDN)',
+      type: 'cdnImage',
+      group: 'media',
+      description: 'Paste a BunnyCDN image URL instead of uploading the hero image',
+    }),
 
     defineField({
       name: 'galleryImages',
@@ -163,6 +170,12 @@ export default defineType({
           type: 'object',
           fields: [
             defineField({name: 'url', title: 'Image URL', type: 'url'}),
+            defineField({
+              name: 'cdnImage',
+              title: 'OR BunnyCDN Image',
+              type: 'cdnImage',
+              description: 'Paste a BunnyCDN image URL instead of uploading',
+            }),
             defineField({
               name: 'imageUpload',
               title: 'OR Uploaded Image',
@@ -236,7 +249,26 @@ export default defineType({
               name: 'images',
               title: 'Floor Plan Images',
               type: 'array',
-              of: [{type: 'object', fields: [defineField({name: 'url', title: 'Image URL', type: 'url'})]}],
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    defineField({name: 'url', title: 'Image URL', type: 'url'}),
+                    defineField({
+                      name: 'cdnImage',
+                      title: 'OR BunnyCDN Image',
+                      type: 'cdnImage',
+                      description: 'Paste a BunnyCDN image URL instead of uploading',
+                    }),
+                    defineField({
+                      name: 'imageUpload',
+                      title: 'OR Uploaded Image',
+                      type: 'image',
+                      options: {hotspot: true},
+                    }),
+                  ],
+                },
+              ],
             }),
           ],
           preview: {select: {title: 'title', subtitle: 'size'}},
@@ -266,14 +298,33 @@ export default defineType({
       title: 'Nearby Places',
       type: 'array',
       group: 'location',
-      description: 'Key landmarks near the project',
+      description: 'Key landmarks near the project. Add travel time plus landmark coordinates to show interactive pins on the map.',
       of: [
         {
           type: 'object',
           fields: [
             defineField({name: 'name',     title: 'Place Name',    type: 'string'}),
+            defineField({name: 'nameAr',   title: 'Place Name (Arabic)', type: 'string'}),
             defineField({name: 'distance', title: 'Distance',      type: 'string', description: 'e.g. "5 mins"'}),
             defineField({name: 'icon',     title: 'Icon',          type: 'string', description: 'e.g. "mall", "airport", "beach"'}),
+            defineField({
+              name: 'lat',
+              title: 'Latitude',
+              type: 'number',
+              description: 'Required if you want this landmark to appear as a pin on the project map.',
+            }),
+            defineField({
+              name: 'lng',
+              title: 'Longitude',
+              type: 'number',
+              description: 'Required if you want this landmark to appear as a pin on the project map.',
+            }),
+            defineField({
+              name: 'directionsUrl',
+              title: 'Google Maps Directions URL (optional)',
+              type: 'url',
+              description: 'Optional override. If empty, the site will generate one from the latitude/longitude.',
+            }),
           ],
           preview: {select: {title: 'name', subtitle: 'distance'}},
         },

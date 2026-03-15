@@ -1,12 +1,26 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import GenerateSalesOfferButton from "@/components/projects/GenerateSalesOfferButton";
 import styles from "@/styles/projects/ProjectIntro.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 
-export default function ProjectIntro({ data, projectData, rawProjectData, isRTL, locale }) {
+function normalizeAmenities(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.filter(Boolean);
+  if (Array.isArray(raw.amenities)) return raw.amenities.filter(Boolean);
+  if (Array.isArray(raw.items)) return raw.items.filter(Boolean);
+  return [];
+}
+
+export default function ProjectIntro({
+  data,
+  projectData,
+  rawProjectData,
+  isRTL,
+  locale,
+}) {
   const { locale: ctxLocale } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
@@ -20,42 +34,185 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
 
   const intro = data;
   const project = projectData?.hero || {};
-
   const CDN = "https://luxury-real-estate-media.b-cdn.net";
 
-  // Get gallery data from projectData if available
-  const galleryData = projectData?.gallery;
-
-  // Get gallery images from projectData.gallery or use intro images
   const galleryImages = useMemo(() => {
-    if (galleryData?.slides && Array.isArray(galleryData.slides)) {
-      return galleryData.slides;
+    const gallerySlides = projectData?.gallery?.slides;
+    if (Array.isArray(gallerySlides) && gallerySlides.length > 0) {
+      return gallerySlides.filter(Boolean);
     }
 
     const images = [];
-    if (data.propertyImages && Array.isArray(data.propertyImages)) {
-      images.push(...data.propertyImages.map((img) => img.src || img));
+    if (Array.isArray(data?.propertyImages)) {
+      images.push(...data.propertyImages.map((img) => img?.src || img).filter(Boolean));
     }
-    if (data.imgUrl) images.push(data.imgUrl);
+    if (data?.imgUrl) images.push(data.imgUrl);
 
     if (images.length === 0) {
       const fallbackImage =
         projectData?.hero?.squareImageUrl ||
         projectData?.hero?.backgroundUrl ||
-        "";
+        `${CDN}/sky-parks/exterior-day-01.jpg`;
       if (fallbackImage) images.push(fallbackImage);
     }
 
     return images;
-  }, [galleryData, data]);
+  }, [data, projectData]);
 
-  // Smooth transition function
+  const brochures = useMemo(() => {
+    const raw = Array.isArray(data?.brochures) ? data.brochures : [];
+
+    return raw
+      .filter((item) => item && (item.url || item.href))
+      .map((item, index) => ({
+        id: item.id || item.type || `${index}-${item.title || "brochure"}`,
+        title:
+          item.title ||
+          (activeIsRTL
+            ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0644\u0641"
+            : "Download File"),
+        url: item.url || item.href,
+      }));
+  }, [data, activeIsRTL]);
+
+  const heading =
+    intro.title ||
+    intro.heading ||
+    (activeIsRTL
+      ? "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0634\u0631\u0648\u0639"
+      : "LIVE WHERE THE SKY FEELS LIKE HOME");
+
+  const paragraphs =
+    Array.isArray(intro.paragraphs) && intro.paragraphs.length
+      ? intro.paragraphs
+      : [
+          activeIsRTL
+            ? "\u0647\u0646\u0627 \u064a\u0645\u0643\u0646\u0643 \u0625\u0636\u0627\u0641\u0629 \u0648\u0635\u0641 \u0639\u0631\u0628\u064a \u0645\u0641\u0635\u0644 \u0644\u0644\u0645\u0634\u0631\u0648\u0639."
+            : "Here you can add a detailed English description of the project.",
+        ];
+
+  const normalizeKey = useCallback(
+    (value) =>
+      String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " "),
+    []
+  );
+
+  const isLocationLabel = useCallback(
+    (label) => {
+      const key = normalizeKey(label);
+      return (
+        key === "location" ||
+        key === "\u0627\u0644\u0645\u0648\u0642\u0639" ||
+        key.includes("location") ||
+        key.includes("\u0627\u0644\u0645\u0648\u0642\u0639")
+      );
+    },
+    [normalizeKey]
+  );
+
+  const stats = useMemo(() => {
+    const result = [];
+    const used = new Set();
+
+    const addStat = (label, value) => {
+      if (!label || !value) return;
+      if (isLocationLabel(label)) return;
+
+      const key = normalizeKey(label);
+      if (used.has(key)) return;
+
+      used.add(key);
+      result.push({ icon: "", label, value });
+    };
+
+    addStat(
+      activeIsRTL
+        ? "\u0627\u0644\u0633\u0639\u0631 \u064a\u0628\u062f\u0623 \u0645\u0646"
+        : "Starting Price",
+      project?.startingPrice
+    );
+    addStat(
+      activeIsRTL ? "\u0627\u0644\u062d\u0627\u0644\u0629" : "Status",
+      project?.status
+    );
+    addStat(
+      activeIsRTL ? "\u0627\u0644\u0646\u0648\u0639" : "Type",
+      project?.type
+    );
+
+    const handoverValue =
+      project?.handover ||
+      project?.handoverDate ||
+      project?.deliveryDate ||
+      project?.completion ||
+      project?.completionDate;
+
+    addStat(
+      activeIsRTL ? "\u0627\u0644\u062a\u0633\u0644\u064a\u0645" : "Handover",
+      handoverValue
+    );
+
+    const floatingCards = Array.isArray(intro?.floatingCards)
+      ? intro.floatingCards
+      : [];
+    for (const card of floatingCards) {
+      if (result.length >= 4) break;
+      addStat(card?.label, card?.value);
+    }
+
+    if (result.length < 4) {
+      addStat(
+        activeIsRTL ? "\u0627\u0644\u0645\u0637\u0648\u0631" : "Developer",
+        project?.developer
+      );
+    }
+    if (result.length < 4) {
+      addStat(
+        activeIsRTL ? "\u0639\u062f\u062f \u0627\u0644\u063a\u0631\u0641" : "Bedrooms",
+        project?.bedrooms
+      );
+    }
+    if (result.length < 4) {
+      addStat(
+        activeIsRTL ? "\u0627\u0644\u0645\u0633\u0627\u062d\u0629" : "Area",
+        project?.area
+      );
+    }
+
+    return result.slice(0, 4);
+  }, [activeIsRTL, intro?.floatingCards, isLocationLabel, normalizeKey, project]);
+
+  const currentGallerySet = useMemo(() => {
+    const fallback =
+      projectData?.hero?.squareImageUrl ||
+      projectData?.hero?.backgroundUrl ||
+      `${CDN}/sky-parks/exterior-day-01.jpg`;
+
+    if (!galleryImages.length) return [fallback, fallback, fallback, fallback];
+
+    return Array.from({ length: 4 }).map((_, index) => {
+      const imageIndex = (activeGalleryStartIndex + index) % galleryImages.length;
+      return galleryImages[imageIndex] || fallback;
+    });
+  }, [CDN, activeGalleryStartIndex, galleryImages, projectData]);
+
+  const uniqueSetsCount = useMemo(
+    () => Math.max(1, Math.ceil((galleryImages.length || 1) / 4)),
+    [galleryImages.length]
+  );
+
+  const activeSetIndex =
+    Math.floor(activeGalleryStartIndex / 4) % Math.max(uniqueSetsCount, 1);
+
   const transitionToNextSet = useCallback(() => {
     setIsTransitioning(true);
 
     setTimeout(() => {
-      setActiveGalleryStartIndex((prev) => {
-        const nextIndex = prev + 4;
+      setActiveGalleryStartIndex((previous) => {
+        const nextIndex = previous + 4;
         const maxIndex = Math.max(0, galleryImages.length - 4);
         return nextIndex >= maxIndex ? 0 : nextIndex;
       });
@@ -63,6 +220,21 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
       setTimeout(() => setIsTransitioning(false), 50);
     }, 300);
   }, [galleryImages.length]);
+
+  const handleDotClick = useCallback(
+    (index) => {
+      if (isTransitioning || activeSetIndex === index) return;
+
+      setIsTransitioning(true);
+
+      setTimeout(() => {
+        const newStartIndex = (index * 4) % Math.max(galleryImages.length, 1);
+        setActiveGalleryStartIndex(newStartIndex);
+        setTimeout(() => setIsTransitioning(false), 50);
+      }, 300);
+    },
+    [activeSetIndex, galleryImages.length, isTransitioning]
+  );
 
   useEffect(() => {
     setIsVisible(true);
@@ -74,161 +246,15 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
     return () => clearInterval(interval);
   }, [transitionToNextSet]);
 
-  // ✅ Normalize brochures
-  const brochures = useMemo(() => {
-    const raw = (data && data.brochures) || [];
-    if (!Array.isArray(raw)) return [];
-
-    return raw
-      .filter((b) => b && (b.url || b.href))
-      .map((b, idx) => ({
-        id: b.id || b.type || `${idx}-${b.title || "brochure"}`,
-        title: b.title || (activeIsRTL ? "تحميل الملف" : "Download File"),
-        url: b.url || b.href,
-      }));
-  }, [data, activeIsRTL]);
-
-  // Create current gallery set of 4 images (loops if less)
-  const currentGallerySet = useMemo(() => {
-    const set = [];
-    const fallback =
-      projectData?.hero?.squareImageUrl ||
-      projectData?.hero?.backgroundUrl ||
-      `${CDN}/sky-parks/exterior-day-01.jpg`;
-
-    if (!galleryImages || galleryImages.length === 0) {
-      return [fallback, fallback, fallback, fallback];
-    }
-
-    for (let i = 0; i < 4; i++) {
-      const index = (activeGalleryStartIndex + i) % galleryImages.length;
-      set.push(galleryImages[index]);
-    }
-
-    return set;
-  }, [galleryImages, activeGalleryStartIndex]);
-
-  // How many sets of 4
-  const uniqueSetsCount = useMemo(() => {
-    if (!galleryImages || galleryImages.length === 0) return 1;
-    return Math.max(1, Math.ceil(galleryImages.length / 4));
-  }, [galleryImages]);
-
-  const heading =
-    intro.title ||
-    intro.heading ||
-    (activeIsRTL ? "عنوان المشروع" : "LIVE WHERE THE SKY FEELS LIKE HOME");
-
-  const paragraphs =
-    intro.paragraphs && intro.paragraphs.length
-      ? intro.paragraphs
-      : [
-          activeIsRTL
-            ? "هنا يمكنك إضافة وصف عربي للمشروع يشبه نص صفحة شوبا الأصلية."
-            : "Here you can add a detailed English description of the project similar to the original Sobha page.",
-        ];
-
-  // ✅ Helpers
-  const normalizeKey = (s) =>
-    String(s || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-
-  const isLocationLabel = (label) => {
-    const k = normalizeKey(label);
-    // English/Arabic common keys that mean location
-    return (
-      k === "location" ||
-      k === "الموقع" ||
-      k.includes("location") ||
-      k.includes("الموقع")
-    );
-  };
-
-  // ✅ Stats: ALWAYS SAME 4 (and NEVER include Location because it's shown in the location section)
-  const stats = useMemo(() => {
-    const result = [];
-    const used = new Set();
-
-    const addStat = (label, value) => {
-      if (!label || !value) return;
-      if (isLocationLabel(label)) return; // 🚫 NEVER add location in stats
-
-      const key = normalizeKey(label);
-      if (used.has(key)) return;
-
-      used.add(key);
-      result.push({
-        icon: "",
-        label,
-        value,
-      });
-    };
-
-    // 1) Starting Price
-    addStat(
-      activeIsRTL ? "السعر يبدأ من" : "Starting Price",
-      project?.startingPrice,
-    );
-
-    // 2) Status
-    addStat(activeIsRTL ? "الحالة" : "Status", project?.status);
-
-    // 3) Type
-    addStat(activeIsRTL ? "النوع" : "Type", project?.type);
-
-    // 4) Handover / Completion / Delivery (first available)
-    const handoverValue =
-      project?.handover ||
-      project?.handoverDate ||
-      project?.deliveryDate ||
-      project?.completion ||
-      project?.completionDate;
-
-    addStat(activeIsRTL ? "التسليم" : "Handover", handoverValue);
-
-    // If still less than 4, fill from intro.floatingCards (WITHOUT duplicates and WITHOUT location)
-    const floating = Array.isArray(intro?.floatingCards)
-      ? intro.floatingCards
-      : [];
-
-    for (const card of floating) {
-      if (result.length >= 4) break;
-      if (!card?.label || !card?.value) continue;
-
-      addStat(card.label, card.value);
-    }
-
-    // Still less? Fill from some common project fields
-    if (result.length < 4) {
-      addStat(activeIsRTL ? "المطور" : "Developer", project?.developer);
-    }
-    if (result.length < 4) {
-      addStat(activeIsRTL ? "عدد الغرف" : "Bedrooms", project?.bedrooms);
-    }
-    if (result.length < 4) {
-      addStat(activeIsRTL ? "المساحة" : "Area", project?.area);
-    }
-
-    return result.slice(0, 4);
-  }, [intro?.floatingCards, project, activeIsRTL]);
-
-  const activeSetIndex =
-    Math.floor(activeGalleryStartIndex / 4) % uniqueSetsCount;
-
-  const handleDotClick = (index) => {
-    if (isTransitioning || activeSetIndex === index) return;
-
-    setIsTransitioning(true);
-
-    setTimeout(() => {
-      const newStartIndex = (index * 4) % galleryImages.length;
-      setActiveGalleryStartIndex(newStartIndex);
-
-      setTimeout(() => setIsTransitioning(false), 50);
-    }, 300);
-  };
+  const brochureAriaTarget = project?.title || project?.developer || "project";
+  const galleryAriaPrefix =
+    activeIsRTL
+      ? "\u0645\u0639\u0631\u0636 \u0635\u0648\u0631"
+      : "Gallery";
+  const gallerySetLabel =
+    activeIsRTL
+      ? "\u0639\u0631\u0636 \u0645\u062c\u0645\u0648\u0639\u0629 \u0627\u0644\u0635\u0648\u0631"
+      : "View gallery set";
 
   return (
     <section
@@ -241,41 +267,38 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
         </div>
 
         <div className={styles.contentGrid}>
-          {/* Left Column - Text & Brochures */}
           <div className={styles.textColumn}>
             <div className={styles.paragraphs}>
-              {paragraphs.map((p, idx) => (
-                <p key={idx} className={styles.paragraph}>
-                  {p}
+              {paragraphs.map((paragraph, index) => (
+                <p key={index} className={styles.paragraph}>
+                  {paragraph}
                 </p>
               ))}
             </div>
 
-            {/* ✅ Location Display (ONLY HERE) */}
-            {project?.location && (
+            {project?.location ? (
               <div className={styles.locationSection}>
                 <div className={styles.locationLabel}>
-                  {activeIsRTL ? "الموقع:" : "Location:"}
+                  {activeIsRTL ? "\u0627\u0644\u0645\u0648\u0642\u0639:" : "Location:"}
                 </div>
                 <div className={styles.locationValue}>{project.location}</div>
               </div>
-            )}
+            ) : null}
 
-            {/* Brochures + Sales Offer */}
-            {(brochures.length > 0 || rawProjectData) && (
+            {(brochures.length > 0 || rawProjectData) ? (
               <div className={styles.brochuresSection}>
                 <div className={styles.brochuresGrid}>
-                  {brochures.map((b, index) => (
+                  {brochures.map((brochure, index) => (
                     <a
-                      key={b?.id || b?.url || index}
-                      href={b?.url}
+                      key={brochure?.id || brochure?.url || index}
+                      href={brochure?.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.downloadBrochure}
-                      aria-label={`View ${project?.title || project?.developer || "project"} brochure`}
+                      aria-label={`View ${brochureAriaTarget} brochure`}
                     >
                       <span className={styles.brochureText}>
-                        {b?.title || "Download Brochure"}
+                        {brochure?.title || "Download Brochure"}
                       </span>
 
                       <div className={styles.downloadIcon}>
@@ -308,22 +331,20 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
                   ) : null}
                 </div>
               </div>
-            )}
+            ) : null}
 
-            {/* Stats Cards (NO LOCATION + NO EMOJIS) */}
-            {stats.length > 0 && (
+            {stats.length > 0 ? (
               <div className={styles.statsContainer}>
-                {stats.map((stat, idx) => (
-                  <div key={idx} className={styles.statCard}>
+                {stats.map((stat, index) => (
+                  <div key={index} className={styles.statCard}>
                     <div className={styles.statValue}>{stat.value}</div>
                     <div className={styles.statLabel}>{stat.label}</div>
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
 
-          {/* Right Column - Creative Gallery */}
           <div className={styles.galleryColumn}>
             <div
               className={`${styles.galleryGrid} ${
@@ -337,7 +358,7 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
                 >
                   <Image
                     src={imageUrl}
-                    alt={`${project?.name || "Project"} - Gallery ${index + 1}`}
+                    alt={`${project?.name || "Project"} - ${galleryAriaPrefix} ${index + 1}`}
                     fill
                     className={styles.galleryImage}
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -349,8 +370,7 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
               ))}
             </div>
 
-            {/* Gallery Navigation Dots */}
-            {uniqueSetsCount > 1 && (
+            {uniqueSetsCount > 1 ? (
               <div className={styles.galleryNav}>
                 {Array.from({ length: uniqueSetsCount }).map((_, index) => (
                   <button
@@ -360,11 +380,11 @@ export default function ProjectIntro({ data, projectData, rawProjectData, isRTL,
                     }`}
                     onClick={() => handleDotClick(index)}
                     disabled={isTransitioning}
-                    aria-label={`View gallery set ${index + 1}`}
+                    aria-label={`${gallerySetLabel} ${index + 1}`}
                   />
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

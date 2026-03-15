@@ -238,3 +238,76 @@
 .devText {
   opacity: 0.9;
 }
+
+@media (max-width: 768px) {
+  .grid {
+    gap: 18px;
+  }
+
+  .mediaWrap,
+  .mediaPlaceholder {
+    height: 230px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .cardBody {
+    padding: 14px 16px 16px;
+  }
+
+  .arrow {
+    width: 34px;
+    height: 34px;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .grid {
+    gap: 14px;
+    padding: 10px 0;
+  }
+
+  .mediaWrap,
+  .mediaPlaceholder {
+    height: 210px;
+  }
+
+  .card {
+    border-radius: 12px;
+  }
+
+  .cardBody {
+    padding: 14px;
+  }
+
+  .title {
+    font-size: 21px;
+    line-height: 1.15;
+  }
+
+  .subTitle,
+  .rangeValue,
+  .toRow {
+    font-size: 12px;
+  }
+
+  .location {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .ribbon,
+  .status {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+
+  .arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+}

@@ -58,13 +58,6 @@ export const PROJECT_NAME_KEY_MAP = {
   aquarise: "aquarise",
   bugatti: "bugattiResidences",
 
-  // ==================== BEYOND ====================
-  kanyon: "kanyon",
-  "31-above": "above31",
-
-  // ==================== IMTIAZ ====================
-  wynwood: "wynwood",
-
   // ==================== PRESTIGE ONE ====================
   "hilton-residences": "hiltonResidencesDMC",
 
@@ -100,9 +93,6 @@ export const PROJECT_NAME_KEY_MAP = {
   "danube-shahrukhz": "shahrukhzByDanube",
   "danube-aspirz": "danubeAspirz",
 
-  // ==================== OMNIYAT ====================
-  lumenaalta: "luminaAlta",
-
   // ==================== AJMAL MAKAN ====================
   "the-view-island": "theViewIsland",
 
@@ -119,11 +109,8 @@ export const DEVELOPER_KEY_MAP = {
   damac: "damacProperties",
   azizi: "aziziDevelopments",
   arada: "arada",
-  omniyat: "omniyat",
   binghatti: "binghatti",
-  beyond: "beyond",
   samana: "samana",
-  imtiaz: "imtiazDevelopments",
   "prestige-one": "prestigeOneDevelopments",
   tiger: "tiger",
   "gulf-land-property": "gulfLandProperty",
@@ -284,7 +271,6 @@ export const getProjectsByDeveloper = (developerSlug) => {
     arada: ["arada", "massar", "armani"],
     samana: ["samana", "imperial", "boulevard"],
     binghatti: ["binghatti", "aquarise", "bugatti", "mercedes"],
-    beyond: ["beyond", "kanyon", "31-above"],
     tiger: [
       "tiger",
       "orchid",
@@ -305,12 +291,10 @@ export const getProjectsByDeveloper = (developerSlug) => {
     lazord: ["lapis"],
     ellington: ["eltiera"],
     danube: ["danube", "shahrukhz", "aspirz"],
-    omniyat: ["lumena"],
     "ajmal-makan": ["view-island"],
     taraf: ["terra", "golf"],
     reportage: ["reportage"],
     "prestige-one": ["hilton"],
-    imtiaz: ["wynwood"],
   };
 
   const keywords = developerKeywords[normalizedSlug] || [normalizedSlug];
@@ -379,9 +363,6 @@ export const getDeveloperFromProject = (projectSlug) => {
     aquarise: "binghatti",
     bugatti: "binghatti",
 
-    // Imtiaz
-    wynwood: "imtiaz",
-
     // Prestige One
     "hilton-residences": "prestige-one",
 
@@ -417,9 +398,6 @@ export const getDeveloperFromProject = (projectSlug) => {
     "danube-shahrukhz": "danube",
     "danube-aspirz": "danube",
 
-    // Omniyat
-    lumenaalta: "omniyat",
-
     // Ajmal Makan
     "the-view-island": "ajmal-makan",
 
@@ -454,10 +432,8 @@ export const getCategoryFromProject = (projectSlug) => {
 
     // Commercial/Retail
     "riviera-retails": "commercial-retail",
-    lumenaalta: "commercial-retail",
     "danube-shahrukhz": "commercial-retail",
     "danube-aspirz": "commercial-retail",
-    "31-above": "commercial-retail",
     emerald: "commercial-retail",
   };
 

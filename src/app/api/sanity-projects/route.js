@@ -23,12 +23,14 @@ const PROPERTY_QUERY = `
   unitTypes,
   featured,
   heroImage,
+  heroImageCdn,
   heroImageUpload{
     asset->
   },
   heroVideo,
   galleryImages[]{
     ...,
+    cdnImage,
     imageUpload{
       asset->
     }
@@ -79,14 +81,22 @@ function normalizeProperty(item) {
         if (typeof entry === "string") return { url: entry };
         return {
           ...entry,
-          url: entry?.url || entry?.imageUpload?.asset?.url || "",
+          url:
+            entry?.cdnImage?.url ||
+            entry?.url ||
+            entry?.imageUpload?.asset?.url ||
+            "",
         };
       })
     : [];
 
   return {
     ...item,
-    heroImage: item?.heroImage || item?.heroImageUpload?.asset?.url || "",
+    heroImage:
+      item?.heroImageCdn?.url ||
+      item?.heroImage ||
+      item?.heroImageUpload?.asset?.url ||
+      "",
     galleryImages,
     priceAED: parsePriceToAED(item?.startingPrice),
     startingPriceAED: parsePriceToAED(item?.startingPrice),

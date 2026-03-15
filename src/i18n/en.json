@@ -7,11 +7,11 @@
     "mixedUse": "Destination Mixed-Use"
   },
   "descriptions": {
-    "apartments": "Curated luxury apartments in Dubai’s most desirable addresses — built for lifestyle and long-term value.",
+    "apartments": "Curated luxury apartments in Dubai's most desirable addresses - built for lifestyle and long-term value.",
     "villas": "Private villas and townhomes with space, seclusion, and statement architecture in elite communities.",
     "commercial": "Investment-grade retail and commercial spaces in high-footfall districts with proven demand drivers.",
     "penthouses": "Ultra-luxury penthouses with panoramic views, private terraces, and world-class amenities.",
-    "mixedUse": "Integrated projects combining residences, offices, and retail — designed for convenience, yield, and prestige."
+    "mixedUse": "Integrated projects combining residences, offices, and retail - designed for convenience, yield, and prestige."
   },
   "developers": {
     "sobhaRealty": "Sobha Realty",
@@ -20,7 +20,6 @@
     "aziziDevelopments": "Azizi Developments",
     "danubeProperties": "Danube Properties",
     "binghatti": "Binghatti",
-    "imtiazDevelopments": "Imtiaz Developments",
     "tiger": "Tiger Properties"
   },
   "projectNames": {
@@ -41,7 +40,6 @@
     "damacIslands2": "Damac Islands 2",
     "aradaMassar3": "Masaar",
     "armaniBeachResidences": "Armani Beach Residences",
-    "opusTower": "The Opus by OMNIYAT",
     "velaViento": "VELA Viento",
     "velaDorchester": "VELA Dorchester",
     "orlaDorchester": "ORLA Dorchester",
@@ -141,7 +139,7 @@
     "about": "ABOUT US",
     "properties": "PROPERTIES",
     "offplan": "Off-Plan",
-    "secondary": "Resale",
+    "secondary": "Ready To Move",
     "whereToLive": "WHERE TO LIVE",
     "developers": "DEVELOPERS",
     "mediaCenter": "INSIGHTS",
@@ -153,8 +151,8 @@
   "ui": {
     "marketLabel": "Market",
     "offPlanLabel": "Off-Plan (Developer)",
-    "marketEmptyHint": "This collection is being curated — new opportunities will appear as inventory is released.",
-    "secondaryLabel": "Secondary (Resale)",
+    "marketEmptyHint": "This collection is being curated - new opportunities will appear as inventory is released.",
+    "secondaryLabel": "Ready To Move",
     "propertyTypesLabel": "PROPERTY TYPES",
     "projectsLabel": "PROJECTS",
     "dubaiNeighborhoodsLabel": "DUBAI DISTRICTS",
@@ -173,43 +171,43 @@
     "defaultNeighborhoodTitle": "Dubai District",
     "viewAllPropertiesMobile": "View All Opportunities",
     "viewAllNeighborhoodsMobile": "View All Districts",
-    "secondaryBadge": "Resale"
+    "secondaryBadge": "Ready"
   },
   "whereToLive": {
     "businessBay": {
       "name": "Business Bay",
-      "location": "Dubai Water Canal address — moments from Downtown Dubai and DIFC access corridors",
+      "location": "Dubai Water Canal address - moments from Downtown Dubai and DIFC access corridors",
       "avgBuy": "1BR from AED 1.1M",
       "avgRent": "1BR from AED 95K / year",
-      "roi": "7–8% estimated ROI"
+      "roi": "7-8% estimated ROI"
     },
     "sheikhZayedRoad": {
       "name": "Sheikh Zayed Road",
-      "location": "Dubai’s prime skyline boulevard — Downtown, Business Bay and Marina connectivity in one corridor",
+      "location": "Dubai's prime skyline boulevard - Downtown, Business Bay and Marina connectivity in one corridor",
       "avgBuy": "1BR from AED 1.2M",
       "avgRent": "1BR from AED 100K / year",
-      "roi": "6–7% estimated ROI"
+      "roi": "6-7% estimated ROI"
     },
     "mbrCity": {
       "name": "Mohammed Bin Rashid City (MBR City)",
-      "location": "Master community near Downtown and Meydan — villas, waterfront pockets, and flagship residences",
+      "location": "Master community near Downtown and Meydan - villas, waterfront pockets, and flagship residences",
       "avgBuy": "Villas from AED 6M",
       "avgRent": "Villas from AED 350K / year",
-      "roi": "5–6% estimated ROI"
+      "roi": "5-6% estimated ROI"
     },
     "dubailand": {
       "name": "Dubailand",
       "location": "Growth corridor with family communities and strong road connectivity via E611 & Al Ain Road",
       "avgBuy": "1BR from AED 750K",
       "avgRent": "1BR from AED 60K / year",
-      "roi": "6–8% estimated ROI"
+      "roi": "6-8% estimated ROI"
     },
     "ummAlQuwain": {
       "name": "Umm Al Quwain Waterfront",
-      "location": "Island and beachfront living on the UAQ coastline — privacy, sea views, and long-horizon appreciation",
+      "location": "Island and beachfront living on the UAQ coastline - privacy, sea views, and long-horizon appreciation",
       "avgBuy": "Villas from AED 2.2M",
       "avgRent": "Villas from AED 120K / year",
-      "roi": "5–6% estimated ROI"
+      "roi": "5-6% estimated ROI"
     },
     "masaarTilalCity": {
       "name": "Masaar, Tilal City (Sharjah)",
@@ -217,7 +215,7 @@
       "description": "A nature-first, gated forest community by Arada with smart homes, lifestyle amenities, and a family-focused masterplan.",
       "avgBuy": "From AED 1.71M (2BR townhouse) • From AED 1.739M (2BR villa)",
       "avgRent": "From AED 112K/year (2BR townhouse/villa)",
-      "roi": "Varies by unit type (see Bayut guide)",
+      "roi": "ROI varies by unit type",
       "bayutGuide": "Masaar Area Guide"
     },
     "sharjah": {
@@ -230,86 +228,86 @@
     "motorCity": {
       "name": "Motor City",
       "location": "Low-rise living with community parks — practical connectivity and lifestyle-led planning",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "dubaiSportsCity": {
       "name": "Dubai Sports City",
       "location": "Active lifestyle district with strong rental demand pockets and easy access to key highways",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "dubaiMaritimeCity": {
       "name": "Dubai Maritime City (DMC)",
       "location": "Coastal address near Port Rashid — waterfront projects and marina-adjacent living",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "dubaiHarbour": {
       "name": "Dubai Harbour",
       "location": "Elite waterfront between Marina and Palm Jumeirah — luxury towers, superyacht vibe, iconic views",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "meydanOne": {
       "name": "Meydan One",
       "location": "MBR City zone near Downtown — large-scale, future-forward projects and premium accessibility",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "nadAlSheba": {
       "name": "Nad Al Sheba",
       "location": "Low-density living near Meydan — privacy, space, and fast central access",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "arjan": {
       "name": "Arjan",
       "location": "High-growth residential district near key attractions and Dubai Hills connectivity",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "dubailandResidenceComplex": {
       "name": "Dubailand Residence Complex (DLRC)",
       "location": "Family-oriented residential cluster with expanding new inventory and long-term upside",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "dubaiIndustrialCity": {
       "name": "Dubai Industrial City",
       "location": "A strategic zone with growing housing supply and strong commuter demand dynamics",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "majan": {
       "name": "Majan",
       "location": "Emerging Dubailand sub-district near Al Barari — value-led mid-rise communities",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "ajman": {
       "name": "Ajman",
       "location": "Northern emirate with coastal living and expanding investment corridors",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "jumeirahIslands": {
       "name": "Jumeirah Islands",
       "location": "Exclusive, low-density villa community near JLT — privacy, greenery, and prime access",
-      "avgBuy": "Avg. purchase varies",
-      "avgRent": "Avg. rent varies",
-      "roi": "Estimated ROI varies"
+      "avgBuy": "1BR pricing varies by inventory",
+      "avgRent": "Rental rates vary by inventory",
+      "roi": "ROI varies by inventory"
     },
     "jumeirahGolfEstates": {
       "name": "Jumeirah Golf Estates",
@@ -1169,54 +1167,6 @@
       "cta": {
         "primary": "View Binghatti Real Estate Projects",
         "final": "Explore Binghatti developments selected for demand, visibility, and liquidity potential."
-      }
-    },
-    "imtiaz": {
-      "hero": {
-        "title": "Imtiaz Developments",
-        "tagline": "Investment-Focused Living with Smart Entry Points",
-        "subtitle": "A Dubai developer known for practical residential projects designed for leasing demand and portfolio building."
-      },
-      "whyImtiaz": [
-        {
-          "title": "Return-Led Product Thinking",
-          "description": "A focus on layouts and pricing that can support achievable investment returns."
-        },
-        {
-          "title": "Competitive Entry Strategy",
-          "description": "Positioned to offer market-relevant pricing within active tenant zones."
-        },
-        {
-          "title": "Leasing Demand Alignment",
-          "description": "Units designed to rent efficiently — supporting steady cash-flow dynamics."
-        }
-      ],
-      "performance": {
-        "title": "Imtiaz — Market Presence",
-        "intro": "Performance depends on district demand, delivery timelines, and price-per-sqft positioning.",
-        "year": "2025",
-        "stats": {
-          "transactions": "Activity varies by project and release phase",
-          "totalValue": "Values depend on unit type and demand windows",
-          "capitalGains": "Gains depend on entry timing and holding horizon"
-        }
-      },
-      "projectsInventory": {
-        "title": "Imtiaz Project Inventory",
-        "underConstruction": {
-          "projects": 30,
-          "units": 6086
-        },
-        "completed": {
-          "projects": 7,
-          "units": 987
-        }
-      },
-      "summary": "Imtiaz can suit investors looking for portfolio scalability, practical layouts, and rental-market alignment — when district selection is evidence-led.",
-      "investmentPerspective": "Investing with Imtiaz is about efficiency: strong rental demand, sensible entry points, and consistent execution.",
-      "cta": {
-        "primary": "View Imtiaz Developments",
-        "final": "Explore Imtiaz opportunities selected for leasing dynamics and smart entry levels."
       }
     },
     "tiger": {

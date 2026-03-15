@@ -41,8 +41,14 @@ const getProjectCardMedia = (data) => {
 
   const hero = node?.hero || {};
   const gallery = node?.gallery || {};
+  const normalizedGallery = Array.isArray(raw?.galleryImages)
+    ? raw.galleryImages
+        .map((item) => (typeof item === "string" ? item : item?.url))
+        .filter(Boolean)
+    : [];
 
   const bg =
+    raw?.heroVideo ||
     hero?.backgroundUrl ||
     hero?.background ||
     raw?.backgroundUrl ||
@@ -52,12 +58,14 @@ const getProjectCardMedia = (data) => {
     "";
 
   const poster =
+    raw?.heroImage ||
     hero?.posterUrl ||
     hero?.poster ||
     raw?.posterUrl ||
     raw?.poster ||
     hero?.image ||
     raw?.image ||
+    normalizedGallery[0] ||
     gallery?.slides?.[0] ||
     null;
 
@@ -65,7 +73,7 @@ const getProjectCardMedia = (data) => {
   if (bg && !isVideoUrl(bg)) return { type: "image", url: bg, poster: null };
 
   const fallbackImage =
-    gallery?.slides?.[0] || hero?.image || raw?.image || null;
+    normalizedGallery[0] || gallery?.slides?.[0] || hero?.image || raw?.image || null;
   if (fallbackImage) return { type: "image", url: fallbackImage, poster: null };
 
   return { type: "none", url: null, poster: null };
@@ -75,94 +83,122 @@ const getProjectCardMedia = (data) => {
 /** Used ONLY if the JSON translation key is missing */
 const DYN = {
   status: {
-    Secondary: { en: "Secondary", ar: "ثانوي" },
-    "Off-plan": { en: "Off-plan", ar: "قيد الإنشاء" },
-    Available: { en: "Available", ar: "متاح" },
-    Completed: { en: "Completed", ar: "مكتمل" },
-    Presale: { en: "Presale", ar: "مرحلة ما قبل البيع" },
-    "Under Construction": { en: "Under Construction", ar: "قيد الإنشاء" },
-    Announced: { en: "Announced", ar: "مُعلن" },
-    "On Sale": { en: "On Sale", ar: "متاح للبيع" },
-    "Off Plan": { en: "Off Plan", ar: "قيد الإنشاء" },
-    Ready: { en: "Ready", ar: "جاهز" },
-    "Ready & Off-Plan": { en: "Ready & Off-Plan", ar: "جاهز وقيد الإنشاء" },
+    Secondary: { en: "Ready To Move", ar: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+    "Ready To Move": { en: "Ready To Move", ar: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+    "Off-plan": { en: "Off-plan", ar: "\u0642\u064a\u062f \u0627\u0644\u0625\u0646\u0634\u0627\u0621" },
+    Available: { en: "Available", ar: "\u0645\u062a\u0627\u062d" },
+    Completed: { en: "Completed", ar: "\u0645\u0643\u062a\u0645\u0644" },
+    Presale: { en: "Presale", ar: "\u0645\u0631\u062d\u0644\u0629 \u0645\u0627 \u0642\u0628\u0644 \u0627\u0644\u0628\u064a\u0639" },
+    "Under Construction": { en: "Under Construction", ar: "\u0642\u064a\u062f \u0627\u0644\u0625\u0646\u0634\u0627\u0621" },
+    Announced: { en: "Announced", ar: "\u0645\u064f\u0639\u0644\u0646" },
+    "On Sale": { en: "On Sale", ar: "\u0645\u062a\u0627\u062d \u0644\u0644\u0628\u064a\u0639" },
+    "Off Plan": { en: "Off Plan", ar: "\u0642\u064a\u062f \u0627\u0644\u0625\u0646\u0634\u0627\u0621" },
+    Ready: { en: "Ready To Move", ar: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+    "Ready & Off-Plan": { en: "Ready & Off-Plan", ar: "\u062c\u0627\u0647\u0632 \u0648\u0642\u064a\u062f \u0627\u0644\u0625\u0646\u0634\u0627\u0621" },
   },
 
   unitTypes: {
-    Apartments: { en: "Apartments", ar: "شقق" },
-    Apartment: { en: "Apartments", ar: "شقق" },
-    Villas: { en: "Villas", ar: "فلل" },
-    Villa: { en: "Villas", ar: "فلل" },
-    Penthouse: { en: "Penthouse", ar: "بنتهاوس" },
-    Penthouses: { en: "Penthouses", ar: "بنتهاوس" },
-    Commercial: { en: "Commercial", ar: "تجاري" },
-    "Mixed Use": { en: "Mixed Use", ar: "متعدد الاستخدامات" },
-    "Luxury Villas": { en: "Luxury Villas", ar: "فلل فاخرة" },
-    "Townhouses & Villas": { en: "Townhouses & Villas", ar: "تاون هاوس وفلل" },
+    Apartments: { en: "Apartments", ar: "\u0634\u0642\u0642" },
+    Apartment: { en: "Apartments", ar: "\u0634\u0642\u0642" },
+    Villas: { en: "Villas", ar: "\u0641\u0644\u0644" },
+    Villa: { en: "Villas", ar: "\u0641\u0644\u0644" },
+    Penthouse: { en: "Penthouse", ar: "\u0628\u0646\u062a\u0647\u0627\u0648\u0633" },
+    Penthouses: { en: "Penthouses", ar: "\u0628\u0646\u062a\u0647\u0627\u0648\u0633" },
+    Commercial: { en: "Commercial", ar: "\u062a\u062c\u0627\u0631\u064a" },
+    "Mixed Use": {
+      en: "Mixed Use",
+      ar: "\u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645\u0627\u062a",
+    },
+    "Luxury Villas": {
+      en: "Luxury Villas",
+      ar: "\u0641\u0644\u0644 \u0641\u0627\u062e\u0631\u0629",
+    },
+    "Townhouses & Villas": {
+      en: "Townhouses & Villas",
+      ar: "\u062a\u0627\u0648\u0646 \u0647\u0627\u0648\u0633 \u0648\u0641\u0644\u0644",
+    },
     "Branded Residences": {
       en: "Branded Residences",
-      ar: "مساكن بعلامة تجارية",
+      ar: "\u0645\u0633\u0627\u0643\u0646 \u0628\u0639\u0644\u0627\u0645\u0629 \u062a\u062c\u0627\u0631\u064a\u0629",
     },
-    "Retail Spaces": { en: "Retail Spaces", ar: "مساحات تجارية" },
-    "Office Spaces": { en: "Office Spaces", ar: "مكاتب" },
+    "Retail Spaces": {
+      en: "Retail Spaces",
+      ar: "\u0645\u0633\u0627\u062d\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629",
+    },
+    "Office Spaces": { en: "Office Spaces", ar: "\u0645\u0643\u0627\u062a\u0628" },
   },
 
   bedsOverrides: {
-    "Office Spaces": { en: "Office Spaces", ar: "مكاتب" },
-    "Retail Units": { en: "Retail Units", ar: "محلات تجارية" },
-    Commercial: { en: "Commercial", ar: "تجاري" },
-    "Apartments + Offices": { en: "Apartments + Offices", ar: "شقق + مكاتب" },
+    "Office Spaces": { en: "Office Spaces", ar: "\u0645\u0643\u0627\u062a\u0628" },
+    "Retail Units": {
+      en: "Retail Units",
+      ar: "\u0645\u062d\u0644\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629",
+    },
+    Commercial: { en: "Commercial", ar: "\u062a\u062c\u0627\u0631\u064a" },
+    "Apartments + Offices": {
+      en: "Apartments + Offices",
+      ar: "\u0634\u0642\u0642 + \u0645\u0643\u0627\u062a\u0628",
+    },
     "Branded Residences": {
       en: "Branded Residences",
-      ar: "مساكن بعلامة تجارية",
+      ar: "\u0645\u0633\u0627\u0643\u0646 \u0628\u0639\u0644\u0627\u0645\u0629 \u062a\u062c\u0627\u0631\u064a\u0629",
     },
   },
 
   regionsBySlug: {
-    "business-bay": { en: "Business Bay", ar: "الخليج التجاري" },
-    "sheikh-zayed-road": { en: "Sheikh Zayed Road", ar: "شارع الشيخ زايد" },
-    "motor-city": { en: "Motor City", ar: "مدينة دبي للسيارات" },
+    "business-bay": {
+      en: "Business Bay",
+      ar: "\u0627\u0644\u062e\u0644\u064a\u062c \u0627\u0644\u062a\u062c\u0627\u0631\u064a",
+    },
+    "sheikh-zayed-road": {
+      en: "Sheikh Zayed Road",
+      ar: "\u0634\u0627\u0631\u0639 \u0627\u0644\u0634\u064a\u062e \u0632\u0627\u064a\u062f",
+    },
+    "motor-city": {
+      en: "Motor City",
+      ar: "\u0645\u062f\u064a\u0646\u0629 \u062f\u0628\u064a \u0644\u0644\u0633\u064a\u0627\u0631\u0627\u062a",
+    },
     "mohammed-bin-rashid-city": {
       en: "Mohammed Bin Rashid City",
-      ar: "مدينة محمد بن راشد",
+      ar: "\u0645\u062f\u064a\u0646\u0629 \u0645\u062d\u0645\u062f \u0628\u0646 \u0631\u0627\u0634\u062f",
     },
     "dubai-maritime-city": {
       en: "Dubai Maritime City",
-      ar: "دبي مارايتيم سيتي",
+      ar: "\u062f\u0628\u064a \u0627\u0644\u0645\u062f\u064a\u0646\u0629 \u0627\u0644\u0628\u062d\u0631\u064a\u0629",
     },
-    "nad-al-sheba": { en: "Nad Al Sheba", ar: "ند الشبا" },
-    arjan: { en: "Arjan", ar: "أرجان" },
-    dubailand: { en: "Dubailand", ar: "دبي لاند" },
-    sharjah: { en: "Sharjah", ar: "الشارقة" },
-    ajman: { en: "Ajman", ar: "عجمان" },
-    "umm-al-quwain": { en: "Umm Al Quwain", ar: "أم القيوين" },
-    "dubai-harbour": { en: "Dubai Harbour", ar: "دبي هاربور" },
-    "palm-jumeirah": { en: "Palm Jumeirah", ar: "نخلة جميرا" },
-    "jumeirah-islands": { en: "Jumeirah Islands", ar: "جزر الجميرا" },
+    "nad-al-sheba": { en: "Nad Al Sheba", ar: "\u0646\u062f \u0627\u0644\u0634\u0628\u0627" },
+    arjan: { en: "Arjan", ar: "\u0623\u0631\u062c\u0627\u0646" },
+    dubailand: { en: "Dubailand", ar: "\u062f\u0628\u064a \u0644\u0627\u0646\u062f" },
+    sharjah: { en: "Sharjah", ar: "\u0627\u0644\u0634\u0627\u0631\u0642\u0629" },
+    ajman: { en: "Ajman", ar: "\u0639\u062c\u0645\u0627\u0646" },
+    "umm-al-quwain": { en: "Umm Al Quwain", ar: "\u0623\u0645 \u0627\u0644\u0642\u064a\u0648\u064a\u0646" },
+    "dubai-harbour": { en: "Dubai Harbour", ar: "\u0645\u0631\u0633\u0649 \u062f\u0628\u064a" },
+    "palm-jumeirah": { en: "Palm Jumeirah", ar: "\u0646\u062e\u0644\u0629 \u062c\u0645\u064a\u0631\u0627" },
+    "jumeirah-islands": { en: "Jumeirah Islands", ar: "\u062c\u0632\u0631 \u0627\u0644\u062c\u0645\u064a\u0631\u0627" },
     "jumeirah-golf-estates": {
       en: "Jumeirah Golf Estates",
-      ar: "عقارات جميرا للجولف",
+      ar: "\u0639\u0642\u0627\u0631\u0627\u062a \u062c\u0645\u064a\u0631\u0627 \u0644\u0644\u062c\u0648\u0644\u0641",
     },
     "dubai-industrial-city": {
       en: "Dubai Industrial City",
-      ar: "مدينة دبي الصناعية",
+      ar: "\u0645\u062f\u064a\u0646\u0629 \u062f\u0628\u064a \u0627\u0644\u0635\u0646\u0627\u0639\u064a\u0629",
     },
-    "al-aaliah": { en: "Al Aaliah", ar: "العالية" },
-    "al-jaddaf": { en: "Al Jaddaf", ar: "الجداف" },
+    "al-aaliah": { en: "Al Aaliah", ar: "\u0627\u0644\u0639\u0627\u0644\u064a\u0629" },
+    "al-jaddaf": { en: "Al Jaddaf", ar: "\u0627\u0644\u062c\u062f\u0627\u0641" },
     "dubai-healthcare-city": {
       en: "Dubai Healthcare City",
-      ar: "مدينة دبي الطبية",
+      ar: "\u0645\u062f\u064a\u0646\u0629 \u062f\u0628\u064a \u0627\u0644\u0637\u0628\u064a\u0629",
     },
-    "creek-harbour": { en: "Creek Harbour", ar: "خور دبي" },
-    "dubai-south": { en: "Dubai South", ar: "دبي الجنوبية" },
-    "damac-hills": { en: "Damac Hills", ar: "داماك هيلز" },
-    "jebel-ali": { en: "Jebel Ali", ar: "جبل علي" },
-    "masaar-tilal-city": { en: "Masaar Tilal City", ar: "مسار تلال سيتي" },
-    "al-aaliah-ajman": { en: "Al Aaliah, Ajman", ar: "العالية، عجمان" },
+    "creek-harbour": { en: "Creek Harbour", ar: "\u062e\u0648\u0631 \u062f\u0628\u064a" },
+    "dubai-south": { en: "Dubai South", ar: "\u062f\u0628\u064a \u0627\u0644\u062c\u0646\u0648\u0628\u064a\u0629" },
+    "damac-hills": { en: "Damac Hills", ar: "\u062f\u0627\u0645\u0627\u0643 \u0647\u064a\u0644\u0632" },
+    "jebel-ali": { en: "Jebel Ali", ar: "\u062c\u0628\u0644 \u0639\u0644\u064a" },
+    "masaar-tilal-city": { en: "Masaar Tilal City", ar: "\u0645\u0633\u0627\u0631 \u062a\u0644\u0627\u0644 \u0633\u064a\u062a\u064a" },
+    "al-aaliah-ajman": { en: "Al Aaliah, Ajman", ar: "\u0627\u0644\u0639\u0627\u0644\u064a\u0629\u060c \u0639\u062c\u0645\u0627\u0646" },
   },
 
-  city: { en: "Dubai", ar: "دبي" },
-  country: { en: "UAE", ar: "الإمارات" },
+  city: { en: "Dubai", ar: "\u062f\u0628\u064a" },
+  country: { en: "UAE", ar: "\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a" },
 };
 
 function dyn(locale, group, key, fallback) {
@@ -256,6 +292,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
 
     const keyMap = {
       Secondary: "projects.status.secondary",
+      "Ready To Move": "projects.status.ready",
       Completed: "projects.status.completed",
       Presale: "projects.status.presale",
       "Under Construction": "projects.status.underConstruction",
@@ -279,6 +316,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
   const getStatusClass = (status) => {
     const map = {
       Secondary: styles.statusSecondary,
+      "Ready To Move": styles.statusCompleted,
       Completed: styles.statusCompleted,
       Presale: styles.statusPresale,
       "Under Construction": styles.statusUnderConstruction,
@@ -668,6 +706,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
 
         const locationLabel = getLocationLabel(project);
         const unitTypeLabel = getUnitTypeLabel(project);
+        const displayPrice = getDisplayPrice(project);
 
         return (
           <ProjectCardLinkWrapper
@@ -687,7 +726,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
               bedsLabel={bedsLabel}
               sqftLabel={sqftLabel}
               formatPrice={formatPrice}
-              getDisplayPrice={getDisplayPrice}
+              displayPrice={displayPrice}
               formatCompletion={formatCompletion}
               unitTypeLabel={unitTypeLabel}
               styles={styles}
@@ -752,7 +791,7 @@ function ProjectCardInner({
   bedsLabel,
   sqftLabel,
   formatPrice,
-  getDisplayPrice,
+  displayPrice,
   formatCompletion,
   unitTypeLabel,
   styles,
@@ -813,7 +852,7 @@ function ProjectCardInner({
           <h3 className={styles.projectName}>{projectNameLabel}</h3>
 
           <div className={styles.location}>
-            <span aria-hidden="true">📍</span>
+            <span aria-hidden="true" className={styles.locationMarker}>?</span>
             <span>{locationLabel}</span>
           </div>
         </div>
@@ -827,8 +866,12 @@ function ProjectCardInner({
                 isAr ? "السعر يبدأ من" : "Price From",
               )}
             </span>
-            <span className={`${styles.detailValue} ${styles.price}`}>
-              {formatPrice(getDisplayPrice(project))}
+            <span
+              className={`${styles.detailValue} ${styles.price} ${
+                displayPrice ? "" : styles.priceRequest
+              }`}
+            >
+              {formatPrice(displayPrice)}
             </span>
           </div>
 

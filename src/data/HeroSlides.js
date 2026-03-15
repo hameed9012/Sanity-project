@@ -136,22 +136,6 @@ export const createMenuData = (t, locale, CDN) => {
         image: `${CDN}/riviera/hero-bg.jpg`,
         developers: [
           {
-            id: 2,
-            name: t("developers.omniyat"),
-            slug: "omniyat",
-            image: `${CDN}/lumena-alta/hero-bg.jpg`,
-            logo: `/omniyat-logo.avif`,
-            projects: [
-              {
-                id: 305,
-                title: t("projectNames.luminaAlta"),
-                slug: "lumenaalta",
-                image: `${CDN}/lumena-alta/hero-bg.jpg`,
-                description: t("descriptions.commercial"),
-              },
-            ],
-          },
-          {
             id: 1,
             name: t("developers.aziziDevelopments"),
             slug: "azizi",

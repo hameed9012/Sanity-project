@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import styles from "./articles.module.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
+import styles from "./articles.module.css";
 
 export default function ArticlesClient({ sanityArticles = [] }) {
   const router = useRouter();
@@ -15,6 +15,41 @@ export default function ArticlesClient({ sanityArticles = [] }) {
 
   const isRTL = locale === "ar";
   const CDN = "https://luxury-real-estate-media.b-cdn.net";
+
+  const copy = {
+    expertInsights: isRTL
+      ? "\u0631\u0624\u0649 \u0627\u0644\u062e\u0628\u0631\u0627\u0621"
+      : "Expert Insights",
+    dubaiRealEstate: isRTL
+      ? "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0641\u064a \u062f\u0628\u064a"
+      : "Dubai Real Estate",
+    readArticle: isRTL
+      ? "\u0627\u0642\u0631\u0623 \u0627\u0644\u0645\u0642\u0627\u0644"
+      : "Read Article",
+    noArticles: isRTL
+      ? "\u0644\u0645 \u064a\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u0645\u0642\u0627\u0644\u0627\u062a \u0628\u0639\u062f."
+      : "No articles have been published yet.",
+    trustStats: [
+      {
+        number: "15+",
+        label: isRTL
+          ? "\u0633\u0646\u0648\u0627\u062a \u062e\u0628\u0631\u0629"
+          : "Years Experience",
+      },
+      {
+        number: "500+",
+        label: isRTL
+          ? "\u0645\u0634\u0631\u0648\u0639 \u0645\u0643\u062a\u0645\u0644"
+          : "Projects Completed",
+      },
+      {
+        number: "98%",
+        label: isRTL
+          ? "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0644\u0627\u0621"
+          : "Client Satisfaction",
+      },
+    ],
+  };
 
   const track = (eventName, params = {}) => {
     if (typeof window === "undefined" || typeof window.fbq !== "function") {
@@ -28,25 +63,31 @@ export default function ArticlesClient({ sanityArticles = [] }) {
       {
         src: `${CDN}/sky-parks/exterior-night-01.jpg`,
         alt: isRTL ? "Dubai articles" : "Dubai Real Estate Market Insights",
-        title: isRTL ? "دليل الاستثمار" : "Investment Guides",
+        title: isRTL
+          ? "\u062f\u0644\u064a\u0644 \u0627\u0644\u0627\u0633\u062a\u062b\u0645\u0627\u0631"
+          : "Investment Guides",
         description: isRTL
-          ? "مقالات وتحليلات حديثة عن سوق العقار في دبي."
+          ? "\u0645\u0642\u0627\u0644\u0627\u062a \u0648\u062a\u062d\u0644\u064a\u0644\u0627\u062a \u062d\u062f\u064a\u062b\u0629 \u0639\u0646 \u0633\u0648\u0642 \u0627\u0644\u0639\u0642\u0627\u0631 \u0641\u064a \u062f\u0628\u064a."
           : "Fresh market intelligence and investment guidance from Dubai real estate.",
       },
       {
         src: `${CDN}/hartland/hero-bg.jpg`,
         alt: isRTL ? "Market analysis" : "Investment Strategies",
-        title: isRTL ? "تحليل السوق" : "Market Analysis",
+        title: isRTL
+          ? "\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0633\u0648\u0642"
+          : "Market Analysis",
         description: isRTL
-          ? "تغطية للاتجاهات والفرص العقارية الأكثر أهمية."
+          ? "\u062a\u063a\u0637\u064a\u0629 \u0644\u0644\u0627\u062a\u062c\u0627\u0647\u0627\u062a \u0648\u0627\u0644\u0641\u0631\u0635 \u0627\u0644\u0639\u0642\u0627\u0631\u064a\u0629 \u0627\u0644\u0623\u0643\u062b\u0631 \u0623\u0647\u0645\u064a\u0629."
           : "Coverage of the trends, launches, and opportunities shaping the market.",
       },
       {
         src: `${CDN}/lumena-alta/hero-bg.jpg`,
         alt: isRTL ? "Development news" : "Property Development",
-        title: isRTL ? "أخبار التطوير" : "Development News",
+        title: isRTL
+          ? "\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u062a\u0637\u0648\u064a\u0631"
+          : "Development News",
         description: isRTL
-          ? "كل مقال جديد من سانيتي سيظهر هنا تلقائياً."
+          ? "\u0643\u0644 \u0645\u0642\u0627\u0644 \u062c\u062f\u064a\u062f \u0645\u0646 \u0633\u0627\u0646\u064a\u062a\u064a \u0633\u064a\u0638\u0647\u0631 \u0647\u0646\u0627 \u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b."
           : "Every new article published in Sanity appears here automatically.",
       },
     ],
@@ -70,51 +111,46 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           : article.description || article.descriptionAr || "",
       }));
 
-    return slides.length > 0 ? slides : fallbackHeroImages;
+    return slides.length ? slides : fallbackHeroImages;
   }, [fallbackHeroImages, isRTL, sanityArticles]);
-
-  const trustStats = useMemo(
-    () => [
-      { number: "15+", label: isRTL ? "سنوات خبرة" : "Years Experience" },
-      { number: "500+", label: isRTL ? "مشروع مكتمل" : "Projects Completed" },
-      { number: "98%", label: isRTL ? "رضا العملاء" : "Client Satisfaction" },
-    ],
-    [isRTL]
-  );
 
   const listingData = useMemo(
     () => ({
       sectionHeader: {
-        badge: isRTL ? "مركز الإعلام" : "Media Center",
-        title: isRTL ? "أحدث" : "Latest",
-        highlight: isRTL ? "المقالات" : "Articles",
+        badge: isRTL
+          ? "\u0645\u0631\u0643\u0632 \u0627\u0644\u0625\u0639\u0644\u0627\u0645"
+          : "Media Center",
+        title: isRTL ? "\u0623\u062d\u062f\u062b" : "Latest",
+        highlight: isRTL ? "\u0627\u0644\u0645\u0642\u0627\u0644\u0627\u062a" : "Articles",
         subtitle: isRTL
-          ? "كل مقال جديد من سانيتي سيظهر هنا تلقائياً."
+          ? "\u0643\u0644 \u0645\u0642\u0627\u0644 \u062c\u062f\u064a\u062f \u0645\u0646 \u0633\u0627\u0646\u064a\u062a\u064a \u0633\u064a\u0638\u0647\u0631 \u0647\u0646\u0627 \u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b."
           : "Every article added in Sanity appears here automatically.",
       },
       cta: {
-        badge: isRTL ? "تواصل" : "Get In Touch",
-        title: isRTL ? "هل تريد" : "Want",
-        highlight: isRTL ? "استشارة استثمارية؟" : "investment guidance?",
+        badge: isRTL ? "\u062a\u0648\u0627\u0635\u0644" : "Get In Touch",
+        title: isRTL ? "\u0647\u0644 \u062a\u0631\u064a\u062f" : "Want",
+        highlight: isRTL
+          ? "\u0627\u0633\u062a\u0634\u0627\u0631\u0629 \u0627\u0633\u062a\u062b\u0645\u0627\u0631\u064a\u0629\u061f"
+          : "investment guidance?",
         description: isRTL
-          ? "تواصل معنا لمساعدتك في اختيار المشروع أو المنطقة المناسبة."
+          ? "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0644\u0645\u0633\u0627\u0639\u062f\u062a\u0643 \u0641\u064a \u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0623\u0648 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0645\u0646\u0627\u0633\u0628\u0629."
           : "Reach out and we will help you choose the right project or area.",
         buttons: [
           {
-            text: isRTL ? "واتساب" : "WhatsApp",
+            text: isRTL ? "\u0648\u0627\u062a\u0633\u0627\u0628" : "WhatsApp",
             href: siteContact?.whatsapp
               ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
               : "/contact-us",
             type: "primary",
           },
           {
-            text: isRTL ? "اتصل بنا" : "Contact Us",
+            text: isRTL ? "\u0627\u062a\u0635\u0644 \u0628\u0646\u0627" : "Contact Us",
             href: "/contact-us",
             type: "secondary",
           },
         ],
         trustNote: isRTL
-          ? "مقالات ونشرات محدّثة مباشرة من النظام"
+          ? "\u0645\u0642\u0627\u0644\u0627\u062a \u0648\u0646\u0634\u0631\u0627\u062a \u0645\u062d\u062f\u0651\u062b\u0629 \u0645\u0628\u0627\u0634\u0631\u0629 \u0645\u0646 \u0627\u0644\u0646\u0638\u0627\u0645"
           : "Articles and releases updated directly from the CMS",
       },
     }),
@@ -135,9 +171,9 @@ export default function ArticlesClient({ sanityArticles = [] }) {
         image: article.mainImage || fallbackHeroImages[0]?.src || "",
         readTime: article.readTime || "5 min read",
         category: article.category || "Investment",
-        cta: locale === "ar" ? "اقرأ المقال" : "Read Article",
+        cta: copy.readArticle,
       })),
-    [fallbackHeroImages, locale, sanityArticles]
+    [copy.readArticle, fallbackHeroImages, locale, sanityArticles]
   );
 
   useEffect(() => {
@@ -146,6 +182,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       try {
         const res = await fetch("/api/site-settings", { cache: "no-store" });
@@ -155,6 +192,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
         }
       } catch {}
     })();
+
     return () => {
       active = false;
     };
@@ -179,11 +217,10 @@ export default function ArticlesClient({ sanityArticles = [] }) {
     router.push(`/articles/${article.slug}`);
   };
 
-  const getCarouselTransform = () => {
-    return isRTL
+  const getCarouselTransform = () =>
+    isRTL
       ? `translateX(${currentImage * 100}%)`
       : `translateX(-${currentImage * 100}%)`;
-  };
 
   return (
     <div
@@ -214,20 +251,20 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                 <div className={styles.heroContent}>
                   <div className={styles.heroContentInner}>
                     <div className={styles.heroBadge}>
-                      <span>{isRTL ? "رؤى الخبراء" : "Expert Insights"}</span>
+                      <span>{copy.expertInsights}</span>
                       <div className={styles.badgeLine} />
                     </div>
 
                     <h1 className={styles.heroTitle}>
-                      {isRTL ? "العقارات في دبي" : "Dubai Real Estate"}{" "}
+                      {copy.dubaiRealEstate}{" "}
                       <span className={styles.highlight}>{image.title}</span>
                     </h1>
 
                     <p className={styles.heroSubtitle}>{image.description}</p>
 
                     <div className={styles.trustStats}>
-                      {trustStats.map((stat, i) => (
-                        <div key={i} className={styles.statItem}>
+                      {copy.trustStats.map((stat, indexKey) => (
+                        <div key={indexKey} className={styles.statItem}>
                           <div className={styles.statNumber}>{stat.number}</div>
                           <div className={styles.statLabel}>{stat.label}</div>
                         </div>
@@ -247,6 +284,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   currentImage === index ? styles.active : ""
                 }`}
                 onClick={() => setCurrentImage(index)}
+                type="button"
               />
             ))}
           </div>
@@ -304,9 +342,9 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   </div>
                   <div className={styles.cardHover}>
                     <div className={styles.hoverContent}>
-                      <span>{isRTL ? "اقرأ المقال" : "Read Article"}</span>
+                      <span>{copy.readArticle}</span>
                       <div className={styles.arrowIcon}>
-                        {isRTL ? "←" : "→"}
+                        {isRTL ? "<-" : "->"}
                       </div>
                     </div>
                   </div>
@@ -319,11 +357,12 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   </p>
 
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    onClick={(event) => {
+                      event.stopPropagation();
                       handleArticleClick(article, "cta");
                     }}
                     className={styles.articleCTA}
+                    type="button"
                   >
                     {article.cta}
                   </button>
@@ -333,11 +372,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           </div>
 
           {!articles.length && (
-            <p className={styles.sectionSubtitle}>
-              {isRTL
-                ? "لم يتم إضافة مقالات بعد."
-                : "No articles have been published yet."}
-            </p>
+            <p className={styles.sectionSubtitle}>{copy.noArticles}</p>
           )}
         </div>
       </section>
@@ -359,12 +394,12 @@ export default function ArticlesClient({ sanityArticles = [] }) {
             </p>
 
             <div className={styles.ctaButtons}>
-              {listingData.cta.buttons.map((b, i) => (
+              {listingData.cta.buttons.map((button, index) => (
                 <a
-                  key={i}
-                  href={b.href}
+                  key={index}
+                  href={button.href}
                   className={
-                    b.type === "primary"
+                    button.type === "primary"
                       ? styles.primaryCTA
                       : styles.secondaryCTA
                   }
@@ -372,13 +407,13 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   rel="noopener noreferrer"
                   onClick={() =>
                     track("ArticlesCTAButtonClick", {
-                      label: b.text,
-                      href: b.href,
+                      label: button.text,
+                      href: button.href,
                       locale,
                     })
                   }
                 >
-                  {b.text}
+                  {button.text}
                 </a>
               ))}
             </div>

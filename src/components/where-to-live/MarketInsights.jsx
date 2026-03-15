@@ -103,8 +103,8 @@ export default function MarketInsights({ regionData }) {
       pickLang(mT.roi, lang) ||
       labelByLocale(
         isRTL,
-        "Return on Investment (ROI)",
-        "العائد على الاستثمار"
+        "ROI",
+        "ROI"
       );
 
     const summary = regionData.summary || {};
@@ -225,7 +225,7 @@ export default function MarketInsights({ regionData }) {
           <div className={styles.kicker}>
             <span className={styles.kickerDot} />
             <span className={styles.kickerText}>
-              {labelByLocale(isRTL, "Market Ledger", "سجل السوق")}
+              {labelByLocale(isRTL, "Market Ledger", "\u0633\u062c\u0644 \u0627\u0644\u0633\u0648\u0642")}
             </span>
           </div>
 
@@ -248,7 +248,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "Avg Buy", "متوسط الشراء")}
               </span>
             </div>
-            <div className={styles.quickValue}>{model.quick.avgBuy || "—"}</div>
+            <div className={styles.quickValue}>{model.quick.avgBuy || "N/A"}</div>
           </div>
 
           <div ref={addBlockRef} className={styles.quickCard}>
@@ -258,9 +258,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "Avg Rent", "متوسط الإيجار")}
               </span>
             </div>
-            <div className={styles.quickValue}>
-              {model.quick.avgRent || "—"}
-            </div>
+            <div className={styles.quickValue}>{model.quick.avgRent || "N/A"}</div>
           </div>
 
           <div ref={addBlockRef} className={styles.quickCard}>
@@ -270,7 +268,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "ROI", "العائد")}
               </span>
             </div>
-            <div className={styles.quickValue}>{model.quick.roi || "—"}</div>
+            <div className={styles.quickValue}>{model.quick.roi || "N/A"}</div>
           </div>
         </div>
 
@@ -353,7 +351,7 @@ export default function MarketInsights({ regionData }) {
                   {labelByLocale(
                     isRTL,
                     "No ROI data available.",
-                    "لا توجد بيانات عائد."
+                    "\u0644\u0627 \u062a\u0648\u062c\u062f \u0628\u064a\u0627\u0646\u0627\u062a ROI."
                   )}
                 </div>
               )}

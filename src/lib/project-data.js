@@ -149,7 +149,7 @@ import beachOasisData from "@/data/properties/apartments/azizi/beach-oasis/beach
  * ✅ PROJECT DATA MAP - Direct access to your data
  * Only including projects from specified developers: Damac, Sobha, Azizi, Binghatti, Arada, Imtiaz, Tiger, Beyond, Omniyat, Danube
  **/
-export const PROJECT_DATA_MAP = {
+const RAW_PROJECT_DATA_MAP = {
   // Apartments - Sobha
   skyparks: skyParksData,
   aquamont: aquamontData,
@@ -329,6 +329,31 @@ export const PROJECT_DATA_MAP = {
   // Penthouses - Binghatti
   bugatti: bugattiResidencesData,
 };
+
+const EXCLUDED_STATIC_PROJECT_SLUGS = new Set([
+  "wynwood",
+  "beach-walk-4",
+  "cove-edition-6",
+  "cove-grand",
+  "sunset-bay-grand",
+  "pearl-house-4",
+  "the-symphony",
+  "wynwood-horizon",
+  "kanyon",
+  "31-above",
+  "the-alba-residences",
+  "opus-tower",
+  "vela-dorchester",
+  "orla-dorchester",
+  "vela-viento",
+  "lumenaalta",
+]);
+
+export const PROJECT_DATA_MAP = Object.fromEntries(
+  Object.entries(RAW_PROJECT_DATA_MAP).filter(
+    ([slug]) => !EXCLUDED_STATIC_PROJECT_SLUGS.has(slug)
+  )
+);
 
 /**
  * 🎯 Get project data with locale support
@@ -568,67 +593,67 @@ export function getAllProjectSlugs() {
 export const FALLBACK_PROJECT_DATA = {
   seo: {
     title: {
-      en: "Project Not Found | Nextis",
-      ar: "المشروع غير موجود | نيكستس",
+      en: "Project Not Found | Mohamad Kodmani Real Estate",
+      ar: "??????? ??? ????? | ???? ??????? ????????",
     },
     description: {
       en: "The requested project could not be found.",
-      ar: "لم يتم العثور على المشروع المطلوب.",
+      ar: "???? ?????? ??? ??????? ???????.",
     },
     canonical: "/projects",
   },
   project: {
     name: {
       en: "Unknown Project",
-      ar: "مشروع غير معروف",
+      ar: "????? ??? ?????",
     },
     developer: {
-      en: "Unknown",
-      ar: "غير معروف",
+      en: "Unknown Developer",
+      ar: "???? ??? ?????",
     },
     location: {
-      en: "N/A",
-      ar: "غير متوفر",
+      en: "Dubai, UAE",
+      ar: "???? ????????",
     },
     status: {
       en: "Unavailable",
-      ar: "غير متوفر",
+      ar: "??? ????",
     },
     startingPrice: {
-      en: "N/A",
-      ar: "غير متوفر",
+      en: "Price on request",
+      ar: "????? ??? ?????",
     },
     completionDate: {
-      en: "N/A",
-      ar: "غير متوفر",
+      en: "TBA",
+      ar: "??????",
     },
     type: {
-      en: "N/A",
-      ar: "غير متوفر",
+      en: "Property",
+      ar: "????",
     },
   },
   hero: {
     backgroundUrl: "/images/fallback-hero.jpg",
     squareImageUrl: "/images/fallback-square.jpg",
     companyName: {
-      en: "Unknown Developer",
-      ar: "مطور غير معروف",
+      en: "Private Consultation",
+      ar: "??????? ????",
     },
     rating: 0,
   },
   intro: {
     title: {
       en: "Project Not Found",
-      ar: "المشروع غير موجود",
+      ar: "??????? ??? ?????",
     },
     paragraphs: [
       {
         en: "We couldn't find the project you're looking for.",
-        ar: "لم نتمكن من العثور على المشروع الذي تبحث عنه.",
+        ar: "?? ????? ?? ?????? ??? ??????? ???? ???? ???.",
       },
       {
         en: "Please check the URL or explore other listings.",
-        ar: "يرجى التحقق من الرابط أو استكشاف المشاريع الأخرى.",
+        ar: "???? ?????? ?? ?????? ?? ??????? ?????? ????.",
       },
     ],
   },
@@ -641,20 +666,20 @@ export const FALLBACK_PROJECT_DATA = {
   cta: {
     title: {
       en: "Need Assistance?",
-      ar: "هل تحتاج إلى مساعدة؟",
+      ar: "?? ????? ??? ???????",
     },
     description: {
       en: "Get in touch with our experts today.",
-      ar: "تواصل مع خبرائنا اليوم.",
+      ar: "????? ?? ??????? ?????.",
     },
     buttons: [
       {
         text: {
           en: "Contact Us",
-          ar: "اتصل بنا",
+          ar: "????? ????",
         },
         type: "primary",
-        url: "/contact",
+        url: "/contact-us",
       },
     ],
   },

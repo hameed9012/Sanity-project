@@ -1,11 +1,9 @@
-// src/components/filters/ProjectsFiltersBar.jsx
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import styles from "@/styles/filter/ProjectsFiltersBar.module.css";
 
-// ✅ Unified options that match your regionProjectsIndex data
 const devStatusOptions = [
   { value: "Completed", labelKey: "projects.status.completed" },
   { value: "Presale", labelKey: "projects.status.presale" },
@@ -15,9 +13,8 @@ const devStatusOptions = [
   },
   { value: "Announced", labelKey: "projects.status.announced" },
   { value: "On Sale", labelKey: "projects.status.onSale" },
-  { value: "Off Plan", labelKey: "projects.status.offPlan" },
-  { value: "Off-Plan", labelKey: "projects.status.offPlan" },
-  { value: "Ready", labelKey: "projects.status.ready" },
+  { value: "Off-plan", labelKey: "projects.status.offPlan" },
+  { value: "Ready To Move", labelKey: "projects.status.ready" },
   { value: "Ready & Off-Plan", labelKey: "projects.status.readyAndOffPlan" },
   { value: "Available", labelKey: "projects.status.available" },
 ];
@@ -55,11 +52,11 @@ const parseFormattedNumber = (str) => {
 
 const RangeSlider = ({ min, max, values, onChange, formatLabel }) => {
   const handleChange = (index, value) => {
-    const newValues = [...values];
-    newValues[index] = parseInt(value, 10);
-    if (index === 0 && newValues[0] > newValues[1]) newValues[1] = newValues[0];
-    if (index === 1 && newValues[1] < newValues[0]) newValues[0] = newValues[1];
-    onChange(newValues);
+    const next = [...values];
+    next[index] = parseInt(value, 10);
+    if (index === 0 && next[0] > next[1]) next[1] = next[0];
+    if (index === 1 && next[1] < next[0]) next[0] = next[1];
+    onChange(next);
   };
 
   return (
@@ -70,7 +67,7 @@ const RangeSlider = ({ min, max, values, onChange, formatLabel }) => {
           min={min}
           max={max}
           value={values[0]}
-          onChange={(e) => handleChange(0, e.target.value)}
+          onChange={(event) => handleChange(0, event.target.value)}
           className={styles.slider}
         />
         <input
@@ -78,17 +75,13 @@ const RangeSlider = ({ min, max, values, onChange, formatLabel }) => {
           min={min}
           max={max}
           value={values[1]}
-          onChange={(e) => handleChange(1, e.target.value)}
+          onChange={(event) => handleChange(1, event.target.value)}
           className={styles.slider}
         />
       </div>
       <div className={styles.sliderValues}>
-        <span>
-          {formatLabel ? formatLabel(values[0]) : formatNumber(values[0])}
-        </span>
-        <span>
-          {formatLabel ? formatLabel(values[1]) : formatNumber(values[1])}
-        </span>
+        <span>{formatLabel ? formatLabel(values[0]) : formatNumber(values[0])}</span>
+        <span>{formatLabel ? formatLabel(values[1]) : formatNumber(values[1])}</span>
       </div>
     </div>
   );
@@ -101,16 +94,101 @@ export default function ProjectsFiltersBar({
 }) {
   const { t, locale } = useLanguage();
   const isRTL = locale === "ar";
+  const dropdownRef = useRef(null);
 
   const safeT = (key, values, fallback) => {
     try {
-      const v = t?.(key, values);
-      if (v === undefined || v === null || v === "" || v === key)
+      const value = t?.(key, values);
+      if (value === undefined || value === null || value === "" || value === key) {
         return fallback;
-      return v;
+      }
+      return value;
     } catch {
       return fallback;
     }
+  };
+
+  const copy = {
+    searchAndFilters: safeT(
+      "whereToLive.filters.searchAndFilters",
+      undefined,
+      isRTL ? "\u0628\u062d\u062b \u0648\u0641\u0644\u0627\u062a\u0631" : "Search & Filters"
+    ),
+    price: safeT(
+      "whereToLive.filters.price",
+      undefined,
+      isRTL ? "\u0627\u0644\u0633\u0639\u0631" : "Price"
+    ),
+    priceRange: safeT(
+      "whereToLive.filters.priceRangeLabel",
+      undefined,
+      isRTL ? "\u0646\u0637\u0627\u0642 \u0627\u0644\u0633\u0639\u0631" : "Price range"
+    ),
+    size: safeT(
+      "whereToLive.filters.size",
+      undefined,
+      isRTL ? "\u0627\u0644\u0645\u0633\u0627\u062d\u0629" : "Size"
+    ),
+    sizeRange: safeT(
+      "whereToLive.filters.sizeRangeLabel",
+      undefined,
+      isRTL ? "\u0646\u0637\u0627\u0642 \u0627\u0644\u0645\u0633\u0627\u062d\u0629" : "Size range"
+    ),
+    min: safeT(
+      "whereToLive.filters.minSizeLabel",
+      undefined,
+      isRTL ? "\u0627\u0644\u062d\u062f \u0627\u0644\u0623\u062f\u0646\u0649" : "Min"
+    ),
+    max: safeT(
+      "whereToLive.filters.maxSizeLabel",
+      undefined,
+      isRTL ? "\u0627\u0644\u062d\u062f \u0627\u0644\u0623\u0642\u0635\u0649" : "Max"
+    ),
+    from: safeT("common.from", undefined, isRTL ? "\u0645\u0646" : "From"),
+    to: safeT("common.to", undefined, isRTL ? "\u0625\u0644\u0649" : "To"),
+    unitType: safeT(
+      "whereToLive.filters.unitType",
+      undefined,
+      isRTL ? "\u0646\u0648\u0639 \u0627\u0644\u0648\u062d\u062f\u0629" : "Unit type"
+    ),
+    status: safeT(
+      "whereToLive.filters.status",
+      undefined,
+      isRTL ? "\u0627\u0644\u062d\u0627\u0644\u0629" : "Status"
+    ),
+    statusLong: safeT(
+      "whereToLive.filters.statusLabel",
+      undefined,
+      isRTL
+        ? "\u062d\u0627\u0644\u0629 \u0627\u0644\u0645\u0634\u0631\u0648\u0639"
+        : "Project status"
+    ),
+    bedrooms: safeT(
+      "whereToLive.filters.bedrooms",
+      undefined,
+      isRTL ? "\u063a\u0631\u0641 \u0627\u0644\u0646\u0648\u0645" : "Bedrooms"
+    ),
+    clear: safeT(
+      "common.clear",
+      undefined,
+      isRTL ? "\u0645\u0633\u062d" : "Clear"
+    ),
+    sqftValue: (value) =>
+      safeT(
+        "whereToLive.filters.sizeRangeValue",
+        { value: formatNumber(value, locale) },
+        isRTL
+          ? `${formatNumber(value, locale)} \u0642\u062f\u0645\u00b2`
+          : `${formatNumber(value, locale)} sqft`
+      ),
+    priceValue: (value) =>
+      safeT(
+        "whereToLive.filters.priceRangeValue",
+        { value: formatNumber(value, locale) },
+        isRTL
+          ? `${formatNumber(value, locale)} \u062f.\u0625`
+          : `AED ${formatNumber(value, locale)}`
+      ),
   };
 
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -119,7 +197,6 @@ export default function ProjectsFiltersBar({
     PRICE_RANGE.max,
   ]);
   const [sizeRange, setSizeRange] = useState([SIZE_RANGE.min, SIZE_RANGE.max]);
-  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -145,39 +222,40 @@ export default function ProjectsFiltersBar({
     ]);
   }, [filters.minSize, filters.maxSize]);
 
-  const toggleDropdown = (key) =>
-    setOpenDropdown((prev) => (prev === key ? null : key));
+  const toggleDropdown = (key) => {
+    setOpenDropdown((current) => (current === key ? null : key));
+  };
 
   const handleFormattedInputChange = (field, value) => {
     const numericValue = value ? parseFormattedNumber(value) : "";
     onChange({ ...filters, [field]: numericValue });
   };
 
-  const handlePriceRangeChange = (newRange) => {
-    setPriceRange(newRange);
-    onChange({ ...filters, minPrice: newRange[0], maxPrice: newRange[1] });
+  const handlePriceRangeChange = (nextRange) => {
+    setPriceRange(nextRange);
+    onChange({ ...filters, minPrice: nextRange[0], maxPrice: nextRange[1] });
   };
 
-  const handleSizeRangeChange = (newRange) => {
-    setSizeRange(newRange);
-    onChange({ ...filters, minSize: newRange[0], maxSize: newRange[1] });
+  const handleSizeRangeChange = (nextRange) => {
+    setSizeRange(nextRange);
+    onChange({ ...filters, minSize: nextRange[0], maxSize: nextRange[1] });
   };
 
   const toggleArrayFilter = (key, value) => {
     const current = filters[key] || [];
     const exists = current.includes(value);
     const next = exists
-      ? current.filter((v) => v !== value)
+      ? current.filter((item) => item !== value)
       : [...current, value];
     onChange({ ...filters, [key]: next });
   };
 
   const clearFilter = (filterKeys) => {
-    const newFilters = { ...filters };
+    const nextFilters = { ...filters };
     filterKeys.forEach((key) => {
-      newFilters[key] = Array.isArray(newFilters[key]) ? [] : "";
+      nextFilters[key] = Array.isArray(nextFilters[key]) ? [] : "";
     });
-    onChange(newFilters);
+    onChange(nextFilters);
   };
 
   const hasActiveFilters =
@@ -193,30 +271,19 @@ export default function ProjectsFiltersBar({
   return (
     <div className={styles.stickyWrapper}>
       <div className={styles.filtersBar}>
-        {/* Left side */}
         <div className={styles.leftGroup}>
           <button
             className={styles.searchFiltersButton}
             onClick={onOpenFullFilters}
             type="button"
           >
-            <span className={styles.iconCircle}>🔍</span>
-            <span>
-              {safeT(
-                "whereToLive.filters.searchAndFilters",
-                undefined,
-                isRTL ? "بحث وفلاتر" : "Search & Filters"
-              )}
-            </span>
-            {hasActiveFilters && (
-              <span className={styles.activeDot} aria-hidden="true" />
-            )}
+            <span className={styles.iconCircle}>SF</span>
+            <span>{copy.searchAndFilters}</span>
+            {hasActiveFilters && <span className={styles.activeDot} aria-hidden="true" />}
           </button>
         </div>
 
-        {/* Right side */}
         <div ref={dropdownRef} className={styles.rightGroup}>
-          {/* Price */}
           <div className={styles.dropdownWrapper}>
             <button
               className={`${styles.dropdownButton} ${
@@ -227,35 +294,23 @@ export default function ProjectsFiltersBar({
               onClick={() => toggleDropdown("price")}
               type="button"
             >
-              <span>
-                {safeT(
-                  "whereToLive.filters.price",
-                  undefined,
-                  isRTL ? "السعر" : "Price"
-                )}
-              </span>
+              <span>{copy.price}</span>
               {(filters.minPrice || filters.maxPrice) && (
-                <span className={styles.filterBadge}>•</span>
+                <span className={styles.filterBadge} aria-hidden="true" />
               )}
-              <span className={styles.chevron}>▾</span>
+              <span className={styles.chevron}>v</span>
             </button>
 
             {openDropdown === "price" && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
-                  <h4>
-                    {safeT(
-                      "whereToLive.filters.priceRangeLabel",
-                      undefined,
-                      isRTL ? "نطاق السعر" : "Price range"
-                    )}
-                  </h4>
+                  <h4>{copy.priceRange}</h4>
                   <button
                     className={styles.clearButton}
                     onClick={() => clearFilter(["minPrice", "maxPrice"])}
                     type="button"
                   >
-                    {safeT("common.clear", undefined, isRTL ? "مسح" : "Clear")}
+                    {copy.clear}
                   </button>
                 </div>
 
@@ -264,58 +319,30 @@ export default function ProjectsFiltersBar({
                   max={PRICE_RANGE.max}
                   values={priceRange}
                   onChange={handlePriceRangeChange}
-                  formatLabel={(value) =>
-                    safeT(
-                      "whereToLive.filters.priceRangeValue",
-                      { value: formatNumber(value, locale) },
-                      isRTL
-                        ? `د.إ ${formatNumber(value, locale)}`
-                        : `AED ${formatNumber(value, locale)}`
-                    )
-                  }
+                  formatLabel={copy.priceValue}
                 />
 
                 <div className={styles.rangeRow}>
                   <div className={styles.rangeField}>
-                    <label>
-                      {safeT(
-                        "whereToLive.filters.minPriceLabel",
-                        undefined,
-                        isRTL ? "الحد الأدنى" : "Min"
-                      )}
-                    </label>
+                    <label>{copy.from}</label>
                     <input
                       type="text"
-                      placeholder={safeT(
-                        "common.from",
-                        undefined,
-                        isRTL ? "من" : "From"
-                      )}
+                      placeholder={copy.from}
                       value={formatNumber(filters.minPrice, locale) || ""}
-                      onChange={(e) =>
-                        handleFormattedInputChange("minPrice", e.target.value)
+                      onChange={(event) =>
+                        handleFormattedInputChange("minPrice", event.target.value)
                       }
                       dir={isRTL ? "rtl" : "ltr"}
                     />
                   </div>
                   <div className={styles.rangeField}>
-                    <label>
-                      {safeT(
-                        "whereToLive.filters.maxPriceLabel",
-                        undefined,
-                        isRTL ? "الحد الأقصى" : "Max"
-                      )}
-                    </label>
+                    <label>{copy.to}</label>
                     <input
                       type="text"
-                      placeholder={safeT(
-                        "common.to",
-                        undefined,
-                        isRTL ? "إلى" : "To"
-                      )}
+                      placeholder={copy.to}
                       value={formatNumber(filters.maxPrice, locale) || ""}
-                      onChange={(e) =>
-                        handleFormattedInputChange("maxPrice", e.target.value)
+                      onChange={(event) =>
+                        handleFormattedInputChange("maxPrice", event.target.value)
                       }
                       dir={isRTL ? "rtl" : "ltr"}
                     />
@@ -325,46 +352,31 @@ export default function ProjectsFiltersBar({
             )}
           </div>
 
-          {/* Size */}
           <div className={styles.dropdownWrapper}>
             <button
               className={`${styles.dropdownButton} ${
-                filters.minSize || filters.maxSize
-                  ? styles.dropdownButtonActive
-                  : ""
+                filters.minSize || filters.maxSize ? styles.dropdownButtonActive : ""
               }`}
               onClick={() => toggleDropdown("size")}
               type="button"
             >
-              <span>
-                {safeT(
-                  "whereToLive.filters.size",
-                  undefined,
-                  isRTL ? "المساحة" : "Size"
-                )}
-              </span>
+              <span>{copy.size}</span>
               {(filters.minSize || filters.maxSize) && (
-                <span className={styles.filterBadge}>•</span>
+                <span className={styles.filterBadge} aria-hidden="true" />
               )}
-              <span className={styles.chevron}>▾</span>
+              <span className={styles.chevron}>v</span>
             </button>
 
             {openDropdown === "size" && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
-                  <h4>
-                    {safeT(
-                      "whereToLive.filters.sizeRangeLabel",
-                      undefined,
-                      isRTL ? "نطاق المساحة" : "Size range"
-                    )}
-                  </h4>
+                  <h4>{copy.sizeRange}</h4>
                   <button
                     className={styles.clearButton}
                     onClick={() => clearFilter(["minSize", "maxSize"])}
                     type="button"
                   >
-                    {safeT("common.clear", undefined, isRTL ? "مسح" : "Clear")}
+                    {copy.clear}
                   </button>
                 </div>
 
@@ -373,58 +385,30 @@ export default function ProjectsFiltersBar({
                   max={SIZE_RANGE.max}
                   values={sizeRange}
                   onChange={handleSizeRangeChange}
-                  formatLabel={(value) =>
-                    safeT(
-                      "whereToLive.filters.sizeRangeValue",
-                      { value: formatNumber(value, locale) },
-                      isRTL
-                        ? `${formatNumber(value, locale)} قدم²`
-                        : `${formatNumber(value, locale)} sqft`
-                    )
-                  }
+                  formatLabel={copy.sqftValue}
                 />
 
                 <div className={styles.rangeRow}>
                   <div className={styles.rangeField}>
-                    <label>
-                      {safeT(
-                        "whereToLive.filters.minSizeLabel",
-                        undefined,
-                        isRTL ? "الحد الأدنى" : "Min"
-                      )}
-                    </label>
+                    <label>{copy.min}</label>
                     <input
                       type="text"
-                      placeholder={safeT(
-                        "common.from",
-                        undefined,
-                        isRTL ? "من" : "From"
-                      )}
+                      placeholder={copy.from}
                       value={formatNumber(filters.minSize, locale) || ""}
-                      onChange={(e) =>
-                        handleFormattedInputChange("minSize", e.target.value)
+                      onChange={(event) =>
+                        handleFormattedInputChange("minSize", event.target.value)
                       }
                       dir={isRTL ? "rtl" : "ltr"}
                     />
                   </div>
                   <div className={styles.rangeField}>
-                    <label>
-                      {safeT(
-                        "whereToLive.filters.maxSizeLabel",
-                        undefined,
-                        isRTL ? "الحد الأقصى" : "Max"
-                      )}
-                    </label>
+                    <label>{copy.max}</label>
                     <input
                       type="text"
-                      placeholder={safeT(
-                        "common.to",
-                        undefined,
-                        isRTL ? "إلى" : "To"
-                      )}
+                      placeholder={copy.to}
                       value={formatNumber(filters.maxSize, locale) || ""}
-                      onChange={(e) =>
-                        handleFormattedInputChange("maxSize", e.target.value)
+                      onChange={(event) =>
+                        handleFormattedInputChange("maxSize", event.target.value)
                       }
                       dir={isRTL ? "rtl" : "ltr"}
                     />
@@ -434,7 +418,6 @@ export default function ProjectsFiltersBar({
             )}
           </div>
 
-          {/* Unit type */}
           <div className={styles.dropdownWrapper}>
             <button
               className={`${styles.dropdownButton} ${
@@ -443,37 +426,23 @@ export default function ProjectsFiltersBar({
               onClick={() => toggleDropdown("unitType")}
               type="button"
             >
-              <span>
-                {safeT(
-                  "whereToLive.filters.unitType",
-                  undefined,
-                  isRTL ? "نوع الوحدة" : "Unit type"
-                )}
-              </span>
+              <span>{copy.unitType}</span>
               {filters.unitTypes?.length > 0 && (
-                <span className={styles.filterBadge}>
-                  {filters.unitTypes.length}
-                </span>
+                <span className={styles.filterBadge}>{filters.unitTypes.length}</span>
               )}
-              <span className={styles.chevron}>▾</span>
+              <span className={styles.chevron}>v</span>
             </button>
 
             {openDropdown === "unitType" && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
-                  <h4>
-                    {safeT(
-                      "whereToLive.filters.unitTypeLabel",
-                      undefined,
-                      isRTL ? "نوع الوحدة" : "Unit type"
-                    )}
-                  </h4>
+                  <h4>{copy.unitType}</h4>
                   <button
                     className={styles.clearButton}
                     onClick={() => clearFilter(["unitTypes"])}
                     type="button"
                   >
-                    {safeT("common.clear", undefined, isRTL ? "مسح" : "Clear")}
+                    {copy.clear}
                   </button>
                 </div>
 
@@ -497,7 +466,6 @@ export default function ProjectsFiltersBar({
             )}
           </div>
 
-          {/* Status */}
           <div className={styles.dropdownWrapper}>
             <button
               className={`${styles.dropdownButton} ${
@@ -506,37 +474,23 @@ export default function ProjectsFiltersBar({
               onClick={() => toggleDropdown("devStatus")}
               type="button"
             >
-              <span>
-                {safeT(
-                  "whereToLive.filters.status",
-                  undefined,
-                  isRTL ? "الحالة" : "Status"
-                )}
-              </span>
+              <span>{copy.status}</span>
               {filters.devStatus?.length > 0 && (
-                <span className={styles.filterBadge}>
-                  {filters.devStatus.length}
-                </span>
+                <span className={styles.filterBadge}>{filters.devStatus.length}</span>
               )}
-              <span className={styles.chevron}>▾</span>
+              <span className={styles.chevron}>v</span>
             </button>
 
             {openDropdown === "devStatus" && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
-                  <h4>
-                    {safeT(
-                      "whereToLive.filters.statusLabel",
-                      undefined,
-                      isRTL ? "حالة التطوير" : "Development status"
-                    )}
-                  </h4>
+                  <h4>{copy.statusLong}</h4>
                   <button
                     className={styles.clearButton}
                     onClick={() => clearFilter(["devStatus"])}
                     type="button"
                   >
-                    {safeT("common.clear", undefined, isRTL ? "مسح" : "Clear")}
+                    {copy.clear}
                   </button>
                 </div>
 
@@ -549,9 +503,7 @@ export default function ProjectsFiltersBar({
                           ? styles.chipActive
                           : ""
                       }`}
-                      onClick={() =>
-                        toggleArrayFilter("devStatus", status.value)
-                      }
+                      onClick={() => toggleArrayFilter("devStatus", status.value)}
                       type="button"
                     >
                       {safeT(status.labelKey, undefined, status.value)}
@@ -562,7 +514,6 @@ export default function ProjectsFiltersBar({
             )}
           </div>
 
-          {/* Bedrooms */}
           <div className={styles.dropdownWrapper}>
             <button
               className={`${styles.dropdownButton} ${
@@ -571,53 +522,39 @@ export default function ProjectsFiltersBar({
               onClick={() => toggleDropdown("bedrooms")}
               type="button"
             >
-              <span>
-                {safeT(
-                  "whereToLive.filters.bedrooms",
-                  undefined,
-                  isRTL ? "غرف النوم" : "Bedrooms"
-                )}
-              </span>
+              <span>{copy.bedrooms}</span>
               {filters.bedrooms?.length > 0 && (
-                <span className={styles.filterBadge}>
-                  {filters.bedrooms.length}
-                </span>
+                <span className={styles.filterBadge}>{filters.bedrooms.length}</span>
               )}
-              <span className={styles.chevron}>▾</span>
+              <span className={styles.chevron}>v</span>
             </button>
 
             {openDropdown === "bedrooms" && (
               <div className={styles.dropdownMenu}>
                 <div className={styles.dropdownHeader}>
-                  <h4>
-                    {safeT(
-                      "whereToLive.filters.bedroomsLabel",
-                      undefined,
-                      isRTL ? "غرف النوم" : "Bedrooms"
-                    )}
-                  </h4>
+                  <h4>{copy.bedrooms}</h4>
                   <button
                     className={styles.clearButton}
                     onClick={() => clearFilter(["bedrooms"])}
                     type="button"
                   >
-                    {safeT("common.clear", undefined, isRTL ? "مسح" : "Clear")}
+                    {copy.clear}
                   </button>
                 </div>
 
                 <div className={styles.chipRow}>
-                  {bedroomOptions.map((b) => (
+                  {bedroomOptions.map((bedroom) => (
                     <button
-                      key={b.value}
+                      key={bedroom.value}
                       className={`${styles.chip} ${
-                        filters.bedrooms?.includes(b.value)
+                        filters.bedrooms?.includes(bedroom.value)
                           ? styles.chipActive
                           : ""
                       }`}
-                      onClick={() => toggleArrayFilter("bedrooms", b.value)}
+                      onClick={() => toggleArrayFilter("bedrooms", bedroom.value)}
                       type="button"
                     >
-                      {safeT(b.labelKey, undefined, String(b.value))}
+                      {safeT(bedroom.labelKey, undefined, String(bedroom.value))}
                     </button>
                   ))}
                 </div>

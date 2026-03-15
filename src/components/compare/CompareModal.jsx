@@ -260,7 +260,7 @@ export default function CompareModal() {
               {t("Clear", "مسح")}
             </button>
             <button type="button" className={modal.closeBtn} onClick={compare.close} aria-label="Close">
-              ×
+              X
             </button>
           </div>
         </header>

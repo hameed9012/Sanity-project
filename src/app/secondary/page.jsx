@@ -147,7 +147,7 @@ function InlineSearch({ value, onChange, onClear, isRTL }) {
       />
       {value && (
         <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
-          X
+          {isRTL ? "\u0645\u0633\u062d" : "Clear"}
         </button>
       )}
     </div>

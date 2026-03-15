@@ -1,27 +1,26 @@
 {
   "categories": {
-    "apartments": "شقق سكنية",
-    "villas": "فلل وتاونهاوس",
-    "commercial": "عقارات تجارية",
+    "apartments": "شقق فاخرة",
+    "villas": "فلل مميزة",
+    "commercial": "وحدات تجارية",
     "penthouses": "بنتهاوس فاخر",
-    "mixedUse": "مشاريع متعددة الاستخدامات"
+    "mixedUse": "متعدد الاستخدامات"
   },
   "descriptions": {
-    "apartments": "شقق فاخرة للبيع في دبي بمواقع استراتيجية وتشطيبات عالية",
-    "villas": "فلل وتاونهاوس بمساحات واسعة في مجتمعات راقية مناسبة للعائلات",
-    "commercial": "محلات ومكاتب ومساحات تجارية بعوائد إيجارية قوية ومواقع حيوية",
-    "penthouses": "بنتهاوس بإطلالات بانورامية ومرافق حصرية وتجربة سكن نخبوية",
-    "mixedUse": "مشاريع سكنية وتجارية متكاملة (شقق + مكاتب + محلات) لأسلوب حياة واستثمار متوازن"
+    "apartments": "شقق فاخرة مختارة في أفضل مواقع دبي، توفر أسلوب حياة راقيًا وقيمة استثمارية مستدامة.",
+    "villas": "فلل ومنازل تاون هاوس تجمع بين المساحة والخصوصية والتصميم المميز في مجتمعات راقية.",
+    "commercial": "مساحات تجارية واستثمارية في مواقع حيوية بطلب قوي وحركة نشطة.",
+    "penthouses": "بنتهاوس فائق الفخامة بإطلالات بانورامية وتراسات خاصة وخدمات عالمية.",
+    "mixedUse": "مشاريع متكاملة تجمع السكن والتجزئة والعمل في وجهة واحدة."
   },
   "developers": {
-    "sobhaRealty": "شوبا العقارية",
+    "sobhaRealty": "شوبا ريلتي",
     "arada": "أرادا",
     "damacProperties": "داماك العقارية",
     "aziziDevelopments": "عزيزي للتطوير العقاري",
     "danubeProperties": "دانوب العقارية",
     "binghatti": "بن غاطي",
-    "imtiazDevelopments": "امتياز للتطوير العقاري",
-    "tiger": "تايغر العقارية"
+    "tiger": "تايجر العقارية"
   },
   "projectNames": {
     "sobhaSkyParks": "شوبا سكاي باركس",
@@ -42,7 +41,6 @@
     "aradaMassar3": "مسار",
     "armaniBeachResidences": "أرماني بيتش ريزيدنسز",
     "luminaAlta": "لومينا ألتا",
-    "opusTower": "ذا أوبس من أمنيات",
     "velaViento": "فيلا فينتو",
     "velaDorchester": "فيلا دورشستر",
     "orlaDorchester": "أورلا دورشستر",
@@ -138,42 +136,48 @@
     "mercedesBenzPlacesBinghattiCity": "ميرسيدس-بنز بليسز | بن غاطي سيتي"
   },
   "nav": {
-    "about": "عنّا",
+    "about": "من نحن",
     "properties": "العقارات",
-    "offplan": "عقارات قيد الإنشاء",
-    "secondary": "عقارات ثانوية (إعادة بيع)",
+    "offplan": "قيد الإنشاء",
+    "secondary": "جاهز للسكن",
     "whereToLive": "أين تسكن",
     "developers": "المطورون",
     "mediaCenter": "المركز الإعلامي",
     "contactUs": "تواصل معنا",
-    "marketAnalysis": "تحليل سوق العقارات",
+    "marketAnalysis": "تحليل السوق",
     "searchProperties": "بحث",
-    "lands": "أراضي"
+    "lands": "الأراضي"
   },
   "ui": {
     "marketLabel": "السوق",
     "offPlanLabel": "قيد الإنشاء",
-    "secondaryLabel": "ثانوي (إعادة بيع)",
-    "marketEmptyHint": "المشاريع في هذا السوق لا تزال قيد التطوير — جرّب أسواقاً أخرى أو عد لاحقاً.",
+    "secondaryLabel": "جاهز للسكن",
+    "marketEmptyHint": "يتم تنسيق هذه المجموعة حاليا، وستظهر فرص جديدة عند توفر المخزون.",
     "propertyTypesLabel": "أنواع العقارات",
     "projectsLabel": "المشاريع",
     "dubaiNeighborhoodsLabel": "مناطق دبي",
-    "searchNeighborhoodPlaceholderDesktop": "ابحث عن منطقة (مثل JVC، دبي مارينا)...",
-    "searchNeighborhoodPlaceholderMobile": "ابحث عن المناطق...",
-    "searchOverlayPlaceholder": "ابحث عن مشاريع، مناطق، مطورين، مقالات...",
+    "searchNeighborhoodPlaceholderDesktop": "ابحث عن منطقة مثل نخلة جميرا أو المارينا أو وسط المدينة...",
+    "searchNeighborhoodPlaceholderMobile": "ابحث عن منطقة...",
+    "searchOverlayPlaceholder": "ابحث عن المشاريع والمناطق والمطورين وتحليلات السوق...",
     "searchOverlayButton": "ابحث الآن",
     "viewNeighborhoodDetails": "عرض تفاصيل المنطقة",
     "mobilePropertyTypesTitle": "أنواع العقارات",
     "mobileDevelopersTitlePrefix": "المطورون في",
-    "mobileContactTitle": "تواصل معنا",
+    "mobileContactTitle": "استشارة خاصة",
     "mobileDirectLine": "الخط المباشر",
-    "avgPurchaseLabel": "متوسط سعر الشراء",
+    "avgPurchaseLabel": "متوسط الشراء",
     "avgRentLabel": "متوسط الإيجار",
-    "roiLabel": "العائد الاستثماري",
+    "roiLabel": "العائد المتوقع",
     "defaultNeighborhoodTitle": "منطقة في دبي",
-    "viewAllPropertiesMobile": "عرض جميع العقارات",
+    "viewAllPropertiesMobile": "عرض جميع الفرص",
     "viewAllNeighborhoodsMobile": "عرض جميع المناطق",
-    "secondaryBadge": "إعادة بيع"
+    "secondaryBadge": "جاهز",
+    "searchPropertiesPlaceholder": "ابحث عن مشروع أو مطور أو منطقة...",
+    "viewProject": "عرض المشروع",
+    "startingFrom": "يبدأ من",
+    "handover": "موعد التسليم",
+    "location": "الموقع",
+    "developer": "المطور"
   },
   "whereToLive": {
     "businessBay": {
@@ -1171,54 +1175,6 @@
         "final": "اكتشف مشاريع بن غاطي ذات الهوية المعمارية المميزة."
       }
     },
-    "imtiaz": {
-      "hero": {
-        "title": "امتياز للتطوير العقاري",
-        "tagline": "قيمة عملية بعوائد قابلة للتأجير",
-        "subtitle": "مطور يركز على وحدات عملية وخطط دفع مناسبة للمستثمر الذي يبحث عن أرقام منطقية وتشغيل سريع."
-      },
-      "whyImtiaz": [
-        {
-          "title": "منتج عملي",
-          "description": "مساحات قابلة للتأجير بسهولة تناسب الطلب الحقيقي."
-        },
-        {
-          "title": "توازن بين السعر والقيمة",
-          "description": "خيارات دخول مدروسة مقارنة بفئات مماثلة."
-        },
-        {
-          "title": "ملاءمة للمحافظ",
-          "description": "مناسبة لبناء محفظة متعددة الوحدات بإدارة مخاطر أفضل."
-        }
-      ],
-      "performance": {
-        "title": "امتياز بالأرقام",
-        "intro": "مؤشرات أداء تدعم تقييم الطلب والسيولة.",
-        "year": "2025",
-        "stats": {
-          "transactions": "نشاط تداول جيد",
-          "totalValue": "قيمة تداول ضمن فئات عملية",
-          "capitalGains": "نمو رأسمالي مرتبط بالموقع والتوقيت"
-        }
-      },
-      "projectsInventory": {
-        "title": "مخزون مشاريع امتياز",
-        "underConstruction": {
-          "projects": "مشاريع قيد الإنشاء",
-          "units": "وحدات متعددة"
-        },
-        "completed": {
-          "projects": "مشاريع مُسلّمة",
-          "units": "وحدات جاهزة"
-        }
-      },
-      "summary": "امتياز خيار مناسب لمن يريد دخولاً عملياً مع قابلية تشغيل وتأجير سريعة.",
-      "investmentPerspective": "الاستثمار مع امتياز يعني التركيز على العائد التشغيلي والقرار المبني على الأرقام.",
-      "cta": {
-        "primary": "استعرض مشاريع امتياز",
-        "final": "اكتشف مشاريع امتياز ضمن خيارات استثمار عملية."
-      }
-    },
     "tiger": {
       "hero": {
         "title": "تايغر العقارية",
@@ -1269,29 +1225,11 @@
     }
   },
   "search": {
-    "sort": {
-      "label": "ترتيب حسب",
-      "newest": "الأحدث",
-      "priceAsc": "السعر (من الأقل إلى الأعلى)",
-      "priceDesc": "السعر (من الأعلى إلى الأقل)",
-      "sizeAsc": "المساحة (الأصغر إلى الأكبر)",
-      "sizeDesc": "المساحة (الأكبر إلى الأصغر)"
-    },
-    "view": {
-      "grid": "شبكة",
-      "list": "قائمة"
-    },
-    "results": {
-      "none": "لا توجد نتائج",
-      "showing": "عرض {start}–{end} من {total} نتيجة"
-    },
-    "pagination": {
-      "prev": "السابق",
-      "next": "التالي",
-      "page": "صفحة {page} / {totalPages}",
-      "clearAll": "مسح الكل"
-    },
-    "loading": "جاري تحميل النتائج..."
+    "sort": "ترتيب",
+    "view": "عرض",
+    "results": "النتائج",
+    "pagination": "التنقل بين الصفحات",
+    "loading": "جارٍ التحميل"
   },
   "salesOffer": {
     "editTitle": "تعديل الوصف",
@@ -1340,7 +1278,7 @@
   },
   "developersPage": {
     "title": "المطورون",
-    "subtitle": "استكشف أشهر المطورين في دبي وتعرّف على نبذة وإحصائيات المشاريع.",
+    "subtitle": "استكشف المطورين مع نظرة سريعة وإحصاءات المشاريع.",
     "searchPlaceholder": "ابحث عن مطور...",
     "sortBy": "ترتيب حسب",
     "sort": {
@@ -1354,7 +1292,7 @@
     "noResults": "لا توجد نتائج.",
     "noProjectsYet": "لا توجد مشاريع بعد",
     "loadMore": "عرض المزيد",
-    "defaultDescription": "مطور عقاري يقدّم مشاريع بجودة مناسبة وخيارات سكنية واستثمارية في مواقع مطلوبة.",
+    "defaultDescription": "مطور يقدم مشاريع عالية الجودة مع حضور قوي في السوق وطلب مستدام.",
     "aria": {
       "clearSearch": "مسح البحث",
       "categories": "الفئات",
@@ -1364,10 +1302,10 @@
     }
   },
   "relatedProjects": {
-    "eyebrow": "قد يعجبك أيضاً",
-    "heading": "مشاريع ذات صلة",
-    "subheading": "عقارات مختارة بعناية تتناسب مع اهتماماتك",
-    "viewAll": "عرض جميع العقارات"
+    "eyebrow": "مشاريع ذات صلة",
+    "heading": "اكتشف مشاريع مشابهة",
+    "subheading": "مشاريع مختارة حسب المطور والموقع ونوع الوحدة ونطاق السعر.",
+    "viewAll": "عرض الكل"
   },
   "video": {
     "close": "إغلاق",
@@ -1415,33 +1353,44 @@
   "whereToLivePage": {
     "searchPlaceholder": "ابحث حسب المنطقة أو الموقع أو العائد",
     "showing": "عرض",
-    "areas": "منطقة",
-    "compareAreas": "قارن المناطق",
+    "areas": "مناطق",
+    "compareAreas": "مقارنة المناطق",
     "exitCompare": "إنهاء المقارنة",
     "resetFilters": "إعادة ضبط الفلاتر",
     "loadMore": "عرض المزيد",
-    "endText": "لقد وصلت إلى النهاية.",
-    "noResults": "لا توجد مناطق تطابق معايير البحث.",
-    "pickOneMoreArea": "اختر منطقة أخرى",
+    "endText": "لقد وصلت إلى نهاية القائمة.",
+    "noResults": "لا توجد مناطق مطابقة لبحثك.",
+    "pickOneMoreArea": "اختر منطقة إضافية",
     "remove": "إزالة",
-    "selected": "تم الاختيار",
-    "select": "اختر",
+    "selected": "تم التحديد",
+    "select": "اختيار",
     "selectToCompare": "اختر للمقارنة",
     "avgBuyLabel": "متوسط الشراء",
     "avgRentLabel": "متوسط الإيجار",
     "roiLabel": "العائد",
     "exploreArea": "استكشف المنطقة",
-    "compare": "مقارنة",
-    "selectedCta": "قارن المختارة"
+    "compare": "قارن",
+    "selectedCta": "قارن المحدد",
+    "eyebrow": "دليل المناطق",
+    "title": "اكتشف أين تعيش أو تستثمر في دبي",
+    "subtitle": "قارن بين المناطق حسب الأسعار والإيجارات والعائد وأسلوب الحياة لاتخاذ قرار أوضح.",
+    "emptyTitle": "لا توجد مناطق مطابقة",
+    "emptyDescription": "جرب تعديل الفلاتر أو استخدم بحثا مختلفا."
   },
   "Header": {
-    "title": "محمد قدماني",
-    "companyName": "محمد قدماني للوساطة العقارية",
-    "subtitle": "وسيط عقاري فاخر — دبي، الإمارات",
-    "expertise": "على الخارطة · فلل فاخرة · محافظ استثمارية",
-    "introPrefix": "بخبرة",
-    "introSuffix": "سنة في سوق العقارات الفاخرة بدبي",
-    "portfolio": "عرض المحفظة"
+    "title": "محمد كودماني",
+    "companyName": "محمد كودماني للعقارات",
+    "subtitle": "وسيط عقاري فاخر - دبي، الإمارات",
+    "expertise": "مشاريع قيد الإنشاء · فلل فاخرة · محافظ استثمارية",
+    "introPrefix": "مع",
+    "introSuffix": "سنة من الخبرة في سوق دبي العقاري الفاخر",
+    "portfolio": "عرض الأعمال",
+    "searchAndFilters": "البحث والفلاتر",
+    "price": "السعر",
+    "size": "المساحة",
+    "unitType": "نوع الوحدة",
+    "status": "الحالة",
+    "bedrooms": "غرف النوم"
   },
   "callback": {
     "sectionTitleLine1": "هل أنت مستعد",
@@ -1571,5 +1520,12 @@
     "card3Desc": "مزيج من الأصول الجاهزة وعلى الخارطة لعوائد متنوعة ومخاطر مدارة",
     "card3Metrics": "إجمالي عائد 8-12%",
     "yearLabel": "السنة"
+  },
+  "areaHero": {
+    "subtitle": "دليل المنطقة - سوق العقارات",
+    "breadcrumb": {
+      "home": "الرئيسية",
+      "areas": "أين تسكن"
+    }
   }
 }

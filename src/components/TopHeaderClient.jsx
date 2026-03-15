@@ -13,8 +13,15 @@ function useSafeDOM() {
   return isMounted;
 }
 
+function normalizeSecondaryLabel(item, locale) {
+  const href = String(item?.href || "");
+  const isSecondary = href === "/secondary" || href.startsWith("/secondary?");
+  if (!isSecondary) return locale === "ar" ? item?.labelAr : item?.labelEn;
+  return locale === "ar" ? "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" : "READY TO MOVE";
+}
+
 function labelFor(item, locale) {
-  return locale === "ar" ? item?.labelAr : item?.labelEn;
+  return normalizeSecondaryLabel(item, locale);
 }
 
 function safeHref(href) {
@@ -48,44 +55,46 @@ export default function TopHeader() {
     desktopRight: [],
     mobileMenu: [],
     hideSearch: false,
+    logoUrl: "",
+    logoAlt: "Mohamad Kodmani Real Estate",
   });
 
   const defaultLeft = useMemo(
     () => [
-      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "من نحن" },
-      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "العقارات" },
-      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "على الخارطة" },
-      { type: "link", href: "/secondary", labelEn: "SECONDARY", labelAr: "الثانوي" },
-      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "الإيجار" },
-      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "الأراضي" },
-      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "أين تسكن" },
+      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "\u0645\u0646 \u0646\u062d\u0646" },
+      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a" },
+      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" },
+      { type: "link", href: "/secondary", labelEn: "READY TO MOVE", labelAr: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "\u0627\u0644\u0625\u064a\u062c\u0627\u0631" },
+      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "\u0627\u0644\u0623\u0631\u0627\u0636\u064a" },
+      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "\u0623\u064a\u0646 \u062a\u0633\u0643\u0646" },
     ],
     []
   );
 
   const defaultRight = useMemo(
     () => [
-      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "المطورون" },
-      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "تحليل السوق" },
-      { type: "link", href: "/articles/", labelEn: "MEDIA CENTER", labelAr: "المركز الإعلامي" },
-      { type: "link", href: "/contact-us/", labelEn: "CONTACT US", labelAr: "تواصل معنا" },
+      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "\u0627\u0644\u0645\u0637\u0648\u0631\u0648\u0646" },
+      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0633\u0648\u0642" },
+      { type: "link", href: "/articles/", labelEn: "MEDIA CENTER", labelAr: "\u0627\u0644\u0645\u0631\u0643\u0632 \u0627\u0644\u0625\u0639\u0644\u0627\u0645\u064a" },
+      { type: "link", href: "/contact-us/", labelEn: "CONTACT US", labelAr: "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627" },
     ],
     []
   );
 
   const defaultMobile = useMemo(
     () => [
-      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "من نحن" },
-      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "العقارات" },
-      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "على الخارطة" },
-      { type: "link", href: "/secondary", labelEn: "SECONDARY", labelAr: "الثانوي" },
-      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "الإيجار" },
-      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "الأراضي" },
-      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "أين تسكن" },
-      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "المطورون" },
-      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "تحليل السوق" },
-      { type: "link", href: "/articles", labelEn: "MEDIA CENTER", labelAr: "المركز الإعلامي" },
-      { type: "link", href: "/contact-us", labelEn: "CONTACT US", labelAr: "تواصل معنا" },
+      { type: "link", href: "/about", labelEn: "ABOUT", labelAr: "\u0645\u0646 \u0646\u062d\u0646" },
+      { type: "link", href: "/properties", labelEn: "PROPERTIES", labelAr: "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a" },
+      { type: "link", href: "/offplan", labelEn: "OFFPLAN", labelAr: "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" },
+      { type: "link", href: "/secondary", labelEn: "READY TO MOVE", labelAr: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+      { type: "link", href: "/rental", labelEn: "RENTAL", labelAr: "\u0627\u0644\u0625\u064a\u062c\u0627\u0631" },
+      { type: "link", href: "/lands", labelEn: "LANDS", labelAr: "\u0627\u0644\u0623\u0631\u0627\u0636\u064a" },
+      { type: "link", href: "/where-to-live", labelEn: "WHERE TO LIVE", labelAr: "\u0623\u064a\u0646 \u062a\u0633\u0643\u0646" },
+      { type: "link", href: "/developers", labelEn: "DEVELOPERS", labelAr: "\u0627\u0644\u0645\u0637\u0648\u0631\u0648\u0646" },
+      { type: "link", href: "/market-analysis", labelEn: "MARKET ANALYSIS", labelAr: "\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0633\u0648\u0642" },
+      { type: "link", href: "/articles", labelEn: "MEDIA CENTER", labelAr: "\u0627\u0644\u0645\u0631\u0643\u0632 \u0627\u0644\u0625\u0639\u0644\u0627\u0645\u064a" },
+      { type: "link", href: "/contact-us", labelEn: "CONTACT US", labelAr: "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627" },
     ],
     []
   );
@@ -103,6 +112,8 @@ export default function TopHeader() {
           desktopRight: (data?.desktopRight || []).filter(isValidNavItem),
           mobileMenu: (data?.mobileMenu || []).filter(isValidNavItem),
           hideSearch: Boolean(data?.navbar?.hideSearch ?? data?.hideSearch),
+          logoUrl: data?.navbar?.logoUrl || "",
+          logoAlt: data?.navbar?.logoAlt || "Mohamad Kodmani Real Estate",
         });
       } catch {}
     })();
@@ -258,8 +269,8 @@ export default function TopHeader() {
           <div className={styles.logoSec}>
             <Link href="/" className={styles.logoLink} aria-label="Home">
               <img
-                src="/logo-transparent.png"
-                alt="Mohamad Kodmani Real Estate"
+                src={extras.logoUrl || "/logo-transparent.png"}
+                alt={extras.logoAlt || "Mohamad Kodmani Real Estate"}
                 className={styles.logoImage}
                 width={125}
                 height={45}
@@ -280,7 +291,7 @@ export default function TopHeader() {
                   }`}
                 >
                   <span className={styles.langText}>
-                    {isTransitioning ? "⟳" : locale === "en" ? "العربية" : "EN"}
+                    {isTransitioning ? "..." : locale === "en" ? "\u0627\u0644\u0639\u0631\u0628\u064a\u0629" : "EN"}
                   </span>
                   <span className={styles.langDot} aria-hidden="true" />
                 </button>
@@ -295,7 +306,7 @@ export default function TopHeader() {
                 className={styles.mobileLang}
                 aria-label="Toggle language"
               >
-                {isTransitioning ? "⟳" : locale === "en" ? "AR" : "EN"}
+                {isTransitioning ? "..." : locale === "en" ? "AR" : "EN"}
               </button>
 
               <button
@@ -323,14 +334,16 @@ export default function TopHeader() {
           >
             <div className={styles.curtainInnerCard}>
               <div className={styles.curtainHead}>
-                <div className={styles.curtainTitle}>SEARCH PROPERTIES</div>
+                <div className={styles.curtainTitle}>
+                  {isRTL ? "\u0627\u0628\u062d\u062b \u0639\u0646 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a" : "SEARCH PROPERTIES"}
+                </div>
                 <button
                   type="button"
                   className={styles.curtainClose}
                   onClick={closeCurtain}
                   aria-label="Close search properties"
                 >
-                  ×
+                  x
                 </button>
               </div>
               <div className={styles.curtainBody}>
@@ -353,8 +366,8 @@ export default function TopHeader() {
           <div className={styles.mobileTopRow}>
             <Link href="/" className={styles.mobileBrand} onClick={closeAllMobileMenus}>
               <img
-                src="/logo-transparent.png"
-                alt="Mohamad Kodmani Real Estate"
+                src={extras.logoUrl || "/logo-transparent.png"}
+                alt={extras.logoAlt || "Mohamad Kodmani Real Estate"}
                 className={styles.mobileBrandLogo}
                 width={150}
                 height={54}
@@ -366,7 +379,7 @@ export default function TopHeader() {
               onClick={closeAllMobileMenus}
               aria-label="Close menu"
             >
-              ×
+              x
             </button>
           </div>
 
@@ -379,7 +392,7 @@ export default function TopHeader() {
                 className={styles.mobileLangButton}
               >
                 {isTransitioning
-                  ? "⟳"
+                  ? "..."
                   : locale === "en"
                   ? "Switch to Arabic"
                   : "Switch to English"}

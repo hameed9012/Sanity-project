@@ -40,6 +40,19 @@ export default defineType({
           type: 'boolean',
           initialValue: false,
         }),
+        defineField({
+          name: 'logo',
+          title: 'Navbar Logo (Upload)',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+        }),
+        defineField({
+          name: 'logoCdn',
+          title: 'OR Navbar Logo (BunnyCDN)',
+          type: 'cdnImage',
+          description: 'Paste a BunnyCDN logo URL instead of uploading',
+        }),
       ],
     }),
 

@@ -62,24 +62,8 @@ function AnimatedHeroImage({ src, alt }) {
         src={src}
         alt={alt}
         className={styles.heroImage}
-        style={{
-          width: "100%",
-          height: "115%",
-          objectFit: "cover",
-          opacity: 0.35,
-          transformOrigin: "center top",
-          willChange: "transform",
-          animation: "heroPanZoom 18s ease-in-out infinite alternate",
-        }}
+        style={{ willChange: "transform" }}
       />
-      <style>{`
-        @keyframes heroPanZoom {
-          0% { transform: scale(1.08) translate(0%, 0%); }
-          33% { transform: scale(1.12) translate(-1.5%, -0.5%); }
-          66% { transform: scale(1.1) translate(1.5%, 0.5%); }
-          100% { transform: scale(1.08) translate(0%, -1%); }
-        }
-      `}</style>
     </div>
   );
 }

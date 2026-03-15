@@ -1,5 +1,7 @@
 // src/data/developersData/developersData.js
 
+const EXCLUDED_DEVELOPER_IDS = new Set(["omniyat", "beyond", "imtiaz"]);
+
 export const developersData = (CDN) => [
   // ============================================================
   // CORE DEVELOPERS (WITH EXISTING LOGOS)
@@ -162,4 +164,4 @@ export const developersData = (CDN) => [
     image: `${CDN}/aquamont/intro-main.png`,
     tagline: "Resort-style projects with private pools and leisure decks.",
   },
-];
+].filter((developer) => !EXCLUDED_DEVELOPER_IDS.has(developer.id));

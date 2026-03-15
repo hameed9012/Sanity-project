@@ -3,15 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-
 import { useLanguage } from "@/components/LanguageProvider";
-
 import AreaGuideHero from "@/components/where-to-live/AreaGuideHero";
 import AreaNarrative from "@/components/where-to-live/AreaNarrative";
 import MarketInsights from "@/components/where-to-live/MarketInsights";
 import LocationFAQ from "@/components/where-to-live/LocationFAQ";
 import RegionProjectsSection from "@/components/where-to-live/RegionProjectsSection";
-
 import styles from "@/styles/where-to-live/AreaDetailPage.module.css";
 
 function pickLocalized(enValue, arValue, locale) {
@@ -21,10 +18,12 @@ function pickLocalized(enValue, arValue, locale) {
 function normalizeMoneyLabel(value, locale, fallback) {
   const raw = String(value || "").trim();
   if (!raw) return fallback;
+
   return raw
     .replace(/^average price:\s*/i, "")
     .replace(/^properties from\s*/i, "")
     .replace(/^from\s*/i, "")
+    .replace(/\/\s*year/gi, locale === "ar" ? " \u0633\u0646\u0648\u064a\u064b\u0627" : " yearly")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -32,6 +31,7 @@ function normalizeMoneyLabel(value, locale, fallback) {
 function normalizeRoiLabel(value, fallback) {
   const raw = String(value || "").trim();
   if (!raw) return fallback;
+
   return raw
     .replace(/^return on investment\s*:?/i, "ROI ")
     .replace(/\s+/g, " ")
@@ -40,39 +40,55 @@ function normalizeRoiLabel(value, fallback) {
 
 function buildFaqsFromArea(area) {
   const location = area?.location || "Dubai";
-  const avgBuy = normalizeMoneyLabel(area?.avgBuyPrice, "en", "Market dependent");
-  const avgRent = normalizeMoneyLabel(area?.avgRentPrice, "en", "Market dependent");
-  const roi = normalizeRoiLabel(area?.roi, "Market dependent");
+  const avgBuy = normalizeMoneyLabel(
+    area?.avgBuyPrice,
+    "en",
+    "Pricing varies by inventory"
+  );
+  const avgRent = normalizeMoneyLabel(
+    area?.avgRentPrice,
+    "en",
+    "Rental rates vary by inventory"
+  );
+  const roi = normalizeRoiLabel(area?.roi, "ROI varies by inventory");
 
   return [
     {
       question: {
         en: `Where is ${area?.name || "this area"} located?`,
-        ar: `أين تقع منطقة ${area?.nameAr || area?.name || "هذه المنطقة"}؟`,
+        ar: `\u0623\u064a\u0646 \u062a\u0642\u0639 \u0645\u0646\u0637\u0642\u0629 ${
+          area?.nameAr || area?.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+        }\u061f`,
       },
       answer: {
         en: `${area?.name || "This area"} is located in ${location}.`,
-        ar: `تقع ${area?.nameAr || area?.name || "هذه المنطقة"} في ${location}.`,
+        ar: `\u062a\u0642\u0639 ${
+          area?.nameAr || area?.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+        } \u0641\u064a ${location}.`,
       },
     },
     {
       question: {
         en: `What is the average buying price in ${area?.name || "this area"}?`,
-        ar: `ما هو متوسط سعر الشراء في ${area?.nameAr || area?.name || "هذه المنطقة"}؟`,
+        ar: `\u0645\u0627 \u0647\u0648 \u0645\u062a\u0648\u0633\u0637 \u0633\u0639\u0631 \u0627\u0644\u0634\u0631\u0627\u0621 \u0641\u064a ${
+          area?.nameAr || area?.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+        }\u061f`,
       },
       answer: {
         en: `The current average buying price is ${avgBuy}. Average annual rent is ${avgRent}.`,
-        ar: `متوسط سعر الشراء الحالي هو ${avgBuy}. ومتوسط الإيجار السنوي هو ${avgRent}.`,
+        ar: `\u0645\u062a\u0648\u0633\u0637 \u0633\u0639\u0631 \u0627\u0644\u0634\u0631\u0627\u0621 \u0627\u0644\u062d\u0627\u0644\u064a \u0647\u0648 ${avgBuy}. \u0648\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0625\u064a\u062c\u0627\u0631 \u0627\u0644\u0633\u0646\u0648\u064a \u0647\u0648 ${avgRent}.`,
       },
     },
     {
       question: {
         en: `What ROI can investors expect in ${area?.name || "this area"}?`,
-        ar: `ما هو العائد المتوقع للمستثمرين في ${area?.nameAr || area?.name || "هذه المنطقة"}؟`,
+        ar: `\u0645\u0627 \u0647\u0648 \u0627\u0644\u0639\u0627\u0626\u062f \u0627\u0644\u0645\u062a\u0648\u0642\u0639 \u0644\u0644\u0645\u0633\u062a\u062b\u0645\u0631\u064a\u0646 \u0641\u064a ${
+          area?.nameAr || area?.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+        }\u061f`,
       },
       answer: {
         en: `The latest ROI indicator for this area is ${roi}.`,
-        ar: `أحدث مؤشر للعائد في هذه المنطقة هو ${roi}.`,
+        ar: `\u0623\u062d\u062f\u062b \u0645\u0624\u0634\u0631 \u0644\u0644\u0639\u0627\u0626\u062f \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0647\u0648 ${roi}.`,
       },
     },
   ];
@@ -84,7 +100,11 @@ function normalizeSanityArea(area, locale) {
   const name = pickLocalized(area.name, area.nameAr, locale);
   const tagline = pickLocalized(area.tagline, area.taglineAr, locale);
   const description = pickLocalized(area.description, area.descriptionAr, locale);
-  const bulletPoints = (locale === "ar" ? area.highlightsAr : area.highlights) || area.highlights || area.highlightsAr || [];
+  const bulletPoints =
+    (locale === "ar" ? area.highlightsAr : area.highlights) ||
+    area.highlights ||
+    area.highlightsAr ||
+    [];
 
   return {
     slug: area.slug,
@@ -104,7 +124,7 @@ function normalizeSanityArea(area, locale) {
       },
       nutshellTitle: {
         en: "In a Nutshell",
-        ar: "باختصار",
+        ar: "\u0628\u0627\u062e\u062a\u0635\u0627\u0631",
       },
       inANutshell: {
         en: area.highlights || [],
@@ -114,11 +134,11 @@ function normalizeSanityArea(area, locale) {
     neighbourhoodTitles: {
       overview: {
         en: "Neighborhood Overview",
-        ar: "نظرة عامة على الحي",
+        ar: "\u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629 \u0639\u0644\u0649 \u0627\u0644\u062d\u064a",
       },
       properties: {
         en: "Property Landscape",
-        ar: "مشهد العقارات",
+        ar: "\u0645\u0634\u0647\u062f \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a",
       },
     },
     neighbourhood: {
@@ -134,12 +154,12 @@ function normalizeSanityArea(area, locale) {
     investmentHighlights: {
       title: {
         en: "Investment Highlights",
-        ar: "أبرز النقاط الاستثمارية",
+        ar: "\u0623\u0628\u0631\u0632 \u0627\u0644\u0646\u0642\u0627\u0637 \u0627\u0644\u0627\u0633\u062a\u062b\u0645\u0627\u0631\u064a\u0629",
       },
       points: bulletPoints.map((point, index) => ({
         title: {
           en: `Highlight ${index + 1}`,
-          ar: `النقطة ${index + 1}`,
+          ar: `\u0627\u0644\u0646\u0642\u0637\u0629 ${index + 1}`,
         },
         details: {
           en: [point],
@@ -147,19 +167,21 @@ function normalizeSanityArea(area, locale) {
         },
       })),
       conclusion: {
-        en: `Average buy price: ${normalizeMoneyLabel(area.avgBuyPrice, locale, "N/A")} ✓ Average rent: ${normalizeMoneyLabel(area.avgRentPrice, locale, "N/A")} ✓ ROI: ${normalizeRoiLabel(area.roi, "N/A")}`,
-        ar: `متوسط الشراء: ${normalizeMoneyLabel(area.avgBuyPrice, locale, "N/A")} ✓ متوسط الإيجار: ${normalizeMoneyLabel(area.avgRentPrice, locale, "N/A")} ✓ العائد: ${normalizeRoiLabel(area.roi, "N/A")}`,
+        en: `1BR from ${normalizeMoneyLabel(area.avgBuyPrice, locale, "Market pricing")} | Rent from ${normalizeMoneyLabel(area.avgRentPrice, locale, "Market rent")} | ROI ${normalizeRoiLabel(area.roi, "Market ROI")}`,
+        ar: `\u0633\u0639\u0631 1 \u063a\u0631\u0641\u0629 \u0645\u0646 ${normalizeMoneyLabel(area.avgBuyPrice, locale, "\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0633\u0648\u0642")} | \u0625\u064a\u062c\u0627\u0631 \u0645\u0646 ${normalizeMoneyLabel(area.avgRentPrice, locale, "\u0625\u064a\u062c\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")} | ROI ${normalizeRoiLabel(area.roi, "ROI \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")}`,
       },
     },
     translations: {
       market: {
         title: {
           en: "Market Insights",
-          ar: "تحليلات السوق",
+          ar: "\u062a\u062d\u0644\u064a\u0644\u0627\u062a \u0627\u0644\u0633\u0648\u0642",
         },
         subtitle: {
           en: `Market snapshot for ${area.name || "this area"}.`,
-          ar: `لمحة سوقية عن ${area.nameAr || area.name || "هذه المنطقة"}.`,
+          ar: `\u0644\u0645\u062d\u0629 \u0633\u0648\u0642\u064a\u0629 \u0639\u0646 ${
+            area.nameAr || area.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+          }.`,
         },
       },
     },
@@ -174,14 +196,14 @@ function normalizeSanityArea(area, locale) {
   };
 }
 
-function pickLang(v, locale) {
-  if (v == null) return "";
-  if (typeof v === "string" || typeof v === "number") return String(v);
-  if (Array.isArray(v)) return v.map((x) => pickLang(x, locale)).filter(Boolean);
-  if (typeof v === "object") {
-    if (v[locale] != null) return pickLang(v[locale], locale);
-    if (v.en != null) return pickLang(v.en, locale);
-    const first = Object.values(v).find((x) => typeof x === "string");
+function pickLang(value, locale) {
+  if (value == null) return "";
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (Array.isArray(value)) return value.map((item) => pickLang(item, locale)).filter(Boolean);
+  if (typeof value === "object") {
+    if (value[locale] != null) return pickLang(value[locale], locale);
+    if (value.en != null) return pickLang(value.en, locale);
+    const first = Object.values(value).find((item) => typeof item === "string");
     return first ? String(first) : "";
   }
   return "";
@@ -201,18 +223,18 @@ function deepResolve(value, locale) {
       keys.length <= 4 &&
       (keys.includes("en") || keys.includes("ar")) &&
       keys.every(
-        (k) =>
-          k === "en" ||
-          k === "ar" ||
-          typeof value[k] === "string" ||
-          typeof value[k] === "number"
+        (key) =>
+          key === "en" ||
+          key === "ar" ||
+          typeof value[key] === "string" ||
+          typeof value[key] === "number"
       );
 
     if (isBilingual) return pickLang(value, locale);
 
     const out = {};
-    for (const [k, v] of Object.entries(value)) {
-      out[k] = deepResolve(v, locale);
+    for (const [key, entry] of Object.entries(value)) {
+      out[key] = deepResolve(entry, locale);
     }
     return out;
   }
@@ -234,9 +256,10 @@ export default function AreaDetailPage() {
     async function loadArea() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/sanity-areas?slug=${encodeURIComponent(slug)}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `/api/sanity-areas?slug=${encodeURIComponent(slug)}`,
+          { cache: "no-store" }
+        );
         const data = response.ok ? await response.json() : null;
         if (!alive) return;
         setSanityArea(data || null);
@@ -249,23 +272,22 @@ export default function AreaDetailPage() {
     }
 
     if (slug) loadArea();
+
     return () => {
       alive = false;
     };
   }, [slug]);
 
   const resolvedData = useMemo(() => {
-    if (sanityArea) {
-      return deepResolve(normalizeSanityArea(sanityArea, lang), lang);
-    }
-    return null;
-  }, [sanityArea, slug, lang]);
+    if (!sanityArea) return null;
+    return deepResolve(normalizeSanityArea(sanityArea, lang), lang);
+  }, [lang, sanityArea]);
 
   if (loading && !resolvedData) {
     return (
       <div className={styles.notFound} dir={isRTL ? "rtl" : "ltr"}>
         <div className={styles.notFoundInner}>
-          <h1>{isRTL ? "جارٍ التحميل..." : "Loading..."}</h1>
+          <h1>{isRTL ? "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644..." : "Loading..."}</h1>
         </div>
       </div>
     );
@@ -275,14 +297,20 @@ export default function AreaDetailPage() {
     return (
       <div className={styles.notFound} dir={isRTL ? "rtl" : "ltr"}>
         <div className={styles.notFoundInner}>
-          <h1>{isRTL ? "المنطقة غير موجودة" : "Area Not Found"}</h1>
+          <h1>
+            {isRTL
+              ? "\u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f\u0629"
+              : "Area Not Found"}
+          </h1>
           <p>
             {isRTL
-              ? "لم نتمكن من العثور على هذه المنطقة."
+              ? "\u0644\u0645 \u0646\u062a\u0645\u0643\u0646 \u0645\u0646 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629."
               : "We couldn't find this area."}
           </p>
           <Link href="/where-to-live" className={styles.backLink}>
-            {isRTL ? "← عودة إلى المناطق" : "← Back to Areas"}
+            {isRTL
+              ? "< \u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u0627\u0637\u0642"
+              : "< Back to Areas"}
           </Link>
         </div>
       </div>
@@ -295,13 +323,12 @@ export default function AreaDetailPage() {
       <AreaNarrative regionData={resolvedData} />
       <MarketInsights regionData={resolvedData} />
       <LocationFAQ regionData={resolvedData} />
-      <RegionProjectsSection
-        regionSlug={resolvedData.regionSlug || slug}
-        locale={lang}
-      />
+      <RegionProjectsSection regionSlug={resolvedData.regionSlug || slug} locale={lang} />
       <div className={styles.backBar} dir={isRTL ? "rtl" : "ltr"}>
         <Link href="/where-to-live" className={styles.backLink}>
-          {isRTL ? "← عرض كل المناطق" : "← All Areas"}
+          {isRTL
+            ? "< \u0639\u0631\u0636 \u0643\u0644 \u0627\u0644\u0645\u0646\u0627\u0637\u0642"
+            : "< All Areas"}
         </Link>
       </div>
     </div>

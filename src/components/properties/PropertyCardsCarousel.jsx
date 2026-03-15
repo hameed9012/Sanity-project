@@ -10,6 +10,11 @@ const isArLocale = (locale) =>
 
 const safeArr = (value) => (Array.isArray(value) ? value.filter(Boolean) : []);
 
+const isVideoUrl = (value) => {
+  const clean = String(value || "").split("?")[0].toLowerCase();
+  return [".mp4", ".webm", ".mov", ".m4v", ".ogg"].some((ext) => clean.endsWith(ext));
+};
+
 function parsePriceToAED(value) {
   if (value === null || value === undefined) return null;
 
@@ -33,7 +38,9 @@ function parsePriceToAED(value) {
 }
 
 function fmtPriceShort(priceAED, isAr) {
-  const fallback = isAr ? "السعر عند الطلب" : "Price on request";
+  const fallback = isAr
+    ? "\u0627\u0644\u0633\u0639\u0631 \u0639\u0646\u062f \u0627\u0644\u0637\u0644\u0628"
+    : "Price on request";
   const amount = parsePriceToAED(priceAED);
   if (!amount) return fallback;
 
@@ -41,7 +48,7 @@ function fmtPriceShort(priceAED, isAr) {
     if (amount < 1_000_000) {
       const value = Math.round(amount / 1_000);
       return isAr
-        ? `${new Intl.NumberFormat("ar-AE").format(value)} ألف`
+        ? `${new Intl.NumberFormat("ar-AE").format(value)} \u0623\u0644\u0641`
         : `${new Intl.NumberFormat("en-US").format(value)}K`;
     }
 
@@ -51,7 +58,7 @@ function fmtPriceShort(priceAED, isAr) {
       maximumFractionDigits: 1,
     }).format(value);
 
-    return isAr ? `${pretty} مليون` : `${pretty}M`;
+    return isAr ? `${pretty} \u0645\u0644\u064a\u0648\u0646` : `${pretty}M`;
   } catch {
     return fallback;
   }
@@ -65,10 +72,15 @@ function getLocalizedNode(project) {
 function getSlides(project) {
   const node = getLocalizedNode(project);
   const gallerySlides = safeArr(node?.gallery?.slides);
+  const normalizedSlides = safeArr(project?.galleryImages).map((item) =>
+    typeof item === "string" ? item : item?.url
+  );
   const heroBg = node?.hero?.backgroundUrl;
   const heroImg = node?.hero?.image || node?.hero?.background;
+  if (normalizedSlides.length) return normalizedSlides;
   if (gallerySlides.length) return gallerySlides;
-  const fallback = heroBg || heroImg || project?.image || null;
+  const fallback =
+    project?.heroVideo || project?.heroImage || heroBg || heroImg || project?.image || null;
   return fallback ? [fallback] : [];
 }
 
@@ -86,16 +98,20 @@ function getProjectHref(project, locale) {
 
 function CardCarousel({ slides, alt, isAr }) {
   const [index, setIndex] = React.useState(0);
+  const [videoFailed, setVideoFailed] = React.useState(false);
+  const [imageFailed, setImageFailed] = React.useState(false);
   const total = slides.length || 0;
 
   React.useEffect(() => {
     setIndex(0);
+    setVideoFailed(false);
+    setImageFailed(false);
   }, [total]);
 
   if (!total) {
     return (
       <div className={styles.mediaPlaceholder}>
-        {isAr ? "لا توجد صور" : "No media"}
+        {isAr ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0635\u0648\u0631" : "No media"}
       </div>
     );
   }
@@ -109,10 +125,38 @@ function CardCarousel({ slides, alt, isAr }) {
     });
   };
 
+  const currentSlide = slides[index];
+  const currentUrl = typeof currentSlide === "string" ? currentSlide : currentSlide?.url;
+  const isVideo = isVideoUrl(currentUrl);
+  const showVideo = isVideo && !videoFailed;
+
   return (
     <div className={styles.mediaWrap}>
-      <img className={styles.mediaImg} src={slides[index]} alt={alt} loading="lazy" />
-      {total > 1 && (
+      {showVideo ? (
+        <video
+          className={styles.mediaImg}
+          src={currentUrl}
+          muted
+          loop
+          autoPlay
+          playsInline
+          preload="metadata"
+          onError={() => setVideoFailed(true)}
+        />
+      ) : currentUrl && !imageFailed ? (
+        <img
+          className={styles.mediaImg}
+          src={currentUrl}
+          alt={alt}
+          loading="lazy"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <div className={styles.mediaPlaceholder}>
+          {isAr ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0648\u0633\u0627\u0626\u0637" : "No media"}
+        </div>
+      )}
+      {total > 1 ? (
         <>
           <button
             type="button"
@@ -122,9 +166,13 @@ function CardCarousel({ slides, alt, isAr }) {
               event.stopPropagation();
               go(isAr ? 1 : -1);
             }}
-            aria-label={isAr ? "الصورة السابقة" : "Previous image"}
+            aria-label={
+              isAr
+                ? "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0633\u0627\u0628\u0642\u0629"
+                : "Previous image"
+            }
           >
-            ‹
+            &lt;
           </button>
 
           <button
@@ -135,9 +183,11 @@ function CardCarousel({ slides, alt, isAr }) {
               event.stopPropagation();
               go(isAr ? -1 : 1);
             }}
-            aria-label={isAr ? "الصورة التالية" : "Next image"}
+            aria-label={
+              isAr ? "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u062a\u0627\u0644\u064a\u0629" : "Next image"
+            }
           >
-            ›
+            &gt;
           </button>
 
           <div className={styles.dots}>
@@ -149,7 +199,7 @@ function CardCarousel({ slides, alt, isAr }) {
             ))}
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -160,26 +210,26 @@ export default function PropertyCardsCarousel({ projects = [] }) {
 
   return (
     <div className={styles.grid} dir={isAr ? "rtl" : "ltr"}>
-      {projects.map((project, idx) => {
+      {projects.map((project, index) => {
         const node = isAr
           ? project?.ar || project?.en || project
           : project?.en || project?.ar || project;
+
         const name =
           node?.project?.name ||
           project?.name ||
           project?.slug ||
-          (isAr ? "مشروع" : "Project");
+          (isAr ? "\u0645\u0634\u0631\u0648\u0639" : "Project");
+
         const developer =
           node?.project?.developer ||
           project?.developerName ||
           project?.developer ||
           "";
-        const location = node?.project?.location || project?.location || "";
-        const unitTypes =
-          node?.project?.unitTypes ||
-          project?.unitTypes ||
-          project?.unitType ||
-          "";
+
+        const location =
+          node?.project?.location || project?.location || (isAr ? "\u062f\u0628\u064a\u060c \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a" : "Dubai, UAE");
+        const unitTypes = node?.project?.unitTypes || project?.unitTypes || project?.unitType || "";
         const completion =
           node?.project?.completionDate ||
           project?.completionDate ||
@@ -196,8 +246,8 @@ export default function PropertyCardsCarousel({ projects = [] }) {
         const bedsText =
           Number.isFinite(minBeds) && Number.isFinite(maxBeds)
             ? minBeds === maxBeds
-              ? `${minBeds} ${isAr ? "غرفة" : "Bed"}`
-              : `${minBeds}-${maxBeds} ${isAr ? "غرف" : "Beds"}`
+              ? `${minBeds} ${isAr ? "\u063a\u0631\u0641\u0629" : "Bed"}`
+              : `${minBeds}-${maxBeds} ${isAr ? "\u063a\u0631\u0641" : "Beds"}`
             : "";
 
         const href = getProjectHref(project, locale);
@@ -206,28 +256,34 @@ export default function PropertyCardsCarousel({ projects = [] }) {
           project?.status ||
           project?.devStatus ||
           node?.project?.status ||
-          (isAr ? "متاح" : "Available");
+          (isAr ? "\u0645\u062a\u0627\u062d" : "Available");
 
         return (
           <Link
-            key={`${project?.slug || project?.id || idx}`}
+            key={`${project?.slug || project?.id || index}`}
             href={href}
             className={styles.card}
             aria-label={name}
           >
             <div className={styles.cardTop}>
               <CardCarousel slides={slides} alt={name} isAr={isAr} />
-              <div className={styles.ribbon}>{isAr ? "جديد" : "NEW"}</div>
+              <div className={styles.ribbon}>{isAr ? "\u0645\u0645\u064a\u0632" : "FEATURED"}</div>
               <div className={styles.status}>{String(status)}</div>
             </div>
 
             <div className={styles.cardBody}>
               <div className={styles.iconsRow}>
-                <span className={styles.iconBtn} title={isAr ? "مفضلة" : "Favorite"}>
-                  ♡
+                <span
+                  className={styles.iconBtn}
+                  title={isAr ? "\u0645\u0641\u0636\u0644\u0629" : "Favorite"}
+                >
+                  {isAr ? "\u062d\u0641\u0638" : "SAVE"}
                 </span>
-                <span className={styles.iconBtn} title={isAr ? "مشاركة" : "Share"}>
-                  ↗
+                <span
+                  className={styles.iconBtn}
+                  title={isAr ? "\u0645\u0634\u0627\u0631\u0643\u0629" : "Share"}
+                >
+                  {isAr ? "\u0645\u0634\u0627\u0631\u0643\u0629" : "SHARE"}
                 </span>
               </div>
 
@@ -237,34 +293,42 @@ export default function PropertyCardsCarousel({ projects = [] }) {
                 {bedsText ? (
                   <span>{bedsText}</span>
                 ) : (
-                  <span>{Array.isArray(unitTypes) ? unitTypes.join(" • ") : String(unitTypes || "")}</span>
+                  <span>
+                    {Array.isArray(unitTypes) ? unitTypes.join(" • ") : String(unitTypes || "")}
+                  </span>
                 )}
               </div>
 
               <div className={styles.location}>
-                <span className={styles.pin}>📍</span>
+                <span className={styles.pin}>{isAr ? "\u0627\u0644\u0645\u0648\u0642\u0639" : "Location"}</span>
                 <span>{location}</span>
               </div>
 
               <div className={styles.rangeBox}>
-                <div className={styles.rangeLabel}>{isAr ? "يبدأ من" : "RANGING FROM"}</div>
+                <div className={styles.rangeLabel}>
+                  {isAr ? "\u064a\u0628\u062f\u0623 \u0645\u0646" : "STARTING FROM"}
+                </div>
                 <div className={styles.rangeValue}>{fmtPriceShort(startingPrice, isAr)}</div>
 
                 <div className={styles.toRow}>
-                  <div className={styles.toLabel}>{isAr ? "التسليم" : "Handover"}</div>
+                  <div className={styles.toLabel}>
+                    {isAr ? "\u0627\u0644\u062a\u0633\u0644\u064a\u0645" : "Handover"}
+                  </div>
                   <div className={styles.toValue}>
-                    {completion || (isAr ? "قريباً" : "TBA")}
+                    {completion || (isAr ? "\u0642\u0631\u064a\u0628\u0627\u064b" : "TBA")}
                   </div>
                 </div>
 
                 <div className={styles.devLine}>
                   {developer ? (
                     <span className={styles.devText}>
-                      {isAr ? "المطور: " : "Developer: "} {developer}
+                      {isAr ? "\u0627\u0644\u0645\u0637\u0648\u0631: " : "Developer: "} {developer}
                     </span>
                   ) : (
                     <span className={styles.devText}>
-                      {isAr ? "* الأسعار قابلة للتغيير" : "* Subject to availability"}
+                      {isAr
+                        ? "* \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0642\u0627\u0628\u0644\u0629 \u0644\u0644\u062a\u063a\u064a\u064a\u0631"
+                        : "* Subject to availability"}
                     </span>
                   )}
                 </div>

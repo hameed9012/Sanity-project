@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "@/styles/MarketAnalysisMap/MarketAnalysisMap.module.css";
 import { PROJECT_DATA_MAP } from "@/lib/project-data";
@@ -171,10 +171,15 @@ function parseSqft(str) {
 
 function buildMarketProjectsIndex(projectMap, locale = "en") {
   const projects = [];
+  const excludedDeveloperTokens = ["omniyat", "beyond", "imtiaz"];
   for (const [slug, projectData] of Object.entries(projectMap)) {
     try {
       const coords = extractLatLngFromProjectData(projectData, locale);
       if (!coords) continue;
+      const localeData = projectData?.[locale] || projectData?.en || {};
+      const projectLocale = localeData.project || {};
+      const developerToken = String(projectLocale?.developer || "").toLowerCase();
+      if (excludedDeveloperTokens.some((token) => developerToken.includes(token))) continue;
       const propertyType = extractPropertyType(projectData, locale);
       const completionStatus = extractCompletionStatus(projectData, locale);
       const startingPrice = extractStartingPrice(projectData);
@@ -182,8 +187,6 @@ function buildMarketProjectsIndex(projectMap, locale = "en") {
       const bedroomRange = extractBedroomRange(projectData);
       const areaRange = extractAreaRange(projectData);
       const sidebarData = extractSidebarData(projectData, locale);
-      const localeData = projectData?.[locale] || projectData?.en || {};
-      const projectLocale = localeData.project || {};
       projects.push({
         slug, name: projectLocale.name || slug.replace(/-/g, " "),
         lat: coords.lat, lng: coords.lng,
@@ -196,6 +199,16 @@ function buildMarketProjectsIndex(projectMap, locale = "en") {
     } catch (e) { /* skip */ }
   }
   return projects;
+}
+
+const MARKET_INDEX_CACHE = new Map();
+
+function getCachedMarketProjectsIndex(locale = "en") {
+  const key = String(locale || "en");
+  if (MARKET_INDEX_CACHE.has(key)) return MARKET_INDEX_CACHE.get(key);
+  const result = buildMarketProjectsIndex(PROJECT_DATA_MAP, key);
+  MARKET_INDEX_CACHE.set(key, result);
+  return result;
 }
 
 function buildGeoJSONAll(projects) {
@@ -371,6 +384,7 @@ export default function MarketAnalysisMap() {
   const [appliedMin, setAppliedMin] = useState(0);
   const [appliedMax, setAppliedMax] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [selectedSlug, setSelectedSlug] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -389,8 +403,7 @@ export default function MarketAnalysisMap() {
   const [areaSidebarOpen, setAreaSidebarOpen] = useState(false);
 
   // ── Projects data ──────────────────────────────────────────────────────
-  const allProjects = useMemo(() => buildMarketProjectsIndex(PROJECT_DATA_MAP, locale), [locale]);
-  const allGeoJSON  = useMemo(() => buildGeoJSONAll(allProjects), [allProjects]);
+  const allProjects = useMemo(() => getCachedMarketProjectsIndex(locale), [locale]);
 
   const selectedProject = useMemo(() => {
     if (!selectedSlug) return null;
@@ -419,11 +432,13 @@ export default function MarketAnalysisMap() {
     });
   }, [allProjects, propertyType, completionStatus, beds, appliedMin, appliedMax, priceMetricKey]);
 
+  const filteredGeoJSON = useMemo(() => buildGeoJSONAll(filteredProjects), [filteredProjects]);
+
   const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-    return allProjects.filter((p) => p.name.toLowerCase().includes(q) || p.sidebar?.community?.toLowerCase().includes(q)).slice(0, 10);
-  }, [searchQuery, allProjects]);
+    if (!deferredSearchQuery.trim()) return [];
+    const q = deferredSearchQuery.toLowerCase();
+    return allProjects.filter((p) => p.name.toLowerCase().includes(q) || p.sidebar?.community?.toLowerCase?.().includes(q)).slice(0, 10);
+  }, [deferredSearchQuery, allProjects]);
 
   // ── Area GeoJSON with stats joined ─────────────────────────────────────
   // ── Area GeoJSON with stats joined (and filtered) ──────────────────────
@@ -714,8 +729,7 @@ export default function MarketAnalysisMap() {
     const src = map.getSource("area-polygons");
     if (!src) return;
 
-    const geoJSON = buildAreaGeoJSON(areaStats || {});
-    src.setData(geoJSON);
+    src.setData(areaGeoJSON);
 
     // Update color expressions for active metric
     const colorExpr = buildAreaColorExpression(areaMetricKey);
@@ -726,15 +740,15 @@ export default function MarketAnalysisMap() {
       map.setPaintProperty("area-extrusion", "fill-extrusion-color",    ["case", ["get", "hasData"], colorExpr, "#1a1a2e"]);
       map.setPaintProperty("area-extrusion", "fill-extrusion-height",   heightExpr);
     } catch {}
-  }, [areaStats, areaMetricKey, mapLoaded]);
+  }, [areaGeoJSON, areaMetricKey, mapLoaded]);
 
   // ── Update project source data when filtered ───────────────────────────
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const src = map.getSource("market-points");
-    if (src) src.setData(allGeoJSON);
-  }, [allGeoJSON, mapLoaded]);
+    if (src) src.setData(filteredGeoJSON);
+  }, [filteredGeoJSON, mapLoaded]);
 
   // ── Apply project filter ───────────────────────────────────────────────
   useEffect(() => {

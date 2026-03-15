@@ -6,11 +6,22 @@ import styles from "@/styles/projects/ProjectHero.module.css";
 import { getLocalizedText } from "@/lib/text-utils";
 import { useLanguage } from "@/components/LanguageProvider";
 
-// You'll need to install or create an icon component
-// For now, I'll assume you have an Icon component or you can add emoji/icons via your CMS
-
 function isVideo(url = "") {
   return /\.(mp4|webm|ogg)$/i.test(url);
+}
+
+function getInitials(value) {
+  const words = String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (words.length === 0) return "MK";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return words
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 }
 
 export default function ProjectHero({
@@ -34,10 +45,18 @@ export default function ProjectHero({
   const projectName = getLocalizedText(projectInfo.name, activeLocale);
   const companyName = getLocalizedText(heroData.companyName, activeLocale);
   const locationName = getLocalizedText(projectInfo.location, activeLocale);
+  const heroMeta = [companyName, locationName].filter(Boolean).join(" • ");
 
   const bgUrl = heroData.backgroundUrl || heroData.squareImageUrl || "";
   const isBgVideo = isVideo(bgUrl);
   const logoSrc = heroData.squareImageUrl || heroData.backgroundUrl || "";
+  const proximityItems = Array.isArray(locationData?.proximityFeatures)
+    ? locationData.proximityFeatures.filter((item) => item?.text)
+    : [];
+  const scrollLabel =
+    activeLocale === "ar"
+      ? "\u0627\u0646\u062a\u0642\u0644 \u0625\u0644\u0649 \u0627\u0644\u0645\u062d\u062a\u0648\u0649"
+      : "Scroll to content";
 
   const scrollToContent = () => {
     const secondWrapper = document.querySelector(`.${styles.secondWrapper}`);
@@ -48,7 +67,6 @@ export default function ProjectHero({
 
   return (
     <div className={styles.root} dir={activeIsRTL ? "rtl" : "ltr"}>
-      {/* HERO */}
       <section className={styles.hero}>
         <div className={styles.heroBgWrap}>
           {isBgVideo ? (
@@ -76,37 +94,32 @@ export default function ProjectHero({
 
           <div className={styles.overlayContent}>
             <h1 className={styles.title}>{projectName}</h1>
-            <p className={styles.subtitle}>
-              {companyName} / {locationName}
-            </p>
+            {heroMeta ? <p className={styles.subtitle}>{heroMeta}</p> : null}
 
-            {projectInfo.startingPrice && (
-              <div className={styles.priceBadge}>
-                {projectInfo.startingPrice}
-              </div>
-            )}
+            {projectInfo.startingPrice ? (
+              <div className={styles.priceBadge}>{projectInfo.startingPrice}</div>
+            ) : null}
           </div>
 
           <div className={styles.vignette} />
 
-          {showScrollIndicator && (
+          {showScrollIndicator ? (
             <div
               className={styles.scrollIndicator}
               onClick={scrollToContent}
               role="button"
               tabIndex={0}
-              aria-label="Scroll to content"
+              aria-label={scrollLabel}
             >
               <div className={styles.scrollLine} />
               <span className={styles.scrollText}>
-                {activeLocale === "ar" ? "اسفل" : "SCROLL"}
+                {activeLocale === "ar" ? "\u0627\u0643\u062a\u0634\u0641" : "SCROLL"}
               </span>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
-      {/* LOGO + INFO */}
       <section className={styles.secondWrapper}>
         <div className={styles.innerRow}>
           <div className={styles.detLogoContent}>
@@ -119,22 +132,23 @@ export default function ProjectHero({
                   height={140}
                   className={styles.logoImg}
                 />
-              ) : null}
+              ) : (
+                <span className={styles.logoFallback}>{getInitials(projectName)}</span>
+              )}
             </div>
           </div>
 
-          {/* Nearby Highlights */}
-          {locationData?.proximityFeatures && (
+          {proximityItems.length > 0 ? (
             <div className={styles.nearbyGrid}>
-              {locationData.proximityFeatures.map((item, i) => (
-                <div key={i} className={styles.nearbyCard}>
+              {proximityItems.map((item, index) => (
+                <div key={index} className={styles.nearbyCard}>
                   <span className={styles.nearbyText}>
                     {getLocalizedText(item.text, activeLocale)}
                   </span>
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
     </div>

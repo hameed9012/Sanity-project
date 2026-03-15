@@ -195,6 +195,22 @@
   gap: 8px;
 }
 
+.locationMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(201, 163, 91, 0.12);
+  color: rgba(120, 86, 40, 0.95);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 /* Details Grid (more premium structure) */
 .cardDetails {
   display: grid;
@@ -246,6 +262,15 @@
   letter-spacing: 0.14em;
   color: rgba(12, 12, 14, 0.46);
   margin-right: 4px;
+}
+
+.priceRequest {
+  font-size: 16px !important;
+  letter-spacing: 0;
+}
+
+.priceRequest::before {
+  content: none;
 }
 
 /* Empty State */
@@ -300,7 +325,7 @@
 
 @media (max-width: 768px) {
   .cardsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
     padding: 24px 0;
   }
@@ -313,16 +338,63 @@
   .price {
     font-size: 22px !important;
   }
+  .cardContent {
+    padding: 18px 18px 16px;
+  }
+  .cardDetails {
+    gap: 12px;
+  }
+  .detailItem {
+    padding: 11px 11px;
+  }
 }
 
 @media (max-width: 480px) {
   .cardsGrid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
   .cardMedia {
-    height: 220px;
+    height: 210px;
   }
   .cardContent {
-    padding: 18px;
+    padding: 16px;
+  }
+  .statusBadge {
+    top: 12px;
+    left: 12px;
+    padding: 7px 10px;
+    gap: 8px;
+    font-size: 9px;
+  }
+  .projectName {
+    font-size: 18px;
+    margin: 10px 0 8px;
+  }
+  .location {
+    font-size: 12px;
+    gap: 6px;
+  }
+  .locationMarker {
+    min-width: 26px;
+    height: 18px;
+    font-size: 8px;
+  }
+  .cardDetails {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .detailLabel {
+    font-size: 9px;
+    margin-bottom: 5px;
+  }
+  .detailValue {
+    font-size: 13px;
+  }
+  .price {
+    font-size: 20px !important;
+  }
+  .price::before {
+    font-size: 11px;
   }
 }

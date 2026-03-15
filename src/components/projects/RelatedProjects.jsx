@@ -34,26 +34,34 @@ function scoreRelatedness(current, candidate) {
 
   let score = 0;
 
-  const curDev = (current.developerSlug || current.developer || "").toLowerCase();
-  const canDev = (candidate.developerSlug || candidate.developer || "").toLowerCase();
-  if (curDev && canDev && curDev === canDev) score += 40;
+  const currentDeveloper = (current.developerSlug || current.developer || "").toLowerCase();
+  const candidateDeveloper = (candidate.developerSlug || candidate.developer || "").toLowerCase();
+  if (currentDeveloper && candidateDeveloper && currentDeveloper === candidateDeveloper) {
+    score += 40;
+  }
 
-  const curCat = (current.category || current.type || "").toLowerCase();
-  const canCat = (candidate.category || candidate.type || "").toLowerCase();
-  if (curCat && canCat && curCat === canCat) score += 20;
+  const currentCategory = (current.category || current.type || "").toLowerCase();
+  const candidateCategory = (candidate.category || candidate.type || "").toLowerCase();
+  if (currentCategory && candidateCategory && currentCategory === candidateCategory) {
+    score += 20;
+  }
 
-  const curStatus = (current.status || current.devStatus || "").toLowerCase();
-  const canStatus = (candidate.status || candidate.devStatus || "").toLowerCase();
-  if (curStatus && canStatus && curStatus === canStatus) score += 18;
+  const currentStatus = (current.status || current.devStatus || "").toLowerCase();
+  const candidateStatus = (candidate.status || candidate.devStatus || "").toLowerCase();
+  if (currentStatus && candidateStatus && currentStatus === candidateStatus) {
+    score += 18;
+  }
 
-  const curRegion = (current.regionSlug || "").toLowerCase();
-  const canRegion = (candidate.regionSlug || "").toLowerCase();
-  if (curRegion && canRegion && curRegion === canRegion) score += 15;
+  const currentRegion = (current.regionSlug || "").toLowerCase();
+  const candidateRegion = (candidate.regionSlug || "").toLowerCase();
+  if (currentRegion && candidateRegion && currentRegion === candidateRegion) {
+    score += 15;
+  }
 
-  const curPrice = current.startingPriceAED || current.priceAED;
-  const canPrice = candidate.startingPriceAED || candidate.priceAED;
-  if (curPrice && canPrice && curPrice > 0 && canPrice > 0) {
-    const ratio = Math.min(curPrice, canPrice) / Math.max(curPrice, canPrice);
+  const currentPrice = current.startingPriceAED || current.priceAED;
+  const candidatePrice = candidate.startingPriceAED || candidate.priceAED;
+  if (currentPrice && candidatePrice && currentPrice > 0 && candidatePrice > 0) {
+    const ratio = Math.min(currentPrice, candidatePrice) / Math.max(currentPrice, candidatePrice);
     if (ratio >= 0.7) score += 10;
   }
 
@@ -95,9 +103,11 @@ export default function RelatedProjects({ projectData, currentSlug }) {
 
   if (loading || related.length === 0) return null;
 
-  const heading = isAr ? "مشاريع مشابهة" : "Related Projects";
+  const heading = isAr
+    ? "\u0645\u0634\u0627\u0631\u064a\u0639 \u0645\u0634\u0627\u0628\u0647\u0629"
+    : "Related Projects";
   const subheading = isAr
-    ? "مشاريع قد تهمك بناءً على الموقع والمطور والنوع"
+    ? "\u0645\u0634\u0627\u0631\u064a\u0639 \u0642\u062f \u062a\u0647\u0645\u0643 \u0628\u0646\u0627\u0621\u064b \u0639\u0644\u0649 \u0627\u0644\u0645\u0648\u0642\u0639 \u0648\u0627\u0644\u0645\u0637\u0648\u0631 \u0648\u0627\u0644\u0646\u0648\u0639"
     : "Projects you may like based on location, developer & type";
 
   return (
@@ -105,7 +115,10 @@ export default function RelatedProjects({ projectData, currentSlug }) {
       <div className={styles.container}>
         <div className={styles.header}>
           <p className={styles.eyebrow}>
-            {t?.("relatedProjects.eyebrow") || (isAr ? "اكتشف المزيد" : "DISCOVER MORE")}
+            {t?.("relatedProjects.eyebrow") ||
+              (isAr
+                ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0645\u0632\u064a\u062f"
+                : "DISCOVER MORE")}
           </p>
           <h2 className={styles.heading}>{t?.("relatedProjects.heading") || heading}</h2>
           <p className={styles.subheading}>
@@ -117,7 +130,10 @@ export default function RelatedProjects({ projectData, currentSlug }) {
 
         <div className={styles.viewAll}>
           <Link href="/properties" className={styles.viewAllBtn}>
-            {t?.("relatedProjects.viewAll") || (isAr ? "عرض جميع المشاريع" : "View All Projects")}
+            {t?.("relatedProjects.viewAll") ||
+              (isAr
+                ? "\u0639\u0631\u0636 \u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639"
+                : "View All Projects")}
           </Link>
         </div>
       </div>

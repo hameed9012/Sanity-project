@@ -891,3 +891,65 @@
     justify-content: space-between;
   }
 }
+
+@media (max-width: 680px) {
+  .container {
+    width: min(100%, 94%);
+  }
+
+  .metaRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .metaActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .compareToggleBtn,
+  .resetBtn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .cardsSection {
+    margin-top: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 340px;
+  }
+
+  .heroTop {
+    padding: 34px 18px 22px;
+  }
+
+  .metaText {
+    font-size: 14px;
+  }
+
+  .compareChip,
+  .compareChipLabel {
+    max-width: 100%;
+  }
+
+  .compareChips {
+    width: 100%;
+  }
+
+  .compareBar {
+    border-radius: 14px;
+    padding: 10px;
+  }
+
+  .compareGoBtn,
+  .compareClearBtn {
+    flex: 1 1 0;
+    min-height: 42px;
+  }
+}

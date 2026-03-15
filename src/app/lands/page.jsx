@@ -146,14 +146,14 @@ export default function LandsPage() {
           <div className={styles.pageTitleWrap}>
             <p className={styles.pageSubOnly}>
               {isRTL
-                ? "استعرض مشاريع الأراضي بحسب الحالة وابحث بالعربية أو الإنجليزية"
+                ? "\u0627\u0633\u062a\u0639\u0631\u0636 \u0645\u0634\u0627\u0631\u064a\u0639 \u0627\u0644\u0623\u0631\u0627\u0636\u064a \u0628\u062d\u0633\u0628 \u0627\u0644\u062d\u0627\u0644\u0629 \u0648\u0627\u0628\u062d\u062b \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0623\u0648 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629"
                 : "Browse land projects by status and search in Arabic or English"}
             </p>
           </div>
           <div className={styles.metaPill}>
             {isRTL ? (
               <>
-                <span>المشاريع: </span>
+                <span>\u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639: </span>
                 <b>{filtered.length}</b>
               </>
             ) : (
@@ -174,7 +174,7 @@ export default function LandsPage() {
               onChange={(e) => setSearch(e.target.value)}
               placeholder={
                 isRTL
-                  ? "ابحث باسم المشروع أو المنطقة أو المطور"
+                  ? "\u0627\u0628\u062d\u062b \u0628\u0627\u0633\u0645 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0623\u0648 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0623\u0648 \u0627\u0644\u0645\u0637\u0648\u0631"
                   : "Search by project, area, or developer"
               }
               className={styles.tab}
@@ -189,7 +189,7 @@ export default function LandsPage() {
 
         {loading && allLands.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
-            {isRTL ? "جارٍ التحميل..." : "Loading..."}
+            {isRTL ? "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644..." : "Loading..."}
           </div>
         )}
 
@@ -206,9 +206,9 @@ export default function LandsPage() {
                 whileHover={{ y: -6 }}
               >
                 <Link href={`/lands/${land.slug}`} className={styles.card}>
-                  <span className={styles.brandBadge}>{isRTL ? "الرساخون" : "Al Rasikhoon"}</span>
+                  <span className={styles.brandBadge}>{isRTL ? "\u0627\u0644\u0631\u0627\u0633\u062e\u0648\u0646" : "Al Rasikhoon"}</span>
                   <CardMedia land={land} locale={locale} isRTL={isRTL} />
-                  <CardBody land={land} locale={locale} isRTL={isRTL} activeType={activeType} />
+                  <CardBody land={land} locale={locale} isRTL={isRTL} />
                 </Link>
               </motion.div>
             ))}
@@ -218,11 +218,11 @@ export default function LandsPage() {
         {!loading && filtered.length === 0 && (
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>
-              {isRTL ? "لا توجد مشاريع مطابقة" : "No matching land projects"}
+              {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0634\u0627\u0631\u064a\u0639 \u0623\u0631\u0627\u0636\u064a \u0645\u0637\u0627\u0628\u0642\u0629" : "No matching land projects"}
             </div>
             <div className={styles.emptySub}>
               {isRTL
-                ? "غيّر التبويب أو جرّب كلمة بحث مختلفة."
+                ? "\u063a\u064a\u0651\u0631 \u0627\u0644\u062a\u0628\u0648\u064a\u0628 \u0623\u0648 \u062c\u0631\u0651\u0628 \u0643\u0644\u0645\u0629 \u0628\u062d\u062b \u0645\u062e\u062a\u0644\u0641\u0629."
                 : "Try a different tab or search term."}
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function LandsPage() {
               className={styles.loadMoreBtn}
               onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
             >
-              {isRTL ? "تحميل المزيد" : "LOAD MORE"}
+              {isRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0632\u064a\u062f" : "LOAD MORE"}
             </button>
           </div>
         )}
@@ -246,11 +246,11 @@ export default function LandsPage() {
 
 function TypeTabs({ value, onChange, counts, isRTL }) {
   const tabs = [
-    { id: "all", en: "All", ar: "الكل" },
-    { id: "properties", en: "Properties", ar: "العقارات" },
-    { id: "offplan", en: "Offplan", ar: "الأوف بلان" },
-    { id: "secondary", en: "Secondary", ar: "الجاهز" },
-    { id: "rental", en: "Rental", ar: "الإيجار" },
+    { id: "all", en: "All", ar: "\u0627\u0644\u0643\u0644" },
+    { id: "properties", en: "Properties", ar: "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a" },
+    { id: "offplan", en: "Offplan", ar: "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" },
+    { id: "secondary", en: "Ready To Move", ar: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
+    { id: "rental", en: "Rental", ar: "\u0627\u0644\u0625\u064a\u062c\u0627\u0631" },
   ];
 
   return (
@@ -290,7 +290,7 @@ function CardMedia({ land, locale, isRTL }) {
         <div className={styles.pdfFallback}>
           <div className={styles.pdfBadge}>PDF</div>
           <div className={styles.pdfTitle}>{title}</div>
-          <div className={styles.pdfHint}>{isRTL ? "مشروع" : "Project"}</div>
+          <div className={styles.pdfHint}>{isRTL ? "\u0645\u0634\u0631\u0648\u0639" : "Project"}</div>
         </div>
       )}
       <div className={styles.mediaOverlay} />
@@ -298,7 +298,7 @@ function CardMedia({ land, locale, isRTL }) {
   );
 }
 
-function CardBody({ land, locale, isRTL, activeType }) {
+function CardBody({ land, locale, isRTL }) {
   const title = pickLang(land.title, locale) || land.slug;
   const subtitle = pickLang(land.subtitle, locale);
   const area = pickLang(land.area, locale);
@@ -306,17 +306,17 @@ function CardBody({ land, locale, isRTL, activeType }) {
   const tabType = getTabType(land);
 
   const typeLabelMap = {
-    properties: isRTL ? "عقار" : "Property",
-    offplan: isRTL ? "أوف بلان" : "Offplan",
-    secondary: isRTL ? "جاهز" : "Secondary",
-    rental: isRTL ? "إيجار" : "Rental",
+    properties: isRTL ? "\u0639\u0642\u0627\u0631" : "Property",
+    offplan: isRTL ? "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" : "Offplan",
+    secondary: isRTL ? "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" : "Ready To Move",
+    rental: isRTL ? "\u0625\u064a\u062c\u0627\u0631" : "Rental",
   };
 
   return (
     <div className={styles.cardBody}>
       <div className={styles.pillsRow}>
         <span className={styles.pill}>{typeLabelMap[tabType]}</span>
-        <span className={styles.pillSoft}>{land.developer || (isRTL ? "غير محدد" : "Unknown")}</span>
+        <span className={styles.pillSoft}>{land.developer || (isRTL ? "\u063a\u064a\u0631 \u0645\u062d\u062f\u062f" : "Unknown")}</span>
         {area && <span className={styles.pillSoft}>{area}</span>}
       </div>
       <h3 className={styles.cardTitle}>{title}</h3>
@@ -327,7 +327,7 @@ function CardBody({ land, locale, isRTL, activeType }) {
         </div>
       )}
       <div className={styles.cardCtaRow}>
-        <span className={styles.cardCta}>{isRTL ? "عرض التفاصيل" : "VIEW DETAILS"}</span>
+        <span className={styles.cardCta}>{isRTL ? "\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644" : "VIEW DETAILS"}</span>
       </div>
     </div>
   );

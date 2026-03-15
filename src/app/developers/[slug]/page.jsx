@@ -280,12 +280,31 @@ export default function DeveloperPage() {
     return count;
   }, [filters]);
 
+  const notFoundTitle = isRTL ? "المطور غير موجود" : "Developer Not Found";
+  const notFoundBody = isRTL
+    ? `لا توجد بيانات لهذا المطور: ${slug}`
+    : `No data found for developer: ${slug}`;
+  const loadingLabel = isRTL ? "جارٍ التحميل" : "Loading";
+  const portfolioTitle =
+    t?.("developerPage.portfolioTitle") || (isRTL ? "مجموعة المشاريع" : "Portfolio Collection");
+  const portfolioSubtitle =
+    t?.("developerPage.portfolioSubtitle", {
+      developer: developer?.name || "",
+    }) ||
+    (isRTL
+      ? `مجموعة مختارة من مشاريع ${developer?.name}`
+      : `Curated selection of ${developer?.name}'s exceptional developments`);
+  const projectWord = isRTL ? "مشروع" : "Project";
+  const projectsWord = isRTL ? "مشاريع" : "Projects";
+  const exclusiveProjectLabel = isRTL ? "مشروع مميز" : "Exclusive Project";
+  const signatureProjectsLabel = isRTL ? "مشاريع مختارة" : "Signature Developments";
+
   if (sanityLoaded && (isExcludedDeveloper || !developer)) {
     return (
       <div className={styles.notFound}>
         <div className={styles.notFoundContent}>
-          <h1>Developer Not Found</h1>
-          <p>No data found for developer: {slug}</p>
+          <h1>{notFoundTitle}</h1>
+          <p>{notFoundBody}</p>
         </div>
       </div>
     );
@@ -296,7 +315,7 @@ export default function DeveloperPage() {
       <div className={styles.loadingScreen}>
         <div className={styles.loadingOrnament}></div>
         <div className={styles.loadingText}>
-          <span>Loading</span>
+          <span>{loadingLabel}</span>
           <div className={styles.loadingDots}>
             <span></span>
             <span></span>
@@ -306,14 +325,6 @@ export default function DeveloperPage() {
       </div>
     );
   }
-
-  const portfolioTitle =
-    t?.("developerPage.portfolioTitle") || "Portfolio Collection";
-  const portfolioSubtitle =
-    t?.("developerPage.portfolioSubtitle", {
-      developer: developer?.name || "",
-    }) ||
-    `Curated selection of ${developer?.name}'s exceptional developments`;
 
   return (
     <div className={styles.page}>
@@ -329,7 +340,7 @@ export default function DeveloperPage() {
             <p className={styles.sectionSubtitle}>{portfolioSubtitle}</p>
             <div className={styles.projectCountBadge}>
               {filteredProjects.length}{" "}
-              {filteredProjects.length === 1 ? "Project" : "Projects"}
+              {filteredProjects.length === 1 ? projectWord : projectsWord}
             </div>
           </div>
           <ProjectsFiltersBar
@@ -353,8 +364,8 @@ export default function DeveloperPage() {
                 </span>
                 <span className={styles.resultsLabel}>
                   {filteredProjects.length === 1
-                    ? "Exclusive Project"
-                    : "Signature Developments"}
+                    ? exclusiveProjectLabel
+                    : signatureProjectsLabel}
                 </span>
                 {activeFilterCount > 0 && (
                   <div className={styles.filtersBadge}>

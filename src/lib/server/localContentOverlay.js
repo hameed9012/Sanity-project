@@ -27,6 +27,75 @@ function projectKey(title, developer = "") {
   return developerSlug ? `${developerSlug}::${projectSlug}` : projectSlug;
 }
 
+function tokenizeSlug(value) {
+  return slugify(value)
+    .split("-")
+    .filter(
+      (token) =>
+        token &&
+        token.length > 1 &&
+        ![
+          "the",
+          "and",
+          "of",
+          "by",
+          "at",
+          "project",
+          "projects",
+          "residence",
+          "residences",
+          "apartment",
+          "apartments",
+          "villa",
+          "villas",
+          "tower",
+          "towers",
+        ].includes(token)
+    );
+}
+
+function hasStrongSlugOverlap(a, b) {
+  const aTokens = tokenizeSlug(a);
+  const bTokens = tokenizeSlug(b);
+  if (!aTokens.length || !bTokens.length) return false;
+  const overlap = aTokens.filter((token) => bTokens.includes(token));
+  return overlap.length >= Math.min(2, aTokens.length, bTokens.length);
+}
+
+function findLooseProjectMatch(items, { slug, title, developer }) {
+  const slugValue = slugify(slug);
+  const titleValue = slugify(title);
+  const developerValue = slugify(developer);
+
+  if (!slugValue && !titleValue) return null;
+
+  return items.find((item) => {
+    const itemSlug =
+      slugify(item?.slug) ||
+      slugify(item?.project) ||
+      slugify(item?.en?.project?.name) ||
+      "";
+    const itemDeveloper =
+      slugify(item?.developerSlug) ||
+      slugify(item?.developer) ||
+      slugify(item?.developer_slug) ||
+      slugify(item?.en?.project?.developer) ||
+      "";
+
+    if (!itemSlug) return false;
+    if (developerValue && itemDeveloper && developerValue !== itemDeveloper) return false;
+
+    return (
+      itemSlug === slugValue ||
+      itemSlug === titleValue ||
+      (slugValue && (itemSlug.includes(slugValue) || slugValue.includes(itemSlug))) ||
+      (titleValue && (itemSlug.includes(titleValue) || titleValue.includes(itemSlug))) ||
+      (slugValue && hasStrongSlugOverlap(itemSlug, slugValue)) ||
+      (titleValue && hasStrongSlugOverlap(itemSlug, titleValue))
+    );
+  }) || null;
+}
+
 const DEVELOPER_NAME_MAP = {
   sobha: "Sobha Realty",
   azizi: "Azizi Developments",
@@ -71,6 +140,29 @@ function firstNonEmpty(...values) {
 function asAbsoluteUrl(value) {
   const url = String(value || "").trim();
   return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function isWeakText(value) {
+  const text = String(value || "").trim().toLowerCase();
+  return (
+    !text ||
+    [
+      "tba",
+      "n/a",
+      "na",
+      "unknown",
+      "available",
+      "project",
+      "property",
+      "dubai, uae",
+      "dubai, united arab emirates",
+    ].includes(text)
+  );
+}
+
+function isWeakCompletion(value) {
+  const text = String(value || "").trim().toLowerCase();
+  return !text || ["tba", "soon", "available"].includes(text);
 }
 
 function normalizeDeveloperName(value) {
@@ -177,6 +269,23 @@ function isVideoUrl(url) {
   return [".mp4", ".webm", ".mov", ".m4v", ".ogg"].some((ext) => clean.endsWith(ext));
 }
 
+function normalizeMediaItems(items = []) {
+  const seen = new Set();
+  return items
+    .map((item) => {
+      const url = typeof item === "string" ? item : item?.url;
+      const absolute = asAbsoluteUrl(url);
+      if (!absolute) return null;
+      if (seen.has(absolute)) return null;
+      seen.add(absolute);
+      return {
+        url: absolute,
+        type: isVideoUrl(absolute) ? "video" : "image",
+      };
+    })
+    .filter(Boolean);
+}
+
 function isWeakProjectImage(value) {
   const text = String(value || "").toLowerCase().trim();
   if (!text) return true;
@@ -230,6 +339,23 @@ for (const property of localProperties) {
   const localDeveloper = property?.en?.project?.developer || property?.developer_slug || "";
   localPropertyByKey.set(projectKey(localName, localDeveloper), property);
 }
+const localPropertyList = Array.from(localPropertyBySlug.values());
+const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
+
+const activeDeveloperTokens = new Set();
+for (const property of localPropertyList) {
+  [
+    property?.developer_slug,
+    property?.developerSlug,
+    property?.developer,
+    property?.developerName,
+    property?.en?.project?.developer,
+    property?.ar?.project?.developer,
+  ]
+    .map((value) => slugify(value))
+    .filter(Boolean)
+    .forEach((token) => activeDeveloperTokens.add(token));
+}
 
 const localDeveloperBySlug = new Map();
 for (const developer of localDevelopers) {
@@ -250,11 +376,18 @@ const localArticleBySlug = new Map();
 for (const article of localArticles) {
   localArticleBySlug.set(article.slug, article);
 }
+const workbookRecordList = Array.from(workbookBySlug.values());
 
 const PROPERTY_SLUG_ALIASES = new Map([
   ["one", "sobha-one"],
   ["the-element", "sobha-one-the-element"],
   ["sobha-elwood-secondary", "elwood"],
+  ["estate-sobha", "sobha-estates"],
+  ["sobha-estate", "sobha-estates"],
+  ["azure-azizi", "azure"],
+  ["azizi-azure", "azure"],
+  ["aspirz", "danube-aspirz"],
+  ["danube-aspirz", "danube-aspirz"],
   ["lina", "azizi-lina"],
   ["gabriel", "azizi-gabriel"],
   ["wares", "azizi-wares"],
@@ -273,6 +406,38 @@ const PROPERTY_SLUG_ALIASES = new Map([
   ["shahrukhz", "shahrukz"],
 ]);
 
+const COMMON_AZIZI_AMENITIES = [
+  "Swimming Pool",
+  "Gymnasium",
+  "Kids Play Area",
+  "Landscaped Gardens",
+  "Retail Promenade",
+  "24/7 Security",
+  "Covered Parking",
+];
+
+const COMMON_DANUBE_AMENITIES = [
+  "Swimming Pool",
+  "Gymnasium",
+  "Padel Court",
+  "Kids Play Area",
+  "BBQ Area",
+  "Jogging Track",
+  "Business Lounge",
+  "24/7 Security",
+];
+
+const COMMON_SOBHA_AMENITIES = [
+  "Swimming Pool",
+  "Gymnasium",
+  "Kids Play Area",
+  "Clubhouse",
+  "Landscaped Gardens",
+  "Yoga Deck",
+  "Jogging Track",
+  "24/7 Security",
+];
+
 const MANUAL_PROPERTY_PATCHES = {
   one: {
     title: "Sobha One",
@@ -280,42 +445,129 @@ const MANUAL_PROPERTY_PATCHES = {
     type: "apartments",
     unitTypes: "1-4 Bedroom Apartments & Duplexes",
   },
+  lazord: {
+    title: "Lazord",
+    location: "Majan, Dubailand, Dubai, UAE",
+    developer: "Lapis Properties",
+    startingPrice: "AED 671,000",
+    priceAED: 671_000,
+    startingPriceAED: 671_000,
+    propertyType: "apartments",
+    type: "apartments",
+    unitTypes: "Studios, 1 & 2 Bedroom Apartments",
+    regionSlug: "dubailand",
+    heroImage:
+      "https://luxury-real-estate-media.b-cdn.net/lapis/lazord/Lazord%20studio%20Floor%20Plan.png",
+  },
+  "altai-tower": {
+    title: "Altai Tower",
+    location: "Jumeirah Village Triangle, Dubai, UAE",
+    developer: "Tiger Properties",
+    regionSlug: "jumeirah-village-triangle",
+  },
   lina: {
     title: "Azizi Lina",
     location: "Jebel Ali, Dubai, UAE",
     developer: "Azizi Developments",
+    startingPrice: "AED 588,000",
+    priceAED: 588_000,
+    startingPriceAED: 588_000,
+    propertyType: "apartments",
+    type: "apartments",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/lina/360-DJAZ.07-SL-IMG_EXTERIOR%20VIEW%2004.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   gabriel: {
     title: "Azizi Gabriel",
     location: "Jebel Ali, Dubai, UAE",
     developer: "Azizi Developments",
+    startingPrice: "AED 591,000",
+    priceAED: 591_000,
+    startingPriceAED: 591_000,
+    propertyType: "apartments",
+    type: "apartments",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/gabriel/360-DJAZ2.39-HL-IMG-EXTERIOR%20PERSPECTIVE%201-00.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   wares: {
     title: "Azizi Wares",
     location: "Jebel Ali, Dubai, UAE",
     developer: "Azizi Developments",
+    startingPrice: "AED 594,000",
+    priceAED: 594_000,
+    startingPriceAED: 594_000,
+    propertyType: "apartments",
+    type: "apartments",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/wares/VIEW_02.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   venice: {
     title: "Azizi Venice",
     location: "Dubai South, Dubai, UAE",
     developer: "Azizi Developments",
     paymentPlan: "50 / 50",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   "azizi-ruby": {
     title: "Azizi Ruby",
     location: "Jumeirah Village Circle, Dubai, UAE",
     developer: "Azizi Developments",
     unitTypes: "Studio, 1, 2 & 3 Bedroom Apartments",
+    startingPrice: "AED 1,114,000",
+    priceAED: 1_114_000,
+    startingPriceAED: 1_114_000,
+    completionDate: "Q4 2026",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   skyterraces: {
     title: "Binghatti Sky Terraces",
-    location: "Motor City, Dubai, UAE",
+    developer: "Binghatti",
+    location: "Dubai Motor City, Dubai, UAE",
     completionDate: "Q4 2027",
+    propertyType: "apartments",
+    type: "apartments",
+    unitTypes: "Studio, 1, 2 & 3 Bedroom Apartments",
+    startingPrice: "AED 778,999",
+    priceAED: 778_999,
+    startingPriceAED: 778_999,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/binghatti/skyterraces/1.webp",
   },
   volta: {
     title: "DAMAC Volta",
     location: "Business Bay, Dubai, UAE",
     developer: "DAMAC Properties",
+    propertyType: "apartments",
+    type: "apartments",
+    completionDate: "Q2 2028",
+    startingPrice: "AED 2,496,000",
+    priceAED: 2_496_000,
+    startingPriceAED: 2_496_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/damac/-volta/SZR_04_NIGHT.jpg",
+  },
+  azure: {
+    title: "Azure Azizi",
+    location: "Dubai South, Dubai, UAE",
+    developer: "Azizi Developments",
+    completionDate: "Q4 2026",
+    paymentPlan: "50 / 50",
+    startingPrice: "AED 1,376,000",
+    priceAED: 1_376_000,
+    startingPriceAED: 1_376_000,
+    unitTypes: "1, 2 & 3 Bedroom Apartments",
+    amenities: COMMON_AZIZI_AMENITIES,
+  },
+  "danube-aspirz": {
+    title: "Danube Aspirz",
+    location: "Dubai Sports City, Dubai, UAE",
+    developer: "Danube Properties",
+    completionDate: "Q4 2028",
+    propertyType: "commercial-retail",
+    type: "commercial-retail",
+    startingPrice: "AED 1,770,000",
+    priceAED: 1_770_000,
+    startingPriceAED: 1_770_000,
+    paymentPlan: "70 / 30 Post-Handover",
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   "il-teatro": {
     title: "IL Teatro Residences",
@@ -323,21 +575,38 @@ const MANUAL_PROPERTY_PATCHES = {
     developer: "Arada",
   },
   "mercedes-benz-places-binghatti-city": {
+    developer: "Binghatti",
     location: "Meydan Horizon, Dubai, UAE",
     completionDate: "Q2 2028",
+    paymentPlan: "70 / 30",
   },
   "mercedes-benz-places": {
+    developer: "Binghatti",
     location: "Downtown Dubai, UAE",
     completionDate: "Q4 2026",
+    paymentPlan: "70 / 30",
   },
   "sobha-estates": {
     title: "Sobha Estates Villas",
     propertyType: "villas",
     type: "villas",
+    unitTypes: "5 & 6 Bedroom Villas",
     location: "Mohammed Bin Rashid City, Dubai, UAE",
     completionDate: "Q3 2026",
     developer: "Sobha Realty",
     heroImage: "https://luxury-real-estate-media.b-cdn.net/sobha-reserve/Community.png",
+    amenities: COMMON_SOBHA_AMENITIES,
+  },
+  "estate-sobha": {
+    title: "Sobha Estates Villas",
+    propertyType: "villas",
+    type: "villas",
+    unitTypes: "5 & 6 Bedroom Villas",
+    location: "Mohammed Bin Rashid City, Dubai, UAE",
+    completionDate: "Q3 2026",
+    developer: "Sobha Realty",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/sobha-reserve/Community.png",
+    amenities: COMMON_SOBHA_AMENITIES,
   },
   elwood: {
     title: "Sobha Elwood",
@@ -345,17 +614,38 @@ const MANUAL_PROPERTY_PATCHES = {
     developer: "Sobha Realty",
     propertyType: "villas",
     type: "villas",
+    completionDate: "Q4 2027",
+    unitTypes: "4, 5 & 6 Bedroom Villas",
+    startingPrice: "AED 7,930,000",
+    priceAED: 7_930_000,
+    startingPriceAED: 7_930_000,
     heroImage: "https://luxury-real-estate-media.b-cdn.net/sobha-elwood/TYPE%205A%20FRONT.jpg",
+    amenities: COMMON_SOBHA_AMENITIES,
   },
   inaura: {
     title: "Inaura Hotels & Residences Downtown",
     location: "Downtown Dubai, UAE",
+    developer: "Arada",
     completionDate: "Q2 2030",
+    propertyType: "apartments",
+    type: "apartments",
+    startingPrice: "AED 3,599,000",
+    priceAED: 3_599_000,
+    startingPriceAED: 3_599_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/arada/inaura/EXT01_Hero_B3_12k-02.jpg",
   },
   "w-residences": {
     title: "W Residences",
     location: "Dubai Harbour, Dubai, UAE",
+    developer: "Arada",
     completionDate: "Q4 2028",
+    propertyType: "apartments",
+    type: "apartments",
+    unitTypes: "1, 2, 3 & 4 Bedroom Residences",
+    startingPrice: "AED 4,320,000",
+    priceAED: 4_320_000,
+    startingPriceAED: 4_320_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/arada/w-residences/240522-Frontside-Landscape-10.jpg",
   },
   "w-the-residences": {
     title: "W The Residences",
@@ -367,30 +657,53 @@ const MANUAL_PROPERTY_PATCHES = {
     location: "DIFC, Dubai, UAE",
     developer: "Arada",
     completionDate: "Q4 2029",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/akala/hero.jpg",
   },
   "akala-residence": {
     title: "Akala Residence",
     location: "DIFC, Dubai, UAE",
     developer: "Arada",
     completionDate: "Q4 2029",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/akala/hero.jpg",
   },
   anantara: {
     title: "Anantara Sharjah Residences",
     location: "Sharjah, UAE",
+    completionDate: "Q2 2027",
+    developer: "Arada",
+    propertyType: "apartments",
+    type: "apartments",
+    startingPrice: "AED 2,510,000",
+    priceAED: 2_510_000,
+    startingPriceAED: 2_510_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/arada/anantara/1.webp",
   },
   bugatti: {
     title: "Bugatti Residences by Binghatti",
     location: "Business Bay, Dubai, UAE",
     completionDate: "Q1 2026",
+    developer: "Binghatti",
     propertyType: "penthouses",
     type: "penthouses",
+    unitTypes: "2, 3, 4 & 5 Bedroom Sky Mansions",
+    startingPrice: "AED 19,400,000",
+    priceAED: 19_400_000,
+    startingPriceAED: 19_400_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/binghatti/bugatti/BUGATTI%20RESIDENCES%20BY%20BINGHATTI%20_C8.jpg",
   },
   monaco: {
     title: "Azizi Monaco",
     propertyType: "villas",
     type: "villas",
     unitTypes: "6 & 8 Bedroom Villas",
+    location: "Dubai South, Dubai, UAE",
     completionDate: "Q4 2026",
+    developer: "Azizi Developments",
+    startingPrice: "AED 45,490,000",
+    priceAED: 45_490_000,
+    startingPriceAED: 45_490_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/monaco/6bhk%2FShot_14.jpeg",
+    heroVideo: "https://luxury-real-estate-media.b-cdn.net/azizi/monaco/8bhk%2FMM2%20tour%20video.mp4",
   },
   "seahaven-penthouse": {
     title: "Sobha SeaHaven",
@@ -402,17 +715,26 @@ const MANUAL_PROPERTY_PATCHES = {
     startingPrice: "AED 4,595,585",
     priceAED: 4_595_585,
     startingPriceAED: 4_595_585,
-    heroImage: "https://luxury-real-estate-media.b-cdn.net/seahaven/hero-bg.jpg%20.jpg",
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/seahaven/hero-bg.jpg",
   },
   "sobha-elwood-secondary": {
     title: "Sobha Elwood",
     startingPrice: "AED 9,900,000",
     priceAED: 9_900_000,
     startingPriceAED: 9_900_000,
+    developer: "Sobha Realty",
+    location: "Dubailand, Dubai, UAE",
+    propertyType: "villas",
+    type: "villas",
   },
   "riviera-azure": {
     title: "Riviera Azure",
     location: "Meydan, Dubai, UAE",
+    developer: "Azizi Developments",
+    completionDate: "Q4 2025",
+    propertyType: "apartments",
+    type: "apartments",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
   "riviera-reve-azur": {
     title: "Riviera Reve Azur",
@@ -425,6 +747,7 @@ const MANUAL_PROPERTY_PATCHES = {
     propertyType: "villas",
     type: "villas",
     unitTypes: "4, 5 & 6 Bedroom Villas",
+    amenities: COMMON_SOBHA_AMENITIES,
   },
   "the-grove-at-sobha-sanctuary": {
     title: "The Grove at Sobha Sanctuary",
@@ -432,6 +755,8 @@ const MANUAL_PROPERTY_PATCHES = {
     developer: "Sobha Realty",
     propertyType: "villas",
     type: "villas",
+    unitTypes: "Townhouses & Attached Villas",
+    amenities: COMMON_SOBHA_AMENITIES,
   },
   "the-brooks-at-sobha-sanctuary": {
     title: "The Brooks at Sobha Sanctuary",
@@ -439,7 +764,8 @@ const MANUAL_PROPERTY_PATCHES = {
     developer: "Sobha Realty",
     propertyType: "villas",
     type: "villas",
-    unitTypes: "Townhouses & Villas",
+    unitTypes: "Detached Villas",
+    amenities: COMMON_SOBHA_AMENITIES,
   },
   "sky-tower": {
     title: "Tiger Sky",
@@ -472,13 +798,16 @@ const MANUAL_PROPERTY_PATCHES = {
   },
   "shahrukhz": {
     title: "SHAHRUKHZ",
-    completionDate: "Q2 2029",
+    location: "Sheikh Zayed Road, Dubai, UAE",
+    developer: "Danube Properties",
+    completionDate: "Q4 2028",
     propertyType: "commercial-retail",
     type: "commercial-retail",
     startingPrice: "",
     priceAED: null,
     startingPriceAED: null,
-    paymentPlan: "70 / 30",
+    paymentPlan: "70 / 30 Post-Handover",
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   shahrukz: {
     title: "SHAHRUKHZ",
@@ -488,6 +817,7 @@ const MANUAL_PROPERTY_PATCHES = {
     propertyType: "commercial-retail",
     type: "commercial-retail",
     paymentPlan: "70 / 30 Post-Handover",
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   diamondz: {
     title: "Diamondz",
@@ -495,7 +825,13 @@ const MANUAL_PROPERTY_PATCHES = {
     location: "Jumeirah Lake Towers, Dubai, UAE",
     propertyType: "apartments",
     type: "apartments",
+    completionDate: "Q4 2027",
+    startingPrice: "AED 1,141,000",
+    priceAED: 1_141_000,
+    startingPriceAED: 1_141_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/danube/diamondz/Exterior.jpg",
     paymentPlan: "69 / 31 Post-Handover",
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   fashionz: {
     title: "Fashionz",
@@ -503,26 +839,129 @@ const MANUAL_PROPERTY_PATCHES = {
     location: "Jumeirah Village Triangle, Dubai, UAE",
     propertyType: "apartments",
     type: "apartments",
+    completionDate: "Q4 2026",
+    startingPrice: "AED 791,000",
+    priceAED: 791_000,
+    startingPriceAED: 791_000,
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   "bayz-101": {
     title: "Bayz 101",
     developer: "Danube Properties",
     location: "Business Bay, Dubai, UAE",
+    completionDate: "Q2 2028",
+    startingPrice: "AED 1,587,000",
+    priceAED: 1_587_000,
+    startingPriceAED: 1_587_000,
+    amenities: COMMON_DANUBE_AMENITIES,
   },
   "bayz-102": {
     title: "Bayz 102",
     developer: "Danube Properties",
     location: "Business Bay, Dubai, UAE",
+    completionDate: "Q2 2029",
+    startingPrice: "AED 2,419,000",
+    priceAED: 2_419_000,
+    startingPriceAED: 2_419_000,
     paymentPlan: "64 / 36 Post-Handover",
+    amenities: COMMON_DANUBE_AMENITIES,
+  },
+  "tiger-sky": {
+    title: "Tiger Sky",
+    developer: "Tiger Properties",
+    location: "Business Bay, Dubai, UAE",
+    completionDate: "Q4 2028",
+    propertyType: "apartments",
+    type: "apartments",
+    unitTypes: "1, 2, 3 & 4 Bedroom Apartments",
+    startingPrice: "AED 2,677,180",
+    priceAED: 2_677_180,
+    startingPriceAED: 2_677_180,
+    paymentPlan: "60 / 40",
+  },
+  "azizi-venice": {
+    title: "Azizi Venice",
+    developer: "Azizi Developments",
+    location: "Dubai South, Dubai, UAE",
+    propertyType: "commercial-retail",
+    type: "commercial-retail",
+    completionDate: "Q4 2026",
+    paymentPlan: "50 / 50",
+    unitTypes: "Retail Units",
+    startingPrice: "AED 647,000",
+    priceAED: 647_000,
+    startingPriceAED: 647_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/venice/Shot_09_Boulevard%20aerial.jpeg",
+    amenities: COMMON_AZIZI_AMENITIES,
+  },
+  "azizi-gabriel": {
+    title: "Azizi Gabriel",
+    developer: "Azizi Developments",
+    location: "Jebel Ali, Dubai, UAE",
+    propertyType: "apartments",
+    type: "apartments",
+    completionDate: "Q4 2028",
+    paymentPlan: "50 / 50",
+    unitTypes: "Studio, 1 & 2 Bedroom Apartments",
+    startingPrice: "AED 591,000",
+    priceAED: 591_000,
+    startingPriceAED: 591_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/gabriel/360-DJAZ2.39-HL-IMG-EXTERIOR%20PERSPECTIVE%201-00.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
+  },
+  "azizi-lina": {
+    title: "Azizi Lina",
+    developer: "Azizi Developments",
+    location: "Jebel Ali, Dubai, UAE",
+    propertyType: "apartments",
+    type: "apartments",
+    completionDate: "Q4 2027",
+    paymentPlan: "50 / 50",
+    unitTypes: "Studio, 1, 2 & 3 Bedroom Apartments",
+    startingPrice: "AED 588,000",
+    priceAED: 588_000,
+    startingPriceAED: 588_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/lina/360-DJAZ.07-SL-IMG_EXTERIOR%20VIEW%2004.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
+  },
+  "azizi-wares": {
+    title: "Azizi Wares",
+    developer: "Azizi Developments",
+    location: "Jebel Ali, Dubai, UAE",
+    propertyType: "apartments",
+    type: "apartments",
+    completionDate: "Q4 2027",
+    paymentPlan: "50 / 50",
+    unitTypes: "Studio, 1 & 2 Bedroom Apartments",
+    startingPrice: "AED 594,000",
+    priceAED: 594_000,
+    startingPriceAED: 594_000,
+    heroImage: "https://luxury-real-estate-media.b-cdn.net/azizi/wares/VIEW_02.jpg",
+    amenities: COMMON_AZIZI_AMENITIES,
   },
 };
 
-function mapGalleryImages(slides = []) {
-  return (slides || [])
-    .map((slide) => (typeof slide === "string" ? slide : slide?.url))
-    .map(asAbsoluteUrl)
+function mergeAmenityLists(primary = [], secondary = []) {
+  const seen = new Set();
+  return [...primary, ...secondary]
+    .map((item) =>
+      typeof item === "string"
+        ? { label: item, icon: mapAmenityIcon(undefined, item) }
+        : item && item.label
+        ? { ...item, icon: item.icon || mapAmenityIcon(undefined, item.label) }
+        : null
+    )
     .filter(Boolean)
-    .map((url) => ({ url }));
+    .filter((item) => {
+      const key = String(item.label || "").toLowerCase().trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function mapGalleryImages(slides = []) {
+  return normalizeMediaItems(slides);
 }
 
 function getDeveloperHeroImage(slug) {
@@ -537,6 +976,49 @@ function getDeveloperHeroImage(slug) {
 function getAreaHeroImage(slug) {
   const area = localAreaBySlug.get(slug);
   return asAbsoluteUrl(area?.heroImage || "");
+}
+
+function getOverlayMedia({
+  heroBackground,
+  heroSquare,
+  galleryImages = [],
+  developerSlug,
+  regionSlug,
+  manualImage = "",
+  manualVideo = "",
+}) {
+  const heroBackgroundUrl = asAbsoluteUrl(heroBackground);
+  const heroSquareUrl = asAbsoluteUrl(heroSquare);
+  const developerImage = getDeveloperHeroImage(developerSlug);
+  const areaImage = getAreaHeroImage(regionSlug);
+
+  const heroVideo = firstNonEmpty(
+    isVideoUrl(manualVideo) ? manualVideo : "",
+    isVideoUrl(heroBackgroundUrl) ? heroBackgroundUrl : ""
+  );
+
+  const heroImage = firstNonEmpty(
+    asAbsoluteUrl(manualImage),
+    !isVideoUrl(heroBackgroundUrl) ? heroBackgroundUrl : "",
+    heroSquareUrl,
+    galleryImages.find((item) => item.type === "image")?.url,
+    developerImage,
+    areaImage
+  );
+
+  const gallery = normalizeMediaItems([
+    heroImage,
+    heroVideo,
+    ...galleryImages,
+    developerImage,
+    areaImage,
+  ]);
+
+  return {
+    heroImage: heroImage || "",
+    heroVideo: heroVideo || "",
+    galleryImages: gallery,
+  };
 }
 
 function mapFloorPlans(plans = []) {
@@ -600,6 +1082,7 @@ function resolveLocalPropertySources(input) {
     (aliasSlug ? localPropertyBySlug.get(aliasSlug) : null) ||
     (titleSlug ? localPropertyBySlug.get(titleSlug) : null) ||
     keys.map((key) => localPropertyByKey.get(key)).find(Boolean) ||
+    findLooseProjectMatch(localPropertyList, { slug, title, developer }) ||
     null;
 
   const workbook =
@@ -607,6 +1090,7 @@ function resolveLocalPropertySources(input) {
     (aliasSlug ? workbookBySlug.get(aliasSlug) : null) ||
     (titleSlug ? workbookBySlug.get(titleSlug) : null) ||
     keys.map((key) => workbookByKey.get(key)).find(Boolean) ||
+    findLooseProjectMatch(workbookRecordList, { slug, title, developer }) ||
     null;
 
   return {
@@ -627,11 +1111,6 @@ function getLocalPropertyOverlay(input) {
   const arProject = ar.project || {};
   const heroBg = en?.hero?.backgroundUrl || "";
   const galleryImages = mapGalleryImages(en?.gallery?.slides);
-  const fallbackImage = galleryImages[0]?.url || "";
-  const heroVideo = isVideoUrl(heroBg) ? heroBg : "";
-  const heroImage = heroVideo
-    ? firstNonEmpty(asAbsoluteUrl(en?.hero?.squareImageUrl), fallbackImage)
-    : firstNonEmpty(asAbsoluteUrl(heroBg), asAbsoluteUrl(en?.hero?.squareImageUrl), fallbackImage);
   const developerSlug = local?.developer_slug || workbook?.developerSlug || "";
   const regionSlug = firstNonEmpty(workbook?.regionSlug, local?.region_slug, workbook?.areaSlug) || "dubai";
   const developerName = normalizeDeveloperName(
@@ -651,6 +1130,13 @@ function getLocalPropertyOverlay(input) {
     firstNonEmpty(en?.intro?.paragraphs?.join("\n\n"), en?.intro?.title, workbook?.notes, workbook?.postHandoverDetails) || "";
   const descriptionAr =
     firstNonEmpty(ar?.intro?.paragraphs?.join("\n\n"), ar?.intro?.title) || "";
+  const overlayMedia = getOverlayMedia({
+    heroBackground: heroBg,
+    heroSquare: en?.hero?.squareImageUrl,
+    galleryImages,
+    developerSlug,
+    regionSlug,
+  });
 
   const overlay = {
     slug,
@@ -675,13 +1161,9 @@ function getLocalPropertyOverlay(input) {
     paymentPlan,
     unitTypes,
     featured: !!local?.featured,
-    heroImage:
-      heroImage ||
-      getDeveloperHeroImage(developerSlug) ||
-      getAreaHeroImage(regionSlug) ||
-      "",
-    heroVideo,
-    galleryImages,
+    heroImage: overlayMedia.heroImage,
+    heroVideo: overlayMedia.heroVideo,
+    galleryImages: overlayMedia.galleryImages,
     brochureUrl: firstNonEmpty(asAbsoluteUrl(en?.intro?.brochures?.[0]?.url), asAbsoluteUrl(en?.floorPlans?.brochureHref)) || "",
     description,
     descriptionAr,
@@ -729,7 +1211,10 @@ export function mergePropertyWithLocalData(property) {
       ? property.location
       : firstNonEmpty(overlay.location, property?.location)
   ) || "";
-  merged.locationAr = firstNonEmpty(property?.locationAr, overlay.locationAr) || "";
+  merged.locationAr =
+    !isWeakText(property?.locationAr) && property?.locationAr
+      ? property.locationAr
+      : firstNonEmpty(overlay.locationAr, property?.locationAr) || "";
   merged.status = normalizeListingStatus(firstNonEmpty(property?.status, overlay.status));
   merged.propertyType = normalizePropertyType(firstNonEmpty(property?.propertyType, overlay.propertyType));
   merged.type = normalizePropertyType(firstNonEmpty(property?.type, overlay.type));
@@ -739,29 +1224,61 @@ export function mergePropertyWithLocalData(property) {
     parsePriceToAED(property?.startingPrice) && parsePriceToAED(property?.startingPrice) >= 10_000
       ? property.startingPrice
       : overlay.startingPrice;
-  merged.completionDate = firstNonEmpty(property?.completionDate, overlay.completionDate) || "";
+  const derivedCompletionDate = (() => {
+    const explicitCompletion =
+      !isWeakCompletion(property?.completionDate) && property?.completionDate
+        ? property.completionDate
+        : firstNonEmpty(
+            overlay.completionDate,
+            property?.completionDate,
+            property?.completionYear,
+            property?.handover,
+            property?.handoverDate
+          ) || "";
+
+    if (explicitCompletion) return explicitCompletion;
+    if (merged.status === "Ready To Move") return "Ready To Move";
+    if (merged.status === "Sold-out") return "Completed";
+    return "TBA";
+  })();
+
+  merged.completionDate = derivedCompletionDate;
   merged.paymentPlan = normalizePaymentPlan(
     overlay?.__manualPatched && overlay?.paymentPlan
       ? overlay.paymentPlan
-      : firstNonEmpty(property?.paymentPlan, overlay.paymentPlan)
+      : !isWeakText(property?.paymentPlan) && property?.paymentPlan
+      ? property.paymentPlan
+      : firstNonEmpty(overlay.paymentPlan, property?.paymentPlan)
   );
-  merged.unitTypes = normalizeUnitTypes(firstNonEmpty(property?.unitTypes, overlay.unitTypes)) || "";
-  merged.heroVideo = firstNonEmpty(property?.heroVideo, overlay.heroVideo) || "";
+  merged.unitTypes = normalizeUnitTypes(
+    !isWeakText(property?.unitTypes) && property?.unitTypes
+      ? property.unitTypes
+      : firstNonEmpty(overlay.unitTypes, property?.unitTypes)
+  ) || "";
+  merged.heroVideo =
+    (isVideoUrl(property?.heroVideo) ? property.heroVideo : "") ||
+    firstNonEmpty(overlay.heroVideo, property?.heroVideo) ||
+    "";
   merged.heroImage =
     !isWeakProjectImage(property?.heroImage) && property?.heroImage
       ? property.heroImage
       : firstNonEmpty(overlay.heroImage, property?.heroImage) || "";
-  merged.galleryImages =
-    Array.isArray(property?.galleryImages) && property.galleryImages.length > 0
-      ? property.galleryImages
-      : overlay.galleryImages;
+  merged.galleryImages = normalizeMediaItems([
+    ...(Array.isArray(property?.galleryImages) ? property.galleryImages : []),
+    merged.heroVideo,
+    merged.heroImage,
+    ...(Array.isArray(overlay.galleryImages) ? overlay.galleryImages : []),
+  ]);
   merged.brochureUrl = firstNonEmpty(property?.brochureUrl, overlay.brochureUrl) || "";
-  merged.description = firstNonEmpty(property?.description, overlay.description) || "";
-  merged.descriptionAr = firstNonEmpty(property?.descriptionAr, overlay.descriptionAr) || "";
-  merged.amenities =
-    Array.isArray(property?.amenities) && property.amenities.length > 0
-      ? property.amenities
-      : overlay.amenities;
+  merged.description =
+    !isWeakText(property?.description) && property?.description
+      ? property.description
+      : firstNonEmpty(overlay.description, property?.description) || "";
+  merged.descriptionAr =
+    !isWeakText(property?.descriptionAr) && property?.descriptionAr
+      ? property.descriptionAr
+      : firstNonEmpty(overlay.descriptionAr, property?.descriptionAr) || "";
+  merged.amenities = mergeAmenityLists(property?.amenities, overlay.amenities);
   merged.floorPlans =
     Array.isArray(property?.floorPlans) && property.floorPlans.length > 0
       ? property.floorPlans
@@ -817,9 +1334,17 @@ export function mergeDeveloperWithLocalData(developer) {
 }
 
 export function getFallbackDevelopers() {
-  return Array.from(localDeveloperBySlug.values()).map((developer) =>
-    mergeDeveloperWithLocalData(developer)
-  );
+  return Array.from(localDeveloperBySlug.values())
+    .filter((developer) => {
+      const slug = slugify(developer?.slug);
+      const name = slugify(developer?.name);
+      const nameAr = slugify(developer?.nameAr);
+
+      if (EXCLUDED_DEVELOPER_SLUGS.has(slug)) return false;
+
+      return [slug, name, nameAr].some((token) => token && activeDeveloperTokens.has(token));
+    })
+    .map((developer) => mergeDeveloperWithLocalData(developer));
 }
 
 function normalizeAreaText(value, type) {

@@ -99,6 +99,67 @@
   height: 520px;
 }
 
+.landmarksPanel {
+  margin-top: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.landmarksHeading {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8f6a2c;
+}
+
+.landmarksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.landmarkCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  background: linear-gradient(180deg, #fff 0%, #faf7f1 100%);
+}
+
+.landmarkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(215, 180, 106, 0.18);
+  font-size: 18px;
+}
+
+.landmarkContent {
+  min-width: 0;
+}
+
+.landmarkName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #121212;
+  margin-bottom: 4px;
+}
+
+.landmarkMeta {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #646464;
+}
+
 @media (max-width: 768px) {
   .mapSection {
     padding: 60px 0 70px;
@@ -110,6 +171,10 @@
 
   .mapInner {
     height: 420px;
+  }
+
+  .landmarksGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -125,5 +190,13 @@
 
   .mapInner {
     height: 360px;
+  }
+
+  .landmarksPanel {
+    padding: 18px;
+  }
+
+  .landmarksGrid {
+    grid-template-columns: 1fr;
   }
 }

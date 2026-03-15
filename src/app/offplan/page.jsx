@@ -61,7 +61,7 @@ export default function OffplanPage() {
     filters.minPrice, filters.maxPrice,
   ]);
 
-  // Off-plan only — excluding Omniyat and Beyond projects
+  // Off-plan only — excluding blocked developer inventories
   const OFFPLAN_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
   const offplanProjects = React.useMemo(() => {
     return (rawProjects || []).filter((p) => {

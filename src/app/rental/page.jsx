@@ -33,11 +33,38 @@ const initialFilters = {
 function filterRentalProjects(projects) {
   return projects.filter((project) => {
     if (project?.isLand || project?.category === "lands") return false;
-    const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
-    if (RENTAL_EXCLUDED_DEVELOPER_SLUGS.some((slug) => developerSlug.includes(slug))) return false;
+    const developerSlug = String(
+      project?.developerSlug || project?.developer || ""
+    ).toLowerCase();
+    if (RENTAL_EXCLUDED_DEVELOPER_SLUGS.some((slug) => developerSlug.includes(slug))) {
+      return false;
+    }
     const status = String(project?.status || project?.devStatus || "").toLowerCase();
     return status.includes("rental") || status.includes("rent");
   });
+}
+
+function InlineSearch({ value, onChange, onClear, isRTL }) {
+  return (
+    <div className={styles.inlineSearchWrap}>
+      <input
+        value={value || ""}
+        onChange={(event) => onChange?.(event.target.value)}
+        placeholder={
+          isRTL
+            ? "\u0627\u0628\u062d\u062b \u0639\u0646 \u0639\u0642\u0627\u0631\u0627\u062a \u0644\u0644\u0625\u064a\u062c\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0627\u0633\u0645\u060c \u0627\u0644\u0645\u0637\u0648\u0631\u060c \u0623\u0648 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+            : "Search rental properties by name, developer, or location"
+        }
+        className={styles.inlineSearchInput}
+        dir={isRTL ? "rtl" : "ltr"}
+      />
+      {value && (
+        <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
+          {isRTL ? "\u0645\u0633\u062d" : "Clear"}
+        </button>
+      )}
+    </div>
+  );
 }
 
 export default function RentalPage() {
@@ -63,17 +90,23 @@ export default function RentalPage() {
     filters.maxSize,
   ]);
 
-  const rentalProjects = React.useMemo(() => filterRentalProjects(allProjects || []), [allProjects]);
+  const rentalProjects = React.useMemo(
+    () => filterRentalProjects(allProjects || []),
+    [allProjects]
+  );
+
   const heroImages = React.useMemo(() => {
     return rentalProjects
       .map((project) => project.heroImageUrl || project.image || project.heroImage)
       .filter(Boolean)
       .filter((src, index, arr) => arr.indexOf(src) === index);
   }, [rentalProjects]);
+
   const { filtered, hasActiveFilters } = React.useMemo(
     () => filterProjects(rentalProjects, filters),
     [rentalProjects, filters]
   );
+
   const visibleProjects = filtered.slice(0, visibleCount);
   const canLoadMore = visibleCount < filtered.length;
 
@@ -124,14 +157,18 @@ export default function RentalPage() {
             </div>
           ) : null}
         </div>
+
         <div className={styles.heroOverlay} />
+
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>
-            {isRTL ? "العقارات للإيجار" : "Rental Properties"}
+            {isRTL
+              ? "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0644\u0644\u0625\u064a\u062c\u0627\u0631"
+              : "Rental Properties"}
           </h1>
           <p className={styles.heroSubtitle}>
             {isRTL
-              ? "اكتشف أفضل العقارات المتاحة للإيجار في دبي والإمارات"
+              ? "\u0627\u0643\u062a\u0634\u0641 \u0623\u0641\u0636\u0644 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u062a\u0627\u062d\u0629 \u0644\u0644\u0625\u064a\u062c\u0627\u0631 \u0641\u064a \u062f\u0628\u064a \u0648\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a"
               : "Discover premium rental opportunities across Dubai and the UAE"}
           </p>
         </div>
@@ -144,11 +181,13 @@ export default function RentalPage() {
           onChange={(value) => setFilters((prev) => ({ ...prev, search: value }))}
           onClear={() => setFilters((prev) => ({ ...prev, search: "" }))}
         />
+
         <ProjectsFiltersBar
           filters={filters}
           onChange={setFilters}
           onOpenFullFilters={() => setIsModalOpen(true)}
         />
+
         <ProjectsFiltersModal
           isOpen={isModalOpen}
           filters={filters}
@@ -162,7 +201,8 @@ export default function RentalPage() {
           <div className={styles.metaText}>
             {isRTL ? (
               <>
-                عرض <b>{Math.min(visibleCount, filtered.length)}</b> من <b>{filtered.length}</b> عقار للإيجار
+                \u0639\u0631\u0636 <b>{Math.min(visibleCount, filtered.length)}</b> \u0645\u0646{" "}
+                <b>{filtered.length}</b> \u0639\u0642\u0627\u0631 \u0644\u0644\u0625\u064a\u062c\u0627\u0631
               </>
             ) : (
               <>
@@ -170,9 +210,12 @@ export default function RentalPage() {
               </>
             )}
           </div>
+
           {hasActiveFilters && (
             <button type="button" className={styles.resetBtn} onClick={onResetAll}>
-              {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
+              {isRTL
+                ? "\u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0641\u0644\u0627\u062a\u0631"
+                : "Reset filters"}
             </button>
           )}
         </div>
@@ -188,53 +231,34 @@ export default function RentalPage() {
               className={styles.loadMoreBtn}
               onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
             >
-              {isRTL ? "تحميل المزيد" : "LOAD MORE"}
+              {isRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0632\u064a\u062f" : "LOAD MORE"}
             </button>
           </div>
         )}
 
         {filtered.length === 0 && (
           <div className={styles.noResults}>
-            <div className={styles.noResultsIcon}>🔑</div>
+            <div className={styles.noResultsIcon}>RENT</div>
             <h3 className={styles.noResultsTitle}>
-              {isRTL ? "لا توجد عقارات مطابقة" : "No rental properties found"}
+              {isRTL
+                ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0642\u0627\u0631\u0627\u062a \u0645\u0637\u0627\u0628\u0642\u0629"
+                : "No rental properties found"}
             </h3>
             <p className={styles.noResultsText}>
               {isRTL
-                ? "لم نتمكن من العثور على عقارات إيجار تطابق معايير البحث."
+                ? "\u0644\u0645 \u0646\u062a\u0645\u0643\u0646 \u0645\u0646 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0639\u0642\u0627\u0631\u0627\u062a \u0625\u064a\u062c\u0627\u0631 \u062a\u0637\u0627\u0628\u0642 \u0645\u0639\u0627\u064a\u064a\u0631 \u0627\u0644\u0628\u062d\u062b."
                 : "We couldn't find any rental properties matching your search criteria."}
             </p>
             {hasActiveFilters && (
               <button type="button" className={styles.noResultsButton} onClick={onResetAll}>
-                {isRTL ? "إعادة ضبط الفلاتر" : "Reset filters"}
+                {isRTL
+                  ? "\u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0641\u0644\u0627\u062a\u0631"
+                  : "Reset filters"}
               </button>
             )}
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function InlineSearch({ value, onChange, onClear, isRTL }) {
-  return (
-    <div className={styles.inlineSearchWrap}>
-      <input
-        value={value || ""}
-        onChange={(e) => onChange?.(e.target.value)}
-        placeholder={
-          isRTL
-            ? "ابحث عن عقارات للإيجار حسب الاسم، المطور، أو المنطقة"
-            : "Search rental properties by name, developer, or location"
-        }
-        className={styles.inlineSearchInput}
-        dir={isRTL ? "rtl" : "ltr"}
-      />
-      {value && (
-        <button type="button" className={styles.inlineSearchClear} onClick={onClear}>
-          ×
-        </button>
-      )}
     </div>
   );
 }

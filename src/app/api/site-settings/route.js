@@ -5,6 +5,11 @@ import imageUrlBuilder from '@sanity/image-url'
 const SITE_SETTINGS_QUERY = `
   *[_type == "siteSettings"] | order(_updatedAt desc)[0]{
     "hideSearch": navbar.hideSearch,
+    "logoCdn": navbar.logoCdn,
+    "logo": navbar.logo{
+      asset->,
+      alt
+    },
     "desktopLeft":  navbar.desktopLeft[]{labelEn,labelAr,type,href,openInNewTab},
     "desktopRight": navbar.desktopRight[]{labelEn,labelAr,type,href,openInNewTab},
     "mobileMenu":   navbar.mobileMenu[]{labelEn,labelAr,type,href,openInNewTab},
@@ -106,6 +111,17 @@ export async function GET() {
     
     // Transform image references to URLs
     if (data) {
+      data.navbar = {
+        ...(data.navbar || {}),
+        logoUrl:
+          data?.logoCdn?.url ||
+          (data.logo ? urlFor(data.logo).width(500).url() : null) ||
+          null,
+        logoAlt:
+          data?.logo?.alt ||
+          "Mohamad Kodmani Real Estate",
+      };
+
       // Transform hero slides images
       if (data.heroSlides) {
         data.heroSlides = data.heroSlides.map(slide => ({

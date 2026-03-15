@@ -185,7 +185,7 @@ export default function FreeServices() {
                   </div>
 
                   <div className={styles.serviceBenefit}>
-                    <div className={styles.benefitIcon}>→</div>
+                    <div className={styles.benefitIcon}>-&gt;</div>
                     <span>{service.benefit}</span>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export default function FreeServices() {
             <div className={styles.valueContent}>
               <div className={styles.valueBadge}>WHY CHOOSE OUR SERVICES</div>
               <h2 className={styles.valueTitle}>
-                Beyond Traditional Real Estate
+                Premium Real Estate Advisory
               </h2>
               <p className={styles.valueDescription}>
                 While other agents charge for basic services, we provide premium
@@ -210,14 +210,14 @@ export default function FreeServices() {
 
               <div className={styles.valuePoints}>
                 <div className={styles.valuePoint}>
-                  <div className={styles.pointIcon}>✓</div>
+                  <div className={styles.pointIcon}>OK</div>
                   <div className={styles.pointContent}>
                     <h4>DLD Certified Expertise</h4>
                     <p>Fully licensed and regulated by Dubai Land Department</p>
                   </div>
                 </div>
                 <div className={styles.valuePoint}>
-                  <div className={styles.pointIcon}>✓</div>
+                  <div className={styles.pointIcon}>OK</div>
                   <div className={styles.pointContent}>
                     <h4>Market Intelligence</h4>
                     <p>
@@ -227,14 +227,14 @@ export default function FreeServices() {
                   </div>
                 </div>
                 <div className={styles.valuePoint}>
-                  <div className={styles.pointIcon}>✓</div>
+                  <div className={styles.pointIcon}>OK</div>
                   <div className={styles.pointContent}>
                     <h4>Proven Track Record</h4>
                     <p>100+ successful transactions with satisfied investors</p>
                   </div>
                 </div>
                 <div className={styles.valuePoint}>
-                  <div className={styles.pointIcon}>✓</div>
+                  <div className={styles.pointIcon}>OK</div>
                   <div className={styles.pointContent}>
                     <h4>Lifetime Support</h4>
                     <p>Ongoing portfolio management and investment guidance</p>
@@ -289,7 +289,7 @@ export default function FreeServices() {
                   <span className={styles.ctaIcon}>💬</span>
                   Start Free Consultation on WhatsApp
                 </a>
-                <a href="tel:+971500000000" className={styles.secondaryCTA}>
+                <a href="tel:+971568888906" className={styles.secondaryCTA}>
                   <span className={styles.ctaIcon}>📞</span>
                   Call Directly for Immediate Assistance
                 </a>
