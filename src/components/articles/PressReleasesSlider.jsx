@@ -107,26 +107,27 @@ export default function PressReleasesSlider() {
               nextEl: isRTL ? ".stories-prev" : ".stories-next",
             }}
             autoplay={{
-              delay: 7000,
+              delay: 8000,
               disableOnInteraction: false,
             }}
-            loop={articles.length > 3}
-            speed={700}
+            slidesPerView="auto"
+            centeredSlides
+            spaceBetween={32}
+            loop={articles.length > 1}
+            speed={900}
             breakpoints={{
               0: {
                 slidesPerView: 1,
+                centeredSlides: false,
                 spaceBetween: 16,
               },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 24,
-              },
-              1200: {
-                slidesPerView: 3,
-                spaceBetween: 28,
+              769: {
+                slidesPerView: "auto",
+                centeredSlides: true,
+                spaceBetween: 32,
               },
             }}
-            className={styles.storiesSlider}
+            className={`${styles.storiesSlider} ${isRTL ? styles.rtlSlider : ""}`}
           >
             {articles.map((article) => (
               <SwiperSlide key={article.id || article.slug} className={styles.slide}>
@@ -140,14 +141,28 @@ export default function PressReleasesSlider() {
                         src={article.image}
                         alt={article.title}
                         fill
-                        className={styles.image}
-                        sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 33vw"
+                        className={`${styles.image} ${styles.onlyDesk}`}
+                        sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
+                      />
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        className={`${styles.image} ${styles.onlyMob}`}
+                        sizes="100vw"
                       />
                     </div>
 
                     <div className={styles.cardContent}>
-                      <h3 className={styles.cardTitle}>{article.title}</h3>
-                      <span className={styles.publishedDate}>{article.publishedOn}</span>
+                      <div className={styles.storyTitle}>
+                        <h3 className={styles.cardTitle}>{article.title}</h3>
+                      </div>
+
+                      <div className={styles.storyPublish}>
+                        <div className={styles.datePlace}>
+                          <span className={styles.publishedDate}>{article.publishedOn}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </article>

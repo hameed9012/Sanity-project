@@ -42,7 +42,7 @@ export default function ArtOfDetail() {
     cms?.ownerImageUrl ||
     cms?.ownerImageCdn?.url ||
     cms?.ownerImage ||
-    "https://luxury-real-estate-media.b-cdn.net/public/boss-nobg.png";
+    "/boss-nobg.png";
 
   useEffect(() => {
     if (!sectionRef.current) return;
