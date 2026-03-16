@@ -541,8 +541,12 @@ export default function MarketAnalysisMap() {
 
         // ── Project layers ────────────────────────────────────────────
         map.addSource("market-points", {
-          type: "geojson", data: allGeoJSON,
-          cluster: true, clusterMaxZoom: 14, clusterRadius: 50,
+          type: "geojson",
+          // Keep the source aligned with the memoized dataset used by later updates.
+          data: filteredGeoJSON,
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 50,
         });
 
         map.addLayer({
