@@ -6,6 +6,12 @@ export default defineType({
   title: 'Site Settings',
   type: 'document',
   __experimental_actions: ['update', 'publish'],
+  groups: [
+    {name: 'navigation', title: 'Navigation'},
+    {name: 'home', title: 'Homepage'},
+    {name: 'about', title: 'About'},
+    {name: 'contact', title: 'Contact'},
+  ],
 
   fields: [
     // ─────────────────────────────────────────────────────
@@ -15,6 +21,7 @@ export default defineType({
       name: 'navbar',
       title: 'Navigation Bar',
       type: 'object',
+      group: 'navigation',
       fields: [
         defineField({
           name: 'desktopLeft',
@@ -78,6 +85,7 @@ export default defineType({
       title: 'Home Hero Slides',
       description: 'Featured slides on the homepage hero carousel. Reorder them here. If you leave the image empty, the linked property hero image will be used automatically.',
       type: 'array',
+      group: 'home',
       of: [
         {
           type: 'object',
@@ -180,6 +188,7 @@ export default defineType({
       name: 'artOfDetail',
       title: 'Art of Detail Section (Homepage)',
       type: 'object',
+      group: 'home',
       fields: [
         defineField({ name: 'sloganPre',    title: 'Slogan Pre-text (EN)',  type: 'string' }),
         defineField({ name: 'sloganPreAr',  title: 'Slogan Pre-text (AR)',  type: 'string' }),
@@ -215,6 +224,7 @@ export default defineType({
       name: 'pillars',
       title: 'Pillars Section (Homepage)',
       type: 'object',
+      group: 'home',
       fields: [
         defineField({ name: 'heading',   title: 'Section Heading (EN)', type: 'string' }),
         defineField({ name: 'headingAr', title: 'Section Heading (AR)', type: 'string' }),
@@ -282,6 +292,7 @@ export default defineType({
       name: 'contact',
       title: 'Contact Info',
       type: 'object',
+      group: 'contact',
       fields: [
         defineField({ name: 'whatsapp',   title: 'WhatsApp Number', type: 'string' }),
         defineField({ name: 'phone',      title: 'Phone Display Text', type: 'string' }),
@@ -297,6 +308,7 @@ export default defineType({
       name: 'about',
       title: 'About Page',
       type: 'object',
+      group: 'about',
       fields: [
         defineField({
           name: 'hero',

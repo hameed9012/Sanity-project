@@ -1,9 +1,4 @@
 import { sanityClient } from "@/lib/sanityClient";
-import {
-  getFallbackDevelopers,
-  getFallbackProperties,
-  mergeDeveloperWithLocalData,
-} from "@/lib/server/localContentOverlay";
 
 function slugify(value) {
   return String(value || "")
@@ -20,10 +15,26 @@ function normalize(value) {
     .trim();
 }
 
-function withScopedProjects(developer) {
+async function withScopedProjects(developer) {
   if (!developer) return developer;
 
-  const allProjects = getFallbackProperties();
+  const allProjects = await sanityClient.fetch(`*[_type == "property"]{
+    _id,
+    "slug": slug.current,
+    title,
+    titleAr,
+    developer,
+    "heroImage": coalesce(heroImageCdn.url, heroImageUpload.asset->url, heroImage),
+    location,
+    locationAr,
+    status,
+    propertyType,
+    landCategory,
+    regionSlug,
+    areaSlug,
+    startingPrice,
+    completionDate
+  }`);
   const tokens = new Set(
     [
       developer.slug,
@@ -93,22 +104,12 @@ export async function GET(request) {
       }
     `);
     const data = Array.isArray(rawData)
-      ? rawData.map((item) => withScopedProjects(mergeDeveloperWithLocalData(item)))
-      : withScopedProjects(mergeDeveloperWithLocalData(rawData));
-
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      const fallback = getFallbackDevelopers();
-      const hydratedFallback = fallback.map(withScopedProjects);
-      const filteredFallback = slug ? hydratedFallback.find((item) => item.slug === slug) || null : hydratedFallback;
-      return Response.json(filteredFallback);
-    }
+      ? await Promise.all(rawData.map((item) => withScopedProjects(item)))
+      : await withScopedProjects(rawData);
 
     return Response.json(data || (slug ? null : []));
   } catch (err) {
     console.error("sanity-developer API error:", err);
-    const fallback = getFallbackDevelopers();
-    const hydratedFallback = fallback.map(withScopedProjects);
-    const filteredFallback = slug ? hydratedFallback.find((item) => item.slug === slug) || null : hydratedFallback;
-    return Response.json(filteredFallback, { status: 200 });
+    return Response.json(slug ? null : [], { status: 500 });
   }
 }

@@ -1,8 +1,4 @@
 import { sanityClient } from "@/lib/sanityClient";
-import {
-  getFallbackProperties,
-  mergePropertyWithLocalData,
-} from "@/lib/server/localContentOverlay";
 
 const PROPERTY_QUERY = `
   _id,
@@ -116,20 +112,12 @@ export async function GET(request) {
     const params = slug ? { slug } : {};
     const rawData = await sanityClient.fetch(query, params);
     const data = Array.isArray(rawData)
-      ? rawData.map((item) => mergePropertyWithLocalData(normalizeProperty(item)))
-      : mergePropertyWithLocalData(normalizeProperty(rawData));
-
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      const fallback = getFallbackProperties();
-      const filteredFallback = slug ? fallback.find((item) => item.slug === slug) || null : fallback;
-      return Response.json(filteredFallback);
-    }
+      ? rawData.map((item) => normalizeProperty(item))
+      : normalizeProperty(rawData);
 
     return Response.json(data || (slug ? null : []));
   } catch (err) {
     console.error("sanity-projects API error:", err);
-    const fallback = getFallbackProperties();
-    const filteredFallback = slug ? fallback.find((item) => item.slug === slug) || null : fallback;
-    return Response.json(filteredFallback, { status: 200 });
+    return Response.json(slug ? null : [], { status: 500 });
   }
 }

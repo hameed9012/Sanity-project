@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 
-import { PROJECT_DATA_MAP } from "@/lib/project-data";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const SITE_SETTINGS_QUERY = `
   *[_type == "siteSettings"] | order(_updatedAt desc)[0]{
@@ -232,35 +233,6 @@ function normalizeHeroSlideSlug(value) {
   return HERO_SLIDE_PROPERTY_ALIASES.get(normalized) || normalized;
 }
 
-function resolveProjectImageForHeroSlide(slide) {
-  const candidateSlugs = [
-    slide?.propertySlug,
-    slide?.title,
-    slide?.titleAr,
-  ]
-    .map(normalizeHeroSlideSlug)
-    .filter(Boolean);
-
-  for (const slug of candidateSlugs) {
-    const project = PROJECT_DATA_MAP[slug];
-    if (!project) continue;
-
-    const imageUrl =
-      [
-        getStringUrl(project?.en?.hero?.backgroundUrl),
-        getFirstGalleryImage(project?.en?.gallery?.slides),
-        getStringUrl(project?.en?.intro?.imgUrl),
-        getStringUrl(project?.ar?.hero?.backgroundUrl),
-        getFirstGalleryImage(project?.ar?.gallery?.slides),
-        getStringUrl(project?.ar?.intro?.imgUrl),
-      ].find((url) => url && !isWeakFullscreenImage(url)) || "";
-
-    if (imageUrl) return imageUrl;
-  }
-
-  return null;
-}
-
 function getSlideOrder(slide, fallbackIndex) {
   const numeric = Number(slide?.order);
   return Number.isFinite(numeric) ? numeric : fallbackIndex + 1;
@@ -277,6 +249,48 @@ function pickHeroSlideImage(...candidates) {
 export async function GET() {
   try {
     const data = (await client.fetch(SITE_SETTINGS_QUERY)) || {};
+    const propertyHeroSources = await client.fetch(`*[_type == "property"]{
+      "slug": slug.current,
+      title,
+      titleAr,
+      "heroImage": coalesce(heroImageCdn.url, heroImageUpload.asset->url, heroImage),
+      galleryImages
+    }`);
+
+    function resolveProjectImageForHeroSlide(slide) {
+      const candidateSlugs = [
+        slide?.propertySlug,
+        slide?.title,
+        slide?.titleAr,
+      ]
+        .map(normalizeHeroSlideSlug)
+        .filter(Boolean);
+
+      for (const candidate of candidateSlugs) {
+        const property = propertyHeroSources.find((entry) => {
+          const sourceKeys = [
+            entry?.slug,
+            entry?.title,
+            entry?.titleAr,
+          ]
+            .map(normalizeHeroSlideSlug)
+            .filter(Boolean);
+          return sourceKeys.includes(candidate);
+        });
+
+        if (!property) continue;
+
+        const imageUrl =
+          [
+            getStringUrl(property?.heroImage),
+            getFirstGalleryImage(property?.galleryImages),
+          ].find((url) => url && !isWeakFullscreenImage(url)) || "";
+
+        if (imageUrl) return imageUrl;
+      }
+
+      return null;
+    }
     
     // Transform image references to URLs
     if (data) {

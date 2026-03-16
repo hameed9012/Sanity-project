@@ -1,8 +1,4 @@
 import { sanityClient } from "@/lib/sanityClient";
-import {
-  getFallbackAreas,
-  mergeAreaWithLocalData,
-} from "@/lib/server/localContentOverlay";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -21,9 +17,13 @@ export async function GET(request) {
         description,
         descriptionAr,
         location,
+        locationAr,
         avgBuyPrice,
+        avgBuyPriceAr,
         avgRentPrice,
+        avgRentPriceAr,
         roi,
+        roiAr,
         regionSlug,
         highlights,
         highlightsAr,
@@ -57,9 +57,13 @@ export async function GET(request) {
         description,
         descriptionAr,
         location,
+        locationAr,
         avgBuyPrice,
+        avgBuyPriceAr,
         avgRentPrice,
+        avgRentPriceAr,
         roi,
+        roiAr,
         regionSlug,
         highlights,
         highlightsAr,
@@ -84,21 +88,9 @@ export async function GET(request) {
       }`;
 
     const rawData = await sanityClient.fetch(query, { slug });
-    const data = Array.isArray(rawData)
-      ? rawData.map(mergeAreaWithLocalData)
-      : mergeAreaWithLocalData(rawData);
-
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      const fallback = getFallbackAreas();
-      const filteredFallback = slug ? fallback.find((item) => item.slug === slug) || null : fallback;
-      return Response.json(filteredFallback);
-    }
-
-    return Response.json(data || (slug ? null : []));
+    return Response.json(rawData || (slug ? null : []));
   } catch (err) {
     console.error("sanity-areas API error:", err);
-    const fallback = getFallbackAreas();
-    const filteredFallback = slug ? fallback.find((item) => item.slug === slug) || null : fallback;
-    return Response.json(filteredFallback, { status: 200 });
+    return Response.json(slug ? null : [], { status: 500 });
   }
 }

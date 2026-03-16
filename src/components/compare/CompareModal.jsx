@@ -185,6 +185,10 @@ export default function CompareModal() {
   const { locale } = useLanguage();
   const { allProjects } = useAllProjects();
   const isRTL = locale === "ar";
+  const isOpen = Boolean(compare?.isOpen);
+  const selected = Array.isArray(compare?.selected) ? compare.selected : [];
+  const [aSlug, bSlug] = selected;
+  const t = (en, ar) => (isRTL ? ar : en);
 
   const [areasIndex, setAreasIndex] = useState([]);
   const [imageErrors, setImageErrors] = useState({});
@@ -206,7 +210,7 @@ export default function CompareModal() {
   }, []);
 
   useEffect(() => {
-    if (!compare?.isOpen) return undefined;
+    if (!isOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
     const onKeyDown = (event) => {
       if (event.key === "Escape") compare.close();
@@ -219,10 +223,7 @@ export default function CompareModal() {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [compare]);
-
-  const [aSlug, bSlug] = compare.selected || [];
-  const t = (en, ar) => (isRTL ? ar : en);
+  }, [compare, isOpen]);
   const areaA = useMemo(
     () => (aSlug ? getAreaFromSanity(areasIndex, aSlug, locale || "en") : null),
     [aSlug, areasIndex, locale]
@@ -240,7 +241,7 @@ export default function CompareModal() {
     [allProjects, bSlug]
   );
 
-  if (!compare?.isOpen) return null;
+  if (!isOpen) return null;
 
   return (
     <div className={modal.overlay} onClick={compare.close} dir={isRTL ? "rtl" : "ltr"}>
