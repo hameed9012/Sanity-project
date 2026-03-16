@@ -249,20 +249,3 @@ export async function getAreaBySlug(slug) {
     { slug }
   );
 }
-
-export async function getHeroSlides() {
-  return sanityClient.fetch(`
-    *[_type == "heroSlide"] | order(order asc, _updatedAt desc) {
-      _id,
-      title,
-      titleAr,
-      subtitle,
-      subtitleAr,
-      "image": coalesce(cdnImage.url, image.asset->url, backgroundUrl),
-      ctaLabel,
-      ctaLabelAr,
-      ctaUrl,
-      order
-    }
-  `);
-}

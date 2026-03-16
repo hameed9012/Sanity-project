@@ -119,6 +119,22 @@ export default defineType({
     }),
 
     defineField({
+      name: 'landCategory',
+      title: 'Land Category',
+      type: 'string',
+      group: 'basics',
+      description: 'Used on the Lands page when Listing Status is set to Land.',
+      options: {
+        list: [
+          {title: 'Residential', value: 'residential'},
+          {title: 'Industrial', value: 'industrial'},
+        ],
+        layout: 'radio',
+      },
+      hidden: ({document}) => document?.status !== 'land',
+    }),
+
+    defineField({
       name: 'featured',
       title: 'Featured on homepage?',
       type: 'boolean',

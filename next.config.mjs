@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Serve remote CDN assets directly to avoid flaky optimizer fetches on self-hosted deployments.
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
 
     // ✅ Use this instead of images.domains

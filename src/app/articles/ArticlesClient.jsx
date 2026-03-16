@@ -14,7 +14,6 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   const [siteContact, setSiteContact] = useState(null);
 
   const isRTL = locale === "ar";
-  const CDN = "https://luxury-real-estate-media.b-cdn.net";
 
   const copy = {
     expertInsights: isRTL
@@ -58,44 +57,8 @@ export default function ArticlesClient({ sanityArticles = [] }) {
     window.fbq("trackCustom", eventName, params);
   };
 
-  const fallbackHeroImages = useMemo(
-    () => [
-      {
-        src: `${CDN}/sky-parks/exterior-night-01.jpg`,
-        alt: isRTL ? "Dubai articles" : "Dubai Real Estate Market Insights",
-        title: isRTL
-          ? "\u062f\u0644\u064a\u0644 \u0627\u0644\u0627\u0633\u062a\u062b\u0645\u0627\u0631"
-          : "Investment Guides",
-        description: isRTL
-          ? "\u0645\u0642\u0627\u0644\u0627\u062a \u0648\u062a\u062d\u0644\u064a\u0644\u0627\u062a \u062d\u062f\u064a\u062b\u0629 \u0639\u0646 \u0633\u0648\u0642 \u0627\u0644\u0639\u0642\u0627\u0631 \u0641\u064a \u062f\u0628\u064a."
-          : "Fresh market intelligence and investment guidance from Dubai real estate.",
-      },
-      {
-        src: `${CDN}/hartland/hero-bg.jpg`,
-        alt: isRTL ? "Market analysis" : "Investment Strategies",
-        title: isRTL
-          ? "\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0633\u0648\u0642"
-          : "Market Analysis",
-        description: isRTL
-          ? "\u062a\u063a\u0637\u064a\u0629 \u0644\u0644\u0627\u062a\u062c\u0627\u0647\u0627\u062a \u0648\u0627\u0644\u0641\u0631\u0635 \u0627\u0644\u0639\u0642\u0627\u0631\u064a\u0629 \u0627\u0644\u0623\u0643\u062b\u0631 \u0623\u0647\u0645\u064a\u0629."
-          : "Coverage of the trends, launches, and opportunities shaping the market.",
-      },
-      {
-        src: `${CDN}/lumena-alta/hero-bg.jpg`,
-        alt: isRTL ? "Development news" : "Property Development",
-        title: isRTL
-          ? "\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u062a\u0637\u0648\u064a\u0631"
-          : "Development News",
-        description: isRTL
-          ? "\u0643\u0644 \u0645\u0642\u0627\u0644 \u062c\u062f\u064a\u062f \u0645\u0646 \u0633\u0627\u0646\u064a\u062a\u064a \u0633\u064a\u0638\u0647\u0631 \u0647\u0646\u0627 \u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b."
-          : "Every new article published in Sanity appears here automatically.",
-      },
-    ],
-    [CDN, isRTL]
-  );
-
   const heroImages = useMemo(() => {
-    const slides = sanityArticles
+    return sanityArticles
       .filter((article) => article?.mainImage || article?.hero?.image)
       .slice(0, 3)
       .map((article) => ({
@@ -110,9 +73,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           ? article.descriptionAr || article.description || ""
           : article.description || article.descriptionAr || "",
       }));
-
-    return slides.length ? slides : fallbackHeroImages;
-  }, [fallbackHeroImages, isRTL, sanityArticles]);
+  }, [isRTL, sanityArticles]);
 
   const listingData = useMemo(
     () => ({
@@ -168,12 +129,12 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           locale === "ar" && article.descriptionAr
             ? article.descriptionAr
             : article.description,
-        image: article.mainImage || fallbackHeroImages[0]?.src || "",
+        image: article.mainImage || article.hero?.image || "",
         readTime: article.readTime || "5 min read",
         category: article.category || "Investment",
         cta: copy.readArticle,
       })),
-    [copy.readArticle, fallbackHeroImages, locale, sanityArticles]
+    [copy.readArticle, locale, sanityArticles]
   );
 
   useEffect(() => {
@@ -199,6 +160,8 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   }, []);
 
   useEffect(() => {
+    if (!heroImages.length) return undefined;
+
     setCurrentImage(0);
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
@@ -229,77 +192,79 @@ export default function ArticlesClient({ sanityArticles = [] }) {
       }`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <section className={styles.hero}>
-        <div className={styles.heroCarousel}>
-          <div
-            className={styles.carouselTrack}
-            style={{ transform: getCarouselTransform() }}
-          >
-            {heroImages.map((image, index) => (
-              <div key={index} className={styles.carouselSlide}>
-                <div className={styles.heroBackground}>
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className={styles.heroImage}
-                    priority
-                  />
-                  <div className={styles.heroOverlay} />
-                </div>
+      {heroImages.length ? (
+        <section className={styles.hero}>
+          <div className={styles.heroCarousel}>
+            <div
+              className={styles.carouselTrack}
+              style={{ transform: getCarouselTransform() }}
+            >
+              {heroImages.map((image, index) => (
+                <div key={index} className={styles.carouselSlide}>
+                  <div className={styles.heroBackground}>
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className={styles.heroImage}
+                      priority
+                    />
+                    <div className={styles.heroOverlay} />
+                  </div>
 
-                <div className={styles.heroContent}>
-                  <div className={styles.heroContentInner}>
-                    <div className={styles.heroBadge}>
-                      <span>{copy.expertInsights}</span>
-                      <div className={styles.badgeLine} />
-                    </div>
+                  <div className={styles.heroContent}>
+                    <div className={styles.heroContentInner}>
+                      <div className={styles.heroBadge}>
+                        <span>{copy.expertInsights}</span>
+                        <div className={styles.badgeLine} />
+                      </div>
 
-                    <h1 className={styles.heroTitle}>
-                      {copy.dubaiRealEstate}{" "}
-                      <span className={styles.highlight}>{image.title}</span>
-                    </h1>
+                      <h1 className={styles.heroTitle}>
+                        {copy.dubaiRealEstate}{" "}
+                        <span className={styles.highlight}>{image.title}</span>
+                      </h1>
 
-                    <p className={styles.heroSubtitle}>{image.description}</p>
+                      <p className={styles.heroSubtitle}>{image.description}</p>
 
-                    <div className={styles.trustStats}>
-                      {copy.trustStats.map((stat, indexKey) => (
-                        <div key={indexKey} className={styles.statItem}>
-                          <div className={styles.statNumber}>{stat.number}</div>
-                          <div className={styles.statLabel}>{stat.label}</div>
-                        </div>
-                      ))}
+                      <div className={styles.trustStats}>
+                        {copy.trustStats.map((stat, indexKey) => (
+                          <div key={indexKey} className={styles.statItem}>
+                            <div className={styles.statNumber}>{stat.number}</div>
+                            <div className={styles.statLabel}>{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className={styles.carouselNav}>
-            {heroImages.map((_, index) => (
-              <button
-                key={index}
-                className={`${styles.navDot} ${
-                  currentImage === index ? styles.active : ""
-                }`}
-                onClick={() => setCurrentImage(index)}
-                type="button"
+            <div className={styles.carouselNav}>
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`${styles.navDot} ${
+                    currentImage === index ? styles.active : ""
+                  }`}
+                  onClick={() => setCurrentImage(index)}
+                  type="button"
+                />
+              ))}
+            </div>
+
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{
+                  width: `${((currentImage + 1) / heroImages.length) * 100}%`,
+                  transition: "width 0.3s ease",
+                }}
               />
-            ))}
+            </div>
           </div>
-
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{
-                width: `${((currentImage + 1) / heroImages.length) * 100}%`,
-                transition: "width 0.3s ease",
-              }}
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className={styles.articlesSection}>
         <div className={styles.container}>
@@ -326,13 +291,17 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                 onClick={() => handleArticleClick(article, "card")}
               >
                 <div className={styles.imageContainer}>
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    className={styles.articleImage}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
+                  {article.image ? (
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      className={styles.articleImage}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className={styles.imagePlaceholder} />
+                  )}
                   <div className={styles.imageOverlay} />
                   <div className={styles.categoryBadge}>
                     <span>{article.category}</span>

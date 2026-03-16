@@ -3,7 +3,7 @@ import CdnUrlImageInput from './CdnUrlImageInput'
 
 export default defineType({
   name: 'cdnImage',
-  title: 'CDN Image (URL)',
+  title: 'BunnyCDN Image',
   type: 'object',
   fields: [
     defineField({
@@ -20,17 +20,12 @@ export default defineType({
       title: 'Alt text',
       type: 'string',
     }),
-    defineField({
-      name: 'caption',
-      title: 'Caption',
-      type: 'string',
-    }),
   ],
   preview: {
-    select: {title: 'caption', subtitle: 'url'},
+    select: {title: 'alt', subtitle: 'url'},
     prepare({title, subtitle}) {
       return {
-        title: title || 'CDN Image',
+        title: title || 'BunnyCDN Image',
         subtitle,
       }
     },

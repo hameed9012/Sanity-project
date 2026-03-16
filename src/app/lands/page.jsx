@@ -43,38 +43,55 @@ function getLandThumbnail(land) {
 
 function sanityToLand(p) {
   const slug = p.slug || p._id;
-  const en = p.data?.en || {};
-  const ar = p.data?.ar || {};
+  const project = p.data?.project || {};
+  const intro = p.data?.intro || {};
+  const gallerySlides = Array.isArray(p.data?.gallery?.slides)
+    ? p.data.gallery.slides.map((slide) => (typeof slide === "string" ? slide : slide?.url))
+    : [];
+  const galleryImages = Array.isArray(p.galleryImages)
+    ? p.galleryImages.map((image) => (typeof image === "string" ? image : image?.url))
+    : [];
+  const gallery = [...gallerySlides, ...galleryImages].filter(
+    (url, index, list) => url && list.indexOf(url) === index
+  );
+
   return {
     slug,
     _fromSanity: true,
-    type: (p.type || "land").toLowerCase(),
+    type: String(p.landCategory || "").toLowerCase() === "industrial" ? "industrial" : "residential",
     status: p.status || p.devStatus || "Land",
-    market: en.project?.market || "",
-    title: { en: p.nameEn || slug, ar: p.nameAr || p.nameEn || slug },
-    subtitle: { en: p.location || "", ar: p.locationAr || p.location || "" },
-    description: { en: en.description || "", ar: ar.description || "" },
-    area: { en: en.project?.units || "", ar: ar.project?.units || "" },
-    price: { en: p.startingPrice || "", ar: p.startingPriceAr || "" },
-    developer: p.developer || "",
-    gallery: Array.isArray(en.gallery?.slides)
-      ? en.gallery.slides.map((s) => s?.url || s).filter(Boolean)
-      : [],
+    title: {
+      en: p.nameEn || p.title || project?.name || slug,
+      ar: p.nameAr || p.titleAr || p.nameEn || p.title || project?.name || slug,
+    },
+    subtitle: {
+      en: p.location || project?.location || "",
+      ar: p.locationAr || p.location || project?.location || "",
+    },
+    description: {
+      en: p.description || intro?.description || intro?.paragraphs?.[0] || "",
+      ar: p.descriptionAr || p.description || intro?.description || intro?.paragraphs?.[0] || "",
+    },
+    area: {
+      en: p.unitTypes || project?.units || "Land",
+      ar: p.unitTypes || project?.units || "Land",
+    },
+    price: {
+      en: p.startingPrice || project?.startingPrice || "",
+      ar: p.startingPriceAr || p.startingPrice || project?.startingPrice || "",
+    },
+    completion: {
+      en: p.completionDate || project?.completionDate || "",
+      ar: p.completionDate || project?.completionDate || "",
+    },
+    developer: p.developer || project?.developer || "",
+    brochureUrl: p.brochureUrl || "",
+    gallery,
   };
 }
 
 function getTabType(land) {
-  const market = String(land?.market || "").toLowerCase();
-  const status = String(land?.status || "").toLowerCase();
-
-  if (market.includes("rental") || status.includes("rental")) return "rental";
-  if (market.includes("ready") || status.includes("secondary") || status.includes("ready")) {
-    return "secondary";
-  }
-  if (market.includes("offplan") || market.includes("off-plan") || status.includes("offplan")) {
-    return "offplan";
-  }
-  return "properties";
+  return String(land?.type || "").toLowerCase() === "industrial" ? "industrial" : "residential";
 }
 
 export default function LandsPage() {
@@ -87,7 +104,13 @@ export default function LandsPage() {
     return allProjects
       .filter((p) => {
         const s = (p.status || p.devStatus || "").toLowerCase();
-        return s === "land" || s === "lands" || (p.data?.status || "").toLowerCase() === "land";
+        return (
+          p?.isLand ||
+          p?.category === "lands" ||
+          s === "land" ||
+          s === "lands" ||
+          (p.data?.status || "").toLowerCase() === "land"
+        );
       })
       .map(sanityToLand);
   }, [allProjects]);
@@ -99,10 +122,8 @@ export default function LandsPage() {
   const counts = React.useMemo(
     () => ({
       all: allLands.length,
-      properties: allLands.filter((x) => getTabType(x) === "properties").length,
-      offplan: allLands.filter((x) => getTabType(x) === "offplan").length,
-      secondary: allLands.filter((x) => getTabType(x) === "secondary").length,
-      rental: allLands.filter((x) => getTabType(x) === "rental").length,
+      residential: allLands.filter((x) => getTabType(x) === "residential").length,
+      industrial: allLands.filter((x) => getTabType(x) === "industrial").length,
     }),
     [allLands]
   );
@@ -146,8 +167,8 @@ export default function LandsPage() {
           <div className={styles.pageTitleWrap}>
             <p className={styles.pageSubOnly}>
               {isRTL
-                ? "\u0627\u0633\u062a\u0639\u0631\u0636 \u0645\u0634\u0627\u0631\u064a\u0639 \u0627\u0644\u0623\u0631\u0627\u0636\u064a \u0628\u062d\u0633\u0628 \u0627\u0644\u062d\u0627\u0644\u0629 \u0648\u0627\u0628\u062d\u062b \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0623\u0648 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629"
-                : "Browse land projects by status and search in Arabic or English"}
+                ? "\u0627\u0633\u062a\u0639\u0631\u0636 \u0645\u062d\u0641\u0638\u0629 \u0645\u0634\u0627\u0631\u064a\u0639 \u0627\u0644\u0623\u0631\u0627\u0636\u064a \u062d\u0633\u0628 \u0627\u0644\u0646\u0648\u0639"
+                : "Browse project portfolio by type"}
             </p>
           </div>
           <div className={styles.metaPill}>
@@ -218,12 +239,12 @@ export default function LandsPage() {
         {!loading && filtered.length === 0 && (
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>
-              {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0634\u0627\u0631\u064a\u0639 \u0623\u0631\u0627\u0636\u064a \u0645\u0637\u0627\u0628\u0642\u0629" : "No matching land projects"}
+              {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0634\u0627\u0631\u064a\u0639" : "No projects found"}
             </div>
             <div className={styles.emptySub}>
               {isRTL
-                ? "\u063a\u064a\u0651\u0631 \u0627\u0644\u062a\u0628\u0648\u064a\u0628 \u0623\u0648 \u062c\u0631\u0651\u0628 \u0643\u0644\u0645\u0629 \u0628\u062d\u062b \u0645\u062e\u062a\u0644\u0641\u0629."
-                : "Try a different tab or search term."}
+                ? "\u062c\u0631\u0651\u0628 \u062a\u063a\u064a\u064a\u0631 \u0646\u0648\u0639 \u0627\u0644\u0641\u0644\u062a\u0631 \u0623\u0648 \u0627\u0633\u062a\u062e\u062f\u0645 \u0628\u062d\u062b\u0627 \u0645\u062e\u062a\u0644\u0641\u0627."
+                : "Try changing the filter type or search term."}
             </div>
           </div>
         )}
@@ -246,11 +267,9 @@ export default function LandsPage() {
 
 function TypeTabs({ value, onChange, counts, isRTL }) {
   const tabs = [
-    { id: "all", en: "All", ar: "\u0627\u0644\u0643\u0644" },
-    { id: "properties", en: "Properties", ar: "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a" },
-    { id: "offplan", en: "Offplan", ar: "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" },
-    { id: "secondary", en: "Ready To Move", ar: "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" },
-    { id: "rental", en: "Rental", ar: "\u0627\u0644\u0625\u064a\u062c\u0627\u0631" },
+    { id: "all", en: "All Projects", ar: "\u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639" },
+    { id: "residential", en: "Residential", ar: "\u0633\u0643\u0646\u064a" },
+    { id: "industrial", en: "Industrial", ar: "\u0635\u0646\u0627\u0639\u064a" },
   ];
 
   return (
@@ -306,10 +325,8 @@ function CardBody({ land, locale, isRTL }) {
   const tabType = getTabType(land);
 
   const typeLabelMap = {
-    properties: isRTL ? "\u0639\u0642\u0627\u0631" : "Property",
-    offplan: isRTL ? "\u0639\u0644\u0649 \u0627\u0644\u062e\u0627\u0631\u0637\u0629" : "Offplan",
-    secondary: isRTL ? "\u062c\u0627\u0647\u0632 \u0644\u0644\u0633\u0643\u0646" : "Ready To Move",
-    rental: isRTL ? "\u0625\u064a\u062c\u0627\u0631" : "Rental",
+    residential: isRTL ? "\u0633\u0643\u0646\u064a" : "Residential",
+    industrial: isRTL ? "\u0635\u0646\u0627\u0639\u064a" : "Industrial",
   };
 
   return (

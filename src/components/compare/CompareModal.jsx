@@ -221,8 +221,6 @@ export default function CompareModal() {
     };
   }, [compare]);
 
-  if (!compare?.isOpen) return null;
-
   const [aSlug, bSlug] = compare.selected || [];
   const t = (en, ar) => (isRTL ? ar : en);
   const areaA = useMemo(
@@ -241,6 +239,8 @@ export default function CompareModal() {
     () => (bSlug ? computeStats(allProjects, bSlug) : null),
     [allProjects, bSlug]
   );
+
+  if (!compare?.isOpen) return null;
 
   return (
     <div className={modal.overlay} onClick={compare.close} dir={isRTL ? "rtl" : "ltr"}>

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from '@sanity/image-url'
+import imageUrlBuilder from "@sanity/image-url";
+
+import { PROJECT_DATA_MAP } from "@/lib/project-data";
 
 const SITE_SETTINGS_QUERY = `
   *[_type == "siteSettings"] | order(_updatedAt desc)[0]{
@@ -56,16 +58,91 @@ const SITE_SETTINGS_QUERY = `
       formTitle, formTitleAr
     },
     about{
-      badge, badgeAr,
-      title, titleAr,
-      subtitle, subtitleAr,
-      heroImageCdn,
-      heroImage{
-        asset->
+      hero{
+        yearsNumber, yearsNumberAr,
+        yearsSuffix, yearsSuffixAr,
+        labelTop, labelTopAr,
+        line1, line1Ar,
+        line2, line2Ar,
+        sinceLabel, sinceLabelAr,
+        description1, description1Ar,
+        description2, description2Ar,
+        imageAlt, imageAltAr,
+        imageCdn,
+        image{
+          asset->
+        }
       },
-      sections[]{
+      buildingExcellence{
+        headingLine1, headingLine1Ar,
+        headingLine2, headingLine2Ar,
+        headingLine3, headingLine3Ar,
+        paragraph, paragraphAr,
+        imageAlt, imageAltAr,
+        imageCdn,
+        image{
+          asset->
+        },
+        stats[]{
+          "_key": _key,
+          count,
+          suffix, suffixAr,
+          label, labelAr
+        }
+      },
+      services{
+        title, titleAr,
+        intro, introAr,
+        footer, footerAr,
+        cards[]{
+          "_key": _key,
+          title, titleAr,
+          items, itemsAr
+        }
+      },
+      accordion{
+        visionTitle, visionTitleAr,
+        visionText, visionTextAr,
+        visionImageAlt, visionImageAltAr,
+        visionImageCdn,
+        visionImage{
+          asset->
+        },
+        missionTitle, missionTitleAr,
+        missionText, missionTextAr,
+        missionImageAlt, missionImageAltAr,
+        missionImageCdn,
+        missionImage{
+          asset->
+        },
+        coreTitle, coreTitleAr,
+        coreSubtitleTop, coreSubtitleTopAr,
+        coreSubtitleBottom, coreSubtitleBottomAr,
+        pillars[]{
+          "_key": _key,
+          title, titleAr,
+          text, textAr,
+          imageAlt, imageAltAr,
+          imageCdn,
+          image{
+            asset->
+          }
+        }
+      },
+      journey{
+        kicker, kickerAr,
         heading, headingAr,
-        body, bodyAr
+        steps[]{
+          "_key": _key,
+          year, yearAr,
+          title, titleAr,
+          description, descriptionAr,
+          imageAlt, imageAltAr,
+          imageCdn,
+          image{
+            asset->
+          }
+        }
       }
     }
   }
@@ -84,6 +161,117 @@ const builder = imageUrlBuilder(client);
 
 function urlFor(source) {
   return builder.image(source);
+}
+
+function resolveCmsImage(entry, options = {}) {
+  const {
+    imageKey = "image",
+    cdnKey = "imageCdn",
+    width = 1600,
+    height = 1200,
+  } = options;
+
+  if (!entry) return null;
+
+  const cdnUrl = entry?.[cdnKey]?.url;
+  if (cdnUrl) return cdnUrl;
+
+  const image = entry?.[imageKey];
+  return image ? urlFor(image).width(width).height(height).url() : null;
+}
+
+const HERO_SLIDE_PROPERTY_ALIASES = new Map([
+  ["red-square", "red-square-tower"],
+  ["sobha-one-the-element", "the-element"],
+  ["sobha-the-element", "the-element"],
+  ["the-element-at-sobha-one", "the-element"],
+  ["volga", "volga-tower"],
+]);
+
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function isVideoUrl(value) {
+  const clean = String(value || "").split("?")[0].toLowerCase();
+  return [".mp4", ".webm", ".mov", ".m4v", ".ogg"].some((ext) => clean.endsWith(ext));
+}
+
+function isWeakFullscreenImage(value) {
+  const text = String(value || "").toLowerCase().trim();
+  return (
+    !text ||
+    isVideoUrl(text) ||
+    text.endsWith(".svg") ||
+    text.includes("projects-profile-pictures") ||
+    text.includes("logo")
+  );
+}
+
+function getStringUrl(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function getFirstGalleryImage(slides = []) {
+  if (!Array.isArray(slides)) return "";
+
+  return (
+    slides
+      .map((slide) => (typeof slide === "string" ? slide : slide?.url))
+      .map(getStringUrl)
+      .find((url) => url && !isWeakFullscreenImage(url)) || ""
+  );
+}
+
+function normalizeHeroSlideSlug(value) {
+  const normalized = slugify(value);
+  return HERO_SLIDE_PROPERTY_ALIASES.get(normalized) || normalized;
+}
+
+function resolveProjectImageForHeroSlide(slide) {
+  const candidateSlugs = [
+    slide?.propertySlug,
+    slide?.title,
+    slide?.titleAr,
+  ]
+    .map(normalizeHeroSlideSlug)
+    .filter(Boolean);
+
+  for (const slug of candidateSlugs) {
+    const project = PROJECT_DATA_MAP[slug];
+    if (!project) continue;
+
+    const imageUrl =
+      [
+        getStringUrl(project?.en?.hero?.backgroundUrl),
+        getFirstGalleryImage(project?.en?.gallery?.slides),
+        getStringUrl(project?.en?.intro?.imgUrl),
+        getStringUrl(project?.ar?.hero?.backgroundUrl),
+        getFirstGalleryImage(project?.ar?.gallery?.slides),
+        getStringUrl(project?.ar?.intro?.imgUrl),
+      ].find((url) => url && !isWeakFullscreenImage(url)) || "";
+
+    if (imageUrl) return imageUrl;
+  }
+
+  return null;
+}
+
+function getSlideOrder(slide, fallbackIndex) {
+  const numeric = Number(slide?.order);
+  return Number.isFinite(numeric) ? numeric : fallbackIndex + 1;
+}
+
+function pickHeroSlideImage(...candidates) {
+  return (
+    candidates
+      .map(getStringUrl)
+      .find((url) => url && !isVideoUrl(url)) || null
+  );
 }
 
 export async function GET() {
@@ -115,14 +303,27 @@ export async function GET() {
 
       // Transform hero slides images
       if (data.heroSlides) {
-        data.heroSlides = data.heroSlides.map(slide => ({
-          ...slide,
-          imageUrl:
-            slide?.cdnImage?.url ||
-            (slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null) ||
-            slide.backgroundUrl ||
-            null
-        }));
+        data.heroSlides = data.heroSlides
+          .map((slide, index) => ({
+            slide,
+            index,
+            order: getSlideOrder(slide, index),
+          }))
+          .sort((a, b) => a.order - b.order || a.index - b.index)
+          .map(({ slide, index, order }) => {
+            const fallbackImageUrl = resolveProjectImageForHeroSlide(slide);
+
+            return {
+              ...slide,
+              order,
+              imageUrl: pickHeroSlideImage(
+                slide?.cdnImage?.url,
+                slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null,
+                slide?.backgroundUrl,
+                fallbackImageUrl
+              ),
+            };
+          });
       }
 
       // Transform art of detail owner image
@@ -130,8 +331,57 @@ export async function GET() {
         data.artOfDetail.ownerImageUrl = data.artOfDetail?.ownerImageCdn?.url || urlFor(data.artOfDetail.ownerImage).width(800).height(1000).url();
       }
 
-      if (data.about?.heroImageCdn?.url || data.about?.heroImage) {
-        data.about.heroImageUrl = data.about?.heroImageCdn?.url || urlFor(data.about.heroImage).width(1600).height(1200).url();
+      if (data.about?.hero) {
+        data.about.hero.imageUrl = resolveCmsImage(data.about.hero, {
+          width: 1600,
+          height: 1800,
+        });
+      }
+
+      if (data.about?.buildingExcellence) {
+        data.about.buildingExcellence.imageUrl = resolveCmsImage(
+          data.about.buildingExcellence,
+          {
+            width: 1400,
+            height: 1400,
+          }
+        );
+      }
+
+      if (data.about?.accordion) {
+        data.about.accordion.visionImageUrl = resolveCmsImage(data.about.accordion, {
+          imageKey: "visionImage",
+          cdnKey: "visionImageCdn",
+          width: 1400,
+          height: 1100,
+        });
+
+        data.about.accordion.missionImageUrl = resolveCmsImage(data.about.accordion, {
+          imageKey: "missionImage",
+          cdnKey: "missionImageCdn",
+          width: 1400,
+          height: 1100,
+        });
+
+        if (Array.isArray(data.about.accordion.pillars)) {
+          data.about.accordion.pillars = data.about.accordion.pillars.map((pillar) => ({
+            ...pillar,
+            imageUrl: resolveCmsImage(pillar, {
+              width: 900,
+              height: 1200,
+            }),
+          }));
+        }
+      }
+
+      if (data.about?.journey?.steps) {
+        data.about.journey.steps = data.about.journey.steps.map((step) => ({
+          ...step,
+          imageUrl: resolveCmsImage(step, {
+            width: 1800,
+            height: 1200,
+          }),
+        }));
       }
       
       // Transform pillars images

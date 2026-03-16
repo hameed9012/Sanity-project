@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getArticleBySlug, getAllArticles } from "@/lib/sanityQueries";
+import { getArticleBySlug, getAllArticles } from "@/lib/server/articleQueries";
 import SanityArticleTemplate from "@/components/articles/SanityArticleTemplate";
 
 // If you ever rename slugs, map old → new here.

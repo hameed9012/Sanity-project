@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = process.cwd();
+const PUBLIC_DIR = join(ROOT, "public");
 
 function readJson(filename, fallback = []) {
   try {
@@ -140,6 +141,89 @@ function firstNonEmpty(...values) {
 function asAbsoluteUrl(value) {
   const url = String(value || "").trim();
   return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function isRootRelativePath(value) {
+  return /^\/(?!\/)/.test(String(value || "").trim());
+}
+
+function stripQueryAndHash(value) {
+  return String(value || "").split("#")[0].split("?")[0];
+}
+
+function publicAssetExists(value) {
+  if (!isRootRelativePath(value)) return false;
+  const assetPath = stripQueryAndHash(value).replace(/^\/+/, "");
+  return assetPath ? existsSync(join(PUBLIC_DIR, assetPath)) : false;
+}
+
+const KNOWN_IMAGE_HOSTS = new Set([
+  "cdn.dxbproperties.ae",
+  "cdn.sanity.io",
+  "images.unsplash.com",
+  "luxury-real-estate-media.b-cdn.net",
+]);
+
+function looksLikeImageUrl(value) {
+  const absolute = asAbsoluteUrl(value);
+  if (!absolute) return false;
+
+  try {
+    const parsed = new URL(absolute);
+    const pathname = parsed.pathname.toLowerCase();
+    return (
+      KNOWN_IMAGE_HOSTS.has(parsed.hostname.toLowerCase()) ||
+      /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function asUsableImageSource(value) {
+  const source = String(value || "").trim();
+  if (!source) return "";
+
+  if (looksLikeImageUrl(source)) return source;
+  if (publicAssetExists(source)) return source;
+
+  return "";
+}
+
+function collectNestedText(value, bucket = []) {
+  if (typeof value === "string") {
+    bucket.push(value);
+    return bucket;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectNestedText(item, bucket));
+    return bucket;
+  }
+
+  if (value && typeof value === "object") {
+    Object.values(value).forEach((item) => collectNestedText(item, bucket));
+  }
+
+  return bucket;
+}
+
+function extractImageUrlsFromValue(value) {
+  const matches = [];
+  const seen = new Set();
+
+  for (const text of collectNestedText(value)) {
+    const urls = String(text || "").match(/https?:\/\/[^\s"'<>`]+/gi) || [];
+
+    for (const url of urls) {
+      const cleaned = url.replace(/[),.;]+$/, "");
+      if (!looksLikeImageUrl(cleaned) || seen.has(cleaned)) continue;
+      seen.add(cleaned);
+      matches.push(cleaned);
+    }
+  }
+
+  return matches;
 }
 
 function isWeakText(value) {
@@ -377,6 +461,18 @@ for (const article of localArticles) {
   localArticleBySlug.set(article.slug, article);
 }
 const workbookRecordList = Array.from(workbookBySlug.values());
+
+const DEFAULT_ARTICLE_IMAGE =
+  "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg";
+
+const ARTICLE_IMAGE_FALLBACKS = {
+  "off-plan-investment-dubai":
+    "https://luxury-real-estate-media.b-cdn.net/tiger/red-square/Copy%20of%20main-pool.jpg",
+  "dubai-economic-opportunity":
+    "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg",
+  "dubai-real-estate-demand":
+    "https://luxury-real-estate-media.b-cdn.net/tiger/volga/Outdoor%20002.jpg",
+};
 
 const PROPERTY_SLUG_ALIASES = new Map([
   ["one", "sobha-one"],
@@ -1409,12 +1505,34 @@ export function getFallbackAreas() {
   return Array.from(localAreaBySlug.values()).map((area) => mergeAreaWithLocalData(area));
 }
 
+function resolveArticleImage(article, local, cleanedBodySnippets) {
+  const slug = article?.slug || article?._id || local?.slug || "";
+  const extractedImages = [
+    ...extractImageUrlsFromValue(article?.mainImage),
+    ...extractImageUrlsFromValue(article?.hero?.image),
+    ...extractImageUrlsFromValue(local?.image),
+    ...extractImageUrlsFromValue(cleanedBodySnippets),
+    ...extractImageUrlsFromValue(article?.sections),
+    ...extractImageUrlsFromValue(article?.body),
+    ...extractImageUrlsFromValue(article?.bodyAr),
+  ];
+
+  return (
+    firstNonEmpty(
+      asUsableImageSource(article?.mainImage),
+      asUsableImageSource(article?.hero?.image),
+      asUsableImageSource(local?.image),
+      extractedImages[0],
+      ARTICLE_IMAGE_FALLBACKS[slug],
+      DEFAULT_ARTICLE_IMAGE
+    ) || ""
+  );
+}
+
 export function mergeArticleWithLocalData(article) {
   const slug = article?.slug || article?._id;
-  const local = localArticleBySlug.get(slug);
-  if (!local) return article;
-
-  const cleanedBodySnippets = (Array.isArray(local.bodySnippets) ? local.bodySnippets : [])
+  const local = localArticleBySlug.get(slug) || null;
+  const cleanedBodySnippets = (Array.isArray(local?.bodySnippets) ? local.bodySnippets : [])
     .map((snippet) => String(snippet || "").replace(/\s+/g, " ").trim())
     .filter(
       (snippet) =>
@@ -1423,6 +1541,19 @@ export function mergeArticleWithLocalData(article) {
         !snippet.includes("content: {") &&
         !snippet.includes("sections: [")
     );
+  const resolvedImage = resolveArticleImage(article, local, cleanedBodySnippets);
+
+  if (!local) {
+    return {
+      ...article,
+      slug,
+      mainImage: resolvedImage,
+      hero: {
+        ...(article?.hero || {}),
+        image: resolvedImage,
+      },
+    };
+  }
 
   const sections =
     Array.isArray(article?.sections) && article.sections.length > 0
@@ -1448,7 +1579,7 @@ export function mergeArticleWithLocalData(article) {
     titleAr: firstNonEmpty(article?.titleAr, local?.ar?.title) || "",
     description: firstNonEmpty(article?.description, local?.description) || "",
     descriptionAr: firstNonEmpty(article?.descriptionAr, local?.ar?.description) || "",
-    mainImage: firstNonEmpty(article?.mainImage, asAbsoluteUrl(local?.image), local?.image) || "",
+    mainImage: resolvedImage,
     category: firstNonEmpty(article?.category, local?.category) || "News",
     readTime: firstNonEmpty(article?.readTime, local?.readTime) || "",
     sections,
@@ -1458,7 +1589,7 @@ export function mergeArticleWithLocalData(article) {
       titleAr: firstNonEmpty(article?.hero?.titleAr, local?.ar?.title) || "",
       subtitle: firstNonEmpty(article?.hero?.subtitle, local?.description) || "",
       subtitleAr: firstNonEmpty(article?.hero?.subtitleAr, local?.ar?.description) || "",
-      image: firstNonEmpty(article?.hero?.image, asAbsoluteUrl(local?.image), local?.image) || "",
+      image: resolvedImage,
     },
   };
 }

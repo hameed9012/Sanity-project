@@ -118,7 +118,7 @@ export default function FounderHero() {
           {/* Boss image on top */}
           <div className={styles.bossWrapper}>
             <Image
-              src="/boss-nobg.png"
+              src="https://luxury-real-estate-media.b-cdn.net/public/boss-nobg.png"
               alt="Mohamad Kodmani"
               fill
               priority

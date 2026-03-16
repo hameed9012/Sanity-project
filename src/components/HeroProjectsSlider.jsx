@@ -12,25 +12,6 @@ import styles from "@/styles/HeroProjectsSlider.module.css";
 const ROTATE_MS = 5200;
 const FADE_MS = 900;
 
-function randInt(max) {
-  if (max <= 0) return 0;
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    const a = new Uint32Array(1);
-    crypto.getRandomValues(a);
-    return a[0] % max;
-  }
-  return Math.floor(Math.random() * max);
-}
-
-function shuffleArray(arr) {
-  const input = [...arr];
-  for (let i = input.length - 1; i > 0; i--) {
-    const j = randInt(i + 1);
-    [input[i], input[j]] = [input[j], input[i]];
-  }
-  return input;
-}
-
 export default function LuxuryHeroSlider() {
   const { t, locale } = useLanguage();
   const router = useRouter();
@@ -88,14 +69,24 @@ export default function LuxuryHeroSlider() {
 
   const projects = useMemo(() => {
     const cmsDrivenSlides = cmsSlides
-      .slice()
-      .sort((a, b) => (a?.order || 0) - (b?.order || 0))
       .map((slide, index) => ({
+        slide,
+        index,
+        order: Number.isFinite(Number(slide?.order)) ? Number(slide.order) : Number.MAX_SAFE_INTEGER,
+      }))
+      .sort((a, b) => a.order - b.order || a.index - b.index)
+      .map(({ slide, index }) => ({
         id: slide?._key || `cms-slide-${index}`,
-        title: (locale === "ar" && slide?.titleAr) ? slide.titleAr : slide?.title || slide?.titleAr || "Luxury Real Estate",
+        title:
+          (locale === "ar" && slide?.titleAr)
+            ? slide.titleAr
+            : slide?.title || slide?.titleAr || "Luxury Real Estate",
         slug: slide?.propertySlug || `cms-slide-${index}`,
         image: slide?.imageUrl || slide?.backgroundUrl || "",
-        description: (locale === "ar" && slide?.subtitleAr) ? slide.subtitleAr : slide?.subtitle || slide?.subtitleAr || "",
+        description:
+          (locale === "ar" && slide?.subtitleAr)
+            ? slide.subtitleAr
+            : slide?.subtitle || slide?.subtitleAr || "",
         developerName: "Mohamad Kodmani",
         developerSlug: "",
         category: "apartments",
@@ -123,8 +114,6 @@ export default function LuxuryHeroSlider() {
   const isFadingRef = useRef(false);
   const isTransitioningRef = useRef(false);
   const loadedImagesRef = useRef(new Set());
-  const deckRef = useRef([]);
-  const deckPosRef = useRef(0);
   const rotateTimerRef = useRef(null);
   const fadeTimerRef = useRef(null);
 
@@ -138,27 +127,6 @@ export default function LuxuryHeroSlider() {
     rotateTimerRef.current = null;
     fadeTimerRef.current = null;
   }, []);
-
-  const rebuildDeck = useCallback((len, avoidIndex) => {
-    const indices = Array.from({ length: len }, (_, i) => i);
-    let deck = shuffleArray(indices);
-    if (deck.length > 1 && deck[0] === avoidIndex) {
-      const swapWith = 1 + randInt(deck.length - 1);
-      [deck[0], deck[swapWith]] = [deck[swapWith], deck[0]];
-    }
-    deckRef.current = deck;
-    deckPosRef.current = 0;
-  }, []);
-
-  const getNextFromDeck = useCallback(() => {
-    const len = projects.length;
-    if (!len) return 0;
-    if (!deckRef.current.length) rebuildDeck(len, currentIndexRef.current);
-    if (deckPosRef.current >= deckRef.current.length) rebuildDeck(len, currentIndexRef.current);
-    const idx = deckRef.current[deckPosRef.current];
-    deckPosRef.current += 1;
-    return idx;
-  }, [projects.length, rebuildDeck]);
 
   const preloadImage = useCallback((index) => {
     if (typeof window === "undefined" || !isClient) return;
@@ -197,12 +165,6 @@ export default function LuxuryHeroSlider() {
     }, FADE_MS);
   }, []);
 
-  const scheduleNextSlide = useCallback(() => {
-    clearTimers();
-    if (!projects.length) return;
-    rotateTimerRef.current = setTimeout(() => { prepareNextSlide(); }, ROTATE_MS);
-  }, [projects.length, clearTimers]);
-
   const handleNextImageReady = useCallback((index, imgUrl) => {
     if (index !== nextIndexRef.current) return;
     if (imgUrl) loadedImagesRef.current.add(imgUrl);
@@ -210,9 +172,8 @@ export default function LuxuryHeroSlider() {
   }, [startFadeTransition]);
 
   const prepareNextSlide = useCallback(() => {
-    if (!projects.length || isTransitioningRef.current) return;
-    const nextIdx = getNextFromDeck();
-    if (nextIdx === currentIndexRef.current) { scheduleNextSlide(); return; }
+    if (projects.length < 2 || isTransitioningRef.current) return;
+    const nextIdx = (currentIndexRef.current + 1) % projects.length;
     const nextImg = projects[nextIdx]?.image;
     const isAlreadyLoaded = nextImg && loadedImagesRef.current.has(nextImg);
     setNextIndex(nextIdx);
@@ -225,27 +186,29 @@ export default function LuxuryHeroSlider() {
         if (!isFadingRef.current && nextIndexRef.current === nextIdx) startFadeTransition();
       }, Math.max(FADE_MS, 500));
     }
-  }, [projects, getNextFromDeck, preloadImage, scheduleNextSlide, startFadeTransition]);
+  }, [projects, preloadImage, startFadeTransition]);
+
+  const scheduleNextSlide = useCallback(() => {
+    clearTimers();
+    if (projects.length < 2) return;
+    rotateTimerRef.current = setTimeout(() => { prepareNextSlide(); }, ROTATE_MS);
+  }, [projects.length, clearTimers, prepareNextSlide]);
 
   useEffect(() => {
     if (!isClient || !projects.length) return;
     clearTimers();
-    rebuildDeck(projects.length, -1);
-    const firstIdx = deckRef.current.length ? deckRef.current[0] : randInt(projects.length);
-    deckPosRef.current = 1;
-    setCurrentIndex(firstIdx);
+    setCurrentIndex(0);
     setNextIndex(null);
     setIsFading(false);
-    currentIndexRef.current = firstIdx;
+    currentIndexRef.current = 0;
     nextIndexRef.current = null;
     isFadingRef.current = false;
     isTransitioningRef.current = false;
-    preloadImage(firstIdx);
-    const maybeNext = deckRef.current[1];
-    if (typeof maybeNext === "number") preloadImage(maybeNext);
+    preloadImage(0);
+    if (projects.length > 1) preloadImage(1);
     scheduleNextSlide();
     return clearTimers;
-  }, [projects.length, isClient, clearTimers, rebuildDeck, preloadImage, scheduleNextSlide]);
+  }, [projects, isClient, clearTimers, preloadImage, scheduleNextSlide]);
 
   useEffect(() => {
     if (!isFading && nextIndex === null && !isTransitioningRef.current) scheduleNextSlide();
@@ -330,11 +293,13 @@ export default function LuxuryHeroSlider() {
           quality={isAboveTheFold ? 90 : 85}
           className={`${styles.heroImage} ${styles.kenBurns}`}
           onLoadingComplete={() => {
+            if (project.image) loadedImagesRef.current.add(project.image);
             if (isNext) handleNextImageReady(indexForNext, project.image);
           }}
           onError={(e) => {
+            if (project.image) loadedImagesRef.current.add(project.image);
             // Fallback if image fails to load
-            e.currentTarget.style.background = '#f0f0f0';
+            e.currentTarget.style.background = "#f0f0f0";
           }}
         />
       </div>

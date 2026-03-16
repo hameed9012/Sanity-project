@@ -6,14 +6,13 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { selectAboutValue } from "@/lib/aboutPage";
 import styles from "@/styles/about/BuildingExcellence.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SECTION_IMAGE = "/marina.jpg"; // put image in /public/about/
-
-export default function BuildingExcellenceSection() {
-  const { t, locale } = useLanguage();
+export default function BuildingExcellenceSection({ content }) {
+  const { locale } = useLanguage();
   const isRTL = locale === "ar";
 
   const sectionRef = useRef(null);
@@ -22,15 +21,14 @@ export default function BuildingExcellenceSection() {
   const mediaRef = useRef(null);
   const statRefs = useRef([]);
 
-  const setStatRef = (el, index) => {
-    if (el) statRefs.current[index] = el;
+  const setStatRef = (element, index) => {
+    if (element) statRefs.current[index] = element;
   };
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Heading
       gsap.fromTo(
         leftRef.current,
         { x: isRTL ? 80 : -80, opacity: 0 },
@@ -43,7 +41,6 @@ export default function BuildingExcellenceSection() {
         }
       );
 
-      // Media (middle)
       gsap.fromTo(
         mediaRef.current,
         { y: 26, rotate: -6, opacity: 0 },
@@ -57,7 +54,6 @@ export default function BuildingExcellenceSection() {
         }
       );
 
-      // Paragraph
       gsap.fromTo(
         rightRef.current,
         { x: isRTL ? -80 : 80, opacity: 0 },
@@ -70,7 +66,6 @@ export default function BuildingExcellenceSection() {
         }
       );
 
-      // Stats
       gsap.fromTo(
         statRefs.current,
         { y: 30, opacity: 0 },
@@ -84,19 +79,20 @@ export default function BuildingExcellenceSection() {
         }
       );
 
-      // Counter
-      statRefs.current.forEach((el, index) => {
-        const span = el.querySelector("[data-count-span]");
+      statRefs.current.forEach((element, index) => {
+        const span = element.querySelector("[data-count-span]");
         if (!span) return;
 
-        const target = Number(t(`buildingExcellence.stats.${index}.count`));
+        const target = Number(stats[index]?.count);
+        if (!Number.isFinite(target)) return;
+
         const counter = { value: 0 };
 
         gsap.to(counter, {
           value: target,
           duration: 1.6,
           ease: "power1.out",
-          scrollTrigger: { trigger: el, start: "top 85%" },
+          scrollTrigger: { trigger: element, start: "top 85%" },
           onUpdate: () => {
             span.textContent = Math.floor(counter.value);
           },
@@ -105,41 +101,43 @@ export default function BuildingExcellenceSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [locale, isRTL, t]);
+  }, [isRTL, content]);
+
+  if (!content?.imageUrl) {
+    return null;
+  }
+
+  const headingLineOne = selectAboutValue(locale, content.headingLine1, content.headingLine1Ar);
+  const headingLineTwo = selectAboutValue(locale, content.headingLine2, content.headingLine2Ar);
+  const headingLineThree = selectAboutValue(locale, content.headingLine3, content.headingLine3Ar);
+  const paragraph = selectAboutValue(locale, content.paragraph, content.paragraphAr);
+  const imageAlt = selectAboutValue(locale, content.imageAlt, content.imageAltAr);
+  const stats = Array.isArray(content?.stats) ? content.stats : [];
 
   return (
     <section
       ref={sectionRef}
       className={styles.section}
       dir={isRTL ? "rtl" : "ltr"}
-      style={{ "--heroImg": `url(${SECTION_IMAGE})` }}
+      style={{ "--heroImg": `url(${content.imageUrl})` }}
     >
       <div className={styles.bgPattern} />
       <div className={styles.glowA} />
       <div className={styles.glowB} />
 
       <div className={styles.container}>
-        {/* TOP GRID: heading | media | paragraph */}
         <div className={styles.topGrid}>
-          {/* HEADING */}
           <div ref={leftRef} className={styles.leftCol}>
             <h2 className={styles.heading}>
-              <span className={styles.headingPlain}>
-                {t("buildingExcellence.heading.line1")}{" "}
-              </span>
-              <span className={styles.headingImageFill}>
-                {t("buildingExcellence.heading.line2")}
-              </span>
+              <span className={styles.headingPlain}>{headingLineOne} </span>
+              <span className={styles.headingImageFill}>{headingLineTwo}</span>
               <br />
-              <span className={styles.headingPlain}>
-                {t("buildingExcellence.heading.line3")}
-              </span>
+              <span className={styles.headingPlain}>{headingLineThree}</span>
             </h2>
 
             <div className={styles.microLine} />
           </div>
 
-          {/* UNIQUE MEDIA STACK (MIDDLE COLUMN - NOT ABSOLUTE) */}
           <div ref={mediaRef} className={styles.mediaCol} aria-hidden="true">
             <div className={styles.mediaStack}>
               <div className={styles.mediaBack} />
@@ -147,8 +145,8 @@ export default function BuildingExcellenceSection() {
               <div className={styles.mediaCard}>
                 <div className={styles.mediaFrame}>
                   <Image
-                    src={SECTION_IMAGE}
-                    alt={t("buildingExcellence.imageAlt")}
+                    src={content.imageUrl}
+                    alt={imageAlt}
                     fill
                     priority
                     className={styles.mediaImage}
@@ -159,46 +157,46 @@ export default function BuildingExcellenceSection() {
             </div>
           </div>
 
-          {/* PARAGRAPH */}
           <div ref={rightRef} className={styles.rightCol}>
-            <p
-              className={styles.paragraph}
-              dangerouslySetInnerHTML={{
-                __html: t("buildingExcellence.paragraph"),
-              }}
-            />
+            {paragraph ? (
+              <p
+                className={styles.paragraph}
+                dangerouslySetInnerHTML={{
+                  __html: paragraph,
+                }}
+              />
+            ) : null}
           </div>
         </div>
 
-        {/* STATS GRID */}
-        <div className={styles.statsGrid}>
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              ref={(el) => setStatRef(el, i)}
-              className={styles.statBoxWrapper}
-            >
-              <div className={styles.statBox}>
-                <div className={styles.statTopLine} />
+        {!!stats.length ? (
+          <div className={styles.statsGrid}>
+            {stats.map((stat, index) => (
+              <div
+                key={stat?._key || `${stat?.label || "stat"}-${index}`}
+                ref={(element) => setStatRef(element, index)}
+                className={styles.statBoxWrapper}
+              >
+                <div className={styles.statBox}>
+                  <div className={styles.statTopLine} />
 
-                <h3 className={styles.statTitle}>
-                  <span data-count-span>
-                    {t(`buildingExcellence.stats.${i}.count`)}
-                  </span>
-                  <span className={styles.statSuffix}>
-                    {t(`buildingExcellence.stats.${i}.suffix`)}
-                  </span>
-                </h3>
+                  <h3 className={styles.statTitle}>
+                    <span data-count-span>{stat?.count || ""}</span>
+                    <span className={styles.statSuffix}>
+                      {selectAboutValue(locale, stat?.suffix, stat?.suffixAr)}
+                    </span>
+                  </h3>
 
-                <div className={styles.statLabel}>
-                  {t(`buildingExcellence.stats.${i}.label`)}
+                  <div className={styles.statLabel}>
+                    {selectAboutValue(locale, stat?.label, stat?.labelAr)}
+                  </div>
+
+                  <div className={styles.statBottomLine} />
                 </div>
-
-                <div className={styles.statBottomLine} />
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : null}
 
         <div className={styles.bottomDivider} />
       </div>

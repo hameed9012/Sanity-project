@@ -13,6 +13,7 @@ const PROPERTY_QUERY = `
   location,
   locationAr,
   status,
+  landCategory,
   propertyType,
   type,
   regionSlug,

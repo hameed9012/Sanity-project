@@ -13,6 +13,9 @@ import "swiper/css/navigation";
 import styles from "@/styles/PressReleasesSlider.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 
+const DEFAULT_PRESS_IMAGE =
+  "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg";
+
 function normalizeSanityArticle(article, locale) {
   const isAr = locale === "ar";
 
@@ -20,7 +23,7 @@ function normalizeSanityArticle(article, locale) {
     id: article?._id || article?.slug,
     slug: article?.slug,
     title: isAr ? article?.titleAr || article?.title : article?.title || article?.titleAr,
-    image: article?.mainImage || "/article-placeholder.jpg",
+    image: article?.mainImage || article?.hero?.image || DEFAULT_PRESS_IMAGE,
     publishedOn: article?.publishedAt
       ? new Date(article.publishedAt).toLocaleDateString(isAr ? "ar-AE" : "en-US", {
           year: "numeric",

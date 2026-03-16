@@ -38,7 +38,11 @@ export default function ArtOfDetail() {
   const companyLine = (isAr ? cms?.companyLineAr : cms?.companyLine) || t("artOfDetail.companyLine");
   const description = (isAr ? cms?.descriptionAr : cms?.description) || t("artOfDetail.description");
   const discoverUrl = cms?.discoverMoreUrl || "/about";
-  const ownerImage  = cms?.ownerImage || "/boss-nobg.png";
+  const ownerImage =
+    cms?.ownerImageUrl ||
+    cms?.ownerImageCdn?.url ||
+    cms?.ownerImage ||
+    "https://luxury-real-estate-media.b-cdn.net/public/boss-nobg.png";
 
   useEffect(() => {
     if (!sectionRef.current) return;
