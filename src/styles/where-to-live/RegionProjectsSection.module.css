@@ -120,6 +120,10 @@
   line-height: 1.6;
 }
 
+.cardsWrap {
+  width: 100%;
+}
+
 /* Creative Projects Grid */
 .projectsGrid {
   display: grid;

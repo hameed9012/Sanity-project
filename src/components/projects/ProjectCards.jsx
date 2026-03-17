@@ -37,7 +37,12 @@ const getProjectCardMedia = (data) => {
     data?.project ||
     data;
 
-  const node = raw?.hero || raw?.gallery ? raw : raw?.en || raw?.ar || {};
+  const node =
+    raw?.hero || raw?.gallery
+      ? raw
+      : raw?.data?.hero || raw?.data?.gallery
+      ? raw.data
+      : raw?.en || raw?.ar || {};
 
   const hero = node?.hero || {};
   const gallery = node?.gallery || {};
@@ -45,10 +50,16 @@ const getProjectCardMedia = (data) => {
     ? raw.galleryImages
         .map((item) => (typeof item === "string" ? item : item?.url))
         .filter(Boolean)
+    : Array.isArray(raw?.data?.galleryImages)
+    ? raw.data.galleryImages
+        .map((item) => (typeof item === "string" ? item : item?.url))
+        .filter(Boolean)
     : [];
 
   const bg =
     raw?.heroVideo ||
+    raw?.data?.hero?.backgroundUrl ||
+    raw?.data?.hero?.background ||
     hero?.backgroundUrl ||
     hero?.background ||
     raw?.backgroundUrl ||
@@ -59,6 +70,11 @@ const getProjectCardMedia = (data) => {
 
   const poster =
     raw?.heroImage ||
+    raw?.heroImageUrl ||
+    raw?.data?.hero?.posterUrl ||
+    raw?.data?.hero?.poster ||
+    raw?.data?.hero?.image ||
+    raw?.data?.hero?.squareImageUrl ||
     hero?.posterUrl ||
     hero?.poster ||
     raw?.posterUrl ||
@@ -67,13 +83,21 @@ const getProjectCardMedia = (data) => {
     raw?.image ||
     normalizedGallery[0] ||
     gallery?.slides?.[0] ||
+    raw?.data?.gallery?.slides?.[0] ||
     null;
 
   if (bg && isVideoUrl(bg)) return { type: "video", url: bg, poster };
   if (bg && !isVideoUrl(bg)) return { type: "image", url: bg, poster: null };
 
   const fallbackImage =
-    normalizedGallery[0] || gallery?.slides?.[0] || hero?.image || raw?.image || null;
+    normalizedGallery[0] ||
+    gallery?.slides?.[0] ||
+    raw?.data?.gallery?.slides?.[0] ||
+    hero?.image ||
+    raw?.image ||
+    raw?.heroImageUrl ||
+    raw?.data?.hero?.image ||
+    null;
   if (fallbackImage) return { type: "image", url: fallbackImage, poster: null };
 
   return { type: "none", url: null, poster: null };
@@ -459,7 +483,14 @@ const ProjectCards = ({ projects, onResetFilters }) => {
     const regionSlug = project?.regionSlug ? String(project.regionSlug) : "";
 
     // ✅ Use explicit location from project data if available
-    if (project?.location) return project.location;
+    const explicitLocation =
+      (isAr
+        ? project?.locationAr || project?.location_ar
+        : project?.location) ||
+      project?.location ||
+      (isAr ? project?.data?.project?.locationAr : project?.data?.project?.location) ||
+      project?.data?.project?.location;
+    if (explicitLocation) return explicitLocation;
 
     if (regionSlug === "dubailand") {
       const sublocationMap = {
@@ -573,6 +604,9 @@ const ProjectCards = ({ projects, onResetFilters }) => {
       project?.price,
       project?.project?.startingPrice,
       project?.project?.price,
+      project?.data?.project?.startingPrice,
+      project?.data?.project?.price,
+      project?.data?.hero?.startingPrice,
     ];
 
     for (const candidate of candidates) {
@@ -600,10 +634,19 @@ const ProjectCards = ({ projects, onResetFilters }) => {
       project?.handoverQ;
 
     if (raw === null || raw === undefined || String(raw).trim() === "") {
+      const statusRaw = String(project?.status || project?.devStatus || "").toLowerCase();
+      if (
+        statusRaw.includes("ready") ||
+        statusRaw.includes("secondary") ||
+        statusRaw.includes("resale")
+      ) {
+        return isAr ? "\u062c\u0627\u0647\u0632" : "Ready";
+      }
+
       return safeT(
         "projects.cards.completionTBA",
         undefined,
-        isAr ? "قريباً" : "TBA",
+        isAr ? "\u0642\u0631\u064a\u0628\u0627\u064b" : "TBA",
       );
     }
 
@@ -844,6 +887,9 @@ function ProjectCardInner({
         )}
 
         <div className={statusClass}>{statusLabel}</div>
+        {project?.badge ? (
+          <div className={styles.cardBadge}>{project.badge}</div>
+        ) : null}
       </div>
 
       <div className={styles.cardContent}>

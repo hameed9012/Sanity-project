@@ -7,15 +7,28 @@ import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import { buildProjectsQuery } from "@/lib/search/projectsSearch";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import styles from "@/styles/HeroProjectsSlider.module.css";
 
 const ROTATE_MS = 5200;
 const FADE_MS = 900;
+const MAX_SLIDES = 8;
+
+function normalizeHeroLabel(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const lowered = text.toLowerCase();
+  if (lowered.includes("mohamad") && lowered.includes("kodmani")) return "";
+  return text
+    .replace(/\s+(properties|realty|developments?|real estate)\s*$/i, "")
+    .trim();
+}
 
 export default function LuxuryHeroSlider() {
   const { t, locale } = useLanguage();
   const router = useRouter();
   const isAr = locale === "ar" || String(locale || "").startsWith("ar");
+  const { allProjects } = useAllProjects();
 
   const [cmsSlides, setCmsSlides] = useState([]);
 
@@ -68,6 +81,12 @@ export default function LuxuryHeroSlider() {
   }, []);
 
   const projects = useMemo(() => {
+    const projectBySlug = new Map(
+      (allProjects || [])
+        .filter((project) => project?.slug)
+        .map((project) => [String(project.slug).toLowerCase(), project])
+    );
+
     const cmsDrivenSlides = cmsSlides
       .map((slide, index) => ({
         slide,
@@ -75,32 +94,118 @@ export default function LuxuryHeroSlider() {
         order: Number.isFinite(Number(slide?.order)) ? Number(slide.order) : Number.MAX_SAFE_INTEGER,
       }))
       .sort((a, b) => a.order - b.order || a.index - b.index)
-      .map(({ slide, index }) => ({
-        id: slide?._key || `cms-slide-${index}`,
-        title:
+      .map(({ slide, index }) => {
+        const slideSlug = slide?.propertySlug || slide?.slug;
+        const projectMatch = slideSlug
+          ? projectBySlug.get(String(slideSlug).toLowerCase())
+          : null;
+
+        const title =
           (locale === "ar" && slide?.titleAr)
             ? slide.titleAr
-            : slide?.title || slide?.titleAr || "Luxury Real Estate",
-        slug: slide?.propertySlug || `cms-slide-${index}`,
-        image: slide?.imageUrl || slide?.backgroundUrl || "",
-        description:
+            : slide?.title || slide?.titleAr || projectMatch?.nameAr || projectMatch?.nameEn || projectMatch?.name || "Luxury Real Estate";
+
+        const description =
           (locale === "ar" && slide?.subtitleAr)
             ? slide.subtitleAr
-            : slide?.subtitle || slide?.subtitleAr || "",
-        developerName: "Mohamad Kodmani",
-        developerSlug: "",
-        category: "apartments",
-        href: slide?.ctaUrl || "/properties",
-        location: "",
-        devStatus: "Off-plan",
-        status: "Off-plan",
-      }))
-      .filter((slide) => slide.image);
+            : slide?.subtitle || slide?.subtitleAr || projectMatch?.data?.project?.description || projectMatch?.data?.intro?.description || "";
+
+        const developerName =
+          slide?.developerName ||
+          slide?.developer ||
+          projectMatch?.developerNameEn ||
+          projectMatch?.developerNameAr ||
+          projectMatch?.developer ||
+          projectMatch?.data?.project?.developer ||
+          "";
+
+        const location =
+          (locale === "ar" && slide?.locationAr)
+            ? slide.locationAr
+            : slide?.location || slide?.locationAr || projectMatch?.location || projectMatch?.data?.project?.location || "";
+
+        return {
+          id: slide?._key || `cms-slide-${index}`,
+          title,
+          slug: slideSlug || `cms-slide-${index}`,
+          image:
+            slide?.imageUrl ||
+            slide?.backgroundUrl ||
+            projectMatch?.image ||
+            projectMatch?.data?.hero?.backgroundUrl ||
+            projectMatch?.data?.hero?.image ||
+            "",
+          description,
+          developerName: normalizeHeroLabel(developerName),
+          developerSlug: projectMatch?.developerSlug || "",
+          category: projectMatch?.category || "apartments",
+          href: slide?.ctaUrl || projectMatch?.href || "/properties",
+          location,
+          devStatus: projectMatch?.status || projectMatch?.devStatus || "Off-plan",
+          status: projectMatch?.status || projectMatch?.devStatus || "Off-plan",
+        };
+      })
+      .filter((slide) => slide.image)
+      .slice(0, MAX_SLIDES);
 
     if (cmsDrivenSlides.length > 0) return cmsDrivenSlides;
 
-    return [];
-  }, [cmsSlides, locale]);
+    const fallbackSlides = (allProjects || [])
+      .map((project, index) => {
+        const image =
+          project?.image ||
+          project?.data?.hero?.backgroundUrl ||
+          project?.data?.hero?.image ||
+          project?.data?.hero?.posterUrl ||
+          project?.data?.hero?.poster ||
+          "";
+
+        const title =
+          (locale === "ar" && project?.nameAr)
+            ? project.nameAr
+            : project?.nameEn || project?.name || project?.slug || "Luxury Real Estate";
+
+        const description =
+          (locale === "ar" && project?.data?.project?.descriptionAr)
+            ? project.data.project.descriptionAr
+            : project?.data?.project?.description ||
+              project?.data?.intro?.description ||
+              "";
+
+        const location =
+          (locale === "ar" && project?.locationAr)
+            ? project.locationAr
+            : project?.location || project?.data?.project?.location || "";
+
+        const developerName =
+          normalizeHeroLabel(
+            project?.developerNameEn ||
+              project?.developerNameAr ||
+              project?.developer ||
+              project?.data?.project?.developer ||
+              ""
+          );
+
+        return {
+          id: project?.slug || project?.id || `project-${index}`,
+          title,
+          slug: project?.slug || `project-${index}`,
+          image,
+          description,
+          developerName,
+          developerSlug: project?.developerSlug || "",
+          category: project?.category || "apartments",
+          href: project?.href || "/properties",
+          location,
+          devStatus: project?.status || project?.devStatus || "Off-plan",
+          status: project?.status || project?.devStatus || "Off-plan",
+        };
+      })
+      .filter((slide) => slide.image)
+      .slice(0, MAX_SLIDES);
+
+    return fallbackSlides;
+  }, [cmsSlides, locale, allProjects]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(null);
@@ -265,7 +370,7 @@ export default function LuxuryHeroSlider() {
   const currentProject = projects[currentIndex];
   const nextProject = nextIndex !== null ? projects[nextIndex] : null;
   const displayProject = currentProject;
-  const displayLocation = String(displayProject?.location || "").trim();
+  const displayLocation = String(currentProject?.location || "").trim();
 
   const mainTitle = t?.("homeSlider.mainTitle") || "Discover Extraordinary Living";
   const subtitle = t?.("homeSlider.subtitle") || "Curated Collection of the World's Finest Properties";
@@ -329,7 +434,9 @@ export default function LuxuryHeroSlider() {
       <div className={styles.overlay}>
         <div className={styles.contentContainer}>
           <div key={displayProject.id} className={`${styles.textBlock} notranslate`} translate="no">
-            <p className={`${styles.kicker} notranslate`} translate="no"><span>{displayProject.developerName}</span></p>
+            <p className={`${styles.kicker} notranslate`} translate="no">
+              <span>{displayProject.developerName || "Featured Project"}</span>
+            </p>
             <h2 className={`${styles.heading} notranslate`} translate="no">
               {displayProject.title}
               {displayLocation ? <span>{displayLocation}</span> : null}

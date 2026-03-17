@@ -32,7 +32,7 @@
 }
 
 .slide {
-  width: 760px;
+  width: clamp(300px, 62vw, 900px);
   max-width: 100%;
   display: flex;
   justify-content: center;
@@ -61,12 +61,14 @@
   transition:
     transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
     box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
-  transform: scale(0.72);
+  transform: scale(0.88);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  opacity: 0.94;
 }
 
 .storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
   transform: scale(1);
+  opacity: 1;
 }
 
 .storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox,
@@ -82,9 +84,8 @@
 .imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 372 / 249;
-  width: 896.383px;
-  height: 600px;
+  aspect-ratio: 16 / 10;
+  height: clamp(320px, 52vw, 600px);
   overflow: hidden;
 }
 

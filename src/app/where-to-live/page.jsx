@@ -8,10 +8,22 @@ import styles from "@/styles/where-to-live/WhereToLive.module.css";
 import { useCompare } from "@/components/compare/CompareProvider";
 import CompareModal from "@/components/compare/CompareModal";
 import { useLanguage } from "@/components/LanguageProvider";
+import staticAreas from "../../../areas.json";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
 
 const PAGE_SIZE = 9;
 const INITIAL_FILTERS = { search: "", avgBuy: "", avgRent: "", roi: "" };
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
+
+const STATIC_AREAS = Array.isArray(staticAreas) ? staticAreas : [];
+const STATIC_AREA_MAP = STATIC_AREAS.reduce((map, area) => {
+  if (area?.slug && !map.has(area.slug)) map.set(area.slug, area);
+  return map;
+}, new Map());
 
 function buildAreaHref(slug) {
   return `/where-to-live/${slug}`;
@@ -53,33 +65,64 @@ function normalizeSearchText(value) {
     .toLowerCase();
 }
 
-function sanityAreaToCard(doc, locale) {
+function pickStaticValue(staticArea, key, locale) {
+  if (!staticArea) return "";
+  const suffix = locale === "ar" ? "ar" : "en";
+  const primary = staticArea[`${key}_${suffix}`];
+  if (primary) return primary;
+  return staticArea[`${key}_en`] || staticArea[`${key}_ar`] || "";
+}
+
+function sanityAreaToCard(doc, locale, staticArea) {
+  const name =
+    (locale === "ar"
+      ? doc?.nameAr || doc?.name
+      : doc?.name || doc?.nameAr) || pickStaticValue(staticArea, "name", locale);
+
+  const location =
+    (locale === "ar"
+      ? doc?.locationAr || doc?.location
+      : doc?.location || doc?.locationAr) ||
+    pickStaticValue(staticArea, "location", locale);
+
+  const description =
+    (locale === "ar"
+      ? doc?.descriptionAr || doc?.description
+      : doc?.description || doc?.descriptionAr) ||
+    pickStaticValue(staticArea, "description", locale);
+
+  const avgBuyRaw = doc?.avgBuyPrice || pickStaticValue(staticArea, "avgBuy", locale);
+  const avgRentRaw = doc?.avgRentPrice || pickStaticValue(staticArea, "avgRent", locale);
+  const roiRaw = doc?.roi || pickStaticValue(staticArea, "roi", locale);
+
+  const heroImage =
+    doc?.heroImage ||
+    staticArea?.heroImage ||
+    (Array.isArray(staticArea?.gallery) ? staticArea.gallery[0] : "");
+
   return {
-    slug: doc.slug,
-    id: doc.slug,
-    name: locale === "ar" ? doc.nameAr || doc.name : doc.name,
-    location: doc.location || "",
-    roi: normalizeRoiLabel(doc.roi, "ROI varies"),
+    slug: doc?.slug || staticArea?.slug,
+    id: doc?.slug || staticArea?.slug,
+    name,
+    location: location || "",
+    roi: normalizeRoiLabel(roiRaw, locale === "ar" ? "\u0627\u0644\u0639\u0627\u0626\u062f \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642" : "ROI varies"),
     avgBuy: normalizeMoneyLabel(
-      doc.avgBuyPrice,
+      avgBuyRaw,
       locale,
       locale === "ar"
         ? "\u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642"
         : "Market-based pricing"
     ),
     avgRent: normalizeMoneyLabel(
-      doc.avgRentPrice,
+      avgRentRaw,
       locale,
       locale === "ar"
         ? "\u0627\u0644\u0625\u064a\u062c\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642"
         : "Market-based rent"
     ),
-    image: doc.heroImage || "",
-    description:
-      locale === "ar"
-        ? doc.descriptionAr || doc.description || ""
-        : doc.description || "",
-    _fromSanity: true,
+    image: heroImage || "",
+    description: description || "",
+    _fromSanity: Boolean(doc),
   };
 }
 
@@ -148,10 +191,30 @@ export default function WhereToLivePage() {
     setVisibleCount(PAGE_SIZE);
   }, [filters.search, filters.avgBuy, filters.avgRent, filters.roi]);
 
-  const allAreas = useMemo(
-    () => sanityAreas.map((doc) => sanityAreaToCard(doc, locale)),
-    [locale, sanityAreas]
-  );
+  const allAreas = useMemo(() => {
+    const bySlug = new Map();
+
+    (sanityAreas || []).forEach((doc) => {
+      if (!doc?.slug) return;
+      const fallback = STATIC_AREA_MAP.get(doc.slug);
+      bySlug.set(doc.slug, sanityAreaToCard(doc, locale, fallback));
+    });
+
+    STATIC_AREA_MAP.forEach((staticArea, slug) => {
+      if (bySlug.has(slug)) return;
+      bySlug.set(slug, sanityAreaToCard(null, locale, staticArea));
+    });
+
+    return Array.from(bySlug.values()).filter((area) => area?.slug);
+  }, [locale, sanityAreas]);
+
+  const heroImages = useMemo(() => {
+    const images = (allAreas || [])
+      .map((area) => area.image)
+      .filter(Boolean)
+      .filter((src, index, arr) => arr.indexOf(src) === index);
+    return images.length ? images : STATIC_AREAS.map((area) => area.heroImage).filter(Boolean);
+  }, [allAreas]);
 
   const { filtered, hasActiveFilters } = useMemo(
     () => filterWhereToLive(allAreas, filters),
@@ -183,7 +246,7 @@ export default function WhereToLivePage() {
 
   return (
     <div className={styles.page} dir={isRTL ? "rtl" : "ltr"}>
-      <Hero />
+      <Hero images={heroImages} />
 
       <div className={styles.container}>
         <InlineSearch
@@ -299,9 +362,52 @@ export default function WhereToLivePage() {
   );
 }
 
-function Hero() {
+function Hero({ images }) {
+  const hasImages = Array.isArray(images) && images.length > 0;
+
   return (
     <div className={styles.hero}>
+      <div className={styles.heroMedia}>
+        {hasImages && images.length > 1 ? (
+          <Swiper
+            className={styles.heroSwiper}
+            modules={[Autoplay, EffectFade]}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            loop
+            speed={1300}
+            autoplay={{ delay: 2600, disableOnInteraction: false }}
+          >
+            {images.map((src, index) => (
+              <SwiperSlide key={`${src}-${index}`} className={styles.heroSlide}>
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  priority={index === 0}
+                  className={styles.heroImage}
+                  sizes="100vw"
+                  unoptimized
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : hasImages && images[0] ? (
+          <div className={styles.heroSlide}>
+            <Image
+              src={images[0]}
+              alt=""
+              fill
+              priority
+              className={styles.heroImage}
+              sizes="100vw"
+              unoptimized
+            />
+          </div>
+        ) : (
+          <div className={styles.heroFallback} />
+        )}
+      </div>
       <div className={styles.heroOverlay} />
       <div className={styles.heroTop} />
     </div>

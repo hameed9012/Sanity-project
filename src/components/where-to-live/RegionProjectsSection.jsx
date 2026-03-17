@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useMemo, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
 
 import { useAllProjects } from "@/components/SanityProjectsContext";
+import ProjectCards from "@/components/projects/ProjectCards";
 import styles from "@/styles/where-to-live/RegionProjectsSection.module.css";
 
 function normalizeSlug(value) {
@@ -28,29 +27,6 @@ function formatRegionName(slug) {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-function parsePriceToAED(value) {
-  if (value === null || value === undefined) return null;
-  const raw = String(value).trim().toLowerCase();
-  if (!raw) return null;
-
-  const numericPart = raw.replace(/[^\d.]/g, "");
-  let parsed = Number(numericPart);
-  const compact = raw.replace(/\s+/g, "");
-
-  if (!Number.isFinite(parsed) || parsed <= 0) return null;
-  if (/million/.test(raw) || /\d(?:\.\d+)?m\b/.test(compact)) parsed *= 1_000_000;
-  if (/thousand/.test(raw) || /\d(?:\.\d+)?k\b/.test(compact)) parsed *= 1_000;
-  parsed = Math.round(parsed);
-  return parsed >= 10_000 ? parsed : null;
-}
-
-function formatPriceBadge(value) {
-  const amount = parsePriceToAED(value);
-  if (!amount) return "";
-  if (amount < 1_000_000) return `AED ${Math.round(amount / 1_000)}K`;
-  return `AED ${(amount / 1_000_000).toFixed(1)}M`;
 }
 
 function projectMatchesArea(project, regionSlug) {
@@ -213,72 +189,8 @@ export default function RegionProjectsSection({
           </p>
         </div>
 
-        <div className={styles.projectsGrid}>
-          {filteredProjects.map((project) => (
-            <div key={project.slug} className={styles.projectCard}>
-              <Link href={project.href} className={styles.cardLink}>
-                <div className={styles.imageContainer}>
-                  {project.image ? (
-                    <Image
-                      src={project.image}
-                      alt={project.name || project.slug}
-                      fill
-                      className={styles.projectImage}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  ) : null}
-                  <div className={styles.imageOverlay} />
-
-                  {formatPriceBadge(
-                    project.startingPriceAED || project.priceAED || project.startingPrice
-                  ) && (
-                    <div className={styles.priceBadge}>
-                      {formatPriceBadge(
-                        project.startingPriceAED || project.priceAED || project.startingPrice
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className={styles.cardContent}>
-                  <div className={styles.projectHeader}>
-                    <h3 className={styles.projectName}>{project.name}</h3>
-                    <p className={styles.projectLocation}>
-                      {project.location || formatRegionName(regionSlug)}
-                    </p>
-                  </div>
-
-                  <div className={styles.developerInfo}>
-                    <span className={styles.developerLabel}>
-                      {locale === "ar" ? "المطور" : "Developer"}
-                    </span>
-                    <span className={styles.developerName}>{project.developer}</span>
-                  </div>
-
-                  <div className={styles.detailsGrid}>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>
-                        {locale === "ar" ? "النوع" : "Property Type"}
-                      </span>
-                      <span className={styles.detailValue}>{project.unitType || project.type}</span>
-                    </div>
-                    <div className={styles.detailItem}>
-                      <span className={styles.detailLabel}>
-                        {locale === "ar" ? "التسليم" : "Handover"}
-                      </span>
-                      <span className={styles.detailValue}>
-                        {project.handover || (locale === "ar" ? "قريباً" : "TBA")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {project.status && (
-                    <div className={styles.statusBadge}>{project.status}</div>
-                  )}
-                </div>
-              </Link>
-            </div>
-          ))}
+        <div className={styles.cardsWrap}>
+          <ProjectCards projects={filteredProjects} />
         </div>
       </div>
     </section>

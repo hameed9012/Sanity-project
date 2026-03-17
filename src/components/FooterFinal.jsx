@@ -39,25 +39,41 @@ const SOCIAL_ICONS = {
 const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 // ─── helpers ──────────────────────────────────────────────────
-function shuffleCopy(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function pickRandom(arr, n) {
-  if (!Array.isArray(arr) || !arr.length) return [];
-  return shuffleCopy(arr).slice(0, n);
+function humanizeName(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  return raw
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\b\w/g, (match) => match.toUpperCase())
+    .trim();
 }
 
 // ─── single property card ─────────────────────────────────────
 function PropertyCard({ project }) {
   const [imgOk, setImgOk] = useState(true);
-  const image = project?.image || project?.data?.en?.hero?.backgroundUrl || "";
-  const name  = project?.nameEn || project?.name || "";
-  const dev   = project?.developer || "";
+  const image =
+    project?.image ||
+    project?.data?.hero?.backgroundUrl ||
+    project?.data?.hero?.image ||
+    project?.data?.gallery?.slides?.[0] ||
+    project?.data?.intro?.imgUrl ||
+    "";
+  const name  = humanizeName(
+    project?.nameEn ||
+    project?.nameAr ||
+    project?.name ||
+    project?.data?.project?.name ||
+    project?.slug ||
+    ""
+  );
+  const dev = humanizeName(
+    project?.developerNameEn ||
+    project?.developerNameAr ||
+    project?.developer ||
+    project?.data?.project?.developer ||
+    ""
+  );
   const href  = project?.href || "#";
 
   return (
@@ -99,7 +115,16 @@ export default function FooterFinal() {
       const developerSlug = String(p?.developerSlug || p?.developer || "").toLowerCase();
       return !p.isLand && p.image && !EXCLUDED_DEVELOPER_SLUGS.has(developerSlug);
     });
-    setCards(pickRandom(pool, 9));
+    const featured = pool.filter((project) => project?.featured);
+    const orderedPool = [...(featured.length ? featured : pool)].sort((a, b) => {
+      const aFeatured = a?.featured ? 1 : 0;
+      const bFeatured = b?.featured ? 1 : 0;
+      if (aFeatured !== bFeatured) return bFeatured - aFeatured;
+      return String(a?.nameEn || a?.name || a?.slug || "").localeCompare(
+        String(b?.nameEn || b?.name || b?.slug || "")
+      );
+    });
+    setCards(orderedPool.slice(0, 9));
   }, [pathname, allProjects]);
 
   useEffect(() => {

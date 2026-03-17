@@ -28,11 +28,42 @@ function pickLang(value, lang) {
   return "";
 }
 
+function splitParagraphs(text) {
+  if (!text) return [];
+  const raw = String(text).replace(/\r/g, "").trim();
+  if (!raw) return [];
+
+  const withBreaks = raw
+    .replace(/([.!?\u061F\u061B])\s+/g, "$1\n")
+    .replace(/\n{2,}/g, "\n");
+
+  return withBreaks
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function splitToBullets(text) {
+  if (!text) return [];
+  const raw = String(text).trim();
+  if (!raw) return [];
+
+  const hasDelimiters = /[\n\u2022\u2023|]/.test(raw);
+  if (hasDelimiters) {
+    return raw
+      .split(/[\n\u2022\u2023|]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return splitParagraphs(raw);
+}
+
 function pickList(value, lang) {
   if (value == null) return [];
   const v = pickLang(value, lang);
   if (Array.isArray(v)) return v.map(String).filter(Boolean);
-  if (typeof v === "string") return v ? [v] : [];
+  if (typeof v === "string") return splitToBullets(v);
   return [];
 }
 
@@ -234,7 +265,11 @@ export default function AreaNarrative({ regionData }) {
                 {labelByLocale(isRTL, "About the Area", "عن المنطقة")}
               </h3>
             </div>
-            {model.about ? <p className={styles.text}>{model.about}</p> : null}
+            {splitParagraphs(model.about).map((paragraph, idx) => (
+              <p key={idx} className={styles.text}>
+                {paragraph}
+              </p>
+            ))}
           </article>
 
           <article ref={addCardRef} className={styles.card}>
@@ -260,9 +295,11 @@ export default function AreaNarrative({ regionData }) {
               <span className={styles.cardDot} />
               <h3 className={styles.cardTitle}>{model.nTitle1}</h3>
             </div>
-            {model.nOverview ? (
-              <p className={styles.text}>{model.nOverview}</p>
-            ) : null}
+            {splitParagraphs(model.nOverview).map((paragraph, idx) => (
+              <p key={idx} className={styles.text}>
+                {paragraph}
+              </p>
+            ))}
           </article>
 
           <article ref={addCardRef} className={styles.card}>
@@ -270,9 +307,11 @@ export default function AreaNarrative({ regionData }) {
               <span className={styles.cardDot} />
               <h3 className={styles.cardTitle}>{model.nTitle2}</h3>
             </div>
-            {model.nProperties ? (
-              <p className={styles.text}>{model.nProperties}</p>
-            ) : null}
+            {splitParagraphs(model.nProperties).map((paragraph, idx) => (
+              <p key={idx} className={styles.text}>
+                {paragraph}
+              </p>
+            ))}
           </article>
         </div>
 
@@ -356,3 +395,4 @@ export default function AreaNarrative({ regionData }) {
     </section>
   );
 }
+

@@ -8,7 +8,7 @@ import { selectAboutValue } from "@/lib/aboutPage";
 import styles from "@/styles/about/BrandPillarsAccordion.module.css";
 
 export default function BrandPillarsAccordion({ content }) {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState("vision");
   const { locale } = useLanguage();
   const isRTL = locale === "ar";
 

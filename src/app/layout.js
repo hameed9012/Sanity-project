@@ -89,7 +89,12 @@ export const metadata = {
   },
 
   icons: {
-    icon: [{ url: "/logo.jpg" }],
+    icon: [
+      { url: "/icon.png" },
+      { url: "/logo-transparent.png", type: "image/png" },
+    ],
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   },
 };
 

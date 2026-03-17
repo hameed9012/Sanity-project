@@ -5,9 +5,22 @@ import Link from "next/link";
 import styles from "@/styles/developer/developers-2.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
+import developersEn from "@/data/developers/en.json";
+import developersAr from "@/data/developers/ar.json";
 
 const PAGE_SIZE = 12;
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
+const ALLOWED_DEVELOPER_SLUGS = [
+  "damac",
+  "sobha",
+  "azizi",
+  "binghatti",
+  "arada",
+  "imtiaz",
+  "tiger",
+  "beyond",
+  "omniyat",
+  "danube",
+];
 
 function normalizeLocale(locale) {
   return String(locale || "en").toLowerCase().startsWith("ar") ? "ar" : "en";
@@ -44,6 +57,40 @@ const getInitials = (name) => {
   if (words.length === 0) return "DEV";
   if (words.length === 1) return words[0].substring(0, 3).toUpperCase();
   return words.map((word) => word[0]).join("").substring(0, 3).toUpperCase();
+};
+
+const DEV_FALLBACK_EN = developersEn || {};
+const DEV_FALLBACK_AR = developersAr || {};
+
+const resolveDeveloperImage = (projects, slug, name) => {
+  if (!Array.isArray(projects) || projects.length === 0) return "";
+  const tokens = [slug, name]
+    .filter(Boolean)
+    .map((value) => String(value).toLowerCase());
+
+  const match = projects.find((project) => {
+    const projectTokens = [
+      project?.developerSlug,
+      project?.developer,
+      project?.developerName,
+      project?.developerNameEn,
+      project?.developerNameAr,
+    ]
+      .filter(Boolean)
+      .map((value) => String(value).toLowerCase());
+
+    return tokens.some((token) => projectTokens.some((t) => t.includes(token)));
+  });
+
+  return (
+    match?.heroImageUrl ||
+    match?.image ||
+    match?.heroImage ||
+    match?.data?.hero?.backgroundUrl ||
+    match?.data?.hero?.image ||
+    match?.data?.hero?.posterUrl ||
+    ""
+  );
 };
 
 export default function DevelopersClient({ sanityDevelopers = [] }) {
@@ -101,42 +148,39 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
       : "Browse developers linked to real live projects across the site.";
 
   const allDevs = useMemo(() => {
-    if (!Array.isArray(sanityDevelopers) || sanityDevelopers.length === 0) return [];
+    const sanityMap = new Map();
+    (sanityDevelopers || []).forEach((developer) => {
+      if (developer?.slug) sanityMap.set(String(developer.slug).toLowerCase(), developer);
+    });
 
-    const activeDeveloperTokens = new Set(
-      (allProjects || [])
-        .flatMap((project) => [
-          String(project?.developerSlug || "").toLowerCase(),
-          String(project?.developer || "").toLowerCase(),
-          String(project?.developerName || "").toLowerCase(),
-        ])
-        .filter(Boolean)
-    );
+    return ALLOWED_DEVELOPER_SLUGS.map((slug) => {
+      const sanityDev = sanityMap.get(slug) || {};
+      const fallbackEn = DEV_FALLBACK_EN?.[slug] || {};
+      const fallbackAr = DEV_FALLBACK_AR?.[slug] || {};
 
-    return sanityDevelopers
-      .filter((developer) => {
-        if (!developer || !developer.slug) return false;
-        const slug = String(developer.slug).toLowerCase();
-        if (EXCLUDED_DEVELOPER_SLUGS.has(slug)) return false;
+      const nameEn = sanityDev.name || fallbackEn.name || slug;
+      const nameAr = sanityDev.nameAr || fallbackAr.name || nameEn;
+      const taglineEn = sanityDev.tagline || fallbackEn.tagline || "";
+      const taglineAr = sanityDev.taglineAr || fallbackAr.tagline || taglineEn;
+      const descriptionEn = sanityDev.description || taglineEn || "";
+      const descriptionAr = sanityDev.descriptionAr || taglineAr || descriptionEn;
 
-        const nameToken = String(developer.name || "").toLowerCase();
-        const arabicNameToken = String(developer.nameAr || "").toLowerCase();
+      const heroImage =
+        sanityDev.heroImageUrl || resolveDeveloperImage(allProjects, slug, nameEn);
 
-        return (
-          activeDeveloperTokens.has(slug) ||
-          activeDeveloperTokens.has(nameToken) ||
-          activeDeveloperTokens.has(arabicNameToken)
-        );
-      })
-      .map((developer) => ({
-        slug: developer.slug,
-        name: developer.name || developer.slug,
-        tagline: developer.tagline || "",
-        description: developer.tagline || "",
-        heroImage: developer.heroImageUrl || "",
-        logo: developer.logoUrl || "",
-        _fromSanity: true,
-      }));
+      return {
+        slug,
+        nameEn,
+        nameAr,
+        taglineEn,
+        taglineAr,
+        descriptionEn,
+        descriptionAr,
+        heroImage,
+        logo: sanityDev.logoUrl || sanityDev.logo || "",
+        _fromSanity: Boolean(sanityDev?.slug),
+      };
+    });
   }, [sanityDevelopers, allProjects]);
 
   const projectsByDeveloper = useMemo(() => {
@@ -163,7 +207,8 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
     return allDevs.map((developer) => {
       const projectCount =
         projectsByDeveloper.get(String(developer.slug || "").toLowerCase()) ||
-        projectsByDeveloper.get(String(developer.name || "").toLowerCase()) ||
+        projectsByDeveloper.get(String(developer.nameEn || "").toLowerCase()) ||
+        projectsByDeveloper.get(String(developer.nameAr || "").toLowerCase()) ||
         0;
 
       const fallbackDescription =
@@ -171,12 +216,29 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
           ? `${projectCount} \u0645\u0634\u0631\u0648\u0639 \u0645\u062a\u0627\u062d`
           : `${projectCount} live projects`;
 
+      const displayName =
+        locale === "ar"
+          ? developer.nameAr || developer.nameEn || developer.slug
+          : developer.nameEn || developer.nameAr || developer.slug;
+
+      const displayTagline =
+        locale === "ar"
+          ? developer.taglineAr || developer.taglineEn || ""
+          : developer.taglineEn || developer.taglineAr || "";
+
+      const displayDescription =
+        locale === "ar"
+          ? developer.descriptionAr || developer.descriptionEn || fallbackDescription
+          : developer.descriptionEn || developer.descriptionAr || fallbackDescription;
+
       return {
         ...developer,
-        description: developer.description || fallbackDescription,
+        name: displayName,
+        tagline: displayTagline,
+        description: displayDescription,
         projectCount,
         logoType: detectLogoType(developer.logo),
-        initials: getInitials(developer.name),
+        initials: getInitials(displayName),
         hasLogoError: !!logoErrors[developer.slug],
       };
     });

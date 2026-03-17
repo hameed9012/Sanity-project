@@ -84,8 +84,8 @@
   inset: 0;
   z-index: 10;
   background:
-    linear-gradient(180deg, rgba(9, 11, 14, 0.28) 0%, rgba(9, 11, 14, 0.08) 26%, rgba(9, 11, 14, 0.14) 100%),
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, rgba(9, 11, 14, 0.1) 62%, rgba(9, 11, 14, 0.2) 100%);
+    linear-gradient(180deg, rgba(9, 11, 14, 0.42) 0%, rgba(9, 11, 14, 0.14) 26%, rgba(9, 11, 14, 0.22) 100%),
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.02) 0%, rgba(9, 11, 14, 0.14) 62%, rgba(9, 11, 14, 0.3) 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -195,21 +195,32 @@
   opacity: 0;
 }
 
+.searchContainer::before {
+  content: "";
+  position: absolute;
+  inset: -18px -26px;
+  z-index: -1;
+  border-radius: 44px;
+  background: radial-gradient(circle at center, rgba(8, 10, 13, 0.82) 0%, rgba(8, 10, 13, 0.62) 46%, rgba(8, 10, 13, 0.2) 88%);
+  filter: blur(12px);
+  pointer-events: none;
+}
+
 .searchBar {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(9, 12, 15, 0.68);
   backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
   padding: 0.55rem;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
   transition: all 0.35s ease;
 }
 
 .searchBar:focus-within {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(201, 162, 106, 0.42);
+  background: rgba(9, 12, 15, 0.78);
+  border-color: rgba(201, 162, 106, 0.5);
   box-shadow: 0 24px 56px rgba(0, 0, 0, 0.32);
   transform: translateY(-1px);
 }
@@ -260,8 +271,8 @@
 }
 
 .filterButton {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   color: #fff;
   padding: 0.8rem 1.45rem;
   border-radius: 999px;
@@ -277,7 +288,7 @@
 
 .filterButton:hover,
 .filterButtonActive {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.16);
   border-color: rgba(201, 162, 106, 0.3);
 }
 

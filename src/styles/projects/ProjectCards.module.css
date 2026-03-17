@@ -10,6 +10,9 @@
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 32px;
   padding: 34px 0;
+  width: min(1280px, 94%);
+  margin: 0 auto;
+  grid-auto-flow: row dense;
 }
 
 /* Card Container (NO fixed height — let it breathe) */
@@ -113,6 +116,25 @@
   color: rgba(12, 12, 14, 0.72);
 
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+}
+
+/* Tiny brand badge (used by Lands) */
+.cardBadge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.72);
+  color: #fff;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
 }
 
 .statusBadge::before {

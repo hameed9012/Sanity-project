@@ -23,6 +23,33 @@ async function fetchArtOfDetailSettings() {
   }
 }
 
+function normalizeOwnerImageSource(value) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) return "/boss-nobg-cropped.png";
+
+  const normalized = raw.toLowerCase();
+  if (
+    normalized.endsWith("/boss-nobg.png") ||
+    normalized.includes("luxury-real-estate-media.b-cdn.net/public/boss-nobg.png")
+  ) {
+    return "/boss-nobg-cropped.png";
+  }
+
+  return raw;
+}
+
+function preferLegacyArtCopy(value, fallback, patterns = []) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) return fallback;
+
+  const normalized = raw.toLowerCase();
+  if (patterns.some((pattern) => normalized.includes(pattern))) {
+    return fallback;
+  }
+
+  return raw;
+}
+
 export default function ArtOfDetail() {
   const sectionRef = useRef(null);
   const { t, locale } = useLanguage();
@@ -33,16 +60,30 @@ export default function ArtOfDetail() {
     fetchArtOfDetailSettings().then(setCms);
   }, []);
 
-  const sloganPre   = (isAr ? cms?.sloganPreAr   : cms?.sloganPre)   || t("artOfDetail.sloganPre");
-  const sloganMain  = (isAr ? cms?.sloganMainAr  : cms?.sloganMain)  || t("artOfDetail.sloganMain");
-  const companyLine = (isAr ? cms?.companyLineAr : cms?.companyLine) || t("artOfDetail.companyLine");
-  const description = (isAr ? cms?.descriptionAr : cms?.description) || t("artOfDetail.description");
+  const sloganPre = preferLegacyArtCopy(
+    isAr ? cms?.sloganPreAr : cms?.sloganPre,
+    t("artOfDetail.sloganPre"),
+    ["crafted with", "مصنوع", "صُمم"]
+  );
+  const sloganMain = preferLegacyArtCopy(
+    isAr ? cms?.sloganMainAr : cms?.sloganMain,
+    t("artOfDetail.sloganMain"),
+    ["the art of detail", "فن التفاصيل"]
+  );
+  const companyLine = preferLegacyArtCopy(
+    isAr ? cms?.companyLineAr : cms?.companyLine,
+    t("artOfDetail.companyLine"),
+    ["al rasikhoon", "الراسخون"]
+  );
+  const description = preferLegacyArtCopy(
+    isAr ? cms?.descriptionAr : cms?.description,
+    t("artOfDetail.description"),
+    ["we believe every great investment begins", "نؤمن أن كل استثمار عظيم يبدأ"]
+  );
   const discoverUrl = cms?.discoverMoreUrl || "/about";
-  const ownerImage =
-    cms?.ownerImageUrl ||
-    cms?.ownerImageCdn?.url ||
-    cms?.ownerImage ||
-    "/boss-nobg.png";
+  const ownerImage = normalizeOwnerImageSource(
+    cms?.ownerImageUrl || cms?.ownerImageCdn?.url || cms?.ownerImage
+  );
 
   useEffect(() => {
     if (!sectionRef.current) return;

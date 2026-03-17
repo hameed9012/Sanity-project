@@ -11,10 +11,17 @@ import AreaConnections from "@/components/where-to-live/AreaConnections";
 import LocationFAQ from "@/components/where-to-live/LocationFAQ";
 import RegionProjectsSection from "@/components/where-to-live/RegionProjectsSection";
 import styles from "@/styles/where-to-live/AreaDetailPage.module.css";
+import staticAreas from "../../../../areas.json";
 
 function pickLocalized(enValue, arValue, locale) {
   return locale === "ar" ? arValue || enValue || "" : enValue || arValue || "";
 }
+
+const STATIC_AREAS = Array.isArray(staticAreas) ? staticAreas : [];
+const STATIC_AREA_MAP = STATIC_AREAS.reduce((map, area) => {
+  if (area?.slug && !map.has(area.slug)) map.set(area.slug, area);
+  return map;
+}, new Map());
 
 function normalizeMoneyLabel(value, locale, fallback) {
   const raw = String(value || "").trim();
@@ -37,6 +44,36 @@ function normalizeRoiLabel(value, fallback) {
     .replace(/^return on investment\s*:?/i, "ROI ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function pickStaticValue(staticArea, key, locale) {
+  if (!staticArea) return "";
+  const suffix = locale === "ar" ? "ar" : "en";
+  const primary = staticArea[`${key}_${suffix}`];
+  if (primary) return primary;
+  return staticArea[`${key}_en`] || staticArea[`${key}_ar`] || "";
+}
+
+function splitToBullets(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map(String).map((v) => v.trim()).filter(Boolean);
+
+  const raw = String(value).trim();
+  if (!raw) return [];
+
+  const hasDelimiters = /[\n•\u2022|]/.test(raw);
+  if (hasDelimiters) {
+    return raw
+      .split(/[\n•\u2022|]+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+
+  const withBreaks = raw.replace(/([.!?؟؛])\s+/g, "$1\n");
+  return withBreaks
+    .split("\n")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 function buildFaqsFromArea(area) {
@@ -95,18 +132,70 @@ function buildFaqsFromArea(area) {
   ];
 }
 
-function normalizeSanityArea(area, locale) {
-  if (!area) return null;
+function normalizeSanityArea(area, locale, staticArea) {
+  if (!area && !staticArea) return null;
 
-  const name = pickLocalized(area.name, area.nameAr, locale);
-  const tagline = pickLocalized(area.tagline, area.taglineAr, locale);
-  const description = pickLocalized(area.description, area.descriptionAr, locale);
-  const bulletPoints =
-    (locale === "ar" ? area.highlightsAr : area.highlights) ||
-    area.highlights ||
-    area.highlightsAr ||
+  const nameEn = area?.name || pickStaticValue(staticArea, "name", "en");
+  const nameAr =
+    area?.nameAr || pickStaticValue(staticArea, "name", "ar") || nameEn;
+
+  const taglineEn = area?.tagline || pickStaticValue(staticArea, "tagline", "en");
+  const taglineAr =
+    area?.taglineAr || pickStaticValue(staticArea, "tagline", "ar") || taglineEn;
+
+  const descriptionEn =
+    area?.description || pickStaticValue(staticArea, "description", "en");
+  const descriptionAr =
+    area?.descriptionAr || pickStaticValue(staticArea, "description", "ar") || descriptionEn;
+
+  const locationEn =
+    area?.location || pickStaticValue(staticArea, "location", "en");
+  const locationAr =
+    area?.locationAr || pickStaticValue(staticArea, "location", "ar") || locationEn;
+
+  const avgBuyEn =
+    area?.avgBuyPrice || pickStaticValue(staticArea, "avgBuy", "en");
+  const avgBuyAr =
+    area?.avgBuyPriceAr || pickStaticValue(staticArea, "avgBuy", "ar") || avgBuyEn;
+  const avgRentEn =
+    area?.avgRentPrice || pickStaticValue(staticArea, "avgRent", "en");
+  const avgRentAr =
+    area?.avgRentPriceAr || pickStaticValue(staticArea, "avgRent", "ar") || avgRentEn;
+  const roiEn = area?.roi || pickStaticValue(staticArea, "roi", "en");
+  const roiAr = area?.roiAr || pickStaticValue(staticArea, "roi", "ar") || roiEn;
+
+  const name = pickLocalized(nameEn, nameAr, locale);
+  const tagline = pickLocalized(taglineEn, taglineAr, locale);
+  const description = pickLocalized(descriptionEn, descriptionAr, locale);
+  const location = pickLocalized(locationEn, locationAr, locale);
+
+  const avgBuy = normalizeMoneyLabel(
+    locale === "ar" ? avgBuyAr : avgBuyEn,
+    locale,
+    ""
+  );
+  const avgRent = normalizeMoneyLabel(
+    locale === "ar" ? avgRentAr : avgRentEn,
+    locale,
+    ""
+  );
+  const roi = normalizeRoiLabel(locale === "ar" ? roiAr : roiEn, "");
+
+  const rawHighlights =
+    (locale === "ar" ? area?.highlightsAr : area?.highlights) ||
+    area?.highlights ||
+    area?.highlightsAr ||
+    (locale === "ar" ? staticArea?.highlights_ar : staticArea?.highlights_en) ||
+    staticArea?.highlights_en ||
+    staticArea?.highlights_ar ||
     [];
-  const nearbyLandmarks = Array.isArray(area.nearbyLandmarks)
+
+  const bulletPoints = splitToBullets(rawHighlights);
+  const fallbackBullets = bulletPoints.length
+    ? bulletPoints
+    : splitToBullets(description);
+
+  const nearbyLandmarks = Array.isArray(area?.nearbyLandmarks)
     ? area.nearbyLandmarks.map((item) => ({
         name: {
           en: item?.name || "",
@@ -119,7 +208,7 @@ function normalizeSanityArea(area, locale) {
         directionsUrl: item?.directionsUrl || "",
       }))
     : [];
-  const nearbyAreas = Array.isArray(area.nearbyAreas)
+  const nearbyAreas = Array.isArray(area?.nearbyAreas)
     ? area.nearbyAreas.map((item) => ({
         name: {
           en: item?.name || "",
@@ -131,29 +220,61 @@ function normalizeSanityArea(area, locale) {
       }))
     : [];
 
+  const heroImage = area?.heroImage || staticArea?.heroImage || "";
+  const gallerySlides =
+    (Array.isArray(area?.gallerySlides) && area.gallerySlides.length
+      ? area.gallerySlides
+      : Array.isArray(area?.gallery) && area.gallery.length
+      ? area.gallery
+      : Array.isArray(staticArea?.gallery) && staticArea.gallery.length
+      ? staticArea.gallery
+      : heroImage
+      ? [heroImage]
+      : []);
+
+  const faqSeed = {
+    name: nameEn || name,
+    nameAr,
+    location: locationEn || location,
+    avgBuyPrice: avgBuyEn || avgBuy,
+    avgRentPrice: avgRentEn || avgRent,
+    roi: roiEn || roi,
+  };
+
+  const areaSlug = area?.slug || staticArea?.slug || "";
+
   return {
-    slug: area.slug,
-    heroImage: area.heroImage || "",
-    gallerySlides: area.heroImage ? [area.heroImage] : [],
+    slug: areaSlug,
+    name,
+    nameEn,
+    nameAr,
+    location,
+    locationEn,
+    locationAr,
+    avgBuy,
+    avgRent,
+    roi,
+    heroImage,
+    gallerySlides,
     summary: {
       name,
-      location: area.location || "",
-      avgBuy: normalizeMoneyLabel(area.avgBuyPrice, locale, ""),
-      avgRent: normalizeMoneyLabel(area.avgRentPrice, locale, ""),
-      roi: normalizeRoiLabel(area.roi, ""),
+      location,
+      avgBuy,
+      avgRent,
+      roi,
     },
     highlights: {
       about: {
-        en: area.description || "",
-        ar: area.descriptionAr || area.description || "",
+        en: descriptionEn || "",
+        ar: descriptionAr || descriptionEn || "",
       },
       nutshellTitle: {
         en: "In a Nutshell",
         ar: "\u0628\u0627\u062e\u062a\u0635\u0627\u0631",
       },
       inANutshell: {
-        en: area.highlights || [],
-        ar: area.highlightsAr || area.highlights || [],
+        en: fallbackBullets,
+        ar: fallbackBullets,
       },
     },
     neighbourhoodTitles: {
@@ -168,12 +289,12 @@ function normalizeSanityArea(area, locale) {
     },
     neighbourhood: {
       communityOverview: {
-        en: area.tagline || area.description || "",
-        ar: area.taglineAr || area.descriptionAr || area.tagline || area.description || "",
+        en: taglineEn || descriptionEn || "",
+        ar: taglineAr || descriptionAr || taglineEn || descriptionEn || "",
       },
       propertiesOverview: {
-        en: description || tagline,
-        ar: area.descriptionAr || area.taglineAr || area.description || area.tagline || "",
+        en: descriptionEn || taglineEn || "",
+        ar: descriptionAr || taglineAr || descriptionEn || taglineEn || "",
       },
     },
     investmentHighlights: {
@@ -181,7 +302,7 @@ function normalizeSanityArea(area, locale) {
         en: "Investment Highlights",
         ar: "\u0623\u0628\u0631\u0632 \u0627\u0644\u0646\u0642\u0627\u0637 \u0627\u0644\u0627\u0633\u062a\u062b\u0645\u0627\u0631\u064a\u0629",
       },
-      points: bulletPoints.map((point, index) => ({
+      points: fallbackBullets.map((point, index) => ({
         title: {
           en: `Highlight ${index + 1}`,
           ar: `\u0627\u0644\u0646\u0642\u0637\u0629 ${index + 1}`,
@@ -192,8 +313,8 @@ function normalizeSanityArea(area, locale) {
         },
       })),
       conclusion: {
-        en: `1BR from ${normalizeMoneyLabel(area.avgBuyPrice, locale, "Market pricing")} | Rent from ${normalizeMoneyLabel(area.avgRentPrice, locale, "Market rent")} | ROI ${normalizeRoiLabel(area.roi, "Market ROI")}`,
-        ar: `\u0633\u0639\u0631 1 \u063a\u0631\u0641\u0629 \u0645\u0646 ${normalizeMoneyLabel(area.avgBuyPrice, locale, "\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0633\u0648\u0642")} | \u0625\u064a\u062c\u0627\u0631 \u0645\u0646 ${normalizeMoneyLabel(area.avgRentPrice, locale, "\u0625\u064a\u062c\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")} | ROI ${normalizeRoiLabel(area.roi, "ROI \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")}`,
+        en: `1BR from ${normalizeMoneyLabel(avgBuyEn, locale, "Market pricing")} | Rent from ${normalizeMoneyLabel(avgRentEn, locale, "Market rent")} | ROI ${normalizeRoiLabel(roiEn, "Market ROI")}`,
+        ar: `\u0633\u0639\u0631 1 \u063a\u0631\u0641\u0629 \u0645\u0646 ${normalizeMoneyLabel(avgBuyAr, locale, "\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0633\u0648\u0642")} | \u0625\u064a\u062c\u0627\u0631 \u0645\u0646 ${normalizeMoneyLabel(avgRentAr, locale, "\u0625\u064a\u062c\u0627\u0631 \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")} | ROI ${normalizeRoiLabel(roiAr, "ROI \u062d\u0633\u0628 \u0627\u0644\u0633\u0648\u0642")}`,
       },
     },
     translations: {
@@ -203,23 +324,44 @@ function normalizeSanityArea(area, locale) {
           ar: "\u062a\u062d\u0644\u064a\u0644\u0627\u062a \u0627\u0644\u0633\u0648\u0642",
         },
         subtitle: {
-          en: `Market snapshot for ${area.name || "this area"}.`,
+          en: `Market snapshot for ${nameEn || "this area"}.`,
           ar: `\u0644\u0645\u062d\u0629 \u0633\u0648\u0642\u064a\u0629 \u0639\u0646 ${
-            area.nameAr || area.name || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
+            nameAr || nameEn || "\u0647\u0630\u0647 \u0627\u0644\u0645\u0646\u0637\u0642\u0629"
           }.`,
         },
       },
     },
     market: {
-      rentalTrends: [],
-      salesTrends: [],
-      roiByType: [],
+      rentalTrends: avgRent
+        ? [
+            {
+              type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+              averageRentAED: avgRent,
+            },
+          ]
+        : [],
+      salesTrends: avgBuy
+        ? [
+            {
+              type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+              averagePriceAED: avgBuy,
+            },
+          ]
+        : [],
+      roiByType: roi
+        ? [
+            {
+              type: { en: "Area ROI", ar: "\u0639\u0627\u0626\u062f \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+              roiPercent: roi,
+            },
+          ]
+        : [],
     },
     nearbyLandmarks,
     nearbyAreas,
-    locationCards: {},
-    faqs: buildFaqsFromArea(area),
-    regionSlug: area.regionSlug || area.slug,
+    locationCards: area?.locationCards || {},
+    faqs: Array.isArray(area?.faqs) && area.faqs.length ? area.faqs : buildFaqsFromArea(faqSeed),
+    regionSlug: area?.regionSlug || staticArea?.regionSlug || areaSlug,
   };
 }
 
@@ -276,6 +418,7 @@ export default function AreaDetailPage() {
   const isRTL = lang === "ar";
   const [sanityArea, setSanityArea] = useState(null);
   const [loading, setLoading] = useState(true);
+  const staticArea = useMemo(() => STATIC_AREA_MAP.get(slug), [slug]);
 
   useEffect(() => {
     let alive = true;
@@ -306,9 +449,9 @@ export default function AreaDetailPage() {
   }, [slug]);
 
   const resolvedData = useMemo(() => {
-    if (!sanityArea) return null;
-    return deepResolve(normalizeSanityArea(sanityArea, lang), lang);
-  }, [lang, sanityArea]);
+    if (!sanityArea && !staticArea) return null;
+    return deepResolve(normalizeSanityArea(sanityArea, lang, staticArea), lang);
+  }, [lang, sanityArea, staticArea]);
 
   if (loading && !resolvedData) {
     return (

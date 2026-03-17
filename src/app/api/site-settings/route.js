@@ -253,11 +253,14 @@ export async function GET() {
       "slug": slug.current,
       title,
       titleAr,
+      developer,
+      location,
+      locationAr,
       "heroImage": coalesce(heroImageCdn.url, heroImageUpload.asset->url, heroImage),
       galleryImages
     }`);
 
-    function resolveProjectImageForHeroSlide(slide) {
+    function resolveProjectDataForHeroSlide(slide) {
       const candidateSlugs = [
         slide?.propertySlug,
         slide?.title,
@@ -286,7 +289,14 @@ export async function GET() {
             getFirstGalleryImage(property?.galleryImages),
           ].find((url) => url && !isWeakFullscreenImage(url)) || "";
 
-        if (imageUrl) return imageUrl;
+        if (imageUrl) {
+          return {
+            imageUrl,
+            developer: property?.developer || "",
+            location: property?.location || "",
+            locationAr: property?.locationAr || "",
+          };
+        }
       }
 
       return null;
@@ -325,7 +335,7 @@ export async function GET() {
           }))
           .sort((a, b) => a.order - b.order || a.index - b.index)
           .map(({ slide, index, order }) => {
-            const fallbackImageUrl = resolveProjectImageForHeroSlide(slide);
+            const fallbackPropertyData = resolveProjectDataForHeroSlide(slide);
 
             return {
               ...slide,
@@ -334,8 +344,11 @@ export async function GET() {
                 slide?.cdnImage?.url,
                 slide.image ? urlFor(slide.image).width(1920).height(1080).url() : null,
                 slide?.backgroundUrl,
-                fallbackImageUrl
+                fallbackPropertyData?.imageUrl
               ),
+              developerName: fallbackPropertyData?.developer || "",
+              location: fallbackPropertyData?.location || "",
+              locationAr: fallbackPropertyData?.locationAr || "",
             };
           });
       }

@@ -112,6 +112,11 @@
   letter-spacing: 0.02em;
 }
 
+.cardsWrap {
+  position: relative;
+  z-index: 2;
+}
+
 /* =========================
    TABS
 ========================= */
