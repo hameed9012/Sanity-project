@@ -110,14 +110,18 @@ export default function LuxuryHeroSlider() {
             ? slide.subtitleAr
             : slide?.subtitle || slide?.subtitleAr || projectMatch?.data?.project?.description || projectMatch?.data?.intro?.description || "";
 
-        const developerName =
-          slide?.developerName ||
-          slide?.developer ||
+        // Normalize CMS developer name first; if it gets stripped (e.g. "Mohamad Kodmani"),
+        // fall through to the matched project's actual builder name.
+        const rawDevFromCms = normalizeHeroLabel(
+          slide?.developerName || slide?.developer || ""
+        );
+        const rawDevFromProject = normalizeHeroLabel(
           projectMatch?.developerNameEn ||
-          projectMatch?.developerNameAr ||
           projectMatch?.developer ||
           projectMatch?.data?.project?.developer ||
-          "";
+          ""
+        );
+        const developerName = rawDevFromCms || rawDevFromProject;
 
         const location =
           (locale === "ar" && slide?.locationAr)
@@ -148,8 +152,7 @@ export default function LuxuryHeroSlider() {
       .filter((slide) => slide.image)
       .slice(0, MAX_SLIDES);
 
-    if (cmsDrivenSlides.length > 0) return cmsDrivenSlides;
-
+    // Build fallback slides from allProjects (used as padding when CMS has too few)
     const fallbackSlides = (allProjects || [])
       .map((project, index) => {
         const image =
@@ -203,6 +206,16 @@ export default function LuxuryHeroSlider() {
       })
       .filter((slide) => slide.image)
       .slice(0, MAX_SLIDES);
+
+    // If CMS slides exist but are fewer than MAX_SLIDES, pad with unique project fallbacks
+    if (cmsDrivenSlides.length > 0) {
+      if (cmsDrivenSlides.length >= MAX_SLIDES) return cmsDrivenSlides;
+      const usedSlugs = new Set(cmsDrivenSlides.map((s) => s.slug));
+      const padding = fallbackSlides
+        .filter((s) => !usedSlugs.has(s.slug))
+        .slice(0, MAX_SLIDES - cmsDrivenSlides.length);
+      return [...cmsDrivenSlides, ...padding];
+    }
 
     return fallbackSlides;
   }, [cmsSlides, locale, allProjects]);
@@ -369,8 +382,11 @@ export default function LuxuryHeroSlider() {
 
   const currentProject = projects[currentIndex];
   const nextProject = nextIndex !== null ? projects[nextIndex] : null;
-  const displayProject = currentProject;
-  const displayLocation = String(currentProject?.location || "").trim();
+  // Sync text with image: when fading begins show the incoming slide's content immediately
+  const displayProject = (isFading && nextIndex !== null && projects[nextIndex])
+    ? projects[nextIndex]
+    : currentProject;
+  const displayLocation = String(displayProject?.location || "").trim();
 
   const mainTitle = t?.("homeSlider.mainTitle") || "Discover Extraordinary Living";
   const subtitle = t?.("homeSlider.subtitle") || "Curated Collection of the World's Finest Properties";

@@ -41,14 +41,52 @@ export default function ArtOfDetail() {
     fetchArtOfDetailSettings().then(setCms);
   }, []);
 
-  const sloganPre = getString(isAr ? cms?.sloganPreAr : cms?.sloganPre);
-  const sloganMain = getString(isAr ? cms?.sloganMainAr : cms?.sloganMain);
-  const companyLine = getString(isAr ? cms?.companyLineAr : cms?.companyLine);
-  const description = getString(isAr ? cms?.descriptionAr : cms?.description);
+  // Brand defaults — used when Sanity field is empty or contains wrong/old content
+  const DEFAULTS = {
+    sloganPre: "Where",
+    sloganPreAr: "حيث",
+    sloganMain: "The 1% Invest",
+    sloganMainAr: "يستثمر أصحاب 1%",
+    companyLine: "Mohamad Kodmani Real Estate Brokers",
+    companyLineAr: "محمد قدماني للوساطة العقارية",
+    description:
+      "At Mohamad Kodmani Real Estate Brokers, luxury is never accidental. It is curated — from the address and the layout to the investment story behind every unit. We advise discerning clients on luxury property Dubai opportunities, off-plan releases, and investment strategies designed for capital preservation and upside.",
+    descriptionAr:
+      "في محمد قدماني للوساطة العقارية، الفخامة ليست مصادفة. إنها مُصمَّمة بعناية — من العنوان والتخطيط إلى قصة الاستثمار خلف كل وحدة. ننصح عملاءنا المميزين بفرص العقارات الفاخرة في دبي، والإصدارات على الخارطة، واستراتيجيات الاستثمار المصممة لصون رأس المال وتحقيق العوائد.",
+    discoverMoreLabel: "Discover More",
+    discoverMoreLabelAr: "اكتشف المزيد",
+  };
 
-  const discoverLabel = getString(
-    isAr ? cms?.discoverMoreLabelAr : cms?.discoverMoreLabel
+  // Only use CMS value if it's present AND doesn't contain wrong brand references
+  function resolveField(cmsVal, fallback) {
+    const v = getString(cmsVal);
+    if (!v) return fallback;
+    // If the CMS has been updated with the wrong company/brand (e.g. Al Rasikhoon), use fallback
+    const lower = v.toLowerCase();
+    if (lower.includes("al rasikhoon") || lower.includes("rasikhoon")) return fallback;
+    return v;
+  }
+
+  const sloganPre = resolveField(
+    isAr ? cms?.sloganPreAr : cms?.sloganPre,
+    isAr ? DEFAULTS.sloganPreAr : DEFAULTS.sloganPre
   );
+  const sloganMain = resolveField(
+    isAr ? cms?.sloganMainAr : cms?.sloganMain,
+    isAr ? DEFAULTS.sloganMainAr : DEFAULTS.sloganMain
+  );
+  const companyLine = resolveField(
+    isAr ? cms?.companyLineAr : cms?.companyLine,
+    isAr ? DEFAULTS.companyLineAr : DEFAULTS.companyLine
+  );
+  const description = resolveField(
+    isAr ? cms?.descriptionAr : cms?.description,
+    isAr ? DEFAULTS.descriptionAr : DEFAULTS.description
+  );
+
+  const discoverLabel =
+    getString(isAr ? cms?.discoverMoreLabelAr : cms?.discoverMoreLabel) ||
+    (isAr ? DEFAULTS.discoverMoreLabelAr : DEFAULTS.discoverMoreLabel);
 
   const discoverUrl = getString(cms?.discoverMoreUrl);
 

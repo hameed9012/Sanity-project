@@ -138,6 +138,20 @@ function developerToSlug(name) {
   ) || "unknown";
 }
 
+/** Convert a slug-style string ("elbrus-tower") to Title Case ("Elbrus Tower"). */
+function titleFromSlug(value) {
+  const s = String(value || "").trim();
+  if (!s) return s;
+  // If no hyphens, return as-is
+  if (!s.includes("-")) return s;
+  // If it already has spaces it's probably a real title
+  if (s.includes(" ")) return s;
+  return s
+    .split("-")
+    .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
+    .join(" ");
+}
+
 function shouldExcludeDeveloper(value) {
   const token = String(value || "").toLowerCase();
   return Array.from(EXCLUDED_DEVELOPER_SLUGS).some((slug) => token.includes(slug));
@@ -272,7 +286,7 @@ function normalizeLegacyProperty(property) {
       ? `/lands/${slug}`
       : `/properties/${category}/${developerToSlug(developer)}/${slug}`,
     data: buildSyntheticPayload({
-      title: project?.name || slug,
+      title: titleFromSlug(project?.name || "") || titleFromSlug(slug),
       developer,
       location,
       startingPrice: project?.startingPrice || "",
@@ -303,9 +317,9 @@ function normalizeLegacyProperty(property) {
     developer,
     developerNameEn: developer,
     developerNameAr: "",
-    nameEn: project?.name || "",
+    nameEn: titleFromSlug(project?.name || ""),
     nameAr: property?.ar?.project?.name || "",
-    name: project?.name || property?.ar?.project?.name || "",
+    name: titleFromSlug(project?.name || "") || property?.ar?.project?.name || "",
     type: category,
     landCategory: property?.landCategory || "",
     unitType: project?.type || category,
@@ -362,7 +376,7 @@ function normalizeFlatProperty(property) {
       ? `/lands/${slug}`
       : `/properties/${category}/${developerToSlug(developer)}/${slug}`,
     data: buildSyntheticPayload({
-      title: property?.title || slug,
+      title: titleFromSlug(property?.title || "") || titleFromSlug(slug),
       developer,
       location,
       startingPrice: property?.startingPrice || "",
@@ -387,9 +401,9 @@ function normalizeFlatProperty(property) {
     developer,
     developerNameEn: developer,
     developerNameAr: "",
-    nameEn: property?.title || "",
+    nameEn: titleFromSlug(property?.title || ""),
     nameAr: property?.titleAr || "",
-    name: property?.title || property?.titleAr || "",
+    name: titleFromSlug(property?.title || "") || property?.titleAr || "",
     type: category,
     landCategory: property?.landCategory || "",
     unitType: property?.unitTypes || category,

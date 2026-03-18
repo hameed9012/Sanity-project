@@ -66,6 +66,18 @@ function getProjectBrochureUrl(project) {
   );
 }
 
+function formatProjectName(name) {
+  if (!name) return "";
+  // If the name looks like a slug (hyphens, no spaces), convert to Title Case
+  if (name.includes("-") && !name.includes(" ")) {
+    return name
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+  return name;
+}
+
 export default function HomeHeroSlider() {
   const { locale } = useLanguage();
   const isAr = locale === "ar" || String(locale || "").startsWith("ar");
@@ -80,7 +92,7 @@ export default function HomeHeroSlider() {
       .slice(0, 12)
       .map((p, index) => ({
         id: p?._id || p?.slug || p?.id || index,
-        title: p?.name || "",
+        title: formatProjectName(p?.nameEn || p?.name || ""),
         image: p?.image || "",
         developerName:
           p?.developer ||

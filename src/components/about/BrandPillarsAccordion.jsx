@@ -1,61 +1,60 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import styles from "@/styles/BrandPillarsAccordion.module.css";
-import { useLanguage } from "./LanguageProvider";
+import styles from "@/styles/about/BrandPillarsAccordion.module.css";
+import { useLanguage } from "@/components/LanguageProvider";
 
 gsap.registerPlugin(ScrollTrigger);
-
-let _cachedSettings = null;
-
-async function fetchPillarsSettings() {
-  if (_cachedSettings) return _cachedSettings;
-
-  try {
-    const res = await fetch("/api/site-settings");
-    if (!res.ok) return null;
-
-    const { data } = await res.json();
-    _cachedSettings = data?.pillarsSection || null;
-    return _cachedSettings;
-  } catch {
-    return null;
-  }
-}
 
 function getString(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export default function BrandPillarsAccordion() {
+function AccordionItem({ title, children, initialOpen = false, itemRef }) {
+  const [open, setOpen] = useState(initialOpen);
+
+  return (
+    <div
+      ref={itemRef}
+      className={`${styles.accItem} ${open ? styles.accItemActive : ""}`}
+    >
+      <button
+        className={styles.accHeader}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        <span className={styles.icons} aria-hidden="true" />
+        <h2 className={styles.accTitle}>{title}</h2>
+      </button>
+
+      <div className={`${styles.accBodyWrapper} ${open ? styles.accBodyOpen : ""}`}>
+        <div className={styles.accBody}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function BrandPillarsAccordion({ content }) {
   const { locale } = useLanguage();
   const isAr = locale === "ar";
-
-  const [cms, setCms] = useState(null);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const sectionRef = useRef(null);
   const itemRefs = useRef([]);
 
-  const setItemRef = (el, index) => {
-    if (el) itemRefs.current[index] = el;
+  const setItemRef = (el, i) => {
+    if (el) itemRefs.current[i] = el;
   };
 
   useEffect(() => {
-    fetchPillarsSettings().then(setCms);
-  }, []);
-
-  const pillars = Array.isArray(cms?.pillars) ? cms.pillars : [];
-
-  useEffect(() => {
-    if (!sectionRef.current || !pillars.length) return;
+    if (!sectionRef.current || !content) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        itemRefs.current,
+        itemRefs.current.filter(Boolean),
         { y: 40, opacity: 0 },
         {
           y: 0,
@@ -72,62 +71,136 @@ export default function BrandPillarsAccordion() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [pillars]);
+  }, [content]);
+
+  if (!content) return null;
+
+  const visionTitle = getString(isAr ? content.visionTitleAr : content.visionTitle) || "Vision";
+  const visionText = getString(isAr ? content.visionTextAr : content.visionText);
+  const visionImage = content.visionImageUrl || null;
+  const visionImageAlt = getString(isAr ? content.visionImageAltAr : content.visionImageAlt) || "Vision";
+
+  const missionTitle = getString(isAr ? content.missionTitleAr : content.missionTitle) || "Mission";
+  const missionText = getString(isAr ? content.missionTextAr : content.missionText);
+  const missionImage = content.missionImageUrl || null;
+  const missionImageAlt = getString(isAr ? content.missionImageAltAr : content.missionImageAlt) || "Mission";
+
+  const coreTitle = getString(isAr ? content.coreTitleAr : content.coreTitle) || "Core Values";
+  const coreSubtitleTop = getString(isAr ? content.coreSubtitleTopAr : content.coreSubtitleTop);
+  const coreSubtitleBottom = getString(isAr ? content.coreSubtitleBottomAr : content.coreSubtitleBottom);
+  const pillars = Array.isArray(content.pillars) ? content.pillars : [];
 
   return (
     <section
       ref={sectionRef}
-      className={styles.section}
+      className={styles.brandAccSec}
       dir={isAr ? "rtl" : "ltr"}
     >
       <div className={styles.container}>
-        {pillars.map((pillar, index) => {
-          const title = getString(
-            isAr ? pillar?.titleAr : pillar?.title
-          );
+        <div className={styles.accordion}>
 
-          const description = getString(
-            isAr ? pillar?.descriptionAr : pillar?.description
-          );
-
-          const isActive = activeIndex === index;
-
-          return (
-            <div
-              key={pillar?._key || index}
-              ref={(el) => setItemRef(el, index)}
-              className={`${styles.item} ${
-                isActive ? styles.active : ""
-              }`}
-            >
-              <button
-                className={styles.header}
-                onClick={() =>
-                  setActiveIndex(isActive ? -1 : index)
-                }
-              >
-                <span className={styles.title}>{title}</span>
-
-                <span className={styles.icon}>
-                  {isActive ? "-" : "+"}
-                </span>
-              </button>
-
-              <div
-                className={styles.content}
-                style={{
-                  maxHeight: isActive ? "500px" : "0px",
-                }}
-              >
-                {description && (
-                  <p className={styles.description}>
-                    {description}
+          {/* ── Vision ── */}
+          <AccordionItem
+            title={visionTitle}
+            initialOpen={false}
+            itemRef={(el) => setItemRef(el, 0)}
+          >
+            <div className={styles.twoColContent}>
+              {visionImage && (
+                <div className={styles.twoColLeft}>
+                  <div style={{ position: "relative", width: 320, maxWidth: "100%", aspectRatio: "4/3", borderRadius: 10, overflow: "hidden" }}>
+                    <Image
+                      src={visionImage}
+                      alt={visionImageAlt}
+                      fill
+                      className={styles.iconImage}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className={styles.twoColRight}>
+                {visionText && (
+                  <p className={`${styles.twoColParagraph} ${styles.disc}`}>
+                    {visionText}
                   </p>
                 )}
               </div>
             </div>
-          );
-        })}
+          </AccordionItem>
+
+          {/* ── Mission ── */}
+          <AccordionItem
+            title={missionTitle}
+            initialOpen={false}
+            itemRef={(el) => setItemRef(el, 1)}
+          >
+            <div className={styles.twoColContent}>
+              {missionImage && (
+                <div className={styles.twoColLeft}>
+                  <div style={{ position: "relative", width: 320, maxWidth: "100%", aspectRatio: "4/3", borderRadius: 10, overflow: "hidden" }}>
+                    <Image
+                      src={missionImage}
+                      alt={missionImageAlt}
+                      fill
+                      className={styles.iconImage}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className={styles.twoColRight}>
+                {missionText && (
+                  <p className={`${styles.twoColParagraph} ${styles.disc}`}>
+                    {missionText}
+                  </p>
+                )}
+              </div>
+            </div>
+          </AccordionItem>
+
+          {/* ── Core Values ── */}
+          {pillars.length > 0 && (
+            <AccordionItem
+              title={coreTitle}
+              initialOpen={false}
+              itemRef={(el) => setItemRef(el, 2)}
+            >
+              {(coreSubtitleTop || coreSubtitleBottom) && (
+                <div className={`${styles.style2} ${styles.accBodyHeadingStyle2}`}>
+                  {coreSubtitleBottom && <span>{coreSubtitleBottom}</span>}
+                  {coreSubtitleTop}
+                </div>
+              )}
+
+              <div className={styles.brandAccBoxMain}>
+                {pillars.map((pillar, i) => {
+                  const pillarTitle = getString(isAr ? pillar.titleAr : pillar.title);
+                  const pillarText = getString(isAr ? pillar.textAr : pillar.text);
+                  const pillarImage = pillar.imageUrl || null;
+                  const pillarAlt = getString(isAr ? pillar.imageAltAr : pillar.imageAlt) || pillarTitle;
+
+                  return (
+                    <div key={pillar._key || i} className={styles.brandAccBox}>
+                      {pillarImage && (
+                        <div className={styles.brandAccThumb}>
+                          <img
+                            src={pillarImage}
+                            alt={pillarAlt}
+                            className={styles.brandAccImage}
+                          />
+                        </div>
+                      )}
+                      <div className={styles.brandPillarContent}>
+                        {pillarTitle && <h5>{pillarTitle}</h5>}
+                        {pillarText && <p>{pillarText}</p>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </AccordionItem>
+          )}
+
+        </div>
       </div>
     </section>
   );

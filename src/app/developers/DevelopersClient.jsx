@@ -166,7 +166,10 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
       const descriptionAr = sanityDev.descriptionAr || taglineAr || descriptionEn;
 
       const heroImage =
-        sanityDev.heroImageUrl || resolveDeveloperImage(allProjects, slug, nameEn);
+        sanityDev.coverImage ||
+        sanityDev.coverImageUrl ||
+        sanityDev.heroImageUrl ||
+        resolveDeveloperImage(allProjects, slug, nameEn);
 
       return {
         slug,

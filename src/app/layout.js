@@ -84,12 +84,12 @@ export const metadata = {
 
   icons: {
     icon: [
-      { url: "/logo.jpg", type: "image/jpeg" },
-      { url: "/logo.jpg", sizes: "32x32", type: "image/jpeg" },
-      { url: "/logo.jpg", sizes: "192x192", type: "image/jpeg" },
+      { url: "/logo-transparent.png", type: "image/png" },
+      { url: "/logo-transparent.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo-transparent.png", sizes: "192x192", type: "image/png" },
     ],
-    shortcut: ["/logo.jpg"],
-    apple: [{ url: "/logo.jpg" }],
+    shortcut: ["/logo-transparent.png"],
+    apple: [{ url: "/logo-transparent.png" }],
   },
 };
 

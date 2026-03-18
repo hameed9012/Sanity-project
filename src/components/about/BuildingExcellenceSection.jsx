@@ -205,6 +205,12 @@ export default function BuildingExcellenceSection({ content }) {
                 <div className={styles.statBox}>
                   <div className={styles.statTopLine} />
 
+                  {selectAboutValue(locale, stat?.prefix, stat?.prefixAr) ? (
+                    <div className={styles.statPrefix}>
+                      {selectAboutValue(locale, stat?.prefix, stat?.prefixAr)}
+                    </div>
+                  ) : null}
+
                   <h3 className={styles.statTitle}>
                     <span data-count-span>{stat?.count || ""}</span>
                     <span className={styles.statSuffix}>

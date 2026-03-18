@@ -416,6 +416,8 @@ export default defineType({
                 {
                   type: 'object',
                   fields: [
+                    defineField({ name: 'prefix', title: 'Prefix (EN)', type: 'string', description: 'Optional text shown above the number, e.g. "Targeting"' }),
+                    defineField({ name: 'prefixAr', title: 'Prefix (AR)', type: 'string' }),
                     defineField({ name: 'count', title: 'Count', type: 'string' }),
                     defineField({ name: 'suffix', title: 'Suffix (EN)', type: 'string' }),
                     defineField({ name: 'suffixAr', title: 'Suffix (AR)', type: 'string' }),

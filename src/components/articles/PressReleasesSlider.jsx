@@ -79,98 +79,103 @@ export default function PressReleasesSlider() {
       dir={isRTL ? "rtl" : "ltr"}
       aria-labelledby="press-releases-heading"
     >
+      {/* Heading inside container */}
       <div className={styles.container}>
         <h2 id="press-releases-heading" className={styles.heading}>
           {t?.("pressReleases.heading") || (isRTL ? "البيانات الصحفية" : "PRESS RELEASES")}
         </h2>
+      </div>
 
-        <div className={styles.sliderShell}>
-          <button
-            className={`${styles.navArrow} ${styles.navPrev} stories-prev`}
-            aria-label={t?.("pressReleases.aria.prev") || (isRTL ? "السابق" : "Previous")}
-          >
-            <span className={styles.arrowIcon} />
-          </button>
+      {/* Slider is full-width so side slides bleed to screen edges */}
+      <div className={styles.sliderShell}>
+        <button
+          className={`${styles.navArrow} ${styles.navPrev} stories-prev`}
+          aria-label={t?.("pressReleases.aria.prev") || (isRTL ? "السابق" : "Previous")}
+        >
+          <span className={styles.arrowIcon} />
+        </button>
 
-          <button
-            className={`${styles.navArrow} ${styles.navNext} stories-next`}
-            aria-label={t?.("pressReleases.aria.next") || (isRTL ? "التالي" : "Next")}
-          >
-            <span className={styles.arrowIcon} />
-          </button>
+        <button
+          className={`${styles.navArrow} ${styles.navNext} stories-next`}
+          aria-label={t?.("pressReleases.aria.next") || (isRTL ? "التالي" : "Next")}
+        >
+          <span className={styles.arrowIcon} />
+        </button>
 
-          <Swiper
-            key={locale}
-            modules={[Navigation, Autoplay]}
-            navigation={{
-              prevEl: isRTL ? ".stories-next" : ".stories-prev",
-              nextEl: isRTL ? ".stories-prev" : ".stories-next",
-            }}
-            autoplay={{
-              delay: 8000,
-              disableOnInteraction: false,
-            }}
-            slidesPerView="auto"
-            centeredSlides
-            spaceBetween={32}
-            loop={articles.length > 1}
-            speed={900}
-            breakpoints={{
-              0: {
-                slidesPerView: 1,
-                centeredSlides: false,
-                spaceBetween: 16,
-              },
-              769: {
-                slidesPerView: "auto",
-                centeredSlides: true,
-                spaceBetween: 32,
-              },
-            }}
-            className={`${styles.storiesSlider} ${isRTL ? styles.rtlSlider : ""}`}
-          >
-            {articles.map((article) => (
-              <SwiperSlide key={article.id || article.slug} className={styles.slide}>
-                <article
-                  className={styles.card}
-                  onClick={() => router.push(`/articles/${article.slug}`)}
-                >
-                  <div className={styles.cardBox}>
-                    <div className={styles.imageWrap}>
-                      <Image
-                        src={article.image}
-                        alt={article.title}
-                        fill
-                        className={`${styles.image} ${styles.onlyDesk}`}
-                        sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
-                      />
-                      <Image
-                        src={article.image}
-                        alt={article.title}
-                        fill
-                        className={`${styles.image} ${styles.onlyMob}`}
-                        sizes="100vw"
-                      />
+        <Swiper
+          key={locale}
+          modules={[Navigation, Autoplay]}
+          navigation={{
+            prevEl: isRTL ? ".stories-next" : ".stories-prev",
+            nextEl: isRTL ? ".stories-prev" : ".stories-next",
+          }}
+          autoplay={{
+            delay: 8000,
+            disableOnInteraction: false,
+          }}
+          slidesPerView="auto"
+          centeredSlides
+          spaceBetween={32}
+          loop={articles.length > 1}
+          speed={900}
+          breakpoints={{
+            0: {
+              slidesPerView: 1,
+              centeredSlides: false,
+              spaceBetween: 16,
+            },
+            769: {
+              slidesPerView: "auto",
+              centeredSlides: true,
+              spaceBetween: 32,
+            },
+          }}
+          className={`${styles.storiesSlider} ${isRTL ? styles.rtlSlider : ""}`}
+        >
+          {articles.map((article) => (
+            <SwiperSlide key={article.id || article.slug} className={styles.slide}>
+              <article
+                className={styles.card}
+                onClick={() => router.push(`/articles/${article.slug}`)}
+              >
+                <div className={styles.cardBox}>
+                  <div className={styles.imageWrap}>
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      className={`${styles.image} ${styles.onlyDesk}`}
+                      sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
+                    />
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      className={`${styles.image} ${styles.onlyMob}`}
+                      sizes="100vw"
+                    />
+                  </div>
+
+                  <div className={styles.cardContent}>
+                    <div className={styles.storyTitle}>
+                      <h3 className={styles.cardTitle}>{article.title}</h3>
                     </div>
 
-                    <div className={styles.cardContent}>
-                      <div className={styles.storyTitle}>
-                        <h3 className={styles.cardTitle}>{article.title}</h3>
-                      </div>
-
-                      <div className={styles.storyPublish}>
-                        <div className={styles.datePlace}>
-                          <span className={styles.publishedDate}>{article.publishedOn}</span>
-                        </div>
+                    <div className={styles.storyPublish}>
+                      <div className={styles.datePlace}>
+                        <span className={styles.publishedDate}>{article.publishedOn}</span>
                       </div>
                     </div>
                   </div>
-                </article>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+                </div>
+              </article>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
 
+      {/* View All inside container */}
+      <div className={styles.container}>
         <div className={styles.viewAllRow}>
           <Link href="/articles" className={styles.viewAllBtn}>
             {t?.("pressReleases.viewAll") || (isRTL ? "عرض الكل" : "VIEW ALL")}
