@@ -25,6 +25,8 @@ export default function BuildingExcellenceSection({ content }) {
     if (element) statRefs.current[index] = element;
   };
 
+  const stats = Array.isArray(content?.stats) ? content.stats : [];
+
   useEffect(() => {
     if (!sectionRef.current) return;
 
@@ -80,7 +82,7 @@ export default function BuildingExcellenceSection({ content }) {
       );
 
       statRefs.current.forEach((element, index) => {
-        const span = element.querySelector("[data-count-span]");
+        const span = element?.querySelector("[data-count-span]");
         if (!span) return;
 
         const target = Number(stats[index]?.count);
@@ -101,18 +103,41 @@ export default function BuildingExcellenceSection({ content }) {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [isRTL, content]);
+  }, [isRTL, stats]);
 
   if (!content?.imageUrl) {
     return null;
   }
 
-  const headingLineOne = selectAboutValue(locale, content.headingLine1, content.headingLine1Ar);
-  const headingLineTwo = selectAboutValue(locale, content.headingLine2, content.headingLine2Ar);
-  const headingLineThree = selectAboutValue(locale, content.headingLine3, content.headingLine3Ar);
-  const paragraph = selectAboutValue(locale, content.paragraph, content.paragraphAr);
-  const imageAlt = selectAboutValue(locale, content.imageAlt, content.imageAltAr);
-  const stats = Array.isArray(content?.stats) ? content.stats : [];
+  const headingLineOne = selectAboutValue(
+    locale,
+    content.headingLine1,
+    content.headingLine1Ar
+  );
+
+  const headingLineTwo = selectAboutValue(
+    locale,
+    content.headingLine2,
+    content.headingLine2Ar
+  );
+
+  const headingLineThree = selectAboutValue(
+    locale,
+    content.headingLine3,
+    content.headingLine3Ar
+  );
+
+  const paragraph = selectAboutValue(
+    locale,
+    content.paragraph,
+    content.paragraphAr
+  );
+
+  const imageAlt = selectAboutValue(
+    locale,
+    content.imageAlt,
+    content.imageAltAr
+  );
 
   return (
     <section

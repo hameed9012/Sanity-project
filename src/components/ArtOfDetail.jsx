@@ -10,11 +10,14 @@ import styles from "@/styles/ArtOfDetail.module.css";
 import { useLanguage } from "./LanguageProvider";
 
 let _cachedSettings = null;
+
 async function fetchArtOfDetailSettings() {
   if (_cachedSettings) return _cachedSettings;
+
   try {
     const res = await fetch("/api/site-settings");
     if (!res.ok) return null;
+
     const { data } = await res.json();
     _cachedSettings = data?.artOfDetail || null;
     return _cachedSettings;
@@ -23,74 +26,45 @@ async function fetchArtOfDetailSettings() {
   }
 }
 
-function normalizeOwnerImageSource(value) {
-  const raw = typeof value === "string" ? value.trim() : "";
-  if (!raw) return "/boss-nobg-cropped.png";
-
-  const normalized = raw.toLowerCase();
-  if (
-    normalized.endsWith("/boss-nobg.png") ||
-    normalized.includes("luxury-real-estate-media.b-cdn.net/public/boss-nobg.png")
-  ) {
-    return "/boss-nobg-cropped.png";
-  }
-
-  return raw;
-}
-
-function preferLegacyArtCopy(value, fallback, patterns = []) {
-  const raw = typeof value === "string" ? value.trim() : "";
-  if (!raw) return fallback;
-
-  const normalized = raw.toLowerCase();
-  if (patterns.some((pattern) => normalized.includes(pattern))) {
-    return fallback;
-  }
-
-  return raw;
+function getString(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
 export default function ArtOfDetail() {
   const sectionRef = useRef(null);
-  const { t, locale } = useLanguage();
+  const { locale } = useLanguage();
   const isAr = locale === "ar";
 
   const [cms, setCms] = useState(null);
+
   useEffect(() => {
     fetchArtOfDetailSettings().then(setCms);
   }, []);
 
-  const sloganPre = preferLegacyArtCopy(
-    isAr ? cms?.sloganPreAr : cms?.sloganPre,
-    t("artOfDetail.sloganPre"),
-    ["crafted with", "مصنوع", "صُمم"]
+  const sloganPre = getString(isAr ? cms?.sloganPreAr : cms?.sloganPre);
+  const sloganMain = getString(isAr ? cms?.sloganMainAr : cms?.sloganMain);
+  const companyLine = getString(isAr ? cms?.companyLineAr : cms?.companyLine);
+  const description = getString(isAr ? cms?.descriptionAr : cms?.description);
+
+  const discoverLabel = getString(
+    isAr ? cms?.discoverMoreLabelAr : cms?.discoverMoreLabel
   );
-  const sloganMain = preferLegacyArtCopy(
-    isAr ? cms?.sloganMainAr : cms?.sloganMain,
-    t("artOfDetail.sloganMain"),
-    ["the art of detail", "فن التفاصيل"]
-  );
-  const companyLine = preferLegacyArtCopy(
-    isAr ? cms?.companyLineAr : cms?.companyLine,
-    t("artOfDetail.companyLine"),
-    ["al rasikhoon", "الراسخون"]
-  );
-  const description = preferLegacyArtCopy(
-    isAr ? cms?.descriptionAr : cms?.description,
-    t("artOfDetail.description"),
-    ["we believe every great investment begins", "نؤمن أن كل استثمار عظيم يبدأ"]
-  );
-  const discoverUrl = cms?.discoverMoreUrl || "/about";
-  const ownerImage = normalizeOwnerImageSource(
-    cms?.ownerImageUrl || cms?.ownerImageCdn?.url || cms?.ownerImage
-  );
+
+  const discoverUrl = getString(cms?.discoverMoreUrl);
+
+  const ownerAlt = getString(isAr ? cms?.ownerAltAr : cms?.ownerAlt);
+
+  const ownerImage =
+    getString(cms?.ownerImageUrl) ||
+    getString(cms?.ownerImageCdn?.url) ||
+    getString(cms?.ownerImage);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const pill    = sectionRef.current.querySelector(`.${styles.artAnimSec}`);
+    const pill = sectionRef.current.querySelector(`.${styles.artAnimSec}`);
     const content = sectionRef.current.querySelector(`.${styles.artContentSec}`);
 
     if (!pill) return;
@@ -237,51 +211,67 @@ export default function ArtOfDetail() {
       <div className={styles.artAnimSec}>
         <div className={styles.container}>
           <div className={`${styles.row} ${styles.h100vh}`}>
-
             <div className={styles.artContentSec}>
-              <div className={styles.sloganV1}>
-                <div className={styles.sloganArchitectural}>
-                  <span className={styles.sloganPre}>{sloganPre}</span>
-                  <div className={styles.sloganMainContainer}>
-                    <span className={styles.sloganMain}>{sloganMain}</span>
-                    <div className={styles.sloganDivider}></div>
+              {(sloganPre || sloganMain) && (
+                <div className={styles.sloganV1}>
+                  <div className={styles.sloganArchitectural}>
+                    {sloganPre && (
+                      <span className={styles.sloganPre}>{sloganPre}</span>
+                    )}
+
+                    {sloganMain && (
+                      <div className={styles.sloganMainContainer}>
+                        <span className={styles.sloganMain}>{sloganMain}</span>
+                        <div className={styles.sloganDivider} />
+                      </div>
+                    )}
                   </div>
                 </div>
+              )}
+
+              {companyLine && (
+                <p className={styles.companyLine}>{companyLine}</p>
+              )}
+
+              {description && (
+                <p className={styles.description}>{description}</p>
+              )}
+
+              {discoverUrl && discoverLabel && (
+                <div className={styles.buttonMain}>
+                  <Link href={discoverUrl} className={styles.button1}>
+                    {discoverLabel}
+                    <i />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {ownerImage && (
+              <div className={`${styles.ownerImgWrapper} ${styles.onlyDesk}`}>
+                <Image
+                  src={ownerImage}
+                  alt={ownerAlt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className={styles.ownerImg}
+                  priority
+                />
               </div>
+            )}
 
-              <p className={styles.companyLine}>{companyLine}</p>
-              <p className={styles.description}>{description}</p>
-
-              <div className={styles.buttonMain}>
-                <Link href={discoverUrl} className={styles.button1}>
-                  {t("artOfDetail.discoverMore") || (isAr ? "اكتشف المزيد" : "Discover More")}
-                  <i />
-                </Link>
+            {ownerImage && (
+              <div className={`${styles.ownerImgMobile} ${styles.onlyMob}`}>
+                <Image
+                  src={ownerImage}
+                  alt={ownerAlt}
+                  width={280}
+                  height={340}
+                  className={styles.ownerImgMobileImg}
+                  priority
+                />
               </div>
-            </div>
-
-            <div className={`${styles.ownerImgWrapper} ${styles.onlyDesk}`}>
-              <Image
-                src={ownerImage}
-                alt={t("artOfDetail.ownerAlt") || ""}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className={styles.ownerImg}
-                priority
-              />
-            </div>
-
-            <div className={`${styles.ownerImgMobile} ${styles.onlyMob}`}>
-              <Image
-                src={ownerImage}
-                alt={t("artOfDetail.ownerAlt") || ""}
-                width={280}
-                height={340}
-                className={styles.ownerImgMobileImg}
-                priority
-              />
-            </div>
-
+            )}
           </div>
         </div>
       </div>

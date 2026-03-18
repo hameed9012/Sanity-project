@@ -1,200 +1,133 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { useLanguage } from "@/components/LanguageProvider";
-import { selectAboutValue } from "@/lib/aboutPage";
-import styles from "@/styles/about/BrandPillarsAccordion.module.css";
+import styles from "@/styles/BrandPillarsAccordion.module.css";
+import { useLanguage } from "./LanguageProvider";
 
-export default function BrandPillarsAccordion({ content }) {
-  const [active, setActive] = useState("vision");
-  const { locale } = useLanguage();
-  const isRTL = locale === "ar";
+gsap.registerPlugin(ScrollTrigger);
 
-  if (!content) {
+let _cachedSettings = null;
+
+async function fetchPillarsSettings() {
+  if (_cachedSettings) return _cachedSettings;
+
+  try {
+    const res = await fetch("/api/site-settings");
+    if (!res.ok) return null;
+
+    const { data } = await res.json();
+    _cachedSettings = data?.pillarsSection || null;
+    return _cachedSettings;
+  } catch {
     return null;
   }
+}
 
-  const pillars = Array.isArray(content?.pillars) ? content.pillars : [];
-  const visionTitle = selectAboutValue(locale, content.visionTitle, content.visionTitleAr);
-  const visionText = selectAboutValue(locale, content.visionText, content.visionTextAr);
-  const missionTitle = selectAboutValue(locale, content.missionTitle, content.missionTitleAr);
-  const missionText = selectAboutValue(locale, content.missionText, content.missionTextAr);
-  const coreTitle = selectAboutValue(locale, content.coreTitle, content.coreTitleAr);
-  const coreSubtitleTop = selectAboutValue(
-    locale,
-    content.coreSubtitleTop,
-    content.coreSubtitleTopAr
-  );
-  const coreSubtitleBottom = selectAboutValue(
-    locale,
-    content.coreSubtitleBottom,
-    content.coreSubtitleBottomAr
-  );
+function getString(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
 
-  const toggle = (id) => setActive((previous) => (previous === id ? null : id));
-  const isOpen = (id) => active === id;
+export default function BrandPillarsAccordion() {
+  const { locale } = useLanguage();
+  const isAr = locale === "ar";
+
+  const [cms, setCms] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const sectionRef = useRef(null);
+  const itemRefs = useRef([]);
+
+  const setItemRef = (el, index) => {
+    if (el) itemRefs.current[index] = el;
+  };
+
+  useEffect(() => {
+    fetchPillarsSettings().then(setCms);
+  }, []);
+
+  const pillars = Array.isArray(cms?.pillars) ? cms.pillars : [];
+
+  useEffect(() => {
+    if (!sectionRef.current || !pillars.length) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        itemRefs.current,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [pillars]);
 
   return (
-    <section className={styles.brandAccSec} dir={isRTL ? "rtl" : "ltr"}>
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      dir={isAr ? "rtl" : "ltr"}
+    >
       <div className={styles.container}>
-        <div className={styles.accordion}>
-          <div
-            className={`${styles.accItem} ${
-              isOpen("vision") ? styles.accItemActive : ""
-            }`}
-          >
-            <button
-              type="button"
-              className={styles.accHeader}
-              onClick={() => toggle("vision")}
-              aria-expanded={isOpen("vision")}
-              aria-controls="acc-vision"
-            >
-              <span className={styles.icons} />
-              <h2 className={styles.accTitle}>{visionTitle}</h2>
-            </button>
+        {pillars.map((pillar, index) => {
+          const title = getString(
+            isAr ? pillar?.titleAr : pillar?.title
+          );
 
+          const description = getString(
+            isAr ? pillar?.descriptionAr : pillar?.description
+          );
+
+          const isActive = activeIndex === index;
+
+          return (
             <div
-              id="acc-vision"
-              className={`${styles.accBodyWrapper} ${
-                isOpen("vision") ? styles.accBodyOpen : ""
+              key={pillar?._key || index}
+              ref={(el) => setItemRef(el, index)}
+              className={`${styles.item} ${
+                isActive ? styles.active : ""
               }`}
             >
-              <div className={styles.accBody}>
-                <div className={styles.twoColContent}>
-                  {content?.visionImageUrl ? (
-                    <Image
-                      src={content.visionImageUrl}
-                      alt={selectAboutValue(
-                        locale,
-                        content.visionImageAlt,
-                        content.visionImageAltAr
-                      )}
-                      width={900}
-                      height={650}
-                      className={styles.iconImage}
-                      priority={false}
-                      sizes="(max-width: 900px) 100vw, 500px"
-                    />
-                  ) : null}
+              <button
+                className={styles.header}
+                onClick={() =>
+                  setActiveIndex(isActive ? -1 : index)
+                }
+              >
+                <span className={styles.title}>{title}</span>
 
-                  {visionText ? (
-                    <p className={`${styles.disc} ${styles.twoColParagraph}`}>{visionText}</p>
-                  ) : null}
-                </div>
+                <span className={styles.icon}>
+                  {isActive ? "-" : "+"}
+                </span>
+              </button>
+
+              <div
+                className={styles.content}
+                style={{
+                  maxHeight: isActive ? "500px" : "0px",
+                }}
+              >
+                {description && (
+                  <p className={styles.description}>
+                    {description}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
-
-          <div
-            className={`${styles.accItem} ${
-              isOpen("mission") ? styles.accItemActive : ""
-            }`}
-          >
-            <button
-              type="button"
-              className={styles.accHeader}
-              onClick={() => toggle("mission")}
-              aria-expanded={isOpen("mission")}
-              aria-controls="acc-mission"
-            >
-              <span className={styles.icons} />
-              <h2 className={styles.accTitle}>{missionTitle}</h2>
-            </button>
-
-            <div
-              id="acc-mission"
-              className={`${styles.accBodyWrapper} ${
-                isOpen("mission") ? styles.accBodyOpen : ""
-              }`}
-            >
-              <div className={styles.accBody}>
-                <div className={styles.twoColContent}>
-                  {content?.missionImageUrl ? (
-                    <Image
-                      src={content.missionImageUrl}
-                      alt={selectAboutValue(
-                        locale,
-                        content.missionImageAlt,
-                        content.missionImageAltAr
-                      )}
-                      width={900}
-                      height={650}
-                      className={styles.iconImage}
-                      sizes="(max-width: 900px) 100vw, 500px"
-                    />
-                  ) : null}
-
-                  {missionText ? (
-                    <p className={`${styles.disc} ${styles.twoColParagraph}`}>{missionText}</p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={`${styles.accItem} ${
-              isOpen("pillars") ? styles.accItemActive : ""
-            }`}
-          >
-            <button
-              type="button"
-              className={styles.accHeader}
-              onClick={() => toggle("pillars")}
-              aria-expanded={isOpen("pillars")}
-              aria-controls="acc-pillars"
-            >
-              <span className={styles.icons} />
-              <h2 className={styles.accTitle}>{coreTitle}</h2>
-            </button>
-
-            <div
-              id="acc-pillars"
-              className={`${styles.accBodyWrapper} ${
-                isOpen("pillars") ? styles.accBodyOpen : ""
-              }`}
-            >
-              <div className={styles.accBody}>
-                <h2 className={`${styles.style2} ${styles.accBodyHeadingStyle2}`}>
-                  <span>{coreSubtitleTop}</span>
-                  {coreSubtitleBottom}
-                </h2>
-
-                {!!pillars.length ? (
-                  <div className={styles.brandAccBoxMain}>
-                    {pillars.map((pillar, index) => (
-                      <div
-                        key={pillar?._key || `${pillar?.title || "pillar"}-${index}`}
-                        className={styles.brandAccBox}
-                      >
-                        {pillar?.imageUrl ? (
-                          <Image
-                            src={pillar.imageUrl}
-                            width={420}
-                            height={550}
-                            alt={selectAboutValue(locale, pillar?.imageAlt, pillar?.imageAltAr)}
-                            className={styles.brandAccImage}
-                            sizes="(max-width: 900px) 100vw, 420px"
-                          />
-                        ) : null}
-
-                        <div className={styles.brandPillarContent}>
-                          <h5>{selectAboutValue(locale, pillar?.title, pillar?.titleAr)}</h5>
-                          <p className={styles.disc}>
-                            {selectAboutValue(locale, pillar?.text, pillar?.textAr)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </section>
   );
