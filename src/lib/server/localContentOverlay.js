@@ -1555,21 +1555,70 @@ export function mergeArticleWithLocalData(article) {
     };
   }
 
-  const sections =
-    Array.isArray(article?.sections) && article.sections.length > 0
-      ? article.sections
-      : cleanedBodySnippets.length
-      ? [
-          {
-            _key: "overview",
-            id: "overview",
-            title: "Overview",
-            titleAr: "نظرة عامة",
-            body: cleanedBodySnippets,
-            bodyAr: [],
-          },
-        ]
-      : [];
+  // Clean up Sanity sections' body content by filtering out garbage snippets
+  let sections = [];
+  if (Array.isArray(article?.sections) && article.sections.length > 0) {
+    sections = article.sections.map(section => {
+      if (!section) return section;
+      
+      // Clean up body if it contains garbage snippets
+      const cleanedBody = Array.isArray(section.body)
+        ? section.body.filter(block => {
+            // Must be a valid block object
+            if (!block || typeof block !== 'object') return false;
+            
+            // Check all text in the block for garbage patterns
+            let allText = '';
+            if (block._type === 'block' && Array.isArray(block.children)) {
+              allText = block.children
+                .map(child => String(child.text || ''))
+                .join(' ');
+            }
+            
+            // Garbage patterns to reject
+            const shouldFilter = allText.includes('content: {') || 
+                               allText.includes('sections: [') || 
+                               allText.startsWith(',') ||
+                               allText.match(/^\s*,\s*\]/);
+            
+            if (shouldFilter) {
+              console.log(`[localContentOverlay] Filtering garbage block: "${allText.substring(0, 50)}..."`);
+            }
+            
+            return !shouldFilter;
+          })
+        : section.body;
+      
+      return {
+        ...section,
+        body: cleanedBody && cleanedBody.length > 0 ? cleanedBody : [],
+      };
+    });
+  } else if (cleanedBodySnippets.length) {
+    sections = [
+      {
+        _key: "overview",
+        id: "overview",
+        title: "Overview",
+        titleAr: "نظرة عامة",
+        body: cleanedBodySnippets.map((snippet) => ({
+          _key: `block-${Math.random().toString(36).substr(2, 9)}`,
+          _type: "block",
+          style: "normal",
+          markDefs: [],
+          children: [
+            {
+              _key: `span-${Math.random().toString(36).substr(2, 9)}`,
+              _type: "span",
+              text: snippet,
+              marks: [],
+            },
+          ],
+        })),
+        bodyAr: [],
+      },
+    ];
+  }
 
   return {
     ...local,
