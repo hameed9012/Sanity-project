@@ -215,6 +215,8 @@ export default function LuxuryHeroSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(null);
   const [isFading, setIsFading] = useState(false);
+  const [textFading, setTextFading] = useState(false);
+  const [displayIndex, setDisplayIndex] = useState(0);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => { setIsClient(true); }, []);
@@ -263,6 +265,14 @@ export default function LuxuryHeroSlider() {
   const startFadeTransition = useCallback(() => {
     if (isTransitioningRef.current) return;
     isTransitioningRef.current = true;
+    // Phase 1: fade text out
+    setTextFading(true);
+    // Phase 2: after text fades out (~400ms), swap text + begin image crossfade
+    setTimeout(() => {
+      const ni = nextIndexRef.current;
+      if (ni !== null) setDisplayIndex(ni);
+      setTextFading(false); // fade text back in
+    }, 400);
     setIsFading(true);
     fadeTimerRef.current = setTimeout(() => {
       const ni = nextIndexRef.current;
@@ -310,6 +320,8 @@ export default function LuxuryHeroSlider() {
     setCurrentIndex(0);
     setNextIndex(null);
     setIsFading(false);
+    setDisplayIndex(0);
+    setTextFading(false);
     currentIndexRef.current = 0;
     nextIndexRef.current = null;
     isFadingRef.current = false;
@@ -363,10 +375,8 @@ export default function LuxuryHeroSlider() {
 
   const currentProject = projects[currentIndex];
   const nextProject = nextIndex !== null ? projects[nextIndex] : null;
-  // Sync text with image: when fading begins show the incoming slide's content immediately
-  const displayProject = (isFading && nextIndex !== null && projects[nextIndex])
-    ? projects[nextIndex]
-    : currentProject;
+  // Use displayIndex for smooth text transitions synced with image crossfade
+  const displayProject = projects[displayIndex] || currentProject;
   const displayLocation = String(displayProject?.location || "").trim();
 
   const mainTitle = t?.("homeSlider.mainTitle") || "Discover Extraordinary Living";
@@ -430,7 +440,7 @@ export default function LuxuryHeroSlider() {
 
       <div className={styles.overlay}>
         <div className={styles.contentContainer}>
-          <div key={displayProject.id} className={`${styles.textBlock} notranslate`} translate="no">
+          <div key={displayProject.id} className={`${styles.textBlock} ${textFading ? styles.textFading : ""} notranslate`} translate="no">
             <p className={`${styles.kicker} notranslate`} translate="no">
               <span>{displayProject.developerName || "Featured Project"}</span>
             </p>

@@ -180,8 +180,9 @@ export default defineType({
       of: [
         { type: "string" },
         defineField({
-          name: "tocItem", // FIXED: Added unique name for this object
           type: "object",
+          name: "tocEntry",
+          title: "TOC Entry",
           fields: [
             defineField({
               name: "title",
@@ -199,7 +200,7 @@ export default defineType({
               type: "string",
             }),
           ],
-        }),
+        },
       ],
     }),
     defineField({
@@ -709,8 +710,9 @@ export default defineType({
                       of: [
                         { type: "string" },
                         defineField({
-                          name: "projectionItem", // FIXED: Added unique name for this object
                           type: "object",
+                          name: "projectionItem",
+                          title: "Projection Item",
                           fields: [
                             defineField({
                               name: "label",
@@ -723,7 +725,7 @@ export default defineType({
                               type: "string",
                             }),
                           ],
-                        }),
+                        },
                       ],
                     }),
                   ],

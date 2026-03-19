@@ -5,7 +5,6 @@ export default defineType({
   name: 'siteSettings',
   title: 'Site Settings',
   type: 'document',
-  __experimental_actions: ['update', 'publish'],
   groups: [
     {name: 'navigation', title: 'Navigation'},
     {name: 'home', title: 'Homepage'},
