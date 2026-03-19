@@ -71,7 +71,7 @@ export default function AreaGuideHero({ regionData }) {
       regionData?.details?.name?.[lang] ||
       regionData?.details?.name?.en ||
       regionData?.details?.name?.ar ||
-      "Unknown Area";
+      "";
 
     const summary = regionData?.summary || regionData?.details?.summary || {};
 

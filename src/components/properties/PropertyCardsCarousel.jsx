@@ -38,9 +38,7 @@ function parsePriceToAED(value) {
 }
 
 function fmtPriceShort(priceAED, isAr) {
-  const fallback = isAr
-    ? "\u0627\u0644\u0633\u0639\u0631 \u0639\u0646\u062f \u0627\u0644\u0637\u0644\u0628"
-    : "Price on request";
+  const fallback = "";
   const amount = parsePriceToAED(priceAED);
   if (!amount) return fallback;
 
@@ -315,7 +313,7 @@ export default function PropertyCardsCarousel({ projects = [] }) {
                     {isAr ? "\u0627\u0644\u062a\u0633\u0644\u064a\u0645" : "Handover"}
                   </div>
                   <div className={styles.toValue}>
-                    {completion || (isAr ? "\u0642\u0631\u064a\u0628\u0627\u064b" : "TBA")}
+                    {completion || ""}
                   </div>
                 </div>
 

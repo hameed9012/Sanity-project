@@ -36,7 +36,7 @@ const SOCIAL_ICONS = {
   ),
 };
 
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
+
 
 // ─── helpers ──────────────────────────────────────────────────
 function humanizeName(value) {
@@ -78,22 +78,20 @@ function PropertyCard({ project }) {
 
   return (
     <Link href={href} className={styles.propCard} aria-label={name}>
-      <div className={styles.propCardMedia}>
-        {image && imgOk ? (
-          <img
-            src={image}
-            alt={name}
-            className={styles.propCardImg}
-            loading="lazy"
-            onError={() => setImgOk(false)}
-          />
-        ) : (
-          <div className={styles.propCardPlaceholder}>{name}</div>
-        )}
-        <div className={styles.propCardOverlay} />
-      </div>
+      {image && imgOk ? (
+        <img
+          src={image}
+          alt={name}
+          className={styles.propCardImg}
+          loading="lazy"
+          onError={() => setImgOk(false)}
+        />
+      ) : (
+        <div className={styles.propCardPlaceholder}>{name}</div>
+      )}
+      <div className={styles.propCardOverlay} />
       <div className={styles.propCardBody}>
-        <span className={styles.propCardDev}>{dev}</span>
+        {dev && <span className={styles.propCardDev}>{dev}</span>}
         <span className={styles.propCardName}>{name}</span>
       </div>
     </Link>
@@ -113,7 +111,7 @@ export default function FooterFinal() {
     if (!allProjects?.length) return;
     const pool = allProjects.filter((p) => {
       const developerSlug = String(p?.developerSlug || p?.developer || "").toLowerCase();
-      return !p.isLand && p.image && !EXCLUDED_DEVELOPER_SLUGS.has(developerSlug);
+      return !p.isLand && p.image;
     });
     const featured = pool.filter((project) => project?.featured);
     const orderedPool = [...(featured.length ? featured : pool)].sort((a, b) => {

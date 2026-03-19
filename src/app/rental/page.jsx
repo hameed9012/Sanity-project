@@ -17,8 +17,6 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 9;
-const RENTAL_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
-
 const initialFilters = {
   search: "",
   devStatus: [],
@@ -33,12 +31,6 @@ const initialFilters = {
 function filterRentalProjects(projects) {
   return projects.filter((project) => {
     if (project?.isLand || project?.category === "lands") return false;
-    const developerSlug = String(
-      project?.developerSlug || project?.developer || ""
-    ).toLowerCase();
-    if (RENTAL_EXCLUDED_DEVELOPER_SLUGS.some((slug) => developerSlug.includes(slug))) {
-      return false;
-    }
     const status = String(project?.status || project?.devStatus || "").toLowerCase();
     return status.includes("rental") || status.includes("rent");
   });

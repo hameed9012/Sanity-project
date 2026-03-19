@@ -5,7 +5,6 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 const SanityProjectsContext = createContext({ allProjects: [], loading: true });
 
 const VALID_TYPES = new Set(["apartments", "villas", "penthouses", "commercial-retail"]);
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 function slugify(value) {
   return String(value || "")
@@ -152,10 +151,6 @@ function titleFromSlug(value) {
     .join(" ");
 }
 
-function shouldExcludeDeveloper(value) {
-  const token = String(value || "").toLowerCase();
-  return Array.from(EXCLUDED_DEVELOPER_SLUGS).some((slug) => token.includes(slug));
-}
 
 function inferRegionSlug(location, fallback = "dubai") {
   const primary = String(location || "").split(",")[0].trim();
@@ -188,10 +183,19 @@ function getLegacyGallerySlides(property) {
 }
 
 function getFlatGallerySlides(property) {
-  if (!Array.isArray(property?.galleryImages)) return [];
-  return property.galleryImages
-    .map((image) => image?.url)
-    .filter(Boolean);
+  // Check galleryImages array first
+  if (Array.isArray(property?.galleryImages) && property.galleryImages.length > 0) {
+    return property.galleryImages
+      .map((image) => (typeof image === "string" ? image : image?.url))
+      .filter(Boolean);
+  }
+  // Check gallery.slides as fallback
+  if (Array.isArray(property?.gallery?.slides) && property.gallery.slides.length > 0) {
+    return property.gallery.slides
+      .map((slide) => (typeof slide === "string" ? slide : slide?.url))
+      .filter(Boolean);
+  }
+  return [];
 }
 
 function buildSyntheticPayload({
@@ -327,6 +331,10 @@ function normalizeLegacyProperty(property) {
     devStatus: normalizedStatus,
     location,
     image: hero?.backgroundUrl || gallerySlides[0] || "",
+    heroImageUrl: hero?.squareImageUrl || hero?.backgroundUrl || gallerySlides[0] || "",
+    heroVideo: isVideoUrl(hero?.backgroundUrl) ? hero.backgroundUrl : (property?.heroVideo || ""),
+    heroImage: hero?.squareImageUrl || gallerySlides[0] || "",
+    galleryImages: gallerySlides.map((url) => ({ url })),
     priceAED: price,
     startingPriceAED: price,
     startingPrice: project?.startingPrice || "",
@@ -353,12 +361,13 @@ function normalizeFlatProperty(property) {
   const propertyType = property?.propertyType || property?.unitTypes || property?.type || "";
   const category = isLand ? "lands" : normalizeType(propertyType);
   const gallerySlides = getFlatGallerySlides(property);
+  const videoCandidate = property?.heroVideo || property?.videoUrl || property?.video || "";
   const backgroundUrl =
-    (isVideoUrl(property?.heroVideo) ? property?.heroVideo : "") ||
+    (isVideoUrl(videoCandidate) ? videoCandidate : "") ||
     property?.heroImage ||
     gallerySlides[0] ||
     "";
-  const squareImageUrl = property?.heroImage || gallerySlides[0] || "";
+  const squareImageUrl = property?.heroImage || property?.heroImageUrl || gallerySlides[0] || "";
   const price =
     (Number.isFinite(property?.priceAED) && property.priceAED > 0
       ? property.priceAED
@@ -411,6 +420,10 @@ function normalizeFlatProperty(property) {
     devStatus: normalizedStatus,
     location,
     image: property?.heroImage || gallerySlides[0] || "",
+    heroImageUrl: squareImageUrl || property?.heroImage || gallerySlides[0] || "",
+    heroVideo: isVideoUrl(videoCandidate) ? videoCandidate : "",
+    heroImage: squareImageUrl || gallerySlides[0] || "",
+    galleryImages: gallerySlides.map((url) => ({ url })),
     priceAED: price,
     startingPriceAED: price,
     startingPrice: property?.startingPrice || "",
@@ -447,14 +460,7 @@ export function SanityProjectsProvider({ children }) {
       const data = await res.json();
       setSanityProjects(
         Array.isArray(data)
-          ? data
-              .map(sanityPropertyToEntry)
-              .filter(
-                (project) =>
-                  !shouldExcludeDeveloper(project?.developerSlug) &&
-                  !shouldExcludeDeveloper(project?.developer) &&
-                  !shouldExcludeDeveloper(project?.developerNameEn)
-              )
+          ? data.map(sanityPropertyToEntry)
           : []
       );
     } catch (error) {

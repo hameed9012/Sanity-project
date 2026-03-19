@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { buildProjectsQuery } from "@/lib/search/projectsSearch";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 import styles from "@/styles/HeroProjectsSlider.module.css";
 
@@ -31,13 +30,6 @@ export default function LuxuryHeroSlider() {
   const { allProjects } = useAllProjects();
 
   const [cmsSlides, setCmsSlides] = useState([]);
-
-  const [filters, setFilters] = useState({
-    search: "", minPrice: "", maxPrice: "",
-    devStatus: [], unitTypes: [], bedrooms: [],
-    sort: "newest", page: 1, perPage: 12,
-  });
-  const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
 
@@ -334,26 +326,15 @@ export default function LuxuryHeroSlider() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!filters.search.trim() && !filters.minPrice && !filters.maxPrice &&
-        !filters.devStatus.length && !filters.unitTypes.length && !filters.bedrooms.length) return;
-    const query = buildProjectsQuery({ ...filters, search: filters.search || searchQuery, page: 1 });
-    router.push(`/search-results${query ? `?${query}` : ""}`);
+    if (!searchQuery.trim()) return;
+    const params = new URLSearchParams();
+    params.set("search", searchQuery);
+    router.push(`/search-results?${params.toString()}`);
   };
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    setFilters((prev) => ({ ...prev, search: value }));
-  };
-
-  const applyFilter = (filterType, value) => {
-    setFilters((prev) => {
-      const updated = { ...prev, page: 1 };
-      if (filterType === "minPrice") updated.minPrice = value;
-      else if (filterType === "maxPrice") updated.maxPrice = value;
-      else if (filterType === "status") updated.devStatus = value ? [value] : [];
-      return updated;
-    });
   };
 
   // Don't render anything until client-side to prevent hydration issues
@@ -478,42 +459,8 @@ export default function LuxuryHeroSlider() {
                   aria-label="Search properties" 
                 />
               </div>
-              <div className={styles.searchFilters}>
-                <button type="button"
-                  className={`${styles.filterButton} ${showFilters ? styles.filterButtonActive : ""}`}
-                  onClick={() => setShowFilters(!showFilters)} aria-label="Toggle filters">
-                  <span>⚲</span> {isAr ? "فلتر" : "Filters"}
-                </button>
-                <button type="submit" className={styles.searchButton}>{isAr ? "بحث" : "Search"}</button>
-              </div>
+              <button type="submit" className={styles.searchButton}>{isAr ? "بحث" : "Search"}</button>
             </form>
-            {showFilters && (
-              <div className={styles.expandedFilters}>
-                <div className={styles.filterRow}>
-                  <select className={styles.filterSelect} onChange={(e) => applyFilter("minPrice", e.target.value)} value={filters.minPrice}>
-                    <option value="">{isAr ? "أقل سعر" : "Min Price"}</option>
-                    <option value="500000">500k AED</option>
-                    <option value="1000000">1M AED</option>
-                    <option value="2000000">2M AED</option>
-                    <option value="5000000">5M AED</option>
-                    <option value="10000000">10M AED</option>
-                  </select>
-                  <select className={styles.filterSelect} onChange={(e) => applyFilter("maxPrice", e.target.value)} value={filters.maxPrice}>
-                    <option value="">{isAr ? "أعلى سعر" : "Max Price"}</option>
-                    <option value="1000000">1M AED</option>
-                    <option value="2000000">2M AED</option>
-                    <option value="5000000">5M AED</option>
-                    <option value="10000000">10M AED</option>
-                    <option value="20000000">20M AED</option>
-                  </select>
-                  <select className={styles.filterSelect} onChange={(e) => applyFilter("status", e.target.value)} value={filters.devStatus[0] || ""}>
-                    <option value="">{isAr ? "جميع الحالات" : "All Status"}</option>
-                    <option value="Off-plan">{isAr ? "قيد الإنشاء" : "Off Plan"}</option>
-                    <option value="Secondary">{isAr ? "جاهز" : "Ready"}</option>
-                  </select>
-                </div>
-              </div>
-            )}
           </div>
 
           <Link href={displayProject.href} className={styles.cta} aria-label={`Discover ${displayProject.title}`}>

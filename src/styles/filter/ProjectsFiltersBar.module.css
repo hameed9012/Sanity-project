@@ -224,15 +224,16 @@
 
 .slider {
   position: absolute;
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: #e2e8f0;
-  outline: none;
-  -webkit-appearance: none;
-  pointer-events: none;
-}
-
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    -webkit-appearance: none;
+    pointer-events: none;
+    transform: translateY(-50%);
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

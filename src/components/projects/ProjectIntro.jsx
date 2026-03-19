@@ -34,7 +34,6 @@ export default function ProjectIntro({
 
   const intro = data;
   const project = projectData?.hero || {};
-  const CDN = "https://luxury-real-estate-media.b-cdn.net";
 
   const galleryImages = useMemo(() => {
     const gallerySlides = projectData?.gallery?.slides;
@@ -51,8 +50,7 @@ export default function ProjectIntro({
     if (images.length === 0) {
       const fallbackImage =
         projectData?.hero?.squareImageUrl ||
-        projectData?.hero?.backgroundUrl ||
-        `${CDN}/sky-parks/exterior-day-01.jpg`;
+        projectData?.hero?.backgroundUrl;
       if (fallbackImage) images.push(fallbackImage);
     }
 
@@ -78,18 +76,14 @@ export default function ProjectIntro({
   const heading =
     intro.title ||
     intro.heading ||
-    (activeIsRTL
-      ? "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0634\u0631\u0648\u0639"
-      : "LIVE WHERE THE SKY FEELS LIKE HOME");
+    "";
 
   const paragraphs =
     Array.isArray(intro.paragraphs) && intro.paragraphs.length
       ? intro.paragraphs
-      : [
-          activeIsRTL
-            ? "\u0647\u0646\u0627 \u064a\u0645\u0643\u0646\u0643 \u0625\u0636\u0627\u0641\u0629 \u0648\u0635\u0641 \u0639\u0631\u0628\u064a \u0645\u0641\u0635\u0644 \u0644\u0644\u0645\u0634\u0631\u0648\u0639."
-            : "Here you can add a detailed English description of the project.",
-        ];
+      : intro.description
+        ? [intro.description]
+        : [];
 
   const normalizeKey = useCallback(
     (value) =>
@@ -189,15 +183,18 @@ export default function ProjectIntro({
     const fallback =
       projectData?.hero?.squareImageUrl ||
       projectData?.hero?.backgroundUrl ||
-      `${CDN}/sky-parks/exterior-day-01.jpg`;
+      "";
 
-    if (!galleryImages.length) return [fallback, fallback, fallback, fallback];
+    if (!galleryImages.length) {
+      if (!fallback) return [];
+      return [fallback, fallback, fallback, fallback];
+    }
 
     return Array.from({ length: 4 }).map((_, index) => {
       const imageIndex = (activeGalleryStartIndex + index) % galleryImages.length;
       return galleryImages[imageIndex] || fallback;
     });
-  }, [CDN, activeGalleryStartIndex, galleryImages, projectData]);
+  }, [activeGalleryStartIndex, galleryImages, projectData]);
 
   const uniqueSetsCount = useMemo(
     () => Math.max(1, Math.ceil((galleryImages.length || 1) / 4)),

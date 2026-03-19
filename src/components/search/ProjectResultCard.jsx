@@ -374,20 +374,12 @@ export default function ProjectResultCard({ project, view = "list" }) {
     const price = project?.priceAED ?? project?.startingPriceAED ?? null;
 
     if (price === null || price === undefined || price === "") {
-      return safeT(
-        "projects.cards.priceOnRequest",
-        undefined,
-        isAr ? "السعر عند الطلب" : "Price on request"
-      );
+      return "";
     }
 
     const absPrice = Number(price);
     if (!Number.isFinite(absPrice) || absPrice < 10_000) {
-      return safeT(
-        "projects.cards.priceOnRequest",
-        undefined,
-        isAr ? "السعر عند الطلب" : "Price on request"
-      );
+      return "";
     }
 
     // Format like 23m, 2.4m, 515k (same as your HomeHeroSlider)

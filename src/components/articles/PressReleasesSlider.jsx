@@ -13,8 +13,7 @@ import "swiper/css/navigation";
 import styles from "@/styles/PressReleasesSlider.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 
-const DEFAULT_PRESS_IMAGE =
-  "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg";
+const DEFAULT_PRESS_IMAGE = "";
 
 function normalizeSanityArticle(article, locale) {
   const isAr = locale === "ar";
@@ -113,21 +112,36 @@ export default function PressReleasesSlider() {
             delay: 8000,
             disableOnInteraction: false,
           }}
-          slidesPerView="auto"
+          slidesPerView={1.8}
           centeredSlides
-          spaceBetween={32}
-          loop={articles.length > 1}
+          spaceBetween={20}
+          loop={articles.length > 2}
           speed={900}
           breakpoints={{
             0: {
-              slidesPerView: 1,
-              centeredSlides: false,
-              spaceBetween: 16,
+              slidesPerView: 1.05,
+              centeredSlides: true,
+              spaceBetween: 10,
+            },
+            480: {
+              slidesPerView: 1.15,
+              centeredSlides: true,
+              spaceBetween: 12,
             },
             769: {
-              slidesPerView: "auto",
+              slidesPerView: 1.6,
               centeredSlides: true,
-              spaceBetween: 32,
+              spaceBetween: 18,
+            },
+            1024: {
+              slidesPerView: 1.8,
+              centeredSlides: true,
+              spaceBetween: 20,
+            },
+            1400: {
+              slidesPerView: 2.2,
+              centeredSlides: true,
+              spaceBetween: 24,
             },
           }}
           className={`${styles.storiesSlider} ${isRTL ? styles.rtlSlider : ""}`}

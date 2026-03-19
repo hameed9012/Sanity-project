@@ -424,7 +424,7 @@ for (const property of localProperties) {
   localPropertyByKey.set(projectKey(localName, localDeveloper), property);
 }
 const localPropertyList = Array.from(localPropertyBySlug.values());
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
+
 
 const activeDeveloperTokens = new Set();
 for (const property of localPropertyList) {
@@ -462,17 +462,9 @@ for (const article of localArticles) {
 }
 const workbookRecordList = Array.from(workbookBySlug.values());
 
-const DEFAULT_ARTICLE_IMAGE =
-  "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg";
+const DEFAULT_ARTICLE_IMAGE = "";
 
-const ARTICLE_IMAGE_FALLBACKS = {
-  "off-plan-investment-dubai":
-    "https://luxury-real-estate-media.b-cdn.net/tiger/red-square/Copy%20of%20main-pool.jpg",
-  "dubai-economic-opportunity":
-    "https://luxury-real-estate-media.b-cdn.net/sobha-the-element/Aerial%20Shot.jpg",
-  "dubai-real-estate-demand":
-    "https://luxury-real-estate-media.b-cdn.net/tiger/volga/Outdoor%20002.jpg",
-};
+const ARTICLE_IMAGE_FALLBACKS = {};
 
 const PROPERTY_SLUG_ALIASES = new Map([
   ["one", "sobha-one"],
@@ -1335,7 +1327,7 @@ export function mergePropertyWithLocalData(property) {
     if (explicitCompletion) return explicitCompletion;
     if (merged.status === "Ready To Move") return "Ready To Move";
     if (merged.status === "Sold-out") return "Completed";
-    return "TBA";
+    return "";
   })();
 
   merged.completionDate = derivedCompletionDate;
@@ -1435,8 +1427,6 @@ export function getFallbackDevelopers() {
       const slug = slugify(developer?.slug);
       const name = slugify(developer?.name);
       const nameAr = slugify(developer?.nameAr);
-
-      if (EXCLUDED_DEVELOPER_SLUGS.has(slug)) return false;
 
       return [slug, name, nameAr].some((token) => token && activeDeveloperTokens.has(token));
     })

@@ -11,7 +11,6 @@ import LanguageProvider from "@/components/LanguageProvider";
 import WhatsappFloatingButton from "@/components/FloatingWhatsApp";
 import DirectionWrapper from "@/components/DirectionWrapper";
 import { CompareProvider } from "@/components/compare/CompareProvider";
-import ChatWidget from "@/components/ChatDemoWidget";
 import GAListener from "@/components/GAListener";
 import { SanityProjectsProvider } from "@/components/SanityProjectsContext";
 
@@ -174,7 +173,6 @@ export default function RootLayout({ children }) {
                 {children}
                 <FooterFinal />
                 <WhatsappFloatingButton />
-                <ChatWidget />
               </SanityProjectsProvider>
             </CompareProvider>
           </DirectionWrapper>

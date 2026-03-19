@@ -86,6 +86,7 @@ const SITE_SETTINGS_QUERY = `
         },
         stats[]{
           "_key": _key,
+          prefix, prefixAr,
           count,
           suffix, suffixAr,
           label, labelAr

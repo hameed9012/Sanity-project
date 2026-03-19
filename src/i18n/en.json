@@ -807,7 +807,7 @@
     },
     "cards": {
       "imageFallback": "Project",
-      "priceOnRequest": "Price on request",
+      "priceOnRequest": "On request",
       "priceFrom": "Price from",
       "typeLabel": "Type",
       "typeDefault": "Apartment",

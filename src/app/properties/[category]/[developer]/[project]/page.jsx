@@ -45,51 +45,19 @@ function normalizePropertyType(raw) {
 function normalizeDeveloperName(value) {
   const text = String(value || "").trim();
   if (!text) return "";
-  const slug = text
-    .toLowerCase()
-    .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  const map = {
-    sobha: "Sobha Realty",
-    azizi: "Azizi Developments",
-    danube: "Danube Properties",
-    damac: "DAMAC Properties",
-    tiger: "Tiger Properties",
-    arada: "Arada",
-    binghatti: "Binghatti",
-  };
-  return map[slug] || text;
+  return text;
 }
 
 function normalizeLocation(value) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
   if (!text) return "";
-  const labels = {
-    "business bay": "Business Bay, Dubai, UAE",
-    downtown: "Downtown Dubai, UAE",
-    "dubai harbour": "Dubai Harbour, Dubai, UAE",
-    "dubai south": "Dubai South, Dubai, UAE",
-    "ras al khor": "Ras Al Khor, Dubai, UAE",
-    "mbr city": "Mohammed Bin Rashid City, Dubai, UAE",
-    sharjah: "Sharjah, UAE",
-    jlt: "Jumeirah Lake Towers, Dubai, UAE",
-    jvc: "Jumeirah Village Circle, Dubai, UAE",
-    jvt: "Jumeirah Village Triangle, Dubai, UAE",
-    difc: "DIFC, Dubai, UAE",
-  };
-  return labels[text.toLowerCase()] || text;
+  return text;
 }
 
 function normalizeListingStatus(value) {
-  const text = String(value || "").toLowerCase().trim();
-  if (!text) return "Off-plan";
-  if (text.includes("rent")) return "Rental";
-  if (text.includes("secondary") || text.includes("resale") || text.includes("ready")) {
-    return "Ready To Move";
-  }
-  if (text.includes("sold")) return "Sold-out";
-  return "Off-plan";
+  const text = String(value || "").trim();
+  if (!text) return "";
+  return text;
 }
 
 function normalizeUnitTypes(value) {
@@ -127,7 +95,7 @@ function developerToSlug(name) {
     .toLowerCase()
     .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") || "unknown";
+    .replace(/^-|-$/g, "") || "";
 }
 
 function slugifyValue(value) {
@@ -173,7 +141,7 @@ function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
   return {
     slug: projectSlug,
     category: category || "apartments",
-    developerSlug: developerSlug || "unknown",
+    developerSlug: developerSlug || "",
     regionSlug: rawLocale.location?.regionSlug || "",
     startingPriceAED: parsePriceToAED(rawLocale.project?.startingPrice),
 
@@ -206,7 +174,7 @@ function buildSanityProjectData(sanityDoc, locale) {
       .toLowerCase()
       .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") || "unknown",
+      .replace(/^-|-$/g, "") || "",
     regionSlug: sanityDoc?.regionSlug || "",
     startingPriceAED: parsePriceToAED(project?.startingPrice),
 
@@ -487,8 +455,6 @@ export default function ProjectPage({ params }) {
   }
 
   const shouldShowFloorPlans =
-    project !== "lumenaalta" &&
-    project !== "riviera-retails" &&
     projectData.floorPlans &&
     Array.isArray(projectData.floorPlans.plans) &&
     projectData.floorPlans.plans.length > 0;

@@ -21,7 +21,7 @@
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 600px) {
   .cardsGrid {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -41,6 +41,10 @@
   display: flex;
   flex-direction: column;
   transform: translateZ(0);
+  min-width: 0;
+  max-width: 100%;
+  text-decoration: none;
+  color: inherit;
 }
 
 .projectCard:hover {
@@ -80,12 +84,26 @@
   object-fit: cover;
   display: block;
   transform: scale(1);
-  transition: transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 360ms cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 240ms ease;
+  opacity: 1;
 }
 
 .projectCard:hover .cardImage,
 .projectCard:hover .cardVideo {
-  transform: scale(1.06); /* premium slow zoom */
+  transform: scale(1.05);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .cardImage,
+  .cardVideo {
+    transition: none;
+  }
+  
+  .projectCard:hover .cardImage,
+  .projectCard:hover .cardVideo {
+    transform: scale(1);
+  }
 }
 
 /* Placeholder */
@@ -349,10 +367,6 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .cardsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-    gap: 26px;
-  }
   .cardMedia {
     height: 270px;
   }
@@ -360,7 +374,7 @@
 
 @media (max-width: 768px) {
   .cardsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     padding: 24px 0;
   }
@@ -384,7 +398,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .cardsGrid {
     grid-template-columns: 1fr;
     gap: 16px;

@@ -29,76 +29,64 @@ const isVideoUrl = (url) => {
 const getProjectCardMedia = (data) => {
   if (!data) return { type: "none", url: null, poster: null };
 
-  const raw =
-    data?.data ||
-    data?.projectData ||
-    data?.payload ||
-    data?.content ||
-    data?.project ||
-    data;
+  // ── 1. Gather gallery images from all possible locations ──
+  const gatherGallery = (obj) => {
+    if (!obj) return [];
+    const sources = [
+      obj?.galleryImages,
+      obj?.data?.galleryImages,
+    ];
+    for (const src of sources) {
+      if (Array.isArray(src) && src.length > 0) {
+        return src.map((item) => (typeof item === "string" ? item : item?.url)).filter(Boolean);
+      }
+    }
+    const slidesSources = [
+      obj?.data?.gallery?.slides,
+      obj?.en?.gallery?.slides,
+    ];
+    for (const src of slidesSources) {
+      if (Array.isArray(src) && src.length > 0) {
+        return src.map((item) => (typeof item === "string" ? item : item?.url)).filter(Boolean);
+      }
+    }
+    return [];
+  };
 
-  const node =
-    raw?.hero || raw?.gallery
-      ? raw
-      : raw?.data?.hero || raw?.data?.gallery
-      ? raw.data
-      : raw?.en || raw?.ar || {};
+  const gallery = gatherGallery(data);
 
-  const hero = node?.hero || {};
-  const gallery = node?.gallery || {};
-  const normalizedGallery = Array.isArray(raw?.galleryImages)
-    ? raw.galleryImages
-        .map((item) => (typeof item === "string" ? item : item?.url))
-        .filter(Boolean)
-    : Array.isArray(raw?.data?.galleryImages)
-    ? raw.data.galleryImages
-        .map((item) => (typeof item === "string" ? item : item?.url))
-        .filter(Boolean)
-    : [];
-
-  const bg =
-    raw?.heroVideo ||
-    raw?.data?.hero?.backgroundUrl ||
-    raw?.data?.hero?.background ||
-    hero?.backgroundUrl ||
-    hero?.background ||
-    raw?.backgroundUrl ||
-    raw?.background ||
-    raw?.video ||
-    raw?.heroVideo ||
+  // ── 2. Find video URL ──
+  const videoUrl =
+    data?.heroVideo ||
+    data?.data?.hero?.backgroundUrl ||
+    data?.data?.hero?.background ||
+    data?.video ||
     "";
 
-  const poster =
-    raw?.heroImage ||
-    raw?.heroImageUrl ||
-    raw?.data?.hero?.posterUrl ||
-    raw?.data?.hero?.poster ||
-    raw?.data?.hero?.image ||
-    raw?.data?.hero?.squareImageUrl ||
-    hero?.posterUrl ||
-    hero?.poster ||
-    raw?.posterUrl ||
-    raw?.poster ||
-    hero?.image ||
-    raw?.image ||
-    normalizedGallery[0] ||
-    gallery?.slides?.[0] ||
-    raw?.data?.gallery?.slides?.[0] ||
+  // ── 3. Find poster / image URL ──
+  const posterUrl =
+    data?.heroImage ||
+    data?.heroImageUrl ||
+    data?.image ||
+    data?.data?.hero?.squareImageUrl ||
+    data?.data?.hero?.posterUrl ||
+    data?.data?.hero?.poster ||
+    data?.data?.hero?.image ||
+    gallery[0] ||
     null;
 
-  if (bg && isVideoUrl(bg)) return { type: "video", url: bg, poster };
-  if (bg && !isVideoUrl(bg)) return { type: "image", url: bg, poster: null };
+  // ── 4. Return video if we have one ──
+  if (videoUrl && isVideoUrl(videoUrl)) {
+    return { type: "video", url: videoUrl, poster: posterUrl };
+  }
 
-  const fallbackImage =
-    normalizedGallery[0] ||
-    gallery?.slides?.[0] ||
-    raw?.data?.gallery?.slides?.[0] ||
-    hero?.image ||
-    raw?.image ||
-    raw?.heroImageUrl ||
-    raw?.data?.hero?.image ||
-    null;
-  if (fallbackImage) return { type: "image", url: fallbackImage, poster: null };
+  // ── 5. If backgroundUrl is an image (not video) ──
+  if (videoUrl && !isVideoUrl(videoUrl)) {
+    return { type: "image", url: videoUrl, poster: null };
+  }
+
+  // ── 6. Fall back to poster / gallery image ──
+  if (posterUrl) return { type: "image", url: posterUrl, poster: null };
 
   return { type: "none", url: null, poster: null };
 };
@@ -542,7 +530,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
     const fallback = safeT(
       "projects.cards.priceOnRequest",
       undefined,
-      isAr ? "السعر عند الطلب" : "Price on request",
+      "",
     );
 
     if (price === null || price === undefined || price === "") return fallback;
@@ -646,7 +634,7 @@ const ProjectCards = ({ projects, onResetFilters }) => {
       return safeT(
         "projects.cards.completionTBA",
         undefined,
-        isAr ? "\u0642\u0631\u064a\u0628\u0627\u064b" : "TBA",
+        "",
       );
     }
 
@@ -863,9 +851,11 @@ function ProjectCardInner({
             loop
             autoPlay
             playsInline
-            preload="metadata"
+            preload="none"
             className={styles.cardVideo}
             onError={() => setVideoOk(false)}
+            width="100%"
+            height="290"
           />
         ) : fallbackImage && imgOk ? (
           <img
@@ -874,6 +864,9 @@ function ProjectCardInner({
             className={styles.cardImage}
             onError={() => setImgOk(false)}
             loading="lazy"
+            width="100%"
+            height="290"
+            decoding="async"
           />
         ) : (
           <div className={styles.imagePlaceholder}>
@@ -904,22 +897,22 @@ function ProjectCardInner({
         </div>
 
         <div className={styles.cardDetails}>
-          <div className={styles.detailItem}>
-            <span className={styles.detailLabel}>
-              {safeT(
-                "projects.cards.priceFrom",
-                undefined,
-                isAr ? "السعر يبدأ من" : "Price From",
-              )}
-            </span>
-            <span
-              className={`${styles.detailValue} ${styles.price} ${
-                displayPrice ? "" : styles.priceRequest
-              }`}
-            >
-              {formatPrice(displayPrice)}
-            </span>
-          </div>
+          {displayPrice && (
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>
+                {safeT(
+                  "projects.cards.priceFrom",
+                  undefined,
+                  isAr ? "السعر يبدأ من" : "Price From",
+                )}
+              </span>
+              <span
+                className={`${styles.detailValue} ${styles.price}`}
+              >
+                {formatPrice(displayPrice)}
+              </span>
+            </div>
+          )}
 
           <div className={styles.detailItem}>
             <span className={styles.detailLabel}>

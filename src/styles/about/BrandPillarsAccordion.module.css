@@ -10,7 +10,7 @@
   padding: 0 24px;
 }
 
-/* ACCORDION CORE (mimic Bootstrap accordion-item lines) */
+/* ACCORDION CORE */
 .accordion {
   width: 100%;
 }
@@ -18,14 +18,13 @@
 .accItem {
   border-top: 1px solid #d1d1d1;
   border-bottom: 0;
-  overflow: hidden;
 }
 
 .accItem:last-child {
   border-bottom: 1px solid #d1d1d1;
 }
 
-/* HEADER ROW – position like Sobha */
+/* HEADER ROW */
 .accHeader {
   width: 100%;
   padding: 15px 24px;
@@ -44,25 +43,49 @@
   }
 }
 
-/* PLUS / MINUS ICON – EXACT BEHAVIOUR */
+/* PLUS / MINUS ICON — pure CSS, no external files */
 .icons {
   transition: 0.5s ease;
-  background: url("/about/icons/plus-icon-big.svg") no-repeat center center;
-  background-size: contain;
+  position: relative;
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
+}
+
+/* Horizontal bar (always visible) */
+.icons::before {
+  content: “”;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 2px;
+  background: #000;
+  transition: 0.3s ease;
+}
+
+/* Vertical bar (rotates to 0 on active = becomes minus) */
+.icons::after {
+  content: “”;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 18px;
+  background: #000;
+  transition: 0.3s ease;
 }
 
 @media (min-width: 1000px) {
   .icons {
     opacity: 0;
     visibility: hidden;
-    margin-left: -20px; /* hides it to the left like Sobha */
+    margin-left: -20px;
   }
 }
 
-/* Mobile: icon always visible, aligned like original */
 @media (max-width: 1000px) {
   .icons {
     margin-top: 25px;
@@ -71,7 +94,7 @@
   }
 }
 
-/* Hover + active: slide in + show  */
+/* Hover + active: slide in + show */
 @media (min-width: 1000px) {
   .accHeader:hover .icons,
   .accItemActive .icons {
@@ -82,15 +105,15 @@
   }
 }
 
-/* Active state uses minus icon, same path logic as Sobha */
-.accItemActive .icons {
-  background-image: url("/about/icons/minus-icon-big.svg");
+/* Active state: hide vertical bar to turn + into - */
+.accItemActive .icons::after {
+  height: 0;
+  opacity: 0;
 }
 
-/* HEADER TITLE – HUGE like Sobha */
+/* HEADER TITLE */
 .accTitle {
   margin: 0;
-
   font-weight: 300;
   font-size: 111px;
   line-height: 134px;
@@ -114,36 +137,42 @@
   }
 }
 
-/* when closed on desktop, Sobha shows gold – we mimic by default on desktop */
 @media (min-width: 1000px) {
   .accItem:not(.accItemActive) .accTitle {
     color: #000000;
   }
 }
 
-/* BODY – COLLAPSE ANIMATION (custom, not from Sobha, but feels same) */
+/* BODY – COLLAPSE / EXPAND ANIMATION */
 .accBodyWrapper {
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   overflow: hidden;
   opacity: 0;
   transform: translateY(-8px);
-  transition: max-height 0.45s ease, opacity 0.35s ease, transform 0.35s ease;
+  transition: grid-template-rows 0.5s ease, opacity 0.4s ease, transform 0.4s ease;
 }
 
 .accBodyOpen {
-  max-height: 900px; /* enough for pillars layout */
+  grid-template-rows: 1fr;
   opacity: 1;
   transform: translateY(0);
 }
 
 .accBody {
+  min-height: 0;
+  overflow: hidden;
   padding-top: 0;
-  padding-bottom: 100px;
+  padding-bottom: 0;
   color: #000;
 }
 
+.accBodyOpen .accBody {
+  padding-bottom: 100px;
+}
+
 @media (max-width: 1000px) {
-  .accBody {
+  .accBodyOpen .accBody {
     padding-left: 0;
     padding-right: 0;
     padding-bottom: 50px;
@@ -156,6 +185,7 @@
 .twoColContent {
   display: flex;
   align-items: center;
+  gap: 50px;
 }
 
 @media (min-width: 1000px) {
@@ -169,7 +199,7 @@
   .twoColContent {
     flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 35px;
   }
 }
 
@@ -194,10 +224,11 @@
   object-fit: contain;
 }
 
-/* Typography for paragraph exactly like Sobha */
+/* Typography for paragraph */
 .twoColParagraph {
   font-size: 26px;
   line-height: 48px;
+  color: #000;
 }
 
 @media (max-width: 1000px) {
@@ -206,7 +237,7 @@
   }
 }
 
-/* Limit width like .disc in Sobha */
+/* Limit width like .disc */
 .disc {
   max-width: 448px;
 }
@@ -236,7 +267,6 @@
   color: #000000;
 }
 
-/* Sobha adds extra bottom margin to this in accordion-body */
 .accBodyHeadingStyle2 {
   margin-bottom: 50px;
 }
@@ -264,9 +294,10 @@
   flex-direction: column;
   padding-left: 30px;
   padding-right: 30px;
+  margin-bottom: 50px;
 }
 
-/* mimic their nth-child tweaks */
+/* nth-child tweaks */
 @media (min-width: 1000px) {
   .brandAccBox:nth-child(even) {
     flex-direction: column-reverse;
@@ -299,7 +330,7 @@
   background: #000;
 }
 
-/* Image behaviour like Sobha’s card hover */
+/* Image behaviour */
 .brandAccImage {
   display: block;
   width: 100%;
@@ -315,11 +346,11 @@
   opacity: 1;
 }
 
-/* Text under card – matches brand-piller-content  */
+/* Text under card */
 .brandPillarContent {
   border-left: 1px solid #dbdbdb;
-  margin-left: 25px;
-  padding-top: 30px;
+  margin-left: 35px;
+  padding-top: 40px;
   padding-left: 10px;
   padding-right: 20px;
   padding-bottom: 30px;
@@ -329,7 +360,6 @@
 .brandPillarContent h5 {
   margin: 0;
   max-width: 132px;
-
   font-size: 22px;
   line-height: 26px;
   font-weight: 300;
@@ -345,7 +375,7 @@
   }
 }
 
-/* Mobile layout of pillar boxes like Sobha */
+/* Mobile layout of pillar boxes */
 @media (max-width: 1000px) {
   .brandAccBoxMain {
     margin: 0 -22px;
@@ -366,7 +396,9 @@
     padding-top: 12px;
     padding-bottom: 40px;
   }
-} /* GOLD HOVER FOR TITLES */
+}
+
+/* GOLD HOVER FOR TITLES */
 .brandPillarContent h5:hover,
 .accTitle:hover {
   color: #c7a386 !important;
@@ -374,29 +406,17 @@
 }
 
 /* RTL fixes */
-[dir="rtl"] .accTitle {
+[dir=”rtl”] .accTitle {
   text-align: right;
 }
 
-[dir="rtl"] .twoColContent {
+[dir=”rtl”] .twoColContent {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .brandPillarContent {
+[dir=”rtl”] .brandPillarContent {
   border-left: none;
   border-right: 1px solid #dbdbdb;
-}
-/* Better spacing between image and text */
-.twoColContent {
-  display: flex;
-  align-items: center;
-  gap: 50px; /* NEW spacing */
-}
-
-@media (max-width: 1000px) {
-  .twoColContent {
-    gap: 35px;
-  }
 }
 
 /* Default text = black */
@@ -406,23 +426,13 @@
   color: #000 !important;
 }
 
-/* Hover effect: gold + bold */
+/* Hover effect: gold */
 .twoColParagraph:hover,
 .brandPillarContent p:hover,
 .brandPillarContent h5:hover {
   color: #c7a386 !important;
-  /* font-weight: 600 !important; */
 }
 
-/* More spacing in pillar cards */
-.brandPillarContent {
-  margin-left: 35px;
-  padding-top: 40px;
-}
-
-.brandAccBox {
-  margin-bottom: 50px; /* space between boxes */
-}
 /* ================================
    RESPONSIVE FIXES (Mobile + iPad)
    WITHOUT changing desktop layout
@@ -527,16 +537,17 @@
 
 /* RTL fixes for mobile */
 @media (max-width: 900px) {
-  [dir="rtl"] .twoColContent {
+  [dir=”rtl”] .twoColContent {
     flex-direction: column !important;
   }
 
-  [dir="rtl"] .brandPillarContent {
+  [dir=”rtl”] .brandPillarContent {
     border-right: none !important;
     border-top: 1px solid #444 !important;
     padding-right: 0 !important;
   }
 }
+
 /* ================================
    H5 VISIBILITY FIX FOR MOBILE + TABLETS
 ================================ */
@@ -583,7 +594,7 @@
   }
 }
 
-/* Small screens 430px → tighter spacing */
+/* Small screens 430px */
 @media (max-width: 430px) {
   .brandPillarContent h5 {
     font-size: 18px !important;

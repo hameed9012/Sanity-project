@@ -212,7 +212,7 @@ export default function BuildingExcellenceSection({ content }) {
                   ) : null}
 
                   <h3 className={styles.statTitle}>
-                    <span data-count-span>{stat?.count || ""}</span>
+                    <span data-count-span>{stat?.countDisplay || stat?.count || ""}</span>
                     <span className={styles.statSuffix}>
                       {selectAboutValue(locale, stat?.suffix, stat?.suffixAr)}
                     </span>

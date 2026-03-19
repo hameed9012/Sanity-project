@@ -525,7 +525,7 @@ export default function SanityArticleTemplate({ article }) {
   }, []);
 
   const hero = article?.hero || {};
-  const cta = article?.cta || {};
+  const cta = article?.cta || {}; // kept for potential future CMS-driven CTA
   const author = article?.author || {};
 
   const title = isRTL ? hero?.titleAr || article?.titleAr || hero?.title || article?.title : hero?.title || article?.title || hero?.titleAr || article?.titleAr;
@@ -656,42 +656,19 @@ export default function SanityArticleTemplate({ article }) {
           <Section key={section?._key || section?.id || idx} section={section} isRTL={isRTL} />
         ))}
 
-        <section className={styles.contentSection}>
-          <div className={styles.inArticleCTA}>
-            <h3>
-              {(isRTL ? cta?.inlineTitleAr : cta?.inlineTitle) ||
-                (isRTL ? "مستعد لاتخاذ الإجراء؟" : "Ready to Take Action?")}
-            </h3>
-            <p>
-              {(isRTL ? cta?.inlineDescriptionAr : cta?.inlineDescription) ||
-                (isRTL
-                  ? "احصل على إرشادات مخصصة بناءً على هذا التحليل لتعظيم عوائدك."
-                  : "Get personalized guidance based on this analysis to maximize your returns.")}
-            </p>
-            <a
-              href={contactHref}
-              target={contactHref.startsWith("http") ? "_blank" : undefined}
-              rel={contactHref.startsWith("http") ? "noopener noreferrer" : undefined}
-              className={styles.ctaButton}
-            >
-              {(isRTL ? cta?.buttonLabelAr : cta?.buttonLabel) ||
-                (isRTL ? "احصل على استشارة الخبراء" : "Get Expert Consultation")}
-            </a>
-          </div>
-        </section>
       </main>
 
       <section className={styles.finalCTA}>
         <div className={styles.ctaContent}>
           <h2>
             {(isRTL ? cta?.titleAr : cta?.title) ||
-              (isRTL ? "مستعد لتنفيذ هذه الاستراتيجيات؟" : "Ready to Implement These Strategies?")}
+              (isRTL ? "تحدث إلى فريقنا" : "Speak to our team")}
           </h2>
           <p>
             {(isRTL ? cta?.descriptionAr : cta?.description) ||
               (isRTL
-                ? "اتخذ الخطوة التالية في رحلتك الاستثمارية مع إرشادات مخصصة ودعم الخبراء."
-                : "Take the next step in your investment journey with personalized guidance and expert support.")}
+                ? "احصل على نصائح مخصصة حول فرص العقارات في دبي."
+                : "Get tailored advice on Dubai real estate opportunities.")}
           </p>
           <div className={styles.ctaButtons}>
             <a
@@ -701,27 +678,9 @@ export default function SanityArticleTemplate({ article }) {
               className={styles.primaryCTA}
             >
               {(isRTL ? cta?.buttonLabelAr : cta?.buttonLabel) ||
-                (isRTL ? "احصل على خطة استثمار مخصصة" : "Get Personalized Investment Plan")}
+                (isRTL ? "تواصل معنا" : "Contact us")}
             </a>
-
-            {cta?.secondaryButtonUrl ? (
-              <a
-                href={cta.secondaryButtonUrl}
-                className={styles.secondaryCTA}
-                target={cta.secondaryButtonUrl.startsWith("http") ? "_blank" : undefined}
-                rel={cta.secondaryButtonUrl.startsWith("http") ? "noopener noreferrer" : undefined}
-              >
-                {(isRTL ? cta?.secondaryButtonLabelAr : cta?.secondaryButtonLabel) ||
-                  (isRTL ? "استشارة سريعة" : "Quick Consultation")}
-              </a>
-            ) : null}
           </div>
-
-          {(isRTL ? cta?.trustNoteAr : cta?.trustNote) ? (
-            <div className={styles.guarantee}>
-              <strong>{isRTL ? cta?.trustNoteAr || cta?.trustNote : cta?.trustNote || cta?.trustNoteAr}</strong>
-            </div>
-          ) : null}
         </div>
       </section>
     </article>

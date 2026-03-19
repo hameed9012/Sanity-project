@@ -44,13 +44,15 @@
   padding: 0 0 8px;
 }
 
+/* --- Slide sizing --------------------------------------------------- */
 .slide {
-  width: 760px;
-  max-width: 100%;
   display: flex;
   justify-content: center;
+  height: auto !important;
+  align-self: stretch;
 }
 
+/* --- Card ----------------------------------------------------------- */
 .card {
   position: relative;
   width: 100%;
@@ -59,53 +61,38 @@
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #dddddd;
+  transition: box-shadow 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-radius 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 0.6s ease;
 }
 
 .cardBox {
-  display: block;
-  border: 1px solid #c9c9c9;
+  display: flex;
+  flex-direction: column;
   color: #000000;
   border-radius: 11px;
   background-color: #ffffff;
   overflow: hidden;
+  height: 100%;
+  transition: border-radius 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.storiesSlider :global(.swiper-slide) .cardBox {
-  transition:
-    transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
-    box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
-  transform: scale(0.72);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-}
-
-.storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
-  transform: scale(1);
-}
-
-.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox,
-.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox {
-  border-radius: 0;
-}
-
-.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox img,
-.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox img {
-  border-radius: 0;
-}
-
+/* --- Image wrapper -------------------------------------------------- */
 .imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 372 / 249;
-  width: 896.383px;
-  height: 600px;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #ececec;
+  flex-shrink: 0;
+  transition: flex 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .image {
   object-fit: cover;
   object-position: center;
   display: block;
+  transition: transform 0.6s ease;
 }
 
 .onlyDesk {
@@ -116,9 +103,16 @@
   display: none !important;
 }
 
+/* --- Card text content --------------------------------------------- */
 .cardContent {
   background: #ffffff;
-  padding: 18px 24px 20px;
+  padding: 20px 26px 22px;
+  transition: opacity 0.5s ease,
+              max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+              padding 0.5s ease;
+  max-height: 200px;
+  overflow: hidden;
+  opacity: 1;
 }
 
 .storyTitle {
@@ -161,6 +155,83 @@
   text-transform: uppercase;
 }
 
+/* ====================================================================
+   SWIPER SLIDE STATES
+   – All transitions are smooth via CSS
+   – Inactive slides are dimmed, active is full
+   – Prev / Next slides grow their image and fade out text
+   ==================================================================== */
+
+.storiesSlider :global(.swiper-wrapper) {
+  align-items: stretch;
+}
+
+.storiesSlider :global(.swiper-slide) {
+  opacity: 0.4;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  height: auto !important;
+}
+
+.storiesSlider :global(.swiper-slide-active) {
+  opacity: 1;
+}
+
+.storiesSlider :global(.swiper-slide-active) .card {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+}
+
+.storiesSlider :global(.swiper-slide-active) .cardBox {
+  border-radius: 11px;
+}
+
+.storiesSlider :global(.swiper-slide-active) .cardContent {
+  opacity: 1;
+  max-height: 200px;
+  padding: 20px 26px 22px;
+}
+
+/* Prev / Next neighbours — smooth fade of content */
+.storiesSlider :global(.swiper-slide-prev),
+.storiesSlider :global(.swiper-slide-next) {
+  opacity: 0.75;
+}
+
+.storiesSlider :global(.swiper-slide-prev) .cardBox,
+.storiesSlider :global(.swiper-slide-next) .cardBox {
+  border-radius: 6px;
+}
+
+.storiesSlider :global(.swiper-slide-prev) .card,
+.storiesSlider :global(.swiper-slide-next) .card {
+  border-radius: 6px;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Smoothly hide the text content on side slides */
+.storiesSlider :global(.swiper-slide-prev) .cardContent,
+.storiesSlider :global(.swiper-slide-next) .cardContent {
+  opacity: 0;
+  max-height: 0;
+  padding: 0 26px;
+  overflow: hidden;
+}
+
+/* Image fills more of the card on side slides */
+.storiesSlider :global(.swiper-slide-prev) .imageWrap,
+.storiesSlider :global(.swiper-slide-next) .imageWrap {
+  flex: 1;
+}
+
+/* Subtle zoom on hover for active card */
+.storiesSlider :global(.swiper-slide-active) .image:hover {
+  transform: scale(1.03);
+}
+
+/* ====================================================================
+   NAV ARROWS
+   ==================================================================== */
+
 .navArrow {
   position: absolute;
   top: 50%;
@@ -169,7 +240,7 @@
   margin-top: -23px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,11 +252,11 @@
 }
 
 .navPrev {
-  left: 210px;
+  left: 24%;
 }
 
 .navNext {
-  right: 210px;
+  right: 24%;
 }
 
 .navArrow:hover {
@@ -232,6 +303,10 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
+/* ====================================================================
+   VIEW ALL
+   ==================================================================== */
+
 .viewAllRow {
   display: flex;
   justify-content: center;
@@ -262,27 +337,17 @@
   border-color: #111111;
 }
 
-.storiesSlider :global(.swiper-slide) {
-  opacity: 0.55;
-  transform: scale(0.96);
-}
-
-.storiesSlider :global(.swiper-slide-active) {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.storiesSlider :global(.swiper-slide-active) .card {
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-}
+/* ====================================================================
+   RESPONSIVE
+   ==================================================================== */
 
 @media (max-width: 1400px) {
   .navPrev {
-    left: 140px;
+    left: 20%;
   }
 
   .navNext {
-    right: 140px;
+    right: 20%;
   }
 }
 
@@ -291,34 +356,18 @@
     padding: 0 30px;
   }
 
-  .slide {
-    width: 640px !important;
-  }
-
-  .imageWrap {
-    height: 430px;
-  }
-
   .navPrev {
-    left: 90px;
+    left: 16%;
   }
 
   .navNext {
-    right: 90px;
+    right: 16%;
   }
 }
 
 @media (max-width: 1023px) {
   .container {
     padding: 0 24px;
-  }
-
-  .slide {
-    width: 100% !important;
-  }
-
-  .imageWrap {
-    height: 400px;
   }
 
   .navArrow {
@@ -328,11 +377,11 @@
   }
 
   .navPrev {
-    left: 18px;
+    left: 12px;
   }
 
   .navNext {
-    right: 18px;
+    right: 12px;
   }
 }
 
@@ -352,7 +401,7 @@
   }
 
   .imageWrap {
-    height: 300px;
+    aspect-ratio: 16 / 10;
   }
 
   .cardContent {
@@ -395,15 +444,43 @@
     padding: 12px 26px;
     font-size: 11px;
   }
+
+  /* On mobile, show text on all slides */
+  .storiesSlider :global(.swiper-slide-prev) .cardContent,
+  .storiesSlider :global(.swiper-slide-next) .cardContent {
+    opacity: 1;
+    max-height: 200px;
+    padding: 16px 16px 18px;
+  }
+
+  .storiesSlider :global(.swiper-slide-prev) .cardBox,
+  .storiesSlider :global(.swiper-slide-next) .cardBox {
+    border-radius: 11px;
+  }
+
+  .storiesSlider :global(.swiper-slide-prev) .card,
+  .storiesSlider :global(.swiper-slide-next) .card {
+    border-radius: 12px;
+  }
+
+  .storiesSlider :global(.swiper-slide-prev) .imageWrap,
+  .storiesSlider :global(.swiper-slide-next) .imageWrap {
+    flex: 0 0 auto;
+  }
+
+  .storiesSlider :global(.swiper-slide) {
+    opacity: 0.65;
+  }
+
+  .storiesSlider :global(.swiper-slide-prev),
+  .storiesSlider :global(.swiper-slide-next) {
+    opacity: 0.65;
+  }
 }
 
 @media (max-width: 479px) {
   .heading {
     font-size: 13px;
-  }
-
-  .imageWrap {
-    height: 260px;
   }
 
   .cardTitle {

@@ -9,18 +9,6 @@ import developersEn from "@/data/developers/en.json";
 import developersAr from "@/data/developers/ar.json";
 
 const PAGE_SIZE = 12;
-const ALLOWED_DEVELOPER_SLUGS = [
-  "damac",
-  "sobha",
-  "azizi",
-  "binghatti",
-  "arada",
-  "imtiaz",
-  "tiger",
-  "beyond",
-  "omniyat",
-  "danube",
-];
 
 function normalizeLocale(locale) {
   return String(locale || "en").toLowerCase().startsWith("ar") ? "ar" : "en";
@@ -148,13 +136,26 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
       : "Browse developers linked to real live projects across the site.";
 
   const allDevs = useMemo(() => {
-    const sanityMap = new Map();
+    // Build a unified developer list from all sources (Sanity + fallback JSON)
+    // No hardcoded whitelist — any developer present in Sanity or with projects shows up
+    const seen = new Map();
+
+    // Add all Sanity developers first (primary source)
     (sanityDevelopers || []).forEach((developer) => {
-      if (developer?.slug) sanityMap.set(String(developer.slug).toLowerCase(), developer);
+      if (!developer?.slug) return;
+      const slug = String(developer.slug).toLowerCase();
+      seen.set(slug, developer);
     });
 
-    return ALLOWED_DEVELOPER_SLUGS.map((slug) => {
-      const sanityDev = sanityMap.get(slug) || {};
+    // Merge in fallback JSON developers not already in Sanity
+    for (const slug of Object.keys(DEV_FALLBACK_EN)) {
+      if (!seen.has(slug)) seen.set(slug, {});
+    }
+    for (const slug of Object.keys(DEV_FALLBACK_AR)) {
+      if (!seen.has(slug)) seen.set(slug, {});
+    }
+
+    return Array.from(seen.entries()).map(([slug, sanityDev]) => {
       const fallbackEn = DEV_FALLBACK_EN?.[slug] || {};
       const fallbackAr = DEV_FALLBACK_AR?.[slug] || {};
 

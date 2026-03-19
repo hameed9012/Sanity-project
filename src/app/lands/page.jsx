@@ -57,14 +57,9 @@ export default function LandsPage() {
   const { allProjects, loading } = useAllProjects();
 
   const allLands = React.useMemo(() => {
-    const badgeText = isRTL ? "\u0627\u0644\u0631\u0627\u0633\u062e\u0648\u0646" : "Al Rasikhoon";
     return (allProjects || [])
-      .filter((project) => isLandProject(project))
-      .map((project) => ({
-        ...project,
-        badge: badgeText,
-      }));
-  }, [allProjects, isRTL]);
+      .filter((project) => isLandProject(project));
+  }, [allProjects]);
 
   const [activeType, setActiveType] = React.useState("all");
   const [search, setSearch] = React.useState("");

@@ -12,7 +12,7 @@ function formatPrice(value, isAr = false) {
   const num = Number(value);
 
   if (!Number.isFinite(num) || num <= 0) {
-    return isAr ? "السعر عند الطلب" : "Price on request";
+    return "";
   }
 
   if (num >= 1_000_000) {
@@ -94,12 +94,13 @@ export default function HomeHeroSlider() {
         id: p?._id || p?.slug || p?.id || index,
         title: formatProjectName(p?.nameEn || p?.name || ""),
         image: p?.image || "",
-        developerName:
-          p?.developer ||
-          p?.developerName ||
+        developerName: formatProjectName(
           p?.developerNameEn ||
-          "",
-        location: p?.location || "",
+          p?.developerName ||
+          p?.developer ||
+          ""
+        ),
+        location: formatProjectName(p?.location || ""),
         priceAED: p?.priceAED || p?.startingPriceAED || p?.price || null,
         status: p?.status || "Available",
         propertyType: p?.unitType || p?.type || "Luxury Property",

@@ -248,7 +248,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "Avg Buy", "متوسط الشراء")}
               </span>
             </div>
-            <div className={styles.quickValue}>{model.quick.avgBuy || "N/A"}</div>
+            <div className={styles.quickValue}>{model.quick.avgBuy || "—"}</div>
           </div>
 
           <div ref={addBlockRef} className={styles.quickCard}>
@@ -258,7 +258,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "Avg Rent", "متوسط الإيجار")}
               </span>
             </div>
-            <div className={styles.quickValue}>{model.quick.avgRent || "N/A"}</div>
+            <div className={styles.quickValue}>{model.quick.avgRent || "—"}</div>
           </div>
 
           <div ref={addBlockRef} className={styles.quickCard}>
@@ -268,7 +268,7 @@ export default function MarketInsights({ regionData }) {
                 {labelByLocale(isRTL, "ROI", "العائد")}
               </span>
             </div>
-            <div className={styles.quickValue}>{model.quick.roi || "N/A"}</div>
+            <div className={styles.quickValue}>{model.quick.roi || "—"}</div>
           </div>
         </div>
 

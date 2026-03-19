@@ -61,13 +61,9 @@ export default function OffplanPage() {
     filters.minPrice, filters.maxPrice,
   ]);
 
-  // Off-plan only — excluding blocked developer inventories
-  const OFFPLAN_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
   const offplanProjects = React.useMemo(() => {
     return (rawProjects || []).filter((p) => {
       if (p.isLand || p.category === "lands") return false;
-      const devSlug = (p.developerSlug || p.developer || "").toLowerCase();
-      if (OFFPLAN_EXCLUDED_DEVELOPER_SLUGS.some((s) => devSlug.includes(s))) return false;
       const s = (p.status || p.devStatus || "").toLowerCase();
       return s.includes("off-plan") || s.includes("off plan") || s.includes("offplan") || s.includes("under construction");
     });

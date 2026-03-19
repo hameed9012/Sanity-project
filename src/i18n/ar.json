@@ -813,7 +813,7 @@
     },
     "cards": {
       "imageFallback": "مشروع",
-      "priceOnRequest": "السعر عند الطلب",
+      "priceOnRequest": "حسب الطلب",
       "priceFrom": "السعر يبدأ من",
       "typeLabel": "النوع",
       "typeDefault": "شقة",
@@ -821,7 +821,7 @@
       "sizeNA": "غير متوفر",
       "sqft": "قدم²",
       "completionLabel": "التسليم",
-      "completionTBA": "يُحدد لاحقًا",
+      "completionTBA": "قريباً",
       "viewDetails": "عرض تفاصيل المشروع",
       "defaultLocation": "دبي"
     }

@@ -1,5 +1,5 @@
 const CDN = "https://luxury-real-estate-media.b-cdn.net";
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["omniyat", "beyond", "imtiaz"]);
+
 
 // MAIN OBJECT
 // Only developers that actually have projects in your current data:
@@ -599,13 +599,10 @@ export const developersDetails = {
 // Get a single developer object by slug (used in /developers/[slug]/page.jsx)
 export function getDeveloperBySlug(slug) {
   if (!slug) return null;
-  if (EXCLUDED_DEVELOPER_SLUGS.has(slug)) return null;
   return developersDetails[slug] || null;
 }
 
 // Optional: list all developers as an array (useful for dropdowns / menus)
 export function getAllDevelopers() {
-  return Object.values(developersDetails).filter(
-    (developer) => !EXCLUDED_DEVELOPER_SLUGS.has(developer?.slug)
-  );
+  return Object.values(developersDetails);
 }

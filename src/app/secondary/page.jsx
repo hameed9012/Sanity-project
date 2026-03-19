@@ -51,17 +51,9 @@ function shuffleWithSeed(arr, seed) {
   return copy;
 }
 
-const SECONDARY_EXCLUDED_SLUGS = ["sobha-one", "riviera-reve"];
-const SECONDARY_EXCLUDED_DEVELOPER_SLUGS = ["omniyat", "beyond", "imtiaz"];
-
 function filterSecondaryProjects(projects) {
   return projects.filter((project) => {
     const status = String(project?.status || project?.devStatus || "").toLowerCase();
-    const slug = String(project?.slug || "").toLowerCase();
-    const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
-
-    if (SECONDARY_EXCLUDED_SLUGS.some((item) => slug.includes(item))) return false;
-    if (SECONDARY_EXCLUDED_DEVELOPER_SLUGS.some((item) => developerSlug.includes(item))) return false;
     if (status.includes("off-plan") || status.includes("under construction")) return false;
 
     return (

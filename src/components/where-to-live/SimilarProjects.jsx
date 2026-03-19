@@ -141,7 +141,7 @@ const SimilarProjectsSwiper = ({
 
   const formatPrice = (price) => {
     const amount = Number(String(price ?? "").replace(/[^\d.]/g, ""));
-    if (!Number.isFinite(amount) || amount < 10_000) return "Price on request";
+    if (!Number.isFinite(amount) || amount < 10_000) return "";
     return `AED ${new Intl.NumberFormat().format(amount)}`;
   };
 
@@ -279,7 +279,7 @@ const SimilarProjectsSwiper = ({
                             ? `${new Intl.NumberFormat().format(
                                 project.sizeSqft
                               )} sqft`
-                            : "N/A"}
+                            : "—"}
                         </span>
                       </div>
                     </div>

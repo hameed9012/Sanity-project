@@ -39,10 +39,32 @@ export default function AboutPage() {
     return null;
   }
 
+  // Apply content overrides for buildingExcellence stats
+  const buildingExcellence = { ...about.buildingExcellence };
+  if (Array.isArray(buildingExcellence.stats)) {
+    buildingExcellence.stats = buildingExcellence.stats.map((stat) => {
+      // Update "650M+" → "Targeting 1,000,000,000"
+      if (stat?.count === 650 || String(stat?.suffix || "").includes("M+")) {
+        return {
+          ...stat,
+          prefix: "Targeting",
+          prefixAr: "نستهدف",
+          count: null,
+          countDisplay: "1,000,000,000",
+          suffix: "",
+          suffixAr: "",
+          label: "In transaction volume for investors.",
+          labelAr: "في حجم المعاملات للمستثمرين.",
+        };
+      }
+      return stat;
+    });
+  }
+
   return (
     <main>
       <SobhaLegacyHero content={about.hero} />
-      <BuildingExcellenceSection content={about.buildingExcellence} />
+      <BuildingExcellenceSection content={buildingExcellence} />
       <ServicesSection content={about.services} />
       <BrandPillarsAccordion content={about.accordion} />
       <JourneyTimeline content={about.journey} />

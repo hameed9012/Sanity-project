@@ -57,13 +57,10 @@ export default function ArtOfDetail() {
     discoverMoreLabelAr: "اكتشف المزيد",
   };
 
-  // Only use CMS value if it's present AND doesn't contain wrong brand references
+  // Use CMS value if present, otherwise fall back to defaults
   function resolveField(cmsVal, fallback) {
     const v = getString(cmsVal);
     if (!v) return fallback;
-    // If the CMS has been updated with the wrong company/brand (e.g. Al Rasikhoon), use fallback
-    const lower = v.toLowerCase();
-    if (lower.includes("al rasikhoon") || lower.includes("rasikhoon")) return fallback;
     return v;
   }
 

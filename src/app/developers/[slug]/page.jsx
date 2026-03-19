@@ -18,7 +18,6 @@ import { filterProjects } from "@/lib/projects/filterProjects";
 
 import styles from "@/styles/developer/DeveloperPage.module.css";
 
-const EXCLUDED_DEVELOPER_SLUGS = new Set(["imtiaz", "beyond", "omniyat"]);
 
 function formatSlugToName(slug) {
   if (!slug) return "";
@@ -69,9 +68,7 @@ function buildAutoStats(projects, isRTL) {
       label: isRTL ? "الأسعار من" : "Prices From",
       value: minPrice
         ? `AED ${new Intl.NumberFormat("en-US").format(minPrice)}`
-        : isRTL
-        ? "حسب الطلب"
-        : "On request",
+        : t("projects.cards.priceOnRequest"),
     },
   ];
 }
@@ -106,7 +103,7 @@ export default function DeveloperPage() {
 
   const profileKey = useMemo(() => String(slug || "").trim().toLowerCase(), [slug]);
 
-  const isExcludedDeveloper = EXCLUDED_DEVELOPER_SLUGS.has(profileKey);
+  const isExcludedDeveloper = false;
 
   const matchedProjects = useMemo(() => {
     const tokens = new Set([

@@ -442,7 +442,7 @@ export default function FloorPlanShowcase({
   isRTL,
   locale,
 }) {
-  const { locale: ctxLocale } = useLanguage();
+  const { locale: ctxLocale, t } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
@@ -829,7 +829,7 @@ export default function FloorPlanShowcase({
   const renderedStartingPrice =
     startingPriceValue ||
     normalizeSpaces(projectData?.startingPrice) ||
-    (activeIsRTL ? "حسب الطلب" : "On request");
+    t("projects.cards.priceOnRequest");
 
   const renderedHandover =
     handoverValue ||

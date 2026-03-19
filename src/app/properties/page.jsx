@@ -13,7 +13,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
 const PAGE_SIZE = 9;
-const EXCLUDED_DEVELOPER_SLUGS = ["beyond", "omniyat", "imtiaz"];
+
 
 const initialFilters = {
   search: "",
@@ -117,8 +117,7 @@ function PropertiesContent() {
     () =>
       (rawProjects || []).filter((project) => {
         if (project?.isLand || project?.category === "lands") return false;
-        const developerSlug = String(project?.developerSlug || project?.developer || "").toLowerCase();
-        return !EXCLUDED_DEVELOPER_SLUGS.some((slug) => developerSlug.includes(slug));
+        return true;
       }),
     [rawProjects]
   );
@@ -157,7 +156,7 @@ function PropertiesContent() {
       <section className={styles.heroPanel}>
         <div className={styles.heroInner}>
           <p className={styles.eyebrow}>
-            {isRTL ? "\u0639\u0642\u0627\u0631\u0627\u062a \u0645\u062d\u0645\u062f \u0643\u0648\u062f\u0645\u0627\u0646\u064a" : "Mohamad Kodmani Properties"}
+            {isRTL ? "\u0645\u062d\u0645\u062f \u0642\u062f\u0645\u0627\u0646\u064a \u0644\u0644\u0639\u0642\u0627\u0631\u0627\u062a" : "Mohamad Kodmani Properties"}
           </p>
           <h1 className={styles.pageTitle}>
             {isRTL ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0639\u0642\u0627\u0631 \u0627\u0644\u0645\u0646\u0627\u0633\u0628 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629" : "Find the right property faster"}

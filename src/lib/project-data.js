@@ -330,30 +330,7 @@ const RAW_PROJECT_DATA_MAP = {
   bugatti: bugattiResidencesData,
 };
 
-const EXCLUDED_STATIC_PROJECT_SLUGS = new Set([
-  "wynwood",
-  "beach-walk-4",
-  "cove-edition-6",
-  "cove-grand",
-  "sunset-bay-grand",
-  "pearl-house-4",
-  "the-symphony",
-  "wynwood-horizon",
-  "kanyon",
-  "31-above",
-  "the-alba-residences",
-  "opus-tower",
-  "vela-dorchester",
-  "orla-dorchester",
-  "vela-viento",
-  "lumenaalta",
-]);
-
-export const PROJECT_DATA_MAP = Object.fromEntries(
-  Object.entries(RAW_PROJECT_DATA_MAP).filter(
-    ([slug]) => !EXCLUDED_STATIC_PROJECT_SLUGS.has(slug)
-  )
-);
+export const PROJECT_DATA_MAP = { ...RAW_PROJECT_DATA_MAP };
 
 /**
  * 🎯 Get project data with locale support
@@ -620,12 +597,12 @@ export const FALLBACK_PROJECT_DATA = {
       ar: "??? ????",
     },
     startingPrice: {
-      en: "Price on request",
-      ar: "????? ??? ?????",
+      en: "",
+      ar: "",
     },
     completionDate: {
-      en: "TBA",
-      ar: "??????",
+      en: "",
+      ar: "",
     },
     type: {
       en: "Property",

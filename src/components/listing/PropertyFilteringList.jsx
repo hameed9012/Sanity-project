@@ -14,9 +14,7 @@ import { filterProjects } from "@/lib/projects/filterProjects";
 
 const formatMoney = (amount, isAr) => {
   if (!Number.isFinite(amount) || amount < 10000) {
-    return isAr
-      ? "\u0627\u0644\u0633\u0639\u0631 \u0639\u0646\u062f \u0627\u0644\u0637\u0644\u0628"
-      : "Price on request";
+    return "";
   }
 
   return new Intl.NumberFormat(isAr ? "ar-AE" : "en-US", {
