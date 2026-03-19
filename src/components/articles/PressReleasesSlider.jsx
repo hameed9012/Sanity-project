@@ -19,17 +19,29 @@ function normalizeSanityArticle(article, locale) {
   const isAr = locale === "ar";
 
   return {
-    id: article?._id || article?.slug,
-    slug: article?.slug,
-    title: isAr ? article?.titleAr || article?.title : article?.title || article?.titleAr,
-    image: article?.mainImage || article?.hero?.image || DEFAULT_PRESS_IMAGE,
+    id: article?._id || article?.slug?.current || article?.slug,
+    slug:
+      typeof article?.slug === "object"
+        ? article?.slug?.current
+        : article?.slug,
+    title: isAr
+      ? article?.titleAr || article?.title
+      : article?.title || article?.titleAr,
+    image:
+      article?.mainImage ||
+      article?.hero?.image ||
+      article?.image ||
+      DEFAULT_PRESS_IMAGE,
     publishedOn: article?.publishedAt
-      ? new Date(article.publishedAt).toLocaleDateString(isAr ? "ar-AE" : "en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      : "",
+      ? new Date(article.publishedAt).toLocaleDateString(
+          isAr ? "ar-AE" : "en-US",
+          {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }
+        )
+      : article?.date || "",
   };
 }
 
@@ -46,7 +58,9 @@ export default function PressReleasesSlider() {
 
     async function loadArticles() {
       try {
-        const response = await fetch("/api/sanity-articles", { cache: "no-store" });
+        const response = await fetch("/api/sanity-articles", {
+          cache: "no-store",
+        });
         const data = response.ok ? await response.json() : [];
         if (!alive) return;
         setSanityArticles(Array.isArray(data) ? data : []);
@@ -59,18 +73,29 @@ export default function PressReleasesSlider() {
     }
 
     loadArticles();
+
     return () => {
       alive = false;
     };
   }, []);
 
   const articles = useMemo(() => {
-    const featuredArticles = sanityArticles.filter((article) => article?.featured !== false);
-    return featuredArticles.map((article) => normalizeSanityArticle(article, locale));
+    const featuredArticles = sanityArticles.filter(
+      (article) => article?.featured !== false
+    );
+
+    return featuredArticles
+      .map((article) => normalizeSanityArticle(article, locale))
+      .filter((article) => article.slug && article.title && article.image);
   }, [locale, sanityArticles]);
 
   if (!loaded && sanityArticles.length === 0) return null;
   if (!articles.length) return null;
+
+  const handleClick = (article) => {
+    if (!article?.slug) return;
+    router.push(`/articles/${article.slug}`);
+  };
 
   return (
     <section
@@ -78,121 +103,123 @@ export default function PressReleasesSlider() {
       dir={isRTL ? "rtl" : "ltr"}
       aria-labelledby="press-releases-heading"
     >
-      {/* Heading inside container */}
       <div className={styles.container}>
+        {/* Heading */}
         <h2 id="press-releases-heading" className={styles.heading}>
-          {t?.("pressReleases.heading") || (isRTL ? "البيانات الصحفية" : "PRESS RELEASES")}
+          {t?.("pressReleases.heading") ||
+            (isRTL ? "البيانات الصحفية" : "PRESS RELEASES")}
         </h2>
-      </div>
 
-      {/* Slider is full-width so side slides bleed to screen edges */}
-      <div className={styles.sliderShell}>
-        <button
-          className={`${styles.navArrow} ${styles.navPrev} stories-prev`}
-          aria-label={t?.("pressReleases.aria.prev") || (isRTL ? "السابق" : "Previous")}
-        >
-          <span className={styles.arrowIcon} />
-        </button>
+        <div className={styles.sliderShell}>
+          {/* arrows */}
+          <button
+            className={`${styles.navArrow} ${styles.navPrev} stories-prev`}
+            aria-label={
+              t?.("pressReleases.aria.prev") ||
+              (isRTL ? "البيان السابق" : "Previous press release")
+            }
+            type="button"
+          >
+            <span className={styles.arrowIcon} />
+          </button>
 
-        <button
-          className={`${styles.navArrow} ${styles.navNext} stories-next`}
-          aria-label={t?.("pressReleases.aria.next") || (isRTL ? "التالي" : "Next")}
-        >
-          <span className={styles.arrowIcon} />
-        </button>
+          <button
+            className={`${styles.navArrow} ${styles.navNext} stories-next`}
+            aria-label={
+              t?.("pressReleases.aria.next") ||
+              (isRTL ? "البيان التالي" : "Next press release")
+            }
+            type="button"
+          >
+            <span className={styles.arrowIcon} />
+          </button>
 
-        <Swiper
-          key={locale}
-          modules={[Navigation, Autoplay]}
-          navigation={{
-            prevEl: isRTL ? ".stories-next" : ".stories-prev",
-            nextEl: isRTL ? ".stories-prev" : ".stories-next",
-          }}
-          autoplay={{
-            delay: 8000,
-            disableOnInteraction: false,
-          }}
-          slidesPerView={1.8}
-          centeredSlides
-          spaceBetween={20}
-          loop={articles.length > 2}
-          speed={900}
-          breakpoints={{
-            0: {
-              slidesPerView: 1.05,
-              centeredSlides: true,
-              spaceBetween: 10,
-            },
-            480: {
-              slidesPerView: 1.15,
-              centeredSlides: true,
-              spaceBetween: 12,
-            },
-            769: {
-              slidesPerView: 1.6,
-              centeredSlides: true,
-              spaceBetween: 18,
-            },
-            1024: {
-              slidesPerView: 1.8,
-              centeredSlides: true,
-              spaceBetween: 20,
-            },
-            1400: {
-              slidesPerView: 2.2,
-              centeredSlides: true,
-              spaceBetween: 24,
-            },
-          }}
-          className={`${styles.storiesSlider} ${isRTL ? styles.rtlSlider : ""}`}
-        >
-          {articles.map((article) => (
-            <SwiperSlide key={article.id || article.slug} className={styles.slide}>
-              <article
-                className={styles.card}
-                onClick={() => router.push(`/articles/${article.slug}`)}
+          <Swiper
+            key={locale}
+            modules={[Navigation, Autoplay]}
+            navigation={{
+              prevEl: isRTL ? ".stories-next" : ".stories-prev",
+              nextEl: isRTL ? ".stories-prev" : ".stories-next",
+            }}
+            autoplay={{
+              delay: 8000,
+              disableOnInteraction: false,
+            }}
+            loop={articles.length > 2}
+            speed={900}
+            breakpoints={{
+              0: {
+                slidesPerView: 1,
+                centeredSlides: false,
+                spaceBetween: 16,
+              },
+              769: {
+                slidesPerView: "auto",
+                centeredSlides: true,
+                spaceBetween: 32,
+              },
+            }}
+            className={`${styles.storiesSlider} ${
+              isRTL ? styles.rtlSlider : ""
+            }`}
+          >
+            {articles.map((article) => (
+              <SwiperSlide
+                key={article.id || article.slug}
+                className={styles.slide}
               >
-                <div className={styles.cardBox}>
-                  <div className={styles.imageWrap}>
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      className={`${styles.image} ${styles.onlyDesk}`}
-                      sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
-                    />
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      className={`${styles.image} ${styles.onlyMob}`}
-                      sizes="100vw"
-                    />
-                  </div>
-
-                  <div className={styles.cardContent}>
-                    <div className={styles.storyTitle}>
-                      <h3 className={styles.cardTitle}>{article.title}</h3>
+                <article
+                  className={styles.card}
+                  onClick={() => handleClick(article)}
+                >
+                  <div className={styles.cardBox}>
+                    {/* IMAGE */}
+                    <div className={styles.imageWrap}>
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        className={`${styles.image} ${styles.onlyDesk}`}
+                        sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
+                      />
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        className={`${styles.image} ${styles.onlyMob}`}
+                        sizes="100vw"
+                      />
                     </div>
 
-                    <div className={styles.storyPublish}>
-                      <div className={styles.datePlace}>
-                        <span className={styles.publishedDate}>{article.publishedOn}</span>
+                    {/* CONTENT */}
+                    <div className={styles.cardContent}>
+                      <div className={styles.storyTitle}>
+                        <h3 className={styles.cardTitle}>
+                          {article.title}
+                        </h3>
+                      </div>
+
+                      {/* 🔥 GOLD DATE TAG */}
+                      <div className={styles.storyPublish}>
+                        <div className={styles.datePlace}>
+                          <span className={styles.publishedLabel}>
+                            {article.publishedOn}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+                </article>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
-      {/* View All inside container */}
-      <div className={styles.container}>
+        {/* VIEW ALL */}
         <div className={styles.viewAllRow}>
           <Link href="/articles" className={styles.viewAllBtn}>
-            {t?.("pressReleases.viewAll") || (isRTL ? "عرض الكل" : "VIEW ALL")}
+            {t?.("pressReleases.viewAll") ||
+              (isRTL ? "عرض الكل" : "VIEW ALL")}
           </Link>
         </div>
       </div>

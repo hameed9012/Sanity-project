@@ -18,7 +18,11 @@ export default defineType({
       options: {source: 'name'},
       validation: R => R.required(),
     }),
+    defineField({name: 'nameAr', title: 'Developer Name (Arabic)', type: 'string'}),
     defineField({name: 'tagline', title: 'Tagline', type: 'string'}),
+    defineField({name: 'taglineAr', title: 'Tagline (Arabic)', type: 'string'}),
+    defineField({name: 'description', title: 'Description (English)', type: 'text', rows: 3}),
+    defineField({name: 'descriptionAr', title: 'Description (Arabic)', type: 'text', rows: 3}),
     defineField({
       name: 'logoUrl',
       title: 'Logo URL (Bunny CDN or local path)',
@@ -30,10 +34,26 @@ export default defineType({
       type: 'cdnImage',
     }),
     defineField({
+      name: 'heroImageUrl',
+      title: 'Hero Image URL (external)',
+      type: 'url',
+    }),
+    defineField({
       name: 'heroImageCdn',
       title: 'Hero Image (BunnyCDN)',
       type: 'cdnImage',
     }),
+    defineField({
+      name: 'coverImage',
+      title: 'Cover Image URL (card thumbnail)',
+      type: 'url',
+    }),
+    defineField({
+      name: 'coverImageUrl',
+      title: 'Cover Image URL (alternative)',
+      type: 'url',
+    }),
+    defineField({name: 'ctaUrl', title: 'CTA URL', type: 'url'}),
     defineField({
       name: 'about',
       title: 'About Paragraphs (English)',
@@ -60,7 +80,13 @@ export default defineType({
     }),
     defineField({
       name: 'highlights',
-      title: 'Highlights',
+      title: 'Highlights (English)',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+    defineField({
+      name: 'highlightsAr',
+      title: 'Highlights (Arabic)',
       type: 'array',
       of: [{type: 'string'}],
     }),

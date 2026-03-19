@@ -78,12 +78,32 @@ export default function ProjectIntro({
     intro.heading ||
     "";
 
-  const paragraphs =
-    Array.isArray(intro.paragraphs) && intro.paragraphs.length
-      ? intro.paragraphs
-      : intro.description
-        ? [intro.description]
-        : [];
+  const paragraphs = useMemo(() => {
+    const raw =
+      Array.isArray(intro.paragraphs) && intro.paragraphs.length
+        ? intro.paragraphs
+        : intro.description
+          ? [intro.description]
+          : [];
+    // Split long single-paragraph text into multiple paragraphs at sentence boundaries
+    if (raw.length === 1 && typeof raw[0] === "string" && raw[0].length > 200) {
+      const text = raw[0].trim();
+      // Split on double newlines first
+      const byNewline = text.split(/\n\s*\n/).filter(Boolean);
+      if (byNewline.length > 1) return byNewline.map((p) => p.trim());
+      // Otherwise split on sentences, grouping ~2-3 sentences per paragraph
+      const sentences = text.match(/[^.!?؟]+[.!?؟]+/g);
+      if (sentences && sentences.length > 2) {
+        const chunks = [];
+        const perChunk = Math.ceil(sentences.length / Math.ceil(sentences.length / 3));
+        for (let i = 0; i < sentences.length; i += perChunk) {
+          chunks.push(sentences.slice(i, i + perChunk).join("").trim());
+        }
+        return chunks.filter(Boolean);
+      }
+    }
+    return raw;
+  }, [intro.paragraphs, intro.description]);
 
   const normalizeKey = useCallback(
     (value) =>

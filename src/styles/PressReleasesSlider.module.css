@@ -1,286 +1,232 @@
-/* PressReleasesSlider.module.css */
-
 .sobhaStoriesSec {
-  position: relative;
-  width: 100%;
-  background: #f6f6f6;
-  overflow: hidden;
-  padding: 56px 0 60px;
-}
-
-/* Full-width slider shell — sits outside the max-width container */
-.sliderShell {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  padding: 8px 0 16px;
-}
-
-.rtlSlider {
-  direction: rtl;
+  padding: 96px 0 120px;
+  background-color: #ffffff;
 }
 
 .container {
-  width: 100%;
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 40px;
 }
 
 .heading {
-  text-align: center;
-  margin: 0 0 42px;
   font-size: 18px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
+  text-align: center;
   color: #111111;
-  font-weight: 600;
-  line-height: 1.2;
+  margin: 0 0 40px;
+}
+
+.sliderShell {
+  position: relative;
 }
 
 .storiesSlider {
-  width: 100%;
-  overflow: visible !important;
-  padding: 0 0 8px;
+  position: relative;
 }
 
-/* --- Slide sizing --------------------------------------------------- */
+.rtlSlider {
+}
+
 .slide {
+  width: 760px;
+  max-width: 100%;
   display: flex;
   justify-content: center;
-  height: auto !important;
-  align-self: stretch;
 }
 
-/* --- Card ----------------------------------------------------------- */
 .card {
-  position: relative;
-  width: 100%;
   cursor: pointer;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #dddddd;
-  transition: box-shadow 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
-              border-radius 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
-              border-color 0.6s ease;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+  }
 }
 
 .cardBox {
-  display: flex;
-  flex-direction: column;
+  display: block;
+  border: 1px solid #c9c9c9;
   color: #000000;
   border-radius: 11px;
   background-color: #ffffff;
   overflow: hidden;
-  height: 100%;
-  transition: border-radius 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* --- Image wrapper -------------------------------------------------- */
+.storiesSlider :global(.swiper-slide) .cardBox {
+  -webkit-transition:
+    transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition:
+    transform 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    box-shadow 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  -webkit-transform: scale(0.72);
+  transform: scale(0.72);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox,
+.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox {
+  border-radius: 0;
+}
+
+.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox img,
+.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox img {
+  border-radius: 0;
+}
+
 .imageWrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 372 / 249;
+  min-height: 600px;
   overflow: hidden;
-  background: #ececec;
-  flex-shrink: 0;
-  transition: flex 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .image {
   object-fit: cover;
   object-position: center;
-  display: block;
-  transition: transform 0.6s ease;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
 }
 
 .onlyDesk {
-  display: block !important;
+  display: block;
 }
 
 .onlyMob {
-  display: none !important;
+  display: none;
 }
 
-/* --- Card text content --------------------------------------------- */
 .cardContent {
-  background: #ffffff;
-  padding: 20px 26px 22px;
-  transition: opacity 0.5s ease,
-              max-height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1),
-              padding 0.5s ease;
-  max-height: 200px;
-  overflow: hidden;
-  opacity: 1;
+  padding: 30px 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .storyTitle {
-  margin-bottom: 10px;
-}
-
-.cardTitle {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: #1b1b1b;
+  flex: 0 0 66%;
+  min-width: 0;
 }
 
 .storyPublish {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  flex: 0 0 34%;
+  text-align: right;
+}
+
+[dir="rtl"] .storyPublish {
+  text-align: left;
+}
+
+.cardTitle {
+  font-size: 18px;
+  color: #000000;
+  margin: 0;
 }
 
 .datePlace {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
-.publishedDate {
+[dir="rtl"] .datePlace {
+  align-items: flex-start;
+}
+
+.publishedLabel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
-  padding: 6px 14px;
+  padding: 7px 12px;
   border-radius: 4px;
-  background: #d7b46a;
+  background: #c8a96b;
   color: #111111;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  line-height: 1;
 }
-
-/* ====================================================================
-   SWIPER SLIDE STATES
-   – All transitions are smooth via CSS
-   – Inactive slides are dimmed, active is full
-   – Prev / Next slides grow their image and fade out text
-   ==================================================================== */
-
-.storiesSlider :global(.swiper-wrapper) {
-  align-items: stretch;
+.publishedDate {
+  font-size: 18px;
+  font-weight: 300;
+  color: #000000;
+  display: block;
 }
-
-.storiesSlider :global(.swiper-slide) {
-  opacity: 0.4;
-  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-  height: auto !important;
-}
-
-.storiesSlider :global(.swiper-slide-active) {
-  opacity: 1;
-}
-
-.storiesSlider :global(.swiper-slide-active) .card {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
-  border-radius: 12px;
-}
-
-.storiesSlider :global(.swiper-slide-active) .cardBox {
-  border-radius: 11px;
-}
-
-.storiesSlider :global(.swiper-slide-active) .cardContent {
-  opacity: 1;
-  max-height: 200px;
-  padding: 20px 26px 22px;
-}
-
-/* Prev / Next neighbours — smooth fade of content */
-.storiesSlider :global(.swiper-slide-prev),
-.storiesSlider :global(.swiper-slide-next) {
-  opacity: 0.75;
-}
-
-.storiesSlider :global(.swiper-slide-prev) .cardBox,
-.storiesSlider :global(.swiper-slide-next) .cardBox {
-  border-radius: 6px;
-}
-
-.storiesSlider :global(.swiper-slide-prev) .card,
-.storiesSlider :global(.swiper-slide-next) .card {
-  border-radius: 6px;
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-/* Smoothly hide the text content on side slides */
-.storiesSlider :global(.swiper-slide-prev) .cardContent,
-.storiesSlider :global(.swiper-slide-next) .cardContent {
-  opacity: 0;
-  max-height: 0;
-  padding: 0 26px;
-  overflow: hidden;
-}
-
-/* Image fills more of the card on side slides */
-.storiesSlider :global(.swiper-slide-prev) .imageWrap,
-.storiesSlider :global(.swiper-slide-next) .imageWrap {
-  flex: 1;
-}
-
-/* Subtle zoom on hover for active card */
-.storiesSlider :global(.swiper-slide-active) .image:hover {
-  transform: scale(1.03);
-}
-
-/* ====================================================================
-   NAV ARROWS
-   ==================================================================== */
 
 .navArrow {
   position: absolute;
   top: 50%;
-  width: 46px;
-  height: 46px;
-  margin-top: -23px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.92);
+  z-index: 15;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   outline: none;
-  z-index: 20;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .navPrev {
-  left: 24%;
+  left: 24px;
 }
 
 .navNext {
-  right: 24%;
+  right: 24px;
+}
+
+[dir="rtl"] .navPrev {
+  left: auto;
+  right: 24px;
+}
+
+[dir="rtl"] .navNext {
+  right: auto;
+  left: 24px;
 }
 
 .navArrow:hover {
-  transform: scale(1.06);
-  background: #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  background: #111111;
+  border-color: #111111;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
+  transform: translateY(-50%) translateY(-1px);
 }
 
 .arrowIcon {
   position: relative;
-  display: block;
-  width: 10px;
-  height: 16px;
+  width: 9px;
+  height: 19px;
 }
 
 .arrowIcon::before,
 .arrowIcon::after {
   content: "";
   position: absolute;
-  width: 2px;
-  height: 10px;
-  background: #222222;
   left: 50%;
+  width: 2px;
+  height: 11px;
+  background-color: #000000;
   transform-origin: center;
+  transition: background-color 0.25s ease;
 }
 
 .navPrev .arrowIcon::before {
@@ -289,7 +235,7 @@
 }
 
 .navPrev .arrowIcon::after {
-  top: 7px;
+  bottom: 1px;
   transform: translateX(-50%) rotate(-45deg);
 }
 
@@ -299,197 +245,205 @@
 }
 
 .navNext .arrowIcon::after {
-  top: 7px;
+  bottom: 1px;
   transform: translateX(-50%) rotate(45deg);
 }
 
-/* ====================================================================
-   VIEW ALL
-   ==================================================================== */
+[dir="rtl"] .navPrev .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+[dir="rtl"] .navPrev .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+[dir="rtl"] .navNext .arrowIcon::before {
+  top: 1px;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+[dir="rtl"] .navNext .arrowIcon::after {
+  bottom: 1px;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.navArrow:hover .arrowIcon::before,
+.navArrow:hover .arrowIcon::after {
+  background-color: #ffffff;
+}
 
 .viewAllRow {
+  margin-top: 40px;
   display: flex;
   justify-content: center;
-  margin-top: 34px;
 }
 
 .viewAllBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 174px;
-  padding: 13px 34px;
-  border-radius: 30px;
-  border: 1px solid #6f6f6f;
+  padding: 13px 70px;
+  border-radius: 999px;
+  border: 1px solid #111111;
   background: transparent;
-  color: #1f1f1f;
+  color: #111111;
   font-size: 12px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
-  transition: all 0.25s ease;
-  font-weight: 600;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .viewAllBtn:hover {
   background: #111111;
   color: #ffffff;
   border-color: #111111;
-}
-
-/* ====================================================================
-   RESPONSIVE
-   ==================================================================== */
-
-@media (max-width: 1400px) {
-  .navPrev {
-    left: 20%;
-  }
-
-  .navNext {
-    right: 20%;
-  }
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 1200px) {
   .container {
-    padding: 0 30px;
+    padding: 0 32px;
+  }
+
+  .slide {
+    width: 640px;
   }
 
   .navPrev {
-    left: 16%;
+    left: 16px;
   }
 
   .navNext {
-    right: 16%;
+    right: 16px;
+  }
+
+  [dir="rtl"] .navPrev {
+    right: 16px;
+  }
+
+  [dir="rtl"] .navNext {
+    left: 16px;
+  }
+
+  .imageWrap {
+    min-height: 500px;
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1000px) {
+  .cardContent {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .storyTitle,
+  .storyPublish {
+    flex: 0 0 100%;
+    text-align: center;
+  }
+
+  .datePlace {
+    align-items: center;
+  }
+
+  [dir="rtl"] .datePlace {
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sobhaStoriesSec {
+    padding: 56px 0 72px;
+  }
+
   .container {
-    padding: 0 24px;
+    padding: 0 20px;
+  }
+
+  .heading {
+    font-size: 15px;
+    letter-spacing: 0.24em;
+    margin-bottom: 28px;
+  }
+
+  .slide {
+    width: 100%;
   }
 
   .navArrow {
-    width: 40px;
-    height: 40px;
-    margin-top: -20px;
+    display: none;
   }
 
-  .navPrev {
-    left: 12px;
+  .onlyDesk {
+    display: none;
   }
 
-  .navNext {
-    right: 12px;
+  .onlyMob {
+    display: block;
+  }
+
+  .viewAllBtn {
+    width: 100%;
+    max-width: 260px;
+    padding-inline: 0;
+  }
+
+  .imageWrap {
+    min-height: 260px;
   }
 }
 
-@media (max-width: 767px) {
-  .sobhaStoriesSec {
-    padding: 46px 0 50px;
-  }
-
+@media (max-width: 480px) {
   .container {
     padding: 0 16px;
   }
 
-  .heading {
-    font-size: 15px;
-    letter-spacing: 0.22em;
-    margin-bottom: 28px;
-  }
-
-  .imageWrap {
-    aspect-ratio: 16 / 10;
-  }
-
   .cardContent {
-    padding: 16px 16px 18px;
+    padding: 22px 18px;
   }
 
-  .cardTitle {
-    font-size: 15px;
-  }
-
+  .publishedLabel,
   .publishedDate {
-    font-size: 9px;
-    padding: 6px 12px;
-  }
-
-  .onlyDesk {
-    display: none !important;
-  }
-
-  .onlyMob {
-    display: block !important;
-  }
-
-  .navArrow {
-    width: 36px;
-    height: 36px;
-    margin-top: -18px;
-  }
-
-  .navPrev {
-    left: 10px;
-  }
-
-  .navNext {
-    right: 10px;
-  }
-
-  .viewAllBtn {
-    min-width: 150px;
-    padding: 12px 26px;
-    font-size: 11px;
-  }
-
-  /* On mobile, show text on all slides */
-  .storiesSlider :global(.swiper-slide-prev) .cardContent,
-  .storiesSlider :global(.swiper-slide-next) .cardContent {
-    opacity: 1;
-    max-height: 200px;
-    padding: 16px 16px 18px;
-  }
-
-  .storiesSlider :global(.swiper-slide-prev) .cardBox,
-  .storiesSlider :global(.swiper-slide-next) .cardBox {
-    border-radius: 11px;
-  }
-
-  .storiesSlider :global(.swiper-slide-prev) .card,
-  .storiesSlider :global(.swiper-slide-next) .card {
-    border-radius: 12px;
-  }
-
-  .storiesSlider :global(.swiper-slide-prev) .imageWrap,
-  .storiesSlider :global(.swiper-slide-next) .imageWrap {
-    flex: 0 0 auto;
-  }
-
-  .storiesSlider :global(.swiper-slide) {
-    opacity: 0.65;
-  }
-
-  .storiesSlider :global(.swiper-slide-prev),
-  .storiesSlider :global(.swiper-slide-next) {
-    opacity: 0.65;
-  }
-}
-
-@media (max-width: 479px) {
-  .heading {
-    font-size: 13px;
-  }
-
-  .cardTitle {
     font-size: 14px;
   }
 
-  .navArrow {
-    width: 32px;
-    height: 32px;
-    margin-top: -16px;
+  .imageWrap {
+    min-height: 220px;
+  }
+}
+
+.sliderShell,
+.storiesSlider,
+.storiesSlider :global(.swiper) {
+  overflow: visible !important;
+}
+
+@media (min-width: 769px) {
+  .slide {
+    width: 760px !important;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .storiesSlider :global(.swiper-slide.swiper-slide-active) .cardBox {
+    transform: scale(1) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .storiesSlider {
+    overflow: hidden !important;
+  }
+
+  .slide {
+    width: 100% !important;
   }
 }

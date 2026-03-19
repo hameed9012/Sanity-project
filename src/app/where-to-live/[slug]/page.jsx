@@ -12,6 +12,7 @@ import LocationFAQ from "@/components/where-to-live/LocationFAQ";
 import RegionProjectsSection from "@/components/where-to-live/RegionProjectsSection";
 import styles from "@/styles/where-to-live/AreaDetailPage.module.css";
 import staticAreas from "../../../../areas.json";
+import dldAreaStats from "@/data/dld-area-stats.json";
 
 function pickLocalized(enValue, arValue, locale) {
   return locale === "ar" ? arValue || enValue || "" : enValue || arValue || "";
@@ -130,6 +131,33 @@ function buildFaqsFromArea(area) {
       },
     },
   ];
+}
+
+function findDldStats(areaName) {
+  if (!areaName) return null;
+  const name = String(areaName).toLowerCase().trim();
+  for (const [key, stats] of Object.entries(dldAreaStats)) {
+    if (
+      key.toLowerCase() === name ||
+      String(stats.areaNameEn || "").toLowerCase() === name ||
+      String(stats.areaNameAr || "").toLowerCase() === name
+    ) {
+      return stats;
+    }
+  }
+  // Fuzzy: check if area name is contained in key or vice versa
+  for (const [key, stats] of Object.entries(dldAreaStats)) {
+    const k = key.toLowerCase();
+    if (k.includes(name) || name.includes(k)) return stats;
+  }
+  return null;
+}
+
+function formatDldCurrency(value) {
+  if (!value || !Number.isFinite(value)) return null;
+  if (value >= 1e6) return `AED ${(value / 1e6).toFixed(2)}M`;
+  if (value >= 1e3) return `AED ${(value / 1e3).toFixed(0)}K`;
+  return `AED ${Math.round(value).toLocaleString()}`;
 }
 
 function normalizeSanityArea(area, locale, staticArea) {
@@ -256,13 +284,16 @@ function normalizeSanityArea(area, locale, staticArea) {
     roi,
     heroImage,
     gallerySlides,
-    summary: {
-      name,
-      location,
-      avgBuy,
-      avgRent,
-      roi,
-    },
+    summary: (() => {
+      const dld = findDldStats(nameEn);
+      return {
+        name,
+        location,
+        avgBuy: avgBuy || (dld?.avgSalePrice ? formatDldCurrency(dld.avgSalePrice) : ""),
+        avgRent: avgRent || (dld?.avgAnnualRent ? formatDldCurrency(dld.avgAnnualRent) : ""),
+        roi: roi || (dld?.totalROI != null ? `${dld.totalROI.toFixed(1)}%` : ""),
+      };
+    })(),
     highlights: {
       about: {
         en: descriptionEn || "",
@@ -331,32 +362,75 @@ function normalizeSanityArea(area, locale, staticArea) {
         },
       },
     },
-    market: {
-      rentalTrends: avgRent
-        ? [
-            {
-              type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
-              averageRentAED: avgRent,
-            },
-          ]
-        : [],
-      salesTrends: avgBuy
-        ? [
-            {
-              type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
-              averagePriceAED: avgBuy,
-            },
-          ]
-        : [],
-      roiByType: roi
-        ? [
-            {
-              type: { en: "Area ROI", ar: "\u0639\u0627\u0626\u062f \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
-              roiPercent: roi,
-            },
-          ]
-        : [],
-    },
+    market: (() => {
+      // Enrich with DLD stats
+      const dld = findDldStats(nameEn);
+      const rentalTrends = [];
+      const salesTrends = [];
+      const roiByType = [];
+
+      // Add Sanity/static summary as first row
+      if (avgRent) {
+        rentalTrends.push({
+          type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+          averageRentAED: avgRent,
+        });
+      }
+      if (avgBuy) {
+        salesTrends.push({
+          type: { en: "Area Average", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+          averagePriceAED: avgBuy,
+        });
+      }
+      if (roi) {
+        roiByType.push({
+          type: { en: "Area ROI", ar: "\u0639\u0627\u0626\u062f \u0627\u0644\u0645\u0646\u0637\u0642\u0629" },
+          roiPercent: roi,
+        });
+      }
+
+      // Add DLD numeric data
+      if (dld) {
+        if (dld.avgSalePrice) {
+          salesTrends.push({
+            type: { en: "DLD Avg Sale Price", ar: "\u0645\u062a\u0648\u0633\u0637 \u0633\u0639\u0631 \u0627\u0644\u0628\u064a\u0639 (DLD)" },
+            averagePriceAED: formatDldCurrency(dld.avgSalePrice),
+          });
+        }
+        if (dld.avgPriceSqft) {
+          salesTrends.push({
+            type: { en: "DLD Avg Price/sqft", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0633\u0639\u0631/\u0642\u062f\u0645\u00b2 (DLD)" },
+            averagePriceAED: `AED ${Math.round(dld.avgPriceSqft).toLocaleString()}/sqft`,
+          });
+        }
+        if (dld.avgAnnualRent) {
+          rentalTrends.push({
+            type: { en: "DLD Avg Annual Rent", ar: "\u0645\u062a\u0648\u0633\u0637 \u0627\u0644\u0625\u064a\u062c\u0627\u0631 \u0627\u0644\u0633\u0646\u0648\u064a (DLD)" },
+            averageRentAED: formatDldCurrency(dld.avgAnnualRent),
+          });
+        }
+        if (dld.rentalYield != null && dld.rentalYield > 0) {
+          roiByType.push({
+            type: { en: "Rental Yield", ar: "\u0627\u0644\u0639\u0627\u0626\u062f \u0627\u0644\u0625\u064a\u062c\u0627\u0631\u064a" },
+            roiPercent: `${dld.rentalYield.toFixed(1)}%`,
+          });
+        }
+        if (dld.capitalAppreciation != null) {
+          roiByType.push({
+            type: { en: "Capital Appreciation", ar: "\u062a\u0642\u062f\u064a\u0631 \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644" },
+            roiPercent: `${dld.capitalAppreciation.toFixed(1)}%`,
+          });
+        }
+        if (dld.totalROI != null) {
+          roiByType.push({
+            type: { en: "Total ROI (DLD)", ar: "\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0639\u0627\u0626\u062f (DLD)" },
+            roiPercent: `${dld.totalROI.toFixed(1)}%`,
+          });
+        }
+      }
+
+      return { rentalTrends, salesTrends, roiByType };
+    })(),
     nearbyLandmarks,
     nearbyAreas,
     locationCards: area?.locationCards || {},

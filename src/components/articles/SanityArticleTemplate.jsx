@@ -14,20 +14,45 @@ const ptComponents = {
     normal: ({ children }) => <p>{children}</p>,
     h2: ({ children }) => <h2>{children}</h2>,
     h3: ({ children }) => <h3>{children}</h3>,
+    h4: ({ children }) => <h4>{children}</h4>,
     blockquote: ({ children }) => (
       <blockquote className={styles.expertQuote}>
         <em>{children}</em>
       </blockquote>
     ),
   },
+  list: {
+    bullet: ({ children }) => <ul>{children}</ul>,
+    number: ({ children }) => <ol>{children}</ol>,
+  },
+  listItem: {
+    bullet: ({ children }) => <li>{children}</li>,
+    number: ({ children }) => <li>{children}</li>,
+  },
+  types: {
+    image: ({ value }) => {
+      const src = value?.asset?.url || value?.url || "";
+      if (!src) return null;
+      return (
+        <figure style={{ margin: "28px 0", borderRadius: 12, overflow: "hidden" }}>
+          <img src={src} alt={value?.alt || ""} style={{ width: "100%", display: "block", objectFit: "cover" }} loading="lazy" />
+          {value?.caption && <figcaption style={{ padding: "10px 0", fontSize: 13, color: "rgba(0,0,0,0.5)", textAlign: "center" }}>{value.caption}</figcaption>}
+        </figure>
+      );
+    },
+  },
   marks: {
     strong: ({ children }) => <strong>{children}</strong>,
     em: ({ children }) => <em>{children}</em>,
-    link: ({ value, children }) => (
-      <a href={value?.href} target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    ),
+    link: ({ value, children }) => {
+      const href = value?.href || "";
+      const isExternal = href.startsWith("http");
+      return (
+        <a href={href} {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+          {children}
+        </a>
+      );
+    },
   },
 };
 
@@ -446,7 +471,7 @@ function Section({ section, isRTL }) {
         </div>
       ) : null}
 
-      {html ? <div dangerouslySetInnerHTML={{ __html: html }} /> : renderBody(body)}
+      {html ? <div className={styles.contentSection} dangerouslySetInnerHTML={{ __html: html }} /> : renderBody(body)}
 
       <StatsGrid stats={stats} isRTL={isRTL} />
       <KeyPoints points={keyPoints} />

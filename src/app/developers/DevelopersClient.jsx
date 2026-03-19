@@ -5,8 +5,6 @@ import Link from "next/link";
 import styles from "@/styles/developer/developers-2.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
-import developersEn from "@/data/developers/en.json";
-import developersAr from "@/data/developers/ar.json";
 
 const PAGE_SIZE = 12;
 
@@ -18,7 +16,12 @@ function safeTFactory(t) {
   return (key, values, fallback) => {
     try {
       const value = t?.(key, values);
-      if (value === undefined || value === null || value === "" || value === key) {
+      if (
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        value === key
+      ) {
         return fallback;
       }
       return value;
@@ -31,11 +34,17 @@ function safeTFactory(t) {
 const detectLogoType = (logoUrl) => {
   if (!logoUrl) return "default";
   const url = String(logoUrl).toLowerCase();
-  if (url.includes("white") || url.includes("light") || url.includes("bright")) {
+  if (
+    url.includes("white") ||
+    url.includes("light") ||
+    url.includes("bright")
+  ) {
     return "whiteLogo";
   }
   if (url.includes("black") || url.includes("dark")) return "blackLogo";
-  if (url.includes("transparent") || url.includes(".png")) return "transparentLogo";
+  if (url.includes("transparent") || url.includes(".png")) {
+    return "transparentLogo";
+  }
   return "default";
 };
 
@@ -44,19 +53,22 @@ const getInitials = (name) => {
   const words = String(name).trim().split(" ").filter(Boolean);
   if (words.length === 0) return "DEV";
   if (words.length === 1) return words[0].substring(0, 3).toUpperCase();
-  return words.map((word) => word[0]).join("").substring(0, 3).toUpperCase();
+  return words
+    .map((word) => word[0])
+    .join("")
+    .substring(0, 3)
+    .toUpperCase();
 };
-
-const DEV_FALLBACK_EN = developersEn || {};
-const DEV_FALLBACK_AR = developersAr || {};
 
 const resolveDeveloperImage = (projects, slug, name) => {
   if (!Array.isArray(projects) || projects.length === 0) return "";
+
   const tokens = [slug, name]
     .filter(Boolean)
-    .map((value) => String(value).toLowerCase());
+    .map((value) => String(value).toLowerCase().replace(/[-_\s]+/g, " ").trim());
 
-  const match = projects.find((project) => {
+  // Find ALL matching projects, then pick the one with the best image
+  const matches = projects.filter((project) => {
     const projectTokens = [
       project?.developerSlug,
       project?.developer,
@@ -65,20 +77,31 @@ const resolveDeveloperImage = (projects, slug, name) => {
       project?.developerNameAr,
     ]
       .filter(Boolean)
-      .map((value) => String(value).toLowerCase());
+      .map((value) => String(value).toLowerCase().replace(/[-_\s]+/g, " ").trim());
 
-    return tokens.some((token) => projectTokens.some((t) => t.includes(token)));
+    return tokens.some((token) =>
+      projectTokens.some((projectToken) =>
+        projectToken.includes(token) || token.includes(projectToken)
+      )
+    );
   });
 
-  return (
-    match?.heroImageUrl ||
-    match?.image ||
-    match?.heroImage ||
-    match?.data?.hero?.backgroundUrl ||
-    match?.data?.hero?.image ||
-    match?.data?.hero?.posterUrl ||
-    ""
-  );
+  // Return the first match that has a usable image
+  for (const match of matches) {
+    const img =
+      match?.heroImageUrl ||
+      match?.image ||
+      match?.heroImage ||
+      match?.data?.hero?.backgroundUrl ||
+      match?.data?.hero?.image ||
+      match?.data?.hero?.posterUrl ||
+      match?.data?.gallery?.slides?.[0] ||
+      match?.data?.intro?.imgUrl ||
+      "";
+    if (img) return img;
+  }
+
+  return "";
 };
 
 export default function DevelopersClient({ sanityDevelopers = [] }) {
@@ -103,92 +126,72 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
 
   const searchPlaceholder = getTranslation(
     "searchPlaceholder",
-    "\u0627\u0628\u062d\u062b \u0639\u0646 \u0645\u0637\u0648\u0631...",
+    "ابحث عن مطور...",
     "Search developers..."
   );
-  const exploreLabel = getTranslation(
-    "explore",
-    "\u0627\u0633\u062a\u0643\u0634\u0641",
-    "Explore"
-  );
+  const exploreLabel = getTranslation("explore", "استكشف", "Explore");
   const noResults = getTranslation(
     "noResults",
-    "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c.",
+    "لا توجد نتائج.",
     "No results found."
   );
   const loadMoreText = getTranslation(
     "loadMore",
-    "\u0639\u0631\u0636 \u0627\u0644\u0645\u0632\u064a\u062f",
+    "عرض المزيد",
     "Load more"
   );
-  const clearSearchText =
-    locale === "ar" ? "\u0645\u0633\u062d \u0627\u0644\u0628\u062d\u062b" : "Clear search";
-  const searchLabel = locale === "ar" ? "\u0628\u062d\u062b" : "Search";
+  const clearSearchText = locale === "ar" ? "مسح البحث" : "Clear search";
+  const searchLabel = locale === "ar" ? "بحث" : "Search";
   const tryDifferentFilter =
     locale === "ar"
-      ? "\u062d\u0627\u0648\u0644 \u0627\u0644\u0628\u062d\u062b \u0628\u0627\u0633\u0645 \u0645\u0637\u0648\u0631"
+      ? "حاول البحث باسم مطور"
       : "Try searching by developer name";
-  const titleText = locale === "ar" ? "\u0627\u0644\u0645\u0637\u0648\u0631\u0648\u0646" : "Developers";
-  const projectsLabel = locale === "ar" ? "\u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639" : "projects";
+  const titleText = locale === "ar" ? "المطورون" : "Developers";
+  const projectsLabel = locale === "ar" ? "المشاريع" : "projects";
   const subtitleText =
     locale === "ar"
-      ? "\u0627\u0633\u062a\u0639\u0631\u0636 \u0627\u0644\u0645\u0637\u0648\u0631\u064a\u0646 \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u064a\u0646 \u0628\u0645\u0634\u0627\u0631\u064a\u0639 \u0641\u0639\u0644\u064a\u0629 \u0648\u0645\u062a\u0627\u062d\u0629 \u0639\u0644\u0649 \u0627\u0644\u0645\u0648\u0642\u0639."
+      ? "استعرض المطورين المرتبطين بمشاريع فعلية ومتاحة على الموقع."
       : "Browse developers linked to real live projects across the site.";
 
   const allDevs = useMemo(() => {
-    // Build a unified developer list from all sources (Sanity + fallback JSON)
-    // No hardcoded whitelist — any developer present in Sanity or with projects shows up
-    const seen = new Map();
+    return (sanityDevelopers || [])
+      .map((sanityDev) => {
+        const slug = String(sanityDev?.slug || "").toLowerCase().trim();
+        if (!slug) return null;
 
-    // Add all Sanity developers first (primary source)
-    (sanityDevelopers || []).forEach((developer) => {
-      if (!developer?.slug) return;
-      const slug = String(developer.slug).toLowerCase();
-      seen.set(slug, developer);
-    });
+        const nameEn = sanityDev.name || slug;
+        const nameAr = sanityDev.nameAr || nameEn;
+        const taglineEn = sanityDev.tagline || "";
+        const taglineAr = sanityDev.taglineAr || taglineEn;
+        const descriptionEn = sanityDev.description || taglineEn || "";
+        const descriptionAr =
+          sanityDev.descriptionAr || taglineAr || descriptionEn;
 
-    // Merge in fallback JSON developers not already in Sanity
-    for (const slug of Object.keys(DEV_FALLBACK_EN)) {
-      if (!seen.has(slug)) seen.set(slug, {});
-    }
-    for (const slug of Object.keys(DEV_FALLBACK_AR)) {
-      if (!seen.has(slug)) seen.set(slug, {});
-    }
+        const heroImage =
+          sanityDev.coverImage ||
+          sanityDev.coverImageUrl ||
+          sanityDev.heroImageUrl ||
+          resolveDeveloperImage(allProjects, slug, nameEn);
 
-    return Array.from(seen.entries()).map(([slug, sanityDev]) => {
-      const fallbackEn = DEV_FALLBACK_EN?.[slug] || {};
-      const fallbackAr = DEV_FALLBACK_AR?.[slug] || {};
-
-      const nameEn = sanityDev.name || fallbackEn.name || slug;
-      const nameAr = sanityDev.nameAr || fallbackAr.name || nameEn;
-      const taglineEn = sanityDev.tagline || fallbackEn.tagline || "";
-      const taglineAr = sanityDev.taglineAr || fallbackAr.tagline || taglineEn;
-      const descriptionEn = sanityDev.description || taglineEn || "";
-      const descriptionAr = sanityDev.descriptionAr || taglineAr || descriptionEn;
-
-      const heroImage =
-        sanityDev.coverImage ||
-        sanityDev.coverImageUrl ||
-        sanityDev.heroImageUrl ||
-        resolveDeveloperImage(allProjects, slug, nameEn);
-
-      return {
-        slug,
-        nameEn,
-        nameAr,
-        taglineEn,
-        taglineAr,
-        descriptionEn,
-        descriptionAr,
-        heroImage,
-        logo: sanityDev.logoUrl || sanityDev.logo || "",
-        _fromSanity: Boolean(sanityDev?.slug),
-      };
-    });
+        return {
+          slug,
+          nameEn,
+          nameAr,
+          taglineEn,
+          taglineAr,
+          descriptionEn,
+          descriptionAr,
+          heroImage,
+          logo: sanityDev.logoUrl || sanityDev.logo || "",
+          _fromSanity: true,
+        };
+      })
+      .filter(Boolean);
   }, [sanityDevelopers, allProjects]);
 
   const projectsByDeveloper = useMemo(() => {
     const map = new Map();
+
     for (const project of allProjects || []) {
       const tokens = [
         String(project?.developerSlug || "").toLowerCase(),
@@ -200,6 +203,7 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
         map.set(token, (map.get(token) || 0) + 1);
       }
     }
+
     return map;
   }, [allProjects]);
 
@@ -211,13 +215,17 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
     return allDevs.map((developer) => {
       const projectCount =
         projectsByDeveloper.get(String(developer.slug || "").toLowerCase()) ||
-        projectsByDeveloper.get(String(developer.nameEn || "").toLowerCase()) ||
-        projectsByDeveloper.get(String(developer.nameAr || "").toLowerCase()) ||
+        projectsByDeveloper.get(
+          String(developer.nameEn || "").toLowerCase()
+        ) ||
+        projectsByDeveloper.get(
+          String(developer.nameAr || "").toLowerCase()
+        ) ||
         0;
 
       const fallbackDescription =
         locale === "ar"
-          ? `${projectCount} \u0645\u0634\u0631\u0648\u0639 \u0645\u062a\u0627\u062d`
+          ? `${projectCount} مشروع متاح`
           : `${projectCount} live projects`;
 
       const displayName =
@@ -232,8 +240,12 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
 
       const displayDescription =
         locale === "ar"
-          ? developer.descriptionAr || developer.descriptionEn || fallbackDescription
-          : developer.descriptionEn || developer.descriptionAr || fallbackDescription;
+          ? developer.descriptionAr ||
+            developer.descriptionEn ||
+            fallbackDescription
+          : developer.descriptionEn ||
+            developer.descriptionAr ||
+            fallbackDescription;
 
       return {
         ...developer,
@@ -253,28 +265,32 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
     if (!normalizedQuery) return merged;
 
     return merged.filter((developer) =>
-      `${developer.name} ${developer.slug} ${developer.tagline || ""} ${developer.description || ""}`
+      `${developer.name} ${developer.slug} ${developer.tagline || ""} ${
+        developer.description || ""
+      }`
         .toLowerCase()
         .includes(normalizedQuery)
     );
   }, [merged, query]);
 
-  React.useEffect(() => setVisibleCount(PAGE_SIZE), [query]);
+  React.useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query]);
 
   const visible = useMemo(
     () => filtered.slice(0, visibleCount),
     [filtered, visibleCount]
   );
+
   const canLoadMore = visibleCount < filtered.length;
 
   const getAriaLabel = useCallback(
     (key, values) => {
       const defaults = {
-        clearSearch:
-          locale === "ar" ? "\u0645\u0633\u062d \u0627\u0644\u0628\u062d\u062b" : "Clear search",
+        clearSearch: locale === "ar" ? "مسح البحث" : "Clear search",
         developerCard:
           locale === "ar"
-            ? `\u0639\u0631\u0636 ${values?.developer || ""}`
+            ? `عرض ${values?.developer || ""}`
             : `View ${values?.developer || ""}`,
         coverAlt: `${values?.name || ""} cover`,
         logoAlt: `${values?.name || ""} logo`,
@@ -324,9 +340,7 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
           <div className={styles.resultsInfo}>
             <span className={styles.resultsCount}>{filtered.length}</span>
             <span className={styles.resultsTotal}>
-              {locale === "ar"
-                ? "\u0645\u0637\u0648\u0631 \u0645\u0637\u0627\u0628\u0642"
-                : "matching developers"}
+              {locale === "ar" ? "مطور مطابق" : "matching developers"}
             </span>
           </div>
         </div>
@@ -337,13 +351,11 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>DEV</div>
             <h3 className={styles.emptyTitle}>
-              {locale === "ar"
-                ? "\u0644\u0627 \u064a\u0648\u062c\u062f \u0645\u0637\u0648\u0631\u0648\u0646 \u0628\u0639\u062f"
-                : "No developers yet"}
+              {locale === "ar" ? "لا يوجد مطورون بعد" : "No developers yet"}
             </h3>
             <p className={styles.emptyMessage}>
               {locale === "ar"
-                ? "\u0623\u0636\u0641 \u0627\u0644\u0645\u0637\u0648\u0631\u064a\u0646 \u0645\u0646 Sanity Studio"
+                ? "أضف المطورين من Sanity Studio"
                 : "Add developers from Sanity Studio to display them here."}
             </p>
           </div>
@@ -355,7 +367,11 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
             <h3 className={styles.emptyTitle}>{noResults}</h3>
             <p className={styles.emptyMessage}>{tryDifferentFilter}</p>
             {query && (
-              <button className={styles.resetButton} onClick={() => setQuery("")} type="button">
+              <button
+                className={styles.resetButton}
+                onClick={() => setQuery("")}
+                type="button"
+              >
                 {clearSearchText}
               </button>
             )}
@@ -364,22 +380,26 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
           <div className={styles.grid}>
             {visible.map((developer) => {
               const href = `/developers/${developer.slug}`;
-              const logoClass = `${styles.developerLogo} ${styles[developer.logoType] || ""} ${
-                developer.hasLogoError ? styles.noLogo : ""
-              }`;
+              const logoClass = `${styles.developerLogo} ${
+                styles[developer.logoType] || ""
+              } ${developer.hasLogoError ? styles.noLogo : ""}`;
 
               return (
                 <Link
                   key={developer.slug}
                   href={href}
                   className={styles.card}
-                  aria-label={getAriaLabel("developerCard", { developer: developer.name })}
+                  aria-label={getAriaLabel("developerCard", {
+                    developer: developer.name,
+                  })}
                 >
                   <div className={styles.media}>
                     {developer.heroImage && (
                       <img
                         src={developer.heroImage}
-                        alt={getAriaLabel("coverAlt", { name: developer.name })}
+                        alt={getAriaLabel("coverAlt", {
+                          name: developer.name,
+                        })}
                         className={styles.cover}
                         loading="lazy"
                         onError={(event) => {
@@ -392,7 +412,9 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
                       {developer.logo && !developer.hasLogoError ? (
                         <img
                           src={developer.logo}
-                          alt={getAriaLabel("logoAlt", { name: developer.name })}
+                          alt={getAriaLabel("logoAlt", {
+                            name: developer.name,
+                          })}
                           loading="lazy"
                           onError={() => handleLogoError(developer.slug)}
                         />
@@ -405,12 +427,16 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
                   <div className={styles.body}>
                     <div className={styles.top}>
                       <h3 className={styles.name}>{developer.name}</h3>
-                      {developer.tagline ? <p className={styles.tagline}>{developer.tagline}</p> : null}
+                      {developer.tagline ? (
+                        <p className={styles.tagline}>{developer.tagline}</p>
+                      ) : null}
                     </div>
                     <p className={styles.desc}>{developer.description}</p>
                     <div className={styles.ctaRow}>
                       <span className={styles.cta}>
-                        {`${exploreLabel} ${projectsLabel}${isRTL ? " <" : " >"}`}
+                        {`${exploreLabel} ${projectsLabel}${
+                          isRTL ? " <" : " >"
+                        }`}
                       </span>
                     </div>
                   </div>

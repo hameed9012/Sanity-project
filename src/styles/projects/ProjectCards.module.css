@@ -447,3 +447,19 @@
     font-size: 11px;
   }
 }
+
+/* ── RTL support ──────────────────────────────────────────── */
+[dir="rtl"] .statusBadge {
+  left: auto;
+  right: 16px;
+}
+
+[dir="rtl"] .cardBadge {
+  right: auto;
+  left: 16px;
+}
+
+[dir="rtl"] .price::before {
+  margin-right: 0;
+  margin-left: 4px;
+}

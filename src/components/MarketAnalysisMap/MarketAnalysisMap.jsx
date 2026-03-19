@@ -171,15 +171,12 @@ function parseSqft(str) {
 
 function buildMarketProjectsIndex(projectMap, locale = "en") {
   const projects = [];
-  const excludedDeveloperTokens = ["omniyat", "beyond", "imtiaz"];
   for (const [slug, projectData] of Object.entries(projectMap)) {
     try {
       const coords = extractLatLngFromProjectData(projectData, locale);
       if (!coords) continue;
       const localeData = projectData?.[locale] || projectData?.en || {};
       const projectLocale = localeData.project || {};
-      const developerToken = String(projectLocale?.developer || "").toLowerCase();
-      if (excludedDeveloperTokens.some((token) => developerToken.includes(token))) continue;
       const propertyType = extractPropertyType(projectData, locale);
       const completionStatus = extractCompletionStatus(projectData, locale);
       const startingPrice = extractStartingPrice(projectData);
@@ -670,10 +667,22 @@ export default function MarketAnalysisMap() {
           if (!dldName) return;
           setSelectedArea({ name: displayName, dldName, nameAr, stats: feature.properties });
           setAreaSidebarOpen(true);
+          map.setFilter("area-hover", ["==", ["get", "dldName"], dldName]);
         });
 
-        // Cursor
-        for (const layer of ["market-dots", "clusters", "area-fill", "area-extrusion"]) {
+        // Hover highlight for project dots
+        map.on("mousemove", "market-dots", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+          const slug = e.features?.[0]?.properties?.slug;
+          if (slug) map.setFilter("market-dots-hover", ["==", ["get", "slug"], slug]);
+        });
+        map.on("mouseleave", "market-dots", () => {
+          map.getCanvas().style.cursor = "";
+          map.setFilter("market-dots-hover", ["==", ["get", "slug"], ""]);
+        });
+
+        // Cursor for other interactive layers
+        for (const layer of ["clusters", "area-fill", "area-extrusion"]) {
           map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
           map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
         }
@@ -790,7 +799,19 @@ export default function MarketAnalysisMap() {
   }, []);
 
   const viewProjectDetails = useCallback(() => {
-    if (selectedProject) router.push(`/properties/${selectedProject.slug}`);
+    if (!selectedProject) return;
+    // Build the correct URL path: /properties/{category}/{developer}/{slug}
+    const raw = selectedProject.raw || {};
+    const enProject = raw?.en?.project || {};
+    const status = String(enProject.status || "").toLowerCase();
+    let category = "offplan";
+    if (status.includes("ready") || status.includes("existing") || status.includes("completed")) category = "secondary";
+    const developerSlug = String(enProject.developer || "")
+      .toLowerCase()
+      .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "developer";
+    router.push(`/properties/${category}/${developerSlug}/${selectedProject.slug}`);
   }, [selectedProject, router]);
 
   // Close dropdowns on outside click
@@ -929,6 +950,50 @@ export default function MarketAnalysisMap() {
                     {COMPLETION_OPTIONS.map((opt) => (
                       <button key={opt} className={styles.dropdownItem} onClick={() => { setCompletionStatus(opt); setOpenDropdown(null); }} type="button">{opt}</button>
                     ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Starting Price */}
+              <div className={styles.pillWrap} data-dropdown>
+                <button className={styles.pill} onClick={() => setOpenDropdown((v) => v === "price" ? null : "price")} type="button">
+                  <span className={styles.pillIcon}>💰</span>
+                  <span>{appliedMin > 0 || appliedMax != null ? `${appliedMin > 0 ? formatCurrencyAED(appliedMin, locale) : "Any"} – ${appliedMax != null ? formatCurrencyAED(appliedMax, locale) : "Any"}` : (locale === "ar" ? "السعر الابتدائي" : "Starting Price")}</span>
+                  <span className={styles.caret}>▾</span>
+                </button>
+                {openDropdown === "price" && (
+                  <div className={styles.priceModal}>
+                    <div className={styles.priceTabs}>
+                      {PROJECT_METRICS.map((m) => (
+                        <button key={m.key} className={`${styles.priceTab} ${priceModalTab === m.label ? styles.priceTabActive : ""}`} onClick={() => setPriceModalTab(m.label)} type="button">{m.label}</button>
+                      ))}
+                    </div>
+                    <div className={styles.priceGrid}>
+                      <div className={styles.priceField}>
+                        <div className={styles.priceLabel}>{locale === "ar" ? "الحد الأدنى" : "MIN"}</div>
+                        <input className={styles.priceInput} type="text" placeholder="0" value={priceMinInput} onChange={(e) => setPriceMinInput(e.target.value)} />
+                      </div>
+                      <div className={styles.priceField}>
+                        <div className={styles.priceLabel}>{locale === "ar" ? "الحد الأقصى" : "MAX"}</div>
+                        <input className={styles.priceInput} type="text" placeholder="Maximum" value={priceMaxInput === "Maximum" ? "" : priceMaxInput} onChange={(e) => setPriceMaxInput(e.target.value || "Maximum")} />
+                      </div>
+                    </div>
+                    <div style={{ padding: "0 12px 12px", display: "flex", gap: 8 }}>
+                      <button type="button" className={styles.pill} style={{ flex: 1, justifyContent: "center" }} onClick={() => {
+                        const min = parseAED(priceMinInput);
+                        const max = priceMaxInput === "Maximum" ? null : parseAED(priceMaxInput);
+                        setAppliedMin(min || 0);
+                        setAppliedMax(max);
+                        setOpenDropdown(null);
+                      }}>{locale === "ar" ? "تطبيق" : "Apply"}</button>
+                      <button type="button" className={styles.pill} style={{ justifyContent: "center" }} onClick={() => {
+                        setPriceMinInput("");
+                        setPriceMaxInput("Maximum");
+                        setAppliedMin(0);
+                        setAppliedMax(null);
+                        setOpenDropdown(null);
+                      }}>{locale === "ar" ? "إعادة" : "Reset"}</button>
+                    </div>
                   </div>
                 )}
               </div>

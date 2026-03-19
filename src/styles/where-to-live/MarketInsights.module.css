@@ -99,7 +99,7 @@
 
 .header {
   text-align: left;
-  margin-bottom: 18px;
+  margin-bottom: 32px;
 }
 
 .kicker {
@@ -177,10 +177,10 @@
 }
 
 .quickGrid {
-  margin-top: 16px;
+  margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
 
 .quickCard {
@@ -234,10 +234,10 @@
 }
 
 .tables {
-  margin-top: 16px;
+  margin-top: 28px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
 
 .tableCard {

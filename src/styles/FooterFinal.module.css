@@ -799,7 +799,8 @@
 .propCardsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-auto-rows: 320px;
+  gap: 16px;
   padding-bottom: 48px;
 }
 
@@ -811,7 +812,8 @@
   overflow: hidden;
   text-decoration: none;
   color: #fff;
-  height: 420px;
+  height: 100%;
+  min-height: 240px;
   background: #1a1a1a;
   transition: transform 500ms cubic-bezier(0.22,1,0.36,1),
               box-shadow 500ms ease;
@@ -864,9 +866,9 @@
   background:
     linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.78) 0%,
-      rgba(0, 0, 0, 0.45) 30%,
-      rgba(0, 0, 0, 0.08) 55%,
+      rgba(0, 0, 0, 0.88) 0%,
+      rgba(0, 0, 0, 0.55) 35%,
+      rgba(0, 0, 0, 0.15) 60%,
       transparent 100%
     );
   pointer-events: none;
@@ -877,9 +879,9 @@
   background:
     linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.85) 0%,
-      rgba(0, 0, 0, 0.50) 35%,
-      rgba(0, 0, 0, 0.12) 60%,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.60) 40%,
+      rgba(0, 0, 0, 0.18) 65%,
       transparent 100%
     );
 }
@@ -955,11 +957,8 @@
 @media (max-width: 1024px) {
   .propCardsGrid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  .propCard {
-    height: 280px;
+    grid-auto-rows: 220px;
+    gap: 12px;
   }
 
   .propCardName {
@@ -974,11 +973,8 @@
 @media (max-width: 767px) {
   .propCardsGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-
-  .propCard {
-    height: 240px;
+    grid-auto-rows: 200px;
+    gap: 12px;
   }
 
   .propCardName {
@@ -1004,11 +1000,8 @@
 @media (max-width: 480px) {
   .propCardsGrid {
     grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 180px;
     gap: 10px;
-  }
-
-  .propCard {
-    height: 200px;
   }
 
   .propCardName {

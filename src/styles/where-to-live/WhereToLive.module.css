@@ -413,13 +413,12 @@
   min-height: calc(14px * 1.6 * 2);
 }
 
-/* details ALWAYS align: pushed down if title/desc shorter */
+/* details section below description */
 .projectDetails {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
-
-  margin-top: auto; /* 🔥 makes bottom section consistent */
+  margin-top: 16px;
 }
 
 /* box consistent height */

@@ -417,6 +417,14 @@
 [dir=”rtl”] .brandPillarContent {
   border-left: none;
   border-right: 1px solid #dbdbdb;
+  margin-left: 0;
+  margin-right: 35px;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+[dir=”rtl”] .brandPillarContent h5 {
+  text-align: right;
 }
 
 /* Default text = black */

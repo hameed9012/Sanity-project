@@ -12,11 +12,9 @@
 
 /* ── Top bar ───────────────────────────────────────────────── */
 .topBar {
-  position: fixed;
+  position: sticky;
   top: var(--site-navbar-height, 92px);
-  left: 0;
-  right: 0;
-  z-index: 9999;
+  z-index: 100;
   width: 100%;
   padding: 10px 20px;
   display: flex;
@@ -300,7 +298,6 @@
   height: calc(100vh - var(--site-navbar-height, 92px) - var(--filters-bar-height, 64px));
   min-height: 560px;
   background: #000;
-  margin-top: calc(var(--site-navbar-height, 92px) + var(--filters-bar-height, 64px));
   overflow: hidden;
 }
 
@@ -1141,4 +1138,41 @@
   background: rgba(255, 80, 80, 0.15);
   border-color: rgba(255, 80, 80, 0.3);
   color: #ff6b6b;
+}
+
+/* ── RTL support ──────────────────────────────────────────── */
+[dir="rtl"] .sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  transform: translateX(102%);
+}
+
+[dir="rtl"] .sidebarOpen {
+  transform: translateX(0%);
+}
+
+[dir="rtl"] .resultsCounter {
+  right: auto;
+  left: 16px;
+}
+
+[dir="rtl"] .areaLegend {
+  right: auto;
+  left: 16px;
+}
+
+[dir="rtl"] .dropdown {
+  left: auto;
+  right: 0;
+}
+
+[dir="rtl"] .caret {
+  margin-left: 0;
+  margin-right: 1px;
+}
+
+[dir="rtl"] .searchItem {
+  text-align: right;
 }
