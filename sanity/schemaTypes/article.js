@@ -180,6 +180,7 @@ export default defineType({
       of: [
         { type: "string" },
         defineField({
+          name: "tocItem", // FIXED: Added unique name for this object
           type: "object",
           fields: [
             defineField({
@@ -708,6 +709,7 @@ export default defineType({
                       of: [
                         { type: "string" },
                         defineField({
+                          name: "projectionItem", // FIXED: Added unique name for this object
                           type: "object",
                           fields: [
                             defineField({
