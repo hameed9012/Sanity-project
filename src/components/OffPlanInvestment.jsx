@@ -84,6 +84,7 @@ export default function OffPlanInvestment() {
                 <div key={index} className={styles.carouselSlide}>
                   <div className={styles.imageContainer}>
                     <img
+                      loading="lazy"
                       src={image.src}
                       alt={image.alt}
                       className={styles.propertyImage}

@@ -186,6 +186,7 @@ export default function BrandPillarsAccordion({ content }) {
                             src={pillarImage}
                             alt={pillarAlt}
                             className={styles.brandAccImage}
+                            loading="lazy"
                           />
                         </div>
                       )}

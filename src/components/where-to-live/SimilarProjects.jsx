@@ -218,17 +218,27 @@ const SimilarProjectsSwiper = ({
               >
                 <div className={styles.projectCard}>
                   {project.image ? (
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className={styles.cardImage}
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "flex";
-                      }}
-                    />
-                  ) : null}
-                  {!project.image && (
+                    <>
+                      <img
+                        src={project.image}
+                        alt={project.name}
+                        className={styles.cardImage}
+                        loading="lazy"
+                        style={{ transition: "opacity 0.3s ease" }}
+                        onError={(e) => {
+                          e.target.style.opacity = "0";
+                          e.target.style.pointerEvents = "none";
+                          e.target.nextSibling.style.opacity = "1";
+                        }}
+                      />
+                      <div
+                        className={styles.imagePlaceholder}
+                        style={{ opacity: 0, position: "absolute", top: 0, left: 0, width: "100%", height: "100%", transition: "opacity 0.3s ease" }}
+                      >
+                        {project.name || "Project Image"}
+                      </div>
+                    </>
+                  ) : (
                     <div className={styles.imagePlaceholder}>
                       {project.name || "Project Image"}
                     </div>

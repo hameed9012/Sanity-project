@@ -126,6 +126,7 @@ export default function CapitalGrowth() {
                   src={growthMetrics[activeMetric].image}
                   alt={growthMetrics[activeMetric].alt}
                   className={styles.displayImage}
+                  loading="lazy"
                 />
                 <div className={styles.metricInfo}>
                   <div className={styles.metricValueLarge}>
@@ -243,6 +244,7 @@ export default function CapitalGrowth() {
                   src={luxuryImages[1].url}
                   alt={t("capitalGrowth.communitiesTitle")}
                   className={styles.fullWidthImage}
+                  loading="lazy"
                 />
                 <div className={styles.fullWidthImageOverlay}>
                   <div className={styles.fullWidthImageContent}>

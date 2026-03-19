@@ -121,6 +121,7 @@ export default function PortfolioInvestment() {
                   src={property.src}
                   alt={property.alt}
                   className={styles.propertyImage}
+                  loading="lazy"
                 />
                 <div className={styles.cardOverlay}>
                   <span className={styles.propertyCategory}>

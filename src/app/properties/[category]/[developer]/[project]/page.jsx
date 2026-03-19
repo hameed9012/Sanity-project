@@ -9,6 +9,7 @@ import AmenitiesShowcase from "@/components/projects/AmenitiesShowcase";
 import ContactFormFinal from "@/components/projects/ContactFormFinal";
 import MapDirections from "@/components/projects/MapDirections";
 import RelatedProjects from "@/components/projects/RelatedProjects";
+import MasterplanViewer from "@/components/projects/MasterplanViewer";
 import { useLanguage } from "@/components/LanguageProvider";
 
 function normalizeAmenities(raw) {
@@ -154,6 +155,17 @@ function normalizeStaticData(rawLocale, projectSlug, category, developerSlug) {
 }
 
 
+function extractMasterplan(brochures) {
+  if (!Array.isArray(brochures)) return null;
+  const mp = brochures.find(
+    (b) => b && String(b.type || "").toLowerCase() === "masterplan"
+  );
+  if (mp && (mp.url || mp.href)) {
+    return { url: mp.url || mp.href, title: mp.title || "Masterplan" };
+  }
+  return null;
+}
+
 function buildSanityProjectData(sanityDoc, locale) {
   if (sanityDoc?.en?.project || sanityDoc?.ar?.project) {
   const lang = locale === "ar" ? "ar" : "en";
@@ -205,6 +217,8 @@ function buildSanityProjectData(sanityDoc, locale) {
       imgAlt: intro?.imgAlt || "",
       stats: project?.stats || [],
     },
+
+    masterplan: extractMasterplan(intro?.brochures),
 
     gallery: {
       images: Array.isArray(gallery?.slides)
@@ -293,6 +307,9 @@ function buildSanityProjectData(sanityDoc, locale) {
       imgAlt: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
       stats: [],
     },
+    masterplan: sanityDoc?.masterplanUrl
+      ? { url: sanityDoc.masterplanUrl, title: "Masterplan" }
+      : null,
     gallery: {
       images: gallerySlides.map((url) => ({ url, alt: sanityDoc?.title || "" })),
       slides: gallerySlides,
@@ -473,6 +490,14 @@ export default function ProjectPage({ params }) {
 
       {shouldShowFloorPlans && (
         <FloorPlanShowcase data={projectData.floorPlans} projectData={projectData} />
+      )}
+
+      {projectData.masterplan && (
+        <MasterplanViewer
+          masterplan={projectData.masterplan}
+          locale={locale}
+          isRTL={locale === "ar"}
+        />
       )}
 
       <AmenitiesShowcase

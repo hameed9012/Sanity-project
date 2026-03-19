@@ -116,6 +116,7 @@ function Panel({ area, stats, slug, t, imageErrors, setImageErrors }) {
             src={imageSrc}
             alt={safe(area?.name)}
             className={modal.heroImg}
+            loading="lazy"
             onError={() => setImageErrors((prev) => ({ ...prev, [slug]: true }))}
           />
         ) : (

@@ -33,6 +33,7 @@ const PROPERTY_QUERY = `
     }
   },
   brochureUrl,
+  masterplanUrl,
   description,
   descriptionAr,
   amenities[],

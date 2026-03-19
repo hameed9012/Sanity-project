@@ -73,6 +73,7 @@ export default function PillarsSection() {
                       <img
                         src={pillar.imageUrl}
                         alt={isArabic ? pillar.titleAr || pillar.title : pillar.title}
+                        loading="lazy"
                       />
                     </div>
                     <div className={styles.latestBoxContent}>

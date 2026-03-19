@@ -99,6 +99,7 @@ export default function DubaiDemand() {
                     src={getImageSrc("visitors")}
                     alt={t("dubaiDemand.visitorsTitle")}
                     className={styles.cardImage}
+                    loading="lazy"
                     onError={() => handleImageError("visitors")}
                   />
                   <div className={styles.cardOverlay}></div>
@@ -156,6 +157,7 @@ export default function DubaiDemand() {
                     src={getImageSrc("investors")}
                     alt={t("dubaiDemand.investorsTitle")}
                     className={styles.cardImage}
+                    loading="lazy"
                     onError={() => handleImageError("investors")}
                   />
                   <div className={styles.cardOverlay}></div>
@@ -197,6 +199,7 @@ export default function DubaiDemand() {
                     src={getImageSrc("corporations")}
                     alt={t("dubaiDemand.corporationsTitle")}
                     className={styles.cardImage}
+                    loading="lazy"
                     onError={() => handleImageError("corporations")}
                   />
                   <div className={styles.cardOverlay}></div>

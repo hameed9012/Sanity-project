@@ -61,6 +61,7 @@ function ProjectCardList({ project, isAr }) {
           style={{ objectFit: "cover", borderRadius: 12 }}
           src={project.image || "/images/listings/placeholder.jpg"}
           alt={project.nameEn || project.name || "Project"}
+          loading="lazy"
         />
       </div>
 
@@ -121,6 +122,7 @@ function ProjectCardGrid({ project, isAr }) {
           style={{ height: 240, objectFit: "cover", borderRadius: 12 }}
           src={project.image || "/images/listings/placeholder.jpg"}
           alt={project.nameEn || project.name || "Project"}
+          loading="lazy"
         />
       </div>
 
