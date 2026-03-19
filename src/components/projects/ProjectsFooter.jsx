@@ -78,6 +78,7 @@ export default function ProjectsFooter({ title = "" }) {
                           src={project.image}
                           alt={project.nameEn}
                           className={styles.image}
+                          loading="lazy"
                         />
                       ) : (
                         <div className={styles.imageOverlay}></div>

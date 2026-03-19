@@ -9,6 +9,7 @@ import AmenitiesShowcase from "@/components/projects/AmenitiesShowcase";
 import ContactFormFinal from "@/components/projects/ContactFormFinal";
 import MapDirections from "@/components/projects/MapDirections";
 import RelatedProjects from "@/components/projects/RelatedProjects";
+import MasterplanViewer from "@/components/projects/MasterplanViewer";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
@@ -57,6 +58,49 @@ function pickProximity(project) {
         }))
         .filter((item) => item.text)
     : [];
+}
+
+function pickBrochures(project) {
+  // Pull full brochures array from synthetic data (local data files)
+  const syntheticBrochures = Array.isArray(project?.data?.intro?.brochures)
+    ? project.data.intro.brochures.filter((b) => b && (b.url || b.href))
+    : [];
+
+  if (syntheticBrochures.length > 0) {
+    return syntheticBrochures;
+  }
+
+  // Fallback to single brochureUrl
+  if (project?.brochureUrl) {
+    return [{ title: "Download Brochure", url: project.brochureUrl, type: "main" }];
+  }
+
+  return [];
+}
+
+function pickMasterplan(project) {
+  // Look for masterplan brochure entries in synthetic data
+  const brochures = Array.isArray(project?.data?.intro?.brochures)
+    ? project.data.intro.brochures
+    : [];
+  const masterplanBrochure = brochures.find(
+    (b) => b && String(b.type || "").toLowerCase() === "masterplan"
+  );
+  if (masterplanBrochure) {
+    return { url: masterplanBrochure.url || masterplanBrochure.href, title: masterplanBrochure.title || "Masterplan" };
+  }
+
+  // Check for masterplanUrl on the project
+  const masterplanUrl =
+    project?.masterplanUrl ||
+    project?.masterPlanUrl ||
+    project?.data?.masterplanUrl ||
+    "";
+  if (masterplanUrl) {
+    return { url: masterplanUrl, title: "Masterplan" };
+  }
+
+  return null;
 }
 
 function landToProjectData(project, locale) {
@@ -130,13 +174,12 @@ function landToProjectData(project, locale) {
       title,
       description,
       paragraphs: description ? [description] : [],
-      brochures: project?.brochureUrl
-        ? [{ title: "Download Brochure", url: project.brochureUrl, type: "main" }]
-        : [],
+      brochures: pickBrochures(project),
       imgUrl: heroImage,
       imgAlt: title,
       stats: [],
     },
+    masterplan: pickMasterplan(project),
     gallery: {
       title: "Project Gallery",
       projectTag: title,
@@ -250,6 +293,13 @@ export default function LandDetailPage() {
         isRTL={isRTL}
       />
       <VisualSymphony data={projectData.gallery} locale={locale} isRTL={isRTL} />
+      {projectData.masterplan && (
+        <MasterplanViewer
+          masterplan={projectData.masterplan}
+          locale={locale}
+          isRTL={isRTL}
+        />
+      )}
       <AmenitiesShowcase
         data={projectData.amenities}
         projectData={projectData}

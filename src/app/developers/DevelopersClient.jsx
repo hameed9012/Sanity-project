@@ -403,7 +403,9 @@ export default function DevelopersClient({ sanityDevelopers = [] }) {
                         className={styles.cover}
                         loading="lazy"
                         onError={(event) => {
-                          event.currentTarget.style.display = "none";
+                          event.currentTarget.style.opacity = "0";
+                          event.currentTarget.style.transition = "opacity 0.3s ease";
+                          event.currentTarget.style.pointerEvents = "none";
                         }}
                       />
                     )}

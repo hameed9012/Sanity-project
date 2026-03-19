@@ -178,8 +178,7 @@ export default defineType({
       title: "Table of Contents (EN)",
       type: "array",
       of: [
-        { type: "string" },
-        defineField({
+        {
           type: "object",
           name: "tocEntry",
           title: "TOC Entry",
@@ -708,8 +707,7 @@ export default defineType({
                       title: "Items",
                       type: "array",
                       of: [
-                        { type: "string" },
-                        defineField({
+                        {
                           type: "object",
                           name: "projectionItem",
                           title: "Projection Item",

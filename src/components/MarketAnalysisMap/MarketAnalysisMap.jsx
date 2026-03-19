@@ -1222,7 +1222,7 @@ export default function MarketAnalysisMap() {
             <>
               <div className={styles.sidebarHero}>
                 {selectedProject.sidebar?.heroImage ? (
-                  <img src={selectedProject.sidebar.heroImage} alt={selectedProject.name} className={styles.sidebarImg} onError={(e) => { e.target.style.display = "none"; }} />
+                  <img src={selectedProject.sidebar.heroImage} alt={selectedProject.name} className={styles.sidebarImg} loading="lazy" onError={(e) => { e.target.style.opacity = "0"; e.target.style.transition = "opacity 0.3s ease"; e.target.style.pointerEvents = "none"; }} />
                 ) : (
                   <div className={styles.sidebarImgFallback}>{locale === "ar" ? "لا توجد صورة متاحة" : "No image available"}</div>
                 )}

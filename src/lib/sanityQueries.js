@@ -42,6 +42,7 @@ const PROPERTY_PROJECTION = `
   image,
   heroVideo,
   brochureUrl,
+  masterplanUrl,
   videoUrl,
   video,
   amenities,

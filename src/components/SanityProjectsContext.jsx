@@ -198,6 +198,14 @@ function getFlatGallerySlides(property) {
   return [];
 }
 
+function extractMasterplanUrl(brochures) {
+  if (!Array.isArray(brochures)) return "";
+  const mp = brochures.find(
+    (b) => b && String(b.type || "").toLowerCase() === "masterplan"
+  );
+  return mp?.url || mp?.href || "";
+}
+
 function buildSyntheticPayload({
   title,
   developer,
@@ -210,6 +218,7 @@ function buildSyntheticPayload({
   gallerySlides,
   description,
   brochureUrl,
+  masterplanUrl,
   amenities,
   floorPlans,
   lat,
@@ -239,6 +248,7 @@ function buildSyntheticPayload({
       imgAlt: title,
       stats: [],
     },
+    masterplanUrl: masterplanUrl || "",
     gallery: {
       title: "Project Gallery",
       slides: gallerySlides,
@@ -307,6 +317,7 @@ function normalizeLegacyProperty(property) {
         property?.en?.intro?.brochures?.[0]?.url ||
         property?.en?.floorPlans?.brochureHref ||
         "",
+      masterplanUrl: extractMasterplanUrl(property?.en?.intro?.brochures),
       amenities: property?.en?.amenities?.amenities || [],
       floorPlans,
       lat: property?.en?.location?.lat ?? null,
@@ -398,6 +409,7 @@ function normalizeFlatProperty(property) {
       gallerySlides,
       description: property?.description || "",
       brochureUrl: property?.brochureUrl || "",
+      masterplanUrl: property?.masterplanUrl || "",
       amenities: property?.amenities || [],
       floorPlans: property?.floorPlans || [],
       lat: property?.lat ?? null,

@@ -138,6 +138,15 @@ function firstNonEmpty(...values) {
   });
 }
 
+function extractMasterplanUrlFromBrochures(brochures) {
+  if (!Array.isArray(brochures)) return "";
+  const mp = brochures.find(
+    (b) => b && String(b.type || "").toLowerCase() === "masterplan"
+  );
+  const url = mp?.url || mp?.href || "";
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
 function asAbsoluteUrl(value) {
   const url = String(value || "").trim();
   return /^https?:\/\//i.test(url) ? url : "";
@@ -1253,6 +1262,7 @@ function getLocalPropertyOverlay(input) {
     heroVideo: overlayMedia.heroVideo,
     galleryImages: overlayMedia.galleryImages,
     brochureUrl: firstNonEmpty(asAbsoluteUrl(en?.intro?.brochures?.[0]?.url), asAbsoluteUrl(en?.floorPlans?.brochureHref)) || "",
+    masterplanUrl: extractMasterplanUrlFromBrochures(en?.intro?.brochures),
     description,
     descriptionAr,
     amenities: mapAmenities(en?.amenities?.amenities),
@@ -1358,6 +1368,7 @@ export function mergePropertyWithLocalData(property) {
     ...(Array.isArray(overlay.galleryImages) ? overlay.galleryImages : []),
   ]);
   merged.brochureUrl = firstNonEmpty(property?.brochureUrl, overlay.brochureUrl) || "";
+  merged.masterplanUrl = firstNonEmpty(property?.masterplanUrl, overlay.masterplanUrl) || "";
   merged.description =
     !isWeakText(property?.description) && property?.description
       ? property.description

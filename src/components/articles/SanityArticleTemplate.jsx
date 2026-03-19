@@ -284,6 +284,7 @@ function RentalYields({ items }) {
               <img
                 src={r.image}
                 alt={r.location || "Yield"}
+                loading="lazy"
                 style={{
                   width: "100%",
                   height: "100%",
@@ -467,7 +468,7 @@ function Section({ section, isRTL }) {
 
       {image ? (
         <div style={{ margin: "22px 0", borderRadius: 12, overflow: "hidden" }}>
-          <img src={image} alt={title || "Section"} style={{ width: "100%", display: "block", objectFit: "cover" }} />
+          <img src={image} alt={title || "Section"} style={{ width: "100%", display: "block", objectFit: "cover" }} loading="lazy" />
         </div>
       ) : null}
 
@@ -639,6 +640,7 @@ export default function SanityArticleTemplate({ article }) {
                   src={author.avatar}
                   alt={displayAuthorName || "Author"}
                   className={styles.authorAvatar}
+                  loading="lazy"
                 />
               ) : authorInitials ? (
                 <div className={styles.authorAvatar}>{authorInitials}</div>

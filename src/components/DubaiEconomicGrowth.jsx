@@ -145,6 +145,7 @@ export default function DubaiEconomicGrowth() {
                         src={sector.image}
                         alt={sector.name}
                         className={styles.sectorImage}
+                        loading="lazy"
                       />
                       <div className={styles.sectorOverlay}></div>
                     </div>

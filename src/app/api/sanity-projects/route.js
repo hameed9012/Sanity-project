@@ -39,6 +39,7 @@ const PROPERTY_QUERY = `
     }
   },
   brochureUrl,
+  masterplanUrl,
   description,
   descriptionAr,
   amenities[]{ label, labelAr, icon },
