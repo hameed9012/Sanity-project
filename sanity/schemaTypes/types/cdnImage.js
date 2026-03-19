@@ -1,5 +1,5 @@
 import {defineType, defineField} from 'sanity'
-import CdnUrlImageInput from './CdnUrlImageInput'
+import CdnUrlImageInput from './CdnUrlImageInput.js'
 
 export default defineType({
   name: 'cdnImage',

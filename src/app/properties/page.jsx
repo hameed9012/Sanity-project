@@ -156,7 +156,7 @@ function PropertiesContent() {
       <section className={styles.heroPanel}>
         <div className={styles.heroInner}>
           <p className={styles.eyebrow}>
-            {isRTL ? "\u0645\u062d\u0645\u062f \u0642\u062f\u0645\u0627\u0646\u064a \u0644\u0644\u0639\u0642\u0627\u0631\u0627\u062a" : "Mohamad Kodmani Properties"}
+            {isRTL ? "مجموعتنا العقارية" : "Our Property Collection"}
           </p>
           <h1 className={styles.pageTitle}>
             {isRTL ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0639\u0642\u0627\u0631 \u0627\u0644\u0645\u0646\u0627\u0633\u0628 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629" : "Find the right property faster"}
