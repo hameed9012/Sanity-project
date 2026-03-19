@@ -87,8 +87,14 @@ export default function HomeHeroSlider() {
   const autoplayRef = useRef(null);
 
   const projects = useMemo(() => {
-    return (allProjects || [])
-      .filter((p) => p?.image && p?.name)
+    const valid = (allProjects || []).filter((p) => p?.image && p?.name);
+    // Prioritize featured projects first, then the rest
+    valid.sort((a, b) => {
+      const aFeat = a?.featured === true ? 1 : 0;
+      const bFeat = b?.featured === true ? 1 : 0;
+      return bFeat - aFeat;
+    });
+    return valid
       .slice(0, 12)
       .map((p, index) => ({
         id: p?._id || p?.slug || p?.id || index,

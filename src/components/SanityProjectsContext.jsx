@@ -320,7 +320,7 @@ function normalizeLegacyProperty(property) {
     developerSlug: developerToSlug(developer),
     developer,
     developerNameEn: developer,
-    developerNameAr: "",
+    developerNameAr: property?.developerAr || property?.ar?.project?.developer || "",
     nameEn: titleFromSlug(project?.name || ""),
     nameAr: property?.ar?.project?.name || "",
     name: titleFromSlug(project?.name || "") || property?.ar?.project?.name || "",
@@ -330,6 +330,7 @@ function normalizeLegacyProperty(property) {
     status: normalizedStatus,
     devStatus: normalizedStatus,
     location,
+    locationAr: property?.locationAr || property?.ar?.project?.location || "",
     image: hero?.backgroundUrl || gallerySlides[0] || "",
     heroImageUrl: hero?.squareImageUrl || hero?.backgroundUrl || gallerySlides[0] || "",
     heroVideo: isVideoUrl(hero?.backgroundUrl) ? hero.backgroundUrl : (property?.heroVideo || ""),
@@ -349,6 +350,7 @@ function normalizeLegacyProperty(property) {
     saleStatus: "",
     hasPostHandover: /post[- ]?handover/i.test(project?.paymentPlan || ""),
     postHandoverMonths: extractPostHandoverMonths(project?.paymentPlan),
+    featured: property?.featured === true,
   };
 }
 
@@ -409,7 +411,7 @@ function normalizeFlatProperty(property) {
     developerSlug: developerToSlug(developer),
     developer,
     developerNameEn: developer,
-    developerNameAr: "",
+    developerNameAr: property?.developerAr || "",
     nameEn: titleFromSlug(property?.title || ""),
     nameAr: property?.titleAr || "",
     name: titleFromSlug(property?.title || "") || property?.titleAr || "",
@@ -419,6 +421,7 @@ function normalizeFlatProperty(property) {
     status: normalizedStatus,
     devStatus: normalizedStatus,
     location,
+    locationAr: property?.locationAr || "",
     image: property?.heroImage || gallerySlides[0] || "",
     heroImageUrl: squareImageUrl || property?.heroImage || gallerySlides[0] || "",
     heroVideo: isVideoUrl(videoCandidate) ? videoCandidate : "",
@@ -438,6 +441,7 @@ function normalizeFlatProperty(property) {
     saleStatus: "",
     hasPostHandover: /post[- ]?handover/i.test(property?.paymentPlan || ""),
     postHandoverMonths: extractPostHandoverMonths(property?.paymentPlan),
+    featured: property?.featured === true,
   };
 }
 
