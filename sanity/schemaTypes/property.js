@@ -233,6 +233,7 @@ export default defineType({
           type: 'object',
           fields: [
             defineField({name: 'label', title: 'Amenity Name', type: 'string'}),
+            defineField({name: 'labelAr', title: 'Amenity Name (Arabic)', type: 'string'}),
             defineField({
               name: 'icon',
               title: 'Icon',
@@ -258,6 +259,7 @@ export default defineType({
           type: 'object',
           fields: [
             defineField({name: 'title',   title: 'Label',         type: 'string', description: 'e.g. "1 Bedroom"'}),
+            defineField({name: 'titleAr', title: 'Label (Arabic)', type: 'string'}),
             defineField({name: 'bedrooms',title: 'Bedrooms',      type: 'number'}),
             defineField({name: 'size',    title: 'Size Range',    type: 'string', description: 'e.g. "750–920 sqft"'}),
             defineField({name: 'price',   title: 'Price Range',   type: 'string', description: 'e.g. "AED 1.2M–1.5M"'}),
@@ -393,6 +395,49 @@ export default defineType({
       title: 'Area / Location (Arabic)',
       type: 'string',
       group: 'arabic',
+    }),
+
+    defineField({
+      name: 'developerAr',
+      title: 'Developer (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'startingPriceAr',
+      title: 'Starting Price (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'completionDateAr',
+      title: 'Completion Date (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'paymentPlanAr',
+      title: 'Payment Plan (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'unitTypesAr',
+      title: 'Unit Types (Arabic)',
+      type: 'string',
+      group: 'arabic',
+    }),
+
+    defineField({
+      name: 'statusDisplayAr',
+      title: 'Status Display Text (Arabic)',
+      type: 'string',
+      group: 'arabic',
+      description: 'Optional Arabic override for the status badge text',
     }),
   ],
 

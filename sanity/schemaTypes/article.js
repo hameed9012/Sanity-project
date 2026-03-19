@@ -355,6 +355,11 @@ export default defineType({
                       title: "Description",
                       type: "string",
                     }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
+                      type: "string",
+                    }),
                   ],
                 }),
               ],
@@ -386,6 +391,11 @@ export default defineType({
                         defineField({
                           name: "title",
                           title: "Title",
+                          type: "string",
+                        }),
+                        defineField({
+                          name: "titleAr",
+                          title: "Title (AR)",
                           type: "string",
                         }),
                         defineField({
@@ -429,8 +439,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -449,6 +469,11 @@ export default defineType({
                   type: "string",
                 }),
                 defineField({
+                  name: "titleAr",
+                  title: "Title (AR)",
+                  type: "string",
+                }),
+                defineField({
                   name: "comparisons",
                   title: "Comparisons",
                   type: "array",
@@ -459,6 +484,11 @@ export default defineType({
                         defineField({
                           name: "location",
                           title: "Location",
+                          type: "string",
+                        }),
+                        defineField({
+                          name: "locationAr",
+                          title: "Location (AR)",
                           type: "string",
                         }),
                         defineField({
@@ -498,8 +528,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -526,8 +566,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -554,8 +604,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                     defineField({
@@ -599,8 +659,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -619,6 +689,11 @@ export default defineType({
                     defineField({
                       name: "title",
                       title: "Title",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -702,8 +777,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -730,6 +815,11 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "locationAr",
+                      title: "Location (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "averageYield",
                       title: "Average Yield",
                       type: "string",
@@ -747,6 +837,11 @@ export default defineType({
                     defineField({
                       name: "propertyType",
                       title: "Property Type",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "propertyTypeAr",
+                      title: "Property Type (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -773,8 +868,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                     defineField({
@@ -788,6 +893,11 @@ export default defineType({
                             defineField({
                               name: "label",
                               title: "Label",
+                              type: "string",
+                            }),
+                            defineField({
+                              name: "labelAr",
+                              title: "Label (AR)",
                               type: "string",
                             }),
                             defineField({
@@ -823,8 +933,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                     defineField({
@@ -856,8 +976,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -876,6 +1006,11 @@ export default defineType({
                     defineField({
                       name: "title",
                       title: "Title",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -927,13 +1062,28 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "risk",
                       title: "Risk",
                       type: "text",
                     }),
                     defineField({
+                      name: "riskAr",
+                      title: "Risk (AR)",
+                      type: "text",
+                    }),
+                    defineField({
                       name: "mitigation",
                       title: "Mitigation",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "mitigationAr",
+                      title: "Mitigation (AR)",
                       type: "text",
                     }),
                   ],
@@ -952,6 +1102,11 @@ export default defineType({
                     defineField({
                       name: "name",
                       title: "Name",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "nameAr",
+                      title: "Name (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -993,8 +1148,18 @@ export default defineType({
                       type: "string",
                     }),
                     defineField({
+                      name: "titleAr",
+                      title: "Title (AR)",
+                      type: "string",
+                    }),
+                    defineField({
                       name: "description",
                       title: "Description",
+                      type: "text",
+                    }),
+                    defineField({
+                      name: "descriptionAr",
+                      title: "Description (AR)",
                       type: "text",
                     }),
                   ],
@@ -1013,6 +1178,11 @@ export default defineType({
                     defineField({
                       name: "label",
                       title: "Label",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "labelAr",
+                      title: "Label (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -1041,6 +1211,11 @@ export default defineType({
                     defineField({
                       name: "label",
                       title: "Label",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "labelAr",
+                      title: "Label (AR)",
                       type: "string",
                     }),
                     defineField({
@@ -1164,6 +1339,11 @@ export default defineType({
       title: "SEO Description",
       type: "text",
       rows: 3,
+    }),
+    defineField({
+      name: "seoKeywords",
+      title: "SEO Keywords",
+      type: "string",
     }),
   ],
 

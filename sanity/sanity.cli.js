@@ -7,6 +7,6 @@ export default defineCliConfig({
   },
   deployment: {
     autoUpdates: false,
-    appId: 'kodmani',
+    appId: '',
   }
 })

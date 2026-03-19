@@ -61,8 +61,18 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'locationAr',
+      title: 'Location Label (Arabic)',
+      type: 'string',
+    }),
+    defineField({
       name: 'avgBuyPrice',
       title: 'Avg. Buy Price (e.g. "AED 1.2M")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'avgBuyPriceAr',
+      title: 'Avg. Buy Price (Arabic)',
       type: 'string',
     }),
     defineField({
@@ -71,8 +81,18 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'avgRentPriceAr',
+      title: 'Avg. Rent Price (Arabic)',
+      type: 'string',
+    }),
+    defineField({
       name: 'roi',
       title: 'ROI (e.g. "7.2%")',
+      type: 'string',
+    }),
+    defineField({
+      name: 'roiAr',
+      title: 'ROI (Arabic)',
       type: 'string',
     }),
     defineField({
