@@ -65,8 +65,10 @@ export default defineType({
     }),
     defineField({
       name: "featured",
-      title: "Featured",
+      title: "Featured on Homepage Slider",
       type: "boolean",
+      description:
+        "Toggle ON to show this article in the Press Releases slider on the homepage. Make sure the article has a Main Image or Hero Image set.",
       initialValue: false,
     }),
 

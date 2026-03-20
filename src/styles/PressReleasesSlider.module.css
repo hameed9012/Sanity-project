@@ -74,19 +74,14 @@
 
 .storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox,
 .storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox {
-  border-radius: 0;
-}
-
-.storiesSlider :global(.swiper-slide.swiper-slide-prev) .cardBox img,
-.storiesSlider :global(.swiper-slide.swiper-slide-next) .cardBox img {
-  border-radius: 0;
+  border-radius: 11px;
 }
 
 .imageWrap {
   position: relative;
   width: 100%;
   aspect-ratio: 372 / 249;
-  min-height: 600px;
+  min-height: 380px;
   overflow: hidden;
 }
 

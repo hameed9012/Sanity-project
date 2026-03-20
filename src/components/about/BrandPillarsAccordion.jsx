@@ -75,13 +75,23 @@ export default function BrandPillarsAccordion({ content }) {
 
   if (!content) return null;
 
+  const VISION_DEFAULT_EN =
+    "To be the most trusted name in Dubai luxury real estate — setting the standard for client-first advisory, investment intelligence, and curated property experiences.";
+  const VISION_DEFAULT_AR =
+    "أن نكون الاسم الأكثر ثقة في العقارات الفاخرة في دبي — من خلال وضع المعيار في الاستشارات التي تضع العميل أولاً، وذكاء الاستثمار، وتجارب العقارات المنتقاة.";
+
+  const MISSION_DEFAULT_EN =
+    "To guide discerning investors and homeowners through Dubai's dynamic property landscape with expert market knowledge, integrity, and a relentless commitment to delivering exceptional results.";
+  const MISSION_DEFAULT_AR =
+    "توجيه المستثمرين وأصحاب المنازل المميزين عبر المشهد العقاري الديناميكي في دبي بمعرفة سوقية متخصصة ونزاهة والتزام لا يتزعزع بتحقيق نتائج استثنائية.";
+
   const visionTitle = getString(isAr ? content.visionTitleAr : content.visionTitle) || "Vision";
-  const visionText = getString(isAr ? content.visionTextAr : content.visionText);
+  const visionText = getString(isAr ? content.visionTextAr : content.visionText) || (isAr ? VISION_DEFAULT_AR : VISION_DEFAULT_EN);
   const visionImage = content.visionImageUrl || null;
   const visionImageAlt = getString(isAr ? content.visionImageAltAr : content.visionImageAlt) || "Vision";
 
   const missionTitle = getString(isAr ? content.missionTitleAr : content.missionTitle) || "Mission";
-  const missionText = getString(isAr ? content.missionTextAr : content.missionText);
+  const missionText = getString(isAr ? content.missionTextAr : content.missionText) || (isAr ? MISSION_DEFAULT_AR : MISSION_DEFAULT_EN);
   const missionImage = content.missionImageUrl || null;
   const missionImageAlt = getString(isAr ? content.missionImageAltAr : content.missionImageAlt) || "Mission";
 

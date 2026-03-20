@@ -916,6 +916,88 @@
   left: 32px;
 }
 
+/* Flip chevron direction in RTL */
+.rtl .arrowPrev .arrowIcon::before,
+.rtl .arrowPrev .arrowIcon::after {
+  transform: translateX(-50%) rotate(-45deg);
+  top: 1px;
+}
+
+.rtl .arrowPrev .arrowIcon::after {
+  transform: translateX(-50%) rotate(45deg);
+  top: 9px;
+}
+
+.rtl .arrowNext .arrowIcon::before,
+.rtl .arrowNext .arrowIcon::after {
+  transform: translateX(-50%) rotate(45deg);
+  top: 1px;
+}
+
+.rtl .arrowNext .arrowIcon::after {
+  transform: translateX(-50%) rotate(-45deg);
+  top: 9px;
+}
+
+/* RTL responsive arrow positions */
+@media (max-width: 1200px) {
+  .rtl .arrowPrev {
+    right: 24px;
+  }
+  .rtl .arrowNext {
+    left: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .rtl .arrowPrev {
+    right: 16px;
+  }
+  .rtl .arrowNext {
+    left: 16px;
+  }
+}
+
+@media (max-width: 575px) {
+  .rtl .arrowPrev {
+    right: 12px;
+  }
+  .rtl .arrowNext {
+    left: 12px;
+  }
+}
+
+@media (max-width: 479px) {
+  .rtl .arrowPrev {
+    right: 10px;
+  }
+  .rtl .arrowNext {
+    left: 10px;
+  }
+}
+
+@media (max-width: 359px) {
+  .rtl .arrowPrev {
+    right: 8px;
+  }
+  .rtl .arrowNext {
+    left: 8px;
+  }
+}
+
+/* RTL alignment for right block and layout */
+.rtl .rightBlock {
+  align-items: flex-start;
+}
+
+.rtl .amenitiesTags {
+  justify-content: flex-start;
+}
+
+.rtl .developerLocationRow {
+  flex-direction: row-reverse;
+}
+
 .rtl .projectLogo {
   object-position: right center;
 }

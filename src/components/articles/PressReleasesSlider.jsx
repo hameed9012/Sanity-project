@@ -81,12 +81,12 @@ export default function PressReleasesSlider() {
 
   const articles = useMemo(() => {
     const featuredArticles = sanityArticles.filter(
-      (article) => article?.featured !== false
+      (article) => article?.featured === true
     );
 
     return featuredArticles
       .map((article) => normalizeSanityArticle(article, locale))
-      .filter((article) => article.slug && article.title && article.image);
+      .filter((article) => article.slug && article.title);
   }, [locale, sanityArticles]);
 
   if (!loaded && sanityArticles.length === 0) return null;
@@ -138,8 +138,8 @@ export default function PressReleasesSlider() {
             key={locale}
             modules={[Navigation, Autoplay]}
             navigation={{
-              prevEl: isRTL ? ".stories-next" : ".stories-prev",
-              nextEl: isRTL ? ".stories-prev" : ".stories-next",
+              prevEl: ".stories-prev",
+              nextEl: ".stories-next",
             }}
             autoplay={{
               delay: 8000,
@@ -175,20 +175,42 @@ export default function PressReleasesSlider() {
                   <div className={styles.cardBox}>
                     {/* IMAGE */}
                     <div className={styles.imageWrap}>
-                      <Image
-                        src={article.image}
-                        alt={article.title}
-                        fill
-                        className={`${styles.image} ${styles.onlyDesk}`}
-                        sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
-                      />
-                      <Image
-                        src={article.image}
-                        alt={article.title}
-                        fill
-                        className={`${styles.image} ${styles.onlyMob}`}
-                        sizes="100vw"
-                      />
+                      {article.image ? (
+                        <>
+                          <Image
+                            src={article.image}
+                            alt={article.title}
+                            fill
+                            className={`${styles.image} ${styles.onlyDesk}`}
+                            sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
+                          />
+                          <Image
+                            src={article.image}
+                            alt={article.title}
+                            fill
+                            className={`${styles.image} ${styles.onlyMob}`}
+                            sizes="100vw"
+                          />
+                        </>
+                      ) : (
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            background:
+                              "linear-gradient(135deg, #1a1a1a 0%, #333 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#c8a96b",
+                            fontSize: 18,
+                            letterSpacing: "0.1em",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {article.title}
+                        </div>
+                      )}
                     </div>
 
                     {/* CONTENT */}

@@ -1081,24 +1081,7 @@ export default function SalesOfferPreferencesModal({
                     ✎ {tr("salesOffer.edit", "Edit")}
                   </button>
 
-                  <button
-                    type="button"
-                    className={styles.aiBtn}
-                    onClick={handleImproveWithAI}
-                    disabled={aiLoading}
-                  >
-                    {aiLoading ? (
-                      isRTL ? (
-                        "جارٍ التحسين..."
-                      ) : (
-                        "Improving..."
-                      )
-                    ) : (
-                      <>
-                        {tr("salesOffer.improveWithAI", "Improve with AI")} ✨
-                      </>
-                    )}
-                  </button>
+                  {/* "Improve with AI" button removed per client request */}
                 </div>
               </div>
 
