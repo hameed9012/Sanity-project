@@ -65,59 +65,70 @@ function filterSecondaryProjects(projects) {
   });
 }
 
-function Hero({ isRTL, images }) {
+function Hero({ isRTL, images, projectCount, loading }) {
   return (
-    <div className={styles.hero}>
-      <div className={styles.heroMedia}>
-        {images?.length > 1 ? (
-          <Swiper
-            className={styles.heroSwiper}
-            modules={[Autoplay, EffectFade]}
-            effect="fade"
-            fadeEffect={{ crossFade: true }}
-            loop
-            speed={1200}
-            autoplay={{ delay: 2600, disableOnInteraction: false }}
-          >
-            {images.map((src, index) => (
-              <SwiperSlide key={`${src}-${index}`} className={styles.heroSlide}>
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  priority={index === 0}
-                  className={styles.heroBgImg}
-                  sizes="100vw"
-                  unoptimized
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        ) : images?.[0] ? (
-          <div className={styles.heroSlide}>
-            <Image
-              src={images[0]}
-              alt=""
-              fill
-              priority
-              className={styles.heroBgImg}
-              sizes="100vw"
-              unoptimized
-            />
-          </div>
-        ) : null}
-      </div>
+    <div className={styles.heroSection}>
+      {images && images.length > 1 ? (
+        <Swiper
+          className={styles.heroSwiper}
+          modules={[Autoplay, EffectFade]}
+          effect="fade"
+          fadeEffect={{ crossFade: true }}
+          loop
+          speed={1400}
+          autoplay={{ delay: 2800, disableOnInteraction: false }}
+        >
+          {images.map((src, index) => (
+            <SwiperSlide key={`${src}-${index}`} className={styles.heroSlide}>
+              <Image
+                src={src}
+                alt=""
+                fill
+                priority={index === 0}
+                className={styles.heroBgImg}
+                sizes="100vw"
+                unoptimized
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : images?.[0] ? (
+        <div className={styles.heroSlide}>
+          <Image
+            src={images[0]}
+            alt=""
+            fill
+            priority
+            className={styles.heroBgImg}
+            sizes="100vw"
+            unoptimized
+          />
+        </div>
+      ) : (
+        <div className={styles.heroFallbackBg} />
+      )}
 
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
+        <p className={styles.heroKicker}>
+          {isRTL ? "العقارات الفاخرة" : "Luxury Real Estate"}
+        </p>
         <h1 className={styles.heroTitle}>
-          {isRTL ? "\u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0627\u0644\u062c\u0627\u0647\u0632\u0629 \u0644\u0644\u0628\u064a\u0639" : "Ready To Move"}
+          {isRTL ? "عقارات جاهزة للبيع" : "Ready To Move"}
         </h1>
         <p className={styles.heroSubtitle}>
           {isRTL
-            ? "\u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0627\u0644\u062c\u0627\u0647\u0632\u0629 \u0644\u0644\u0628\u064a\u0639 \u0627\u0644\u0641\u0648\u0631\u064a \u0641\u064a \u062f\u0628\u064a \u0648\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0645\u062a\u062d\u062f\u0629"
+            ? "اكتشف العقارات الجاهزة للبيع الفوري في دبي والإمارات العربية المتحدة"
             : "Discover properties that are ready to move - resale and completed projects available now"}
         </p>
+        {!loading && projectCount > 0 && (
+          <div className={styles.heroCount}>
+            <span className={styles.heroCountNum}>{projectCount}</span>
+            <span className={styles.heroCountLabel}>
+              {isRTL ? "عقار متاح" : "Properties Available"}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -151,7 +162,7 @@ export default function SecondaryPage() {
   const locale = ctxLocale || "en";
   const isRTL = locale === "ar";
   const pathname = usePathname();
-  const { allProjects: sanityMergedProjects } = useAllProjects();
+  const { allProjects: sanityMergedProjects, loading } = useAllProjects();
 
   const [visitSeed, setVisitSeed] = React.useState(() =>
     Math.floor(Date.now() % 2147483647)
@@ -219,7 +230,7 @@ export default function SecondaryPage() {
 
   return (
     <div className={styles.page}>
-      <Hero isRTL={isRTL} images={heroImages} />
+      <Hero isRTL={isRTL} images={heroImages} projectCount={secondaryProjects.length} loading={loading} />
 
       <div className={styles.container}>
         <InlineSearch

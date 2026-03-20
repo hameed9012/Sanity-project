@@ -3,88 +3,14 @@
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "@/styles/MarketAnalysisMap/MarketAnalysisMap.module.css";
-import { PROJECT_DATA_MAP } from "@/lib/project-data";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
+import { useAllProjects } from "@/components/SanityProjectsContext";
 import { DUBAI_AREAS_GEOJSON } from "@/data/dubai-areas-geojson";
 
 /* ==========================================================================
-   Data extraction helpers (unchanged from original)
+   Price / area extraction helpers (used by buildMarketProjectsFromSanity)
 ========================================================================== */
-function extractLatLngFromProjectData(projectData, locale = "en") {
-  const localeData = projectData?.[locale];
-  const lat = localeData?.location?.lat;
-  const lng = localeData?.location?.lng;
-  if (typeof lat === "number" && !isNaN(lat) && typeof lng === "number" && !isNaN(lng)) {
-    return { lat, lng };
-  }
-  const enData = projectData?.en;
-  const enLat = enData?.location?.lat;
-  const enLng = enData?.location?.lng;
-  if (typeof enLat === "number" && !isNaN(enLat) && typeof enLng === "number" && !isNaN(enLng)) {
-    return { lat: enLat, lng: enLng };
-  }
-  return null;
-}
-
-function extractCompletionStatus(projectData, locale = "en") {
-  const localeData = projectData?.[locale];
-  const status = localeData?.project?.status || "";
-  const s = String(status).toLowerCase().trim();
-  if (s.includes("off-plan") || s.includes("off plan") || s.includes("offplan") || s.includes("تحت الإنشاء")) return "Off-plan";
-  if (s.includes("ready") || s.includes("existing") || s.includes("جاهز") || s.includes("قائم")) return "Ready";
-  if (s.includes("completed") || s.includes("منجز")) return "Completed";
-  if (s.includes("almost") || s.includes("شبه جاهز")) return "Almost Ready";
-  if (s.includes("launched") || s.includes("تم الإطلاق")) return "Just Launched";
-  return "Show All";
-}
-
-function extractPropertyType(projectData, locale = "en") {
-  const localeData = projectData?.[locale];
-  const type = localeData?.project?.type || "";
-  const units = localeData?.project?.units || "";
-  const combined = (type + " " + units).toLowerCase();
-  if (combined.includes("villa") || combined.includes("فيلا")) return "Villa";
-  if (combined.includes("penthouse") || combined.includes("penth") || combined.includes("بنتهاوس") || combined.includes("دوبلكس")) return "Penthouse";
-  if (combined.includes("commercial") || combined.includes("retail") || combined.includes("office") || combined.includes("تجاري") || combined.includes("مكتبي")) return "Commercial";
-  return "Apartment";
-}
-
-function extractStartingPrice(projectData) {
-  const enProject = projectData?.en?.project;
-  const enPrice = enProject?.startingPrice;
-  if (enPrice) { const parsed = parseAED(enPrice); if (parsed !== null && parsed > 0) return parsed; }
-  const arProject = projectData?.ar?.project;
-  const arPrice = arProject?.startingPrice;
-  if (arPrice) { const parsed = parseAED(arPrice); if (parsed !== null && parsed > 0) return parsed; }
-  const enPlans = projectData?.en?.floorPlans?.plans || [];
-  let minPrice = null;
-  for (const plan of enPlans) {
-    const planSpecs = plan.specs || {};
-    for (const key of ["Starting Price","Price","startingPrice","السعر الابتدائي","السعر"]) {
-      if (planSpecs[key]) {
-        const parsed = parseAED(planSpecs[key]);
-        if (parsed !== null && parsed > 0) { if (minPrice === null || parsed < minPrice) minPrice = parsed; }
-      }
-    }
-  }
-  return minPrice;
-}
-
-function extractPricePerSqft(projectData) {
-  const plans = projectData?.en?.floorPlans?.plans || [];
-  let minPpsf = null;
-  for (const plan of plans) {
-    const specs = plan.specs || {};
-    const area = extractAreaFromSpecs(specs);
-    const price = extractPriceFromSpecs(specs);
-    if (area !== null && price !== null && area > 0) {
-      const ppsf = price / area;
-      if (minPpsf === null || ppsf < minPpsf) minPpsf = ppsf;
-    }
-  }
-  return minPpsf;
-}
 
 function extractAreaFromSpecs(specs) {
   for (const key of ["Total Area","Area","المساحة الإجمالية","المساحة","Total","إجمالي المساحة","المساحة الكلية"]) {
@@ -100,53 +26,6 @@ function extractPriceFromSpecs(specs) {
   return null;
 }
 
-function extractBedroomRange(projectData) {
-  const plans = projectData?.en?.floorPlans?.plans || [];
-  let minBeds = Infinity, maxBeds = 0, hasStudio = false;
-  for (const plan of plans) {
-    let beds = plan.bedrooms;
-    if (typeof beds === "string") beds = parseFloat(beds);
-    if (beds === 0) { hasStudio = true; continue; }
-    if (typeof beds === "number" && !isNaN(beds) && beds > 0) {
-      minBeds = Math.min(minBeds, beds);
-      maxBeds = Math.max(maxBeds, beds);
-    }
-  }
-  return {
-    minBeds: minBeds === Infinity ? null : minBeds,
-    maxBeds: maxBeds === 0 ? null : maxBeds,
-    hasStudio,
-  };
-}
-
-function extractAreaRange(projectData) {
-  const plans = projectData?.en?.floorPlans?.plans || [];
-  let minArea = null, maxArea = null;
-  for (const plan of plans) {
-    const area = extractAreaFromSpecs(plan.specs || {});
-    if (area !== null && area > 0) {
-      if (minArea === null || area < minArea) minArea = area;
-      if (maxArea === null || area > maxArea) maxArea = area;
-    }
-  }
-  return { minArea, maxArea };
-}
-
-function extractSidebarData(projectData, locale = "en") {
-  const localeData = projectData?.[locale] || projectData?.en || {};
-  const project = localeData.project || {};
-  const location = localeData.location || {};
-  const gallery = localeData.gallery || {};
-  const heroImage = localeData.hero?.backgroundUrl || gallery?.slides?.[0]?.url || null;
-  return {
-    heroImage,
-    description: project.description || "",
-    community: location.community || location.area || "",
-    developer: project.developer || "",
-    completionDate: project.handover || project.completionDate || "",
-    paymentPlan: project.paymentPlan || "",
-  };
-}
 
 function parseAED(str) {
   if (typeof str === "number") return str;
@@ -169,43 +48,106 @@ function parseSqft(str) {
   return isNaN(n) ? null : n;
 }
 
-function buildMarketProjectsIndex(projectMap, locale = "en") {
-  const projects = [];
-  for (const [slug, projectData] of Object.entries(projectMap)) {
-    try {
-      const coords = extractLatLngFromProjectData(projectData, locale);
-      if (!coords) continue;
-      const localeData = projectData?.[locale] || projectData?.en || {};
-      const projectLocale = localeData.project || {};
-      const propertyType = extractPropertyType(projectData, locale);
-      const completionStatus = extractCompletionStatus(projectData, locale);
-      const startingPrice = extractStartingPrice(projectData);
-      const priceSqft = extractPricePerSqft(projectData);
-      const bedroomRange = extractBedroomRange(projectData);
-      const areaRange = extractAreaRange(projectData);
-      const sidebarData = extractSidebarData(projectData, locale);
-      projects.push({
-        slug, name: projectLocale.name || slug.replace(/-/g, " "),
-        lat: coords.lat, lng: coords.lng,
-        propertyType, completionStatus,
-        minBedrooms: bedroomRange.minBeds, maxBedrooms: bedroomRange.maxBeds,
-        hasStudio: bedroomRange.hasStudio, startingPrice, priceSqft,
-        minArea: areaRange.minArea, maxArea: areaRange.maxArea,
-        raw: projectData, sidebar: sidebarData,
-      });
-    } catch (e) { /* skip */ }
+/* ==========================================================================
+   Convert Sanity context projects → market index entries
+   Each entry from useAllProjects() is a normalized flat object with .data
+   holding the synthetic legacy-style payload.
+========================================================================== */
+function mapPropertyType(category) {
+  switch (category) {
+    case "villas": return "Villa";
+    case "penthouses": return "Penthouse";
+    case "commercial-retail": return "Commercial";
+    case "apartments": default: return "Apartment";
   }
-  return projects;
 }
 
-const MARKET_INDEX_CACHE = new Map();
+function mapCompletionStatus(status) {
+  if (!status) return "Show All";
+  const s = String(status).toLowerCase();
+  if (s.includes("off-plan") || s.includes("off plan")) return "Off-plan";
+  if (s.includes("ready")) return "Ready";
+  if (s.includes("completed")) return "Completed";
+  if (s.includes("almost")) return "Almost Ready";
+  if (s.includes("launched")) return "Just Launched";
+  if (s.includes("sold")) return "Completed";
+  return "Show All";
+}
 
-function getCachedMarketProjectsIndex(locale = "en") {
-  const key = String(locale || "en");
-  if (MARKET_INDEX_CACHE.has(key)) return MARKET_INDEX_CACHE.get(key);
-  const result = buildMarketProjectsIndex(PROJECT_DATA_MAP, key);
-  MARKET_INDEX_CACHE.set(key, result);
-  return result;
+function buildMarketProjectsFromSanity(sanityProjects, locale = "en") {
+  const results = [];
+  for (const sp of sanityProjects) {
+    try {
+      const lat = sp.data?.location?.lat;
+      const lng = sp.data?.location?.lng;
+      if (typeof lat !== "number" || typeof lng !== "number" || isNaN(lat) || isNaN(lng)) continue;
+
+      const name = locale === "ar" ? (sp.nameAr || sp.nameEn || sp.name) : (sp.nameEn || sp.name);
+      const propertyType = mapPropertyType(sp.category || sp.type);
+      const completionStatus = mapCompletionStatus(sp.status);
+      const startingPrice = sp.priceAED || sp.startingPriceAED || null;
+      const hasStudio = sp.minBedrooms === 0;
+
+      // Extract price per sqft from floor plans if available
+      let priceSqft = null;
+      const plans = sp.data?.floorPlans?.plans || [];
+      for (const plan of plans) {
+        const specs = plan.specs || {};
+        const area = extractAreaFromSpecs(specs);
+        const price = extractPriceFromSpecs(specs);
+        if (area && price && area > 0) {
+          const val = price / area;
+          if (priceSqft === null || val < priceSqft) priceSqft = val;
+        }
+      }
+
+      // Also try computing from flat floor plan data (size + price fields)
+      if (priceSqft === null && Array.isArray(sp.data?.floorPlans?.plans)) {
+        for (const plan of sp.data.floorPlans.plans) {
+          const sizeStr = plan.size || plan.specs?.["Total Area"] || "";
+          const priceStr = plan.price || plan.specs?.["Starting Price"] || "";
+          const area = parseSqft(sizeStr);
+          const price = parseAED(priceStr);
+          if (area && price && area > 0) {
+            const val = price / area;
+            if (priceSqft === null || val < priceSqft) priceSqft = val;
+          }
+        }
+      }
+
+      const heroImage = sp.heroImageUrl || sp.heroImage || sp.image || sp.data?.hero?.backgroundUrl || "";
+      const description = sp.data?.intro?.description || sp.data?.intro?.paragraphs?.[0] || "";
+      const community = sp.data?.location?.address || sp.location || "";
+      const developer = sp.developer || sp.data?.project?.developer || "";
+      const completionDate = sp.completionDate || sp.handover || "";
+      const paymentPlan = sp.paymentPlan || sp.data?.project?.paymentPlan || "";
+
+      results.push({
+        slug: sp.slug,
+        name,
+        lat, lng,
+        propertyType,
+        completionStatus,
+        minBedrooms: sp.minBedrooms,
+        maxBedrooms: sp.maxBedrooms,
+        hasStudio,
+        startingPrice,
+        priceSqft,
+        minArea: sp.sizeSqftMin,
+        maxArea: sp.sizeSqftMax,
+        raw: sp,
+        sidebar: {
+          heroImage,
+          description,
+          community,
+          developer,
+          completionDate,
+          paymentPlan,
+        },
+      });
+    } catch (e) { /* skip broken entries */ }
+  }
+  return results;
 }
 
 function buildGeoJSONAll(projects) {
@@ -399,8 +341,12 @@ export default function MarketAnalysisMap() {
   const [selectedArea, setSelectedArea] = useState(null);  // { name, stats }
   const [areaSidebarOpen, setAreaSidebarOpen] = useState(false);
 
-  // ── Projects data ──────────────────────────────────────────────────────
-  const allProjects = useMemo(() => getCachedMarketProjectsIndex(locale), [locale]);
+  // ── Projects data (live from Sanity CMS) ───────────────────────────────
+  const { allProjects: sanityProjects, loading: sanityLoading } = useAllProjects();
+  const allProjects = useMemo(
+    () => buildMarketProjectsFromSanity(sanityProjects || [], locale),
+    [sanityProjects, locale]
+  );
 
   const selectedProject = useMemo(() => {
     if (!selectedSlug) return null;
@@ -550,16 +496,27 @@ export default function MarketAnalysisMap() {
           id: "clusters", type: "circle", source: "market-points",
           filter: ["has", "point_count"],
           paint: {
-            "circle-color": ["step", ["get", "point_count"], "#60a5fa", 10, "#3b82f6", 30, "#1d4ed8"],
-            "circle-radius": ["step", ["get", "point_count"], 15, 10, 20, 30, 25],
-            "circle-opacity": 0.9, "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
+            // Small clusters → blue-ish, medium → amber/orange, large → red
+            "circle-color": [
+              "step", ["get", "point_count"],
+              "#60a5fa",   // 2-4:   light blue (just a few grouped)
+              5, "#a78bfa", // 5-9:   purple
+              10, "#f59e0b", // 10-19: amber/orange
+              20, "#f97316", // 20-34: deeper orange
+              35, "#ef4444", // 35-59: red
+              60, "#dc2626", // 60+:   dark red
+            ],
+            "circle-radius": [
+              "step", ["get", "point_count"],
+              16,     // 2-4
+              5, 18,  // 5-9
+              10, 22, // 10-19
+              20, 26, // 20-34
+              35, 30, // 35-59
+              60, 34, // 60+
+            ],
+            "circle-opacity": 0.92, "circle-stroke-width": 2.5, "circle-stroke-color": "#ffffff",
           },
-        });
-        map.addLayer({
-          id: "cluster-count", type: "symbol", source: "market-points",
-          filter: ["has", "point_count"],
-          layout: { "text-field": "{point_count_abbreviated}", "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"], "text-size": 12 },
-          paint: { "text-color": "#ffffff" },
         });
         map.addLayer({
           id: "market-dots", type: "circle", source: "market-points",
@@ -585,6 +542,22 @@ export default function MarketAnalysisMap() {
           paint: {
             "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 20, 10, 24, 14, 30],
             "circle-color": "transparent", "circle-stroke-width": 3, "circle-stroke-color": "#f59e0b", "circle-opacity": 1,
+          },
+        });
+
+        // Cluster count text — added LAST so it renders on top of all circles
+        map.addLayer({
+          id: "cluster-count", type: "symbol", source: "market-points",
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": ["to-string", ["get", "point_count"]],
+            "text-font": ["DIN Offc Pro Bold", "Arial Unicode MS Bold"],
+            "text-size": 14,
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+          },
+          paint: {
+            "text-color": "#ffffff",
           },
         });
 
@@ -679,6 +652,17 @@ export default function MarketAnalysisMap() {
         map.on("mouseleave", "market-dots", () => {
           map.getCanvas().style.cursor = "";
           map.setFilter("market-dots-hover", ["==", ["get", "slug"], ""]);
+        });
+
+        // Click on cluster → zoom in to expand it
+        map.on("click", "clusters", (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
+          if (!features.length) return;
+          const clusterId = features[0].properties.cluster_id;
+          map.getSource("market-points").getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+            map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom, duration: 500 });
+          });
         });
 
         // Cursor for other interactive layers
@@ -800,18 +784,16 @@ export default function MarketAnalysisMap() {
 
   const viewProjectDetails = useCallback(() => {
     if (!selectedProject) return;
-    // Build the correct URL path: /properties/{category}/{developer}/{slug}
-    const raw = selectedProject.raw || {};
-    const enProject = raw?.en?.project || {};
-    const status = String(enProject.status || "").toLowerCase();
-    let category = "offplan";
-    if (status.includes("ready") || status.includes("existing") || status.includes("completed")) category = "secondary";
-    const developerSlug = String(enProject.developer || "")
-      .toLowerCase()
-      .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") || "developer";
-    router.push(`/properties/${category}/${developerSlug}/${selectedProject.slug}`);
+    // Use the pre-built href from the Sanity context normalization
+    const href = selectedProject.raw?.href;
+    if (href) {
+      router.push(href);
+    } else {
+      // Fallback: build URL from available data
+      const category = selectedProject.raw?.category || "apartments";
+      const devSlug = selectedProject.raw?.developerSlug || "developer";
+      router.push(`/properties/${category}/${devSlug}/${selectedProject.slug}`);
+    }
   }, [selectedProject, router]);
 
   // Close dropdowns on outside click
@@ -1168,10 +1150,12 @@ export default function MarketAnalysisMap() {
       {/* ── Map shell ──────────────────────────────────────────────── */}
       <div className={styles.mapShell}>
         <div ref={mapContainerRef} className={styles.mapContainer}>
-          {!mapLoaded && (
+          {(!mapLoaded || sanityLoading) && (
             <div className={styles.mapLoading}>
               <div className={styles.loadingSpinner} />
-              {locale === "ar" ? "جاري تحميل الخريطة التفاعلية..." : "Loading interactive map..."}
+              {sanityLoading
+                ? (locale === "ar" ? "جاري تحميل المشاريع من Sanity..." : "Loading projects from Sanity...")
+                : (locale === "ar" ? "جاري تحميل الخريطة التفاعلية..." : "Loading interactive map...")}
             </div>
           )}
         </div>

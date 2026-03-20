@@ -49,7 +49,13 @@ const PROPERTY_QUERY = `
     bedrooms,
     size,
     price,
-    images[],
+    images[]{
+      ...,
+      cdnImage,
+      imageUpload{
+        asset->
+      }
+    },
   },
   lat,
   lng,
@@ -95,6 +101,27 @@ function normalizeProperty(item) {
       })
     : [];
 
+  // Normalize floor plan images: resolve each image object to a URL string
+  const floorPlans = Array.isArray(item.floorPlans)
+    ? item.floorPlans.map((plan) => {
+        if (!plan) return plan;
+        const images = Array.isArray(plan.images)
+          ? plan.images
+              .map((img) => {
+                if (typeof img === "string") return img;
+                return (
+                  img?.cdnImage?.url ||
+                  img?.url ||
+                  img?.imageUpload?.asset?.url ||
+                  ""
+                );
+              })
+              .filter(Boolean)
+          : [];
+        return { ...plan, images };
+      })
+    : item.floorPlans;
+
   return {
     ...item,
     heroImage:
@@ -103,6 +130,7 @@ function normalizeProperty(item) {
       item?.heroImageUpload?.asset?.url ||
       "",
     galleryImages,
+    floorPlans,
     priceAED: parsePriceToAED(item?.startingPrice),
     startingPriceAED: parsePriceToAED(item?.startingPrice),
   };
