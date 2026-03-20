@@ -50,8 +50,8 @@
 
 .projectCard:hover {
   transform: translateY(-8px);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.12);
-  border-color: rgba(201, 163, 91, 0.25);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.12), inset 0 0 0 1.5px rgba(201, 163, 91, 0.45);
+  border-color: rgba(201, 163, 91, 0.5);
 }
 
 /* Media Wrapper (TALLER hero image) */

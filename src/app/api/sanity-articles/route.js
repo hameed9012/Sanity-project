@@ -17,6 +17,7 @@ export async function GET() {
         readTime,
         readTimeAr,
         featured,
+        featuredLogo,
         sections,
         body,
         bodyAr,

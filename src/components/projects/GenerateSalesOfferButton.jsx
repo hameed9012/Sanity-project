@@ -98,9 +98,11 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) 
     "sales-offer";
 
   const heroBg = d?.hero?.backgroundUrl || "";
+  const firstSlide = d?.gallery?.slides?.[0];
+  const firstSlideUrl = typeof firstSlide === "string" ? firstSlide : firstSlide?.url || "";
   const coverImage = !isProbablyVideo(heroBg)
     ? heroBg
-    : d?.intro?.imgUrl || d?.gallery?.slides?.[0] || "";
+    : d?.intro?.imgUrl || firstSlideUrl || "";
 
   const developerSlugGuess =
     projectData?.project?.developerSlug ||
@@ -264,7 +266,11 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) 
       location: d?.location?.address || d?.project?.location || "",
     },
     facts,
-    gallery: Array.isArray(d?.gallery?.slides) ? d.gallery.slides : [],
+    gallery: Array.isArray(d?.gallery?.slides)
+      ? d.gallery.slides
+          .map((s) => (typeof s === "string" ? s : s?.url || ""))
+          .filter(Boolean)
+      : [],
     floorPlans: convertedFloorPlans,
     amenities,
   };

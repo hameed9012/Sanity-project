@@ -71,6 +71,13 @@ export default defineType({
         "Toggle ON to show this article in the Press Releases slider on the homepage. Make sure the article has a Main Image or Hero Image set.",
       initialValue: false,
     }),
+    defineField({
+      name: "featuredLogo",
+      title: "Featured Logo / Crest URL",
+      type: "string",
+      description:
+        "BunnyCDN URL for a company logo or crest to display on the Press Releases slider card (e.g. https://luxury-real-estate-media.b-cdn.net/logos/company.png).",
+    }),
 
     defineField({
       name: "mainImage",

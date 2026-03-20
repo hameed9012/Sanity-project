@@ -310,8 +310,8 @@
 
 .articleCard:hover {
   transform: translateY(-10px);
-  border-color: rgba(215, 180, 106, 0.3);
-  box-shadow: 0 20px 40px rgba(215, 180, 106, 0.15);
+  border-color: rgba(215, 180, 106, 0.5);
+  box-shadow: 0 20px 40px rgba(215, 180, 106, 0.15), inset 0 0 0 1.5px rgba(215, 180, 106, 0.45);
 }
 
 /* Image Container */

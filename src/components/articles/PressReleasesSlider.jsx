@@ -32,6 +32,7 @@ function normalizeSanityArticle(article, locale) {
       article?.hero?.image ||
       article?.image ||
       DEFAULT_PRESS_IMAGE,
+    logo: article?.featuredLogo || "",
     publishedOn: article?.publishedAt
       ? new Date(article.publishedAt).toLocaleDateString(
           isAr ? "ar-AE" : "en-US",
@@ -181,6 +182,7 @@ export default function PressReleasesSlider() {
                             src={article.image}
                             alt={article.title}
                             fill
+                            unoptimized
                             className={`${styles.image} ${styles.onlyDesk}`}
                             sizes="(max-width: 768px) 0px, (max-width: 1200px) 70vw, 900px"
                           />
@@ -188,6 +190,7 @@ export default function PressReleasesSlider() {
                             src={article.image}
                             alt={article.title}
                             fill
+                            unoptimized
                             className={`${styles.image} ${styles.onlyMob}`}
                             sizes="100vw"
                           />
@@ -211,6 +214,20 @@ export default function PressReleasesSlider() {
                           {article.title}
                         </div>
                       )}
+
+                      {/* LOGO BADGE */}
+                      {article.logo ? (
+                        <div className={styles.logoBadge}>
+                          <Image
+                            src={article.logo}
+                            alt=""
+                            width={56}
+                            height={44}
+                            unoptimized
+                            style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                          />
+                        </div>
+                      ) : null}
                     </div>
 
                     {/* CONTENT */}

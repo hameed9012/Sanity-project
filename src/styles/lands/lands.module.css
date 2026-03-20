@@ -232,8 +232,8 @@
 
 .card:hover {
   transform: translateY(-4px);
-  border-color: rgba(201, 162, 106, 0.32);
-  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.035);
+  border-color: rgba(201, 162, 106, 0.5);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.035), inset 0 0 0 1.5px rgba(201, 162, 106, 0.45);
 }
 
 .card:focus {
