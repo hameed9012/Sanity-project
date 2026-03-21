@@ -343,8 +343,8 @@ export default function ProjectIntro({
                     </a>
                   ))}
 
-                  {rawProjectData ? (
-                    <GenerateSalesOfferButton projectData={rawProjectData} />
+                  {projectData ? (
+                    <GenerateSalesOfferButton projectData={projectData} />
                   ) : null}
                 </div>
               </div>

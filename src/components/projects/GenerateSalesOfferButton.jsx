@@ -85,34 +85,222 @@ function maybeConvertMoneyString(value, currency, fxRate, locale) {
   return formatCurrency(converted, currency, locale);
 }
 
-function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) {
+function formatCreationDate() {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = String(now.getFullYear());
+  return `${dd}.${mm}.${yyyy}`;
+}
+
+function uniqueStrings(values) {
+  return [...new Set((Array.isArray(values) ? values : []).map((value) => String(value || "").trim()).filter(Boolean))];
+}
+
+function looksLikeImage(url) {
+  const value = String(url || "").toLowerCase();
+  if (!value) return false;
+  return !isProbablyVideo(value) && !value.endsWith(".pdf");
+}
+
+function getImageUrl(item) {
+  if (!item) return "";
+  if (typeof item === "string") return item;
+  return item?.url || item?.src || item?.href || item?.image || "";
+}
+
+function getProjectName(d) {
+  return (
+    d?.project?.name ||
+    d?.title ||
+    d?.name ||
+    ""
+  );
+}
+
+function getProjectSlug(d) {
+  const raw =
+    d?.seo?.canonical ||
+    d?.project?.slug ||
+    d?.slug ||
+    d?.projectSlug ||
+    getProjectName(d)?.toLowerCase?.()?.replace(/\s+/g, "-") ||
+    "sales-offer";
+
+  return typeof raw === "string" ? raw : raw?.current || "sales-offer";
+}
+
+function getProjectDeveloper(d) {
+  return d?.project?.developer || d?.developer || "";
+}
+
+function getProjectLocation(d) {
+  return (
+    d?.location?.address ||
+    d?.project?.location ||
+    d?.location ||
+    ""
+  );
+}
+
+function getHeroImage(d) {
+  return (
+    d?.hero?.backgroundUrl ||
+    d?.hero?.squareImageUrl ||
+    d?.heroImage ||
+    ""
+  );
+}
+
+function collectProjectImages(d) {
+  const slides = Array.isArray(d?.gallery?.slides) ? d.gallery.slides : [];
+  const floorPlans = Array.isArray(d?.floorPlans?.plans) ? d.floorPlans.plans : [];
+  const galleryImages = Array.isArray(d?.galleryImages) ? d.galleryImages : [];
+
+  return uniqueStrings([
+    getHeroImage(d),
+    d?.intro?.imgUrl,
+    ...slides.map((item) => getImageUrl(item)),
+    ...galleryImages.map((item) => getImageUrl(item)),
+    ...floorPlans.flatMap((plan) => (Array.isArray(plan?.images) ? plan.images : [])),
+  ]).filter(looksLikeImage);
+}
+
+function parsePaymentPlanStages(value) {
+  const text = String(value || "").trim();
+  if (!text) return [];
+
+  const percents = text.match(/\d+(?:\.\d+)?%/g) || [];
+  if (!percents.length) {
+    return [{ percent: text, caption: "Payment plan" }];
+  }
+
+  return percents.map((percent, index) => ({
+    percent,
+    caption:
+      index === 0
+        ? "Booking / during construction"
+        : index === percents.length - 1
+        ? "On handover"
+        : `Stage ${index + 1}`,
+  }));
+}
+
+function buildUnitRows(floorPlans, pdfLocale, chosenCurrency, fxRate, targetUnit) {
+  const groups = new Map();
+
+  floorPlans.forEach((plan) => {
+    const specs = plan?.specs || {};
+    const label = plan?.title || plan?.name || "Unit";
+    const key = String(label).trim().toLowerCase();
+    const current = groups.get(key) || {
+      unitType: label,
+      bedrooms: plan?.bedrooms ?? specs.Bedrooms ?? "-",
+      amountCount: 0,
+      areas: [],
+      prices: [],
+    };
+
+    current.amountCount += 1;
+
+    const rawArea =
+      specs["Total Area"] ||
+      specs.Area ||
+      specs.Size ||
+      plan?.size ||
+      "";
+    const rawPrice =
+      specs["Starting Price"] ||
+      specs["Price From"] ||
+      plan?.price ||
+      "";
+
+    if (rawArea) current.areas.push(rawArea);
+    if (rawPrice) current.prices.push(rawPrice);
+    groups.set(key, current);
+  });
+
+  return Array.from(groups.values()).map((group) => {
+    const area = group.areas[0]
+      ? convertAreaString(group.areas[0], targetUnit, pdfLocale)
+      : "";
+    const priceFrom = group.prices[0]
+      ? maybeConvertMoneyString(group.prices[0], chosenCurrency, fxRate, pdfLocale)
+      : "";
+
+    return {
+      unitType: group.unitType,
+      bedrooms: group.bedrooms,
+      amount: `${group.amountCount}/${group.amountCount}`,
+      area,
+      priceFrom,
+    };
+  });
+}
+
+async function fetchDeveloperProfile(projectData) {
+  const developerName =
+    projectData?.project?.developer ||
+    projectData?.developer ||
+    "";
+
+  const developerSlug =
+    projectData?.developerSlug ||
+    developerName
+      .toLowerCase()
+      .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+  try {
+    if (developerSlug) {
+      const bySlug = await fetch(`/api/sanity-developer?slug=${encodeURIComponent(developerSlug)}`, {
+        cache: "no-store",
+      });
+      if (bySlug.ok) {
+        const json = await bySlug.json();
+        if (json) return json;
+      }
+    }
+
+    const all = await fetch("/api/sanity-developer", { cache: "no-store" });
+    if (!all.ok) return null;
+    const list = await all.json();
+
+    return (Array.isArray(list) ? list : []).find((item) => {
+      const haystack = `${item?.name || ""} ${item?.slug || ""}`.toLowerCase();
+      return developerName && haystack.includes(String(developerName).toLowerCase());
+    }) || null;
+  } catch {
+    return null;
+  }
+}
+
+function buildSalesOfferPayload(projectData, prefs, currentLocale, siteData, developerData) {
   const pdfLocale = prefs?.pdfLang || currentLocale;
   const d = pickLocaleBlock(projectData, pdfLocale) || {};
 
-  const projectName = d?.project?.name || "Project";
-  const projectSlug =
-    d?.seo?.canonical ||
-    d?.project?.slug ||
-    d?.projectSlug ||
-    d?.project?.name?.toLowerCase?.()?.replace(/\s+/g, "-") ||
-    "sales-offer";
+  const projectName = getProjectName(d) || "Project";
+  const projectSlug = getProjectSlug(d);
 
-  const heroBg = d?.hero?.backgroundUrl || "";
+  const heroBg = getHeroImage(d);
   const firstSlide = d?.gallery?.slides?.[0];
   const firstSlideUrl = typeof firstSlide === "string" ? firstSlide : firstSlide?.url || "";
   const coverImage = !isProbablyVideo(heroBg)
     ? heroBg
-    : d?.intro?.imgUrl || firstSlideUrl || "";
+    : d?.intro?.imgUrl || firstSlideUrl || collectProjectImages(d)[0] || "";
 
   const developerSlugGuess =
     projectData?.project?.developerSlug ||
     projectData?.project?.developer?.slug ||
     projectData?.project?.developer ||
-    d?.project?.developer ||
+    getProjectDeveloper(d) ||
     "";
 
   const amenitiesRaw = Array.isArray(d?.amenities?.amenities)
     ? d.amenities.amenities
+    : Array.isArray(d?.amenities)
+    ? d.amenities
     : [];
 
   const amenities = injectAmenityIcons({
@@ -128,69 +316,19 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) 
     (Array.isArray(d?.intro?.paragraphs)
       ? d.intro.paragraphs.join("\n\n")
       : "") ||
+    d?.intro?.description ||
+    d?.description ||
     d?.seo?.description ||
     "";
 
   const chosenCurrency = prefs?.currency || "AED";
   const fxRate = prefs?.fx?.rate;
-
-  const facts = [
-    prefs?.displaySettings?.developer === false
-      ? null
-      : d?.project?.developer
-        ? {
-            label: pdfLocale === "ar" ? "المطور" : "Developer",
-            value: d.project.developer,
-          }
-        : null,
-
-    d?.project?.location
-      ? {
-          label: pdfLocale === "ar" ? "الموقع" : "Location",
-          value: d.project.location,
-        }
-      : null,
-
-    prefs?.displaySettings?.unitPrices === false
-      ? null
-      : d?.project?.startingPrice
-        ? {
-            label: pdfLocale === "ar" ? "السعر الابتدائي" : "Starting price",
-            value: maybeConvertMoneyString(
-              d.project.startingPrice,
-              chosenCurrency,
-              fxRate,
-              pdfLocale
-            ),
-          }
-        : null,
-
-    d?.project?.completionDate
-      ? {
-          label: pdfLocale === "ar" ? "التسليم" : "Handover",
-          value: d.project.completionDate,
-        }
-      : null,
-
-    d?.project?.paymentPlan
-      ? {
-          label: pdfLocale === "ar" ? "خطة الدفع" : "Payment plan",
-          value: d.project.paymentPlan,
-        }
-      : null,
-
-    d?.project?.units
-      ? {
-          label: pdfLocale === "ar" ? "الوحدات" : "Units",
-          value: d.project.units,
-        }
-      : null,
-  ].filter(Boolean);
-
   const targetUnit = prefs?.measureUnit || "ft2";
 
   const floorPlans = Array.isArray(d?.floorPlans?.plans)
     ? d.floorPlans.plans
+    : Array.isArray(d?.floorPlans)
+    ? d.floorPlans
     : [];
 
   const convertedFloorPlans = floorPlans.map((p) => {
@@ -233,6 +371,31 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) 
     return { ...p, specs };
   });
 
+  const projectImages = collectProjectImages(d);
+  const developerDescription = Array.isArray(developerData?.about)
+    ? developerData.about.join("\n\n")
+    : developerData?.about || developerData?.description || "";
+  const developerImages = uniqueStrings([
+    developerData?.heroImageUrl,
+    developerData?.coverImage,
+    developerData?.coverImageUrl,
+  ]).filter(looksLikeImage);
+  const masterplanUrl =
+    d?.masterplan?.url ||
+    d?.masterplanUrl ||
+    (Array.isArray(d?.intro?.brochures)
+      ? d.intro.brochures.find((item) =>
+          String(item?.type || "").toLowerCase().includes("master")
+        )?.url
+      : "");
+  const paymentPlanValue = d?.project?.paymentPlan || "";
+  const descriptionParts = generalFacts
+    ? String(generalFacts)
+        .split(/\n\s*\n/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
+
   return {
     locale: pdfLocale,
     projectSlug: String(projectSlug)
@@ -240,37 +403,68 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteContact) 
       .replaceAll("properties", ""),
     projectName,
     coverImage,
+    overviewImage:
+      d?.intro?.imgUrl || d?.hero?.squareImageUrl || projectImages[0] || coverImage,
     createdAtLabel: pdfLocale === "ar" ? "تاريخ الإنشاء" : "Date of creation",
-    createdAtValue: new Date().toLocaleDateString(
-      pdfLocale === "ar" ? "ar" : "en"
-    ),
-    preferences: {
-      pdfLang: pdfLocale,
-      currency: chosenCurrency,
-      measureUnit: targetUnit,
-      displaySettings: prefs?.displaySettings || {},
-      fx: prefs?.fx || null,
-    },
+    createdAtValue: formatCreationDate(),
     agent: {
       name: "Mohamad Kodmani",
       company: "Mohamad Kodmani Real Estate Brokers LLC",
-      phone: siteContact?.whatsapp || siteContact?.phone || "",
-      email: siteContact?.email || "",
-      avatar: "https://luxury-real-estate-media.b-cdn.net/agents/mohamad.jpg",
+      phone: siteData?.contact?.whatsapp || siteData?.contact?.phone || "",
+      email: siteData?.contact?.email || "",
+      avatar:
+        siteData?.artOfDetail?.ownerImageUrl ||
+        "https://luxury-real-estate-media.b-cdn.net/agents/mohamad.jpg",
     },
-    sections: {
+    developer: {
+      name: developerData?.name || getProjectDeveloper(d) || "",
+      logo: developerData?.logoUrl || "",
+      description: developerDescription,
+      images: developerImages,
+    },
+    description: generalFacts,
+    finishing: d?.project?.finishing || d?.finishing || "",
+    kitchen: d?.project?.kitchen || d?.kitchen || "",
+    furnishing: d?.project?.furnishing || d?.furnishing || "",
+    gallery: projectImages,
+    location: {
+      address: getProjectLocation(d),
+      district: getProjectLocation(d),
+      lat: d?.location?.lat || d?.lat || null,
+      lng: d?.location?.lng || d?.lng || null,
+    },
+    locationDescription:
+      d?.location?.description ||
+      d?.location?.benefits ||
+      d?.description ||
+      descriptionParts.slice(1).join("\n\n") ||
       generalFacts,
-      finishing: d?.project?.finishing || d?.finishing || "",
-      kitchen: d?.project?.kitchen || d?.kitchen || "",
-      furnishing: d?.project?.furnishing || d?.furnishing || "",
-      location: d?.location?.address || d?.project?.location || "",
-    },
-    facts,
-    gallery: Array.isArray(d?.gallery?.slides)
-      ? d.gallery.slides
-          .map((s) => (typeof s === "string" ? s : s?.url || ""))
-          .filter(Boolean)
+    masterplanImage: masterplanUrl,
+    paymentPlanText: paymentPlanValue || d?.paymentPlan || "",
+    paymentPlans: paymentPlanValue
+      ? [
+          {
+            title: paymentPlanValue,
+            summary: `Structured directly from Sanity payment-plan data for ${projectName}.`,
+            stages: parsePaymentPlanStages(paymentPlanValue),
+          },
+        ]
+      : d?.paymentPlan
+      ? [
+          {
+            title: d.paymentPlan,
+            summary: `Structured directly from Sanity payment-plan data for ${projectName}.`,
+            stages: parsePaymentPlanStages(d.paymentPlan),
+          },
+        ]
       : [],
+    unitRows: buildUnitRows(
+      convertedFloorPlans,
+      pdfLocale,
+      chosenCurrency,
+      fxRate,
+      targetUnit
+    ),
     floorPlans: convertedFloorPlans,
     amenities,
   };
@@ -280,7 +474,7 @@ export default function GenerateSalesOfferButton({ projectData }) {
   const { locale } = useLanguage();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
-  const [siteContact, setSiteContact] = useState(null);
+  const [siteData, setSiteData] = useState(null);
 
   const on = null;
 
@@ -291,7 +485,7 @@ export default function GenerateSalesOfferButton({ projectData }) {
         const res = await fetch("/api/site-settings", { cache: "no-store" });
         const json = await res.json();
         if (active && json?.ok) {
-          setSiteContact(json?.data?.contact || null);
+          setSiteData(json?.data || null);
         }
       } catch {}
     })();
@@ -305,7 +499,14 @@ export default function GenerateSalesOfferButton({ projectData }) {
       setOpen(false);
       setBusy(true);
 
-      const payload = buildSalesOfferPayload(projectData, prefs, locale, siteContact);
+      const developerData = await fetchDeveloperProfile(projectData);
+      const payload = buildSalesOfferPayload(
+        projectData,
+        prefs,
+        locale,
+        siteData,
+        developerData
+      );
 
       const res = await fetch("/api/sales-offer", {
         method: "POST",
@@ -347,7 +548,7 @@ export default function GenerateSalesOfferButton({ projectData }) {
           justifyContent: "space-between",
           width: "100%",
           cursor: busy ? "not-allowed" : "pointer",
-          opacity: busy ? 0.7 : 1
+          opacity: busy ? 0.7 : 1,
         }}
       >
         <span className={styles.brochureText}>

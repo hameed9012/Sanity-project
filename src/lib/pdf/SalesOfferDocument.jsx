@@ -1,16 +1,6 @@
 import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  Font,
-  Link,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, StyleSheet, Font } from "@react-pdf/renderer";
 
-/* ─── Font Registration ──────────────────────────────────────── */
 Font.register({
   family: "NotoSansArabic",
   fonts: [
@@ -43,1101 +33,892 @@ Font.register({
   ],
 });
 
-/* Disable hyphenation */
 Font.registerHyphenationCallback((word) => [word]);
 
-/* ─── Brand Palette ──────────────────────────────────────────── */
-const GOLD = "#C9A35A";
-const GOLD_LIGHT = "#F5ECD7";
-const DARK = "#1A1A1A";
 const WHITE = "#FFFFFF";
-const MUTED = "#6B7280";
-const LIGHT_BG = "#F8F7F4";
-const BORDER = "#E8E5DF";
+const BLACK = "#121212";
+const TEXT = "#2E2E2E";
+const MUTED = "#8D8D8D";
+const LIGHT = "#F3F3F3";
+const BORDER = "#E4E4E4";
+const COVER = "#1C2432";
+const LANDSCAPE_WIDTH = 841.89;
+const LANDSCAPE_HEIGHT = 595.28;
 
-/* ─── Styles ─────────────────────────────────────────────────── */
 const S = StyleSheet.create({
-  /* COVER PAGE */
   coverPage: {
     position: "relative",
+    backgroundColor: COVER,
     padding: 0,
-    width: "100%",
-    height: "100%",
+    width: LANDSCAPE_WIDTH,
+    height: LANDSCAPE_HEIGHT,
+    overflow: "hidden",
   },
-  coverImage: {
+  fullPageImage: {
     position: "absolute",
     top: 0,
     left: 0,
-    width: "100%",
-    height: "100%",
+    width: LANDSCAPE_WIDTH,
+    height: LANDSCAPE_HEIGHT,
     objectFit: "cover",
   },
-  coverDarkOverlay: {
+  coverFadeBottom: {
     position: "absolute",
-    bottom: 0,
     left: 0,
-    width: "100%",
-    height: "60%",
-    backgroundColor: "rgba(0,0,0,0.55)",
+    right: 0,
+    bottom: 0,
+    height: 0,
+    backgroundColor: "transparent",
+  },
+  coverFadeMid: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 0,
+    backgroundColor: "transparent",
   },
   coverContent: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    padding: "0 40 30 40",
-  },
-  coverBadge: {
-    fontSize: 9,
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    color: GOLD,
-    marginBottom: 8,
-    fontFamily: "Inter",
-    fontWeight: 600,
-  },
-  coverTitle: {
-    fontSize: 36,
-    fontWeight: 700,
-    color: WHITE,
-    marginBottom: 6,
-    lineHeight: 1.15,
-    fontFamily: "Inter",
-  },
-  coverLocation: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.8)",
-    marginBottom: 20,
-    fontFamily: "Inter",
-  },
-  coverDivider: {
-    width: 50,
-    height: 2,
-    backgroundColor: GOLD,
-    marginBottom: 20,
-  },
-
-  /* AGENT CARD (on cover) */
-  agentCardCover: {
+    left: 38,
+    right: 38,
+    bottom: 28,
     flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: "rgba(255,255,255,0.12)",
-    borderRadius: 12,
-    padding: "12 16",
-    border: "1px solid rgba(255,255,255,0.15)",
-    maxWidth: 320,
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
-  agentAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    objectFit: "cover",
-    border: `2px solid ${GOLD}`,
+  coverLeft: {
+    width: 420,
   },
-  agentNameCover: {
-    fontSize: 12,
-    fontWeight: 700,
+  coverLine: {
+    fontSize: 20,
     color: WHITE,
-    fontFamily: "Inter",
+    fontWeight: 600,
+    marginBottom: 8,
+  },
+  coverBrand: {
+    fontSize: 27,
+    color: WHITE,
+    fontWeight: 700,
+    lineHeight: 1.15,
+    marginBottom: 8,
+  },
+  coverDate: {
+    fontSize: 9,
+    color: "rgba(255,255,255,0.88)",
+  },
+  coverAgentWrap: {
+    width: 290,
+    paddingTop: 38,
+  },
+  coverAgentCard: {
+    backgroundColor: "rgba(255,255,255,0.78)",
+    borderRadius: 22,
+    paddingTop: 38,
+    paddingRight: 20,
+    paddingBottom: 18,
+    paddingLeft: 20,
+  },
+  coverAgentAvatar: {
+    position: "absolute",
+    top: -22,
+    left: 20,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    border: "4 solid #FFFFFF",
+    objectFit: "cover",
+    backgroundColor: "#E5E5E5",
+  },
+  coverAgentName: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: BLACK,
+    marginBottom: 3,
+  },
+  coverAgentMeta: {
+    fontSize: 10,
+    color: "#4B4B4B",
     marginBottom: 2,
   },
-  agentCompanyCover: {
-    fontSize: 8,
-    color: GOLD,
-    fontFamily: "Inter",
-    marginBottom: 2,
-  },
-  agentContactCover: {
-    fontSize: 8,
-    color: "rgba(255,255,255,0.7)",
-    fontFamily: "Inter",
-  },
-
-  /* CONTENT PAGES */
   page: {
-    padding: "40 40 60 40",
-    fontSize: 10,
-    color: DARK,
+    paddingTop: 24,
+    paddingRight: 28,
+    paddingBottom: 24,
+    paddingLeft: 28,
     backgroundColor: WHITE,
-    fontFamily: "Inter",
-    position: "relative",
-  },
-  pageAlt: {
-    padding: "40 40 60 40",
+    color: TEXT,
     fontSize: 10,
-    color: DARK,
-    backgroundColor: LIGHT_BG,
-    fontFamily: "Inter",
-    position: "relative",
   },
-
-  /* PAGE HEADER */
-  pageHeader: {
+  pageChrome: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 28,
-    paddingBottom: 12,
-    borderBottom: `1.5px solid ${GOLD}`,
+    marginBottom: 16,
   },
-  pageHeaderLeft: {
+  pageChromeLeft: {
+    fontSize: 8,
+    color: MUTED,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  pageChromeRight: {
+    fontSize: 8,
+    color: MUTED,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  splitRow: {
+    flexDirection: "row",
+    height: 500,
+  },
+  imageCol: {
+    width: "42%",
+    paddingRight: 18,
+  },
+  bodyCol: {
+    width: "58%",
+    paddingLeft: 10,
+  },
+  sectionImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+  },
+  title: {
+    fontSize: 27,
+    lineHeight: 1.15,
+    fontWeight: 700,
+    color: BLACK,
+    marginBottom: 12,
+  },
+  metaRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    marginBottom: 10,
   },
-  pageHeaderDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: GOLD,
+  logo: {
+    width: 34,
+    height: 34,
+    objectFit: "contain",
+    marginRight: 10,
   },
-  pageHeaderTitle: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: DARK,
-    letterSpacing: 2.5,
-    textTransform: "uppercase",
-    fontFamily: "Inter",
+  bigLogo: {
+    width: 72,
+    height: 72,
+    objectFit: "contain",
+    marginRight: 16,
   },
-  pageHeaderRight: {
+  metaLabel: {
     fontSize: 8,
     color: MUTED,
-    fontFamily: "Inter",
-  },
-
-  /* SECTION TITLES */
-  sectionLabel: {
-    fontSize: 8,
-    letterSpacing: 3,
+    letterSpacing: 1.1,
     textTransform: "uppercase",
-    color: GOLD,
-    marginBottom: 6,
+    marginBottom: 2,
+  },
+  metaValue: {
+    fontSize: 11,
+    color: TEXT,
     fontWeight: 600,
-    fontFamily: "Inter",
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: 700,
-    color: DARK,
-    marginBottom: 16,
-    lineHeight: 1.2,
-    fontFamily: "Inter",
-  },
-
-  /* FACTS TABLE */
-  factsTable: {
-    marginBottom: 20,
-    borderRadius: 8,
+  table: {
+    marginTop: 12,
+    borderRadius: 10,
     overflow: "hidden",
-    border: `1px solid ${BORDER}`,
+    border: `1 solid ${BORDER}`,
   },
-  factsRow: {
+  trHead: {
     flexDirection: "row",
-    borderBottom: `1px solid ${BORDER}`,
+    backgroundColor: LIGHT,
+    borderBottom: `1 solid ${BORDER}`,
   },
-  factsRowAlt: {
+  tr: {
     flexDirection: "row",
-    borderBottom: `1px solid ${BORDER}`,
-    backgroundColor: LIGHT_BG,
+    borderBottom: `1 solid ${BORDER}`,
   },
-  factsLabel: {
-    width: "40%",
-    padding: "10 14",
+  cellHead: {
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
+    fontSize: 8,
+    color: MUTED,
+    textTransform: "uppercase",
+  },
+  cell: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 8,
+    paddingRight: 8,
+    fontSize: 9,
+    color: TEXT,
+  },
+  c1: { width: "24%" },
+  c2: { width: "12%" },
+  c3: { width: "16%" },
+  c4: { width: "20%" },
+  c5: { width: "28%" },
+  factStack: {
+    marginBottom: 18,
+  },
+  factTitle: {
     fontSize: 9,
     color: MUTED,
-    fontWeight: 600,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
-    fontFamily: "Inter",
-    borderRight: `1px solid ${BORDER}`,
+    marginBottom: 4,
   },
-  factsValue: {
-    flex: 1,
-    padding: "10 14",
-    fontSize: 10,
-    color: DARK,
-    fontWeight: 600,
-    fontFamily: "Inter",
+  factText: {
+    fontSize: 11,
+    lineHeight: 1.6,
+    color: TEXT,
   },
-
-  /* DESCRIPTION TEXT */
-  descText: {
-    fontSize: 10,
+  longText: {
+    fontSize: 11,
+    lineHeight: 1.7,
+    color: "#404040",
+  },
+  fullImage: {
+    width: "100%",
+    height: 520,
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+  },
+  twinRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 520,
+  },
+  twinImage: {
+    width: "48.8%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+  },
+  mixedRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 520,
+  },
+  mixedLeft: {
+    width: "38%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+  },
+  mixedRight: {
+    width: "59%",
+    justifyContent: "space-between",
+  },
+  mixedRightImage: {
+    width: "100%",
+    height: "48.7%",
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+  },
+  sideHeadingCol: {
+    width: "34%",
+    paddingRight: 18,
+  },
+  sideBodyCol: {
+    width: "66%",
+  },
+  sideHeading: {
+    fontSize: 28,
+    lineHeight: 1.1,
+    fontWeight: 700,
+    color: BLACK,
+    marginBottom: 10,
+  },
+  sideCaption: {
+    fontSize: 11,
     lineHeight: 1.7,
     color: "#444444",
-    fontFamily: "Inter",
   },
-
-  /* TWO COLUMN */
-  twoCol: {
-    flexDirection: "row",
-    gap: 20,
-  },
-  col: { flex: 1 },
-
-  /* DETAIL BLOCK */
-  detailBlock: {
-    marginBottom: 16,
-    padding: "14 16",
-    backgroundColor: WHITE,
-    borderRadius: 8,
-    border: `1px solid ${BORDER}`,
-  },
-  detailLabel: {
-    fontSize: 8,
-    color: GOLD,
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 6,
-    fontFamily: "Inter",
-  },
-  detailValue: {
-    fontSize: 9.5,
-    color: "#444",
-    lineHeight: 1.6,
-    fontFamily: "Inter",
-  },
-
-  /* GALLERY */
-  galleryFull: {
+  mapImage: {
     width: "100%",
-    height: 280,
-    borderRadius: 8,
+    height: "100%",
     objectFit: "cover",
-    marginBottom: 10,
+    borderRadius: 10,
+    backgroundColor: LIGHT,
   },
-  galleryHalf: {
-    width: "49%",
-    height: 180,
-    borderRadius: 8,
-    objectFit: "cover",
-  },
-  galleryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  galleryThird: {
-    width: "32%",
-    height: 150,
-    borderRadius: 8,
-    objectFit: "cover",
-  },
-
-  /* AMENITIES */
   amenGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    justifyContent: "space-between",
+    alignContent: "space-between",
+    height: 500,
   },
-  amenChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    border: `1px solid ${BORDER}`,
+  amenCard: {
+    width: "31.7%",
+    height: 156,
+    borderRadius: 10,
+    border: `1 solid ${BORDER}`,
     backgroundColor: WHITE,
+    padding: 14,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  amenIcon: { width: 16, height: 16, opacity: 0.8 },
-  amenLabel: {
-    fontSize: 9,
-    color: DARK,
-    fontFamily: "Inter",
+  amenLeadCard: {
+    backgroundColor: LIGHT,
+    justifyContent: "center",
   },
-
-  /* FLOOR PLAN */
-  floorPlanImage: {
-    width: "100%",
-    height: 320,
+  amenLead: {
+    fontSize: 22,
+    lineHeight: 1.15,
+    fontWeight: 700,
+    color: BLACK,
+  },
+  amenImageBox: {
+    height: 84,
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  amenImage: {
+    width: 54,
+    height: 54,
     objectFit: "contain",
-    marginBottom: 14,
   },
-  specsGrid: {
+  amenText: {
+    fontSize: 14,
+    lineHeight: 1.35,
+    fontWeight: 600,
+    color: TEXT,
+    textAlign: "center",
+  },
+  paymentBox: {
+    marginTop: 8,
+    borderRadius: 14,
+    border: `1 solid ${BORDER}`,
+    padding: 18,
+    backgroundColor: LIGHT,
+  },
+  paymentTitle: {
+    fontSize: 23,
+    fontWeight: 700,
+    color: BLACK,
+    marginBottom: 12,
+  },
+  paymentText: {
+    fontSize: 11,
+    lineHeight: 1.7,
+    color: "#424242",
+  },
+  paymentGrid: {
+    marginTop: 16,
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginTop: 8,
+    justifyContent: "space-between",
+  },
+  paymentCard: {
+    width: "48.8%",
+    marginBottom: 12,
+    padding: 14,
+    borderRadius: 10,
+    backgroundColor: WHITE,
+    border: `1 solid ${BORDER}`,
+  },
+  paymentPercent: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: BLACK,
+    marginBottom: 4,
+  },
+  paymentLabel: {
+    fontSize: 9,
+    lineHeight: 1.45,
+    color: MUTED,
+    textTransform: "uppercase",
+  },
+  unitImage: {
+    width: "100%",
+    height: 350,
+    objectFit: "contain",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+    marginBottom: 16,
+  },
+  statList: {
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  statLine: {
+    fontSize: 11,
+    lineHeight: 1.7,
+    color: TEXT,
+  },
+  specGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   specCard: {
-    width: "48%",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    padding: "8 12",
-    backgroundColor: LIGHT_BG,
-    borderRadius: 6,
-    border: `1px solid ${BORDER}`,
+    width: "32%",
+    marginBottom: 10,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+    border: `1 solid ${BORDER}`,
   },
   specLabel: {
     fontSize: 8,
     color: MUTED,
-    fontFamily: "Inter",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    marginBottom: 4,
   },
   specValue: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: DARK,
-    fontFamily: "Inter",
-  },
-
-  /* BACK PAGE / AGENT */
-  backPage: {
-    padding: 0,
-    position: "relative",
-    backgroundColor: DARK,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backContent: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "80 60",
-  },
-  backTopAccent: {
-    width: 60,
-    height: 3,
-    backgroundColor: GOLD,
-    marginBottom: 30,
-  },
-  backCompany: {
-    fontSize: 28,
-    fontWeight: 700,
-    color: WHITE,
-    marginBottom: 6,
-    fontFamily: "Inter",
-    textAlign: "center",
-  },
-  backTagline: {
-    fontSize: 10,
-    letterSpacing: 3,
-    textTransform: "uppercase",
-    color: GOLD,
-    marginBottom: 40,
-    fontFamily: "Inter",
-    textAlign: "center",
-  },
-  backAgentCard: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: 16,
-    padding: "28 32",
-    border: "1px solid rgba(255,255,255,0.1)",
-    alignItems: "center",
-    width: "100%",
-    maxWidth: 350,
-  },
-  backAgentAvatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    objectFit: "cover",
-    border: `3px solid ${GOLD}`,
-    marginBottom: 14,
-  },
-  backAgentName: {
-    fontSize: 18,
-    fontWeight: 700,
-    color: WHITE,
-    marginBottom: 4,
-    fontFamily: "Inter",
-    textAlign: "center",
-  },
-  backAgentCompany: {
-    fontSize: 10,
-    color: GOLD,
-    marginBottom: 16,
-    fontFamily: "Inter",
-    textAlign: "center",
-  },
-  backContactRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 6,
-  },
-  backContactText: {
-    fontSize: 10,
-    color: "rgba(255,255,255,0.75)",
-    fontFamily: "Inter",
-  },
-  backContactDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: GOLD,
-  },
-
-  /* FOOTER */
-  footer: {
-    position: "absolute",
-    bottom: 18,
-    left: 40,
-    right: 40,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 10,
-    borderTop: `1px solid ${BORDER}`,
-  },
-  footerText: { fontSize: 7, color: MUTED, fontFamily: "Inter" },
-  footerBrand: {
-    fontSize: 7,
-    color: GOLD,
-    fontWeight: 700,
-    letterSpacing: 1.5,
-    fontFamily: "Inter",
-  },
-
-  /* IMAGE WITH OVERLAY TEXT */
-  imageSection: {
-    width: "100%",
-    height: 200,
-    borderRadius: 8,
-    overflow: "hidden",
-    position: "relative",
-    marginBottom: 16,
-  },
-  imageSectionImg: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  },
-  imageSectionOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    padding: "12 16",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  imageSectionText: {
-    fontSize: 10,
-    color: WHITE,
-    fontFamily: "Inter",
+    fontSize: 11,
+    color: TEXT,
     fontWeight: 600,
+  },
+  developerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  developerText: {
+    fontSize: 11,
+    lineHeight: 1.7,
+    color: "#404040",
   },
 });
 
-/* ─── Helpers ────────────────────────────────────────────────── */
-const safe = (v) => (typeof v === "string" ? v : v ? String(v) : "");
+const safe = (v) => (typeof v === "string" ? v : v == null ? "" : String(v));
 
 function getFont(locale) {
   return String(locale || "").startsWith("ar") ? "NotoSansArabic" : "Inter";
 }
 
-function labels(locale) {
-  const ar = String(locale || "").startsWith("ar");
-  return ar
-    ? {
-        salesOffer: "عرض بيع",
-        exclusiveOffer: "عرض حصري",
-        aboutProject: "عن المشروع",
-        projectDetails: "تفاصيل المشروع",
-        description: "الوصف",
-        finishing: "التشطيبات",
-        kitchen: "المطبخ",
-        furnishing: "التأثيث",
-        location: "الموقع",
-        amenities: "المرافق والخدمات",
-        gallery: "معرض الصور",
-        floorPlan: "مخطط الوحدة",
-        typicalUnits: "الوحدات النموذجية",
-        yourConsultant: "مستشارك العقاري",
-        licensedBroker: "وسيط عقاري معتمد",
-        createdOn: "تاريخ الإنشاء",
-        page: "صفحة",
-      }
-    : {
-        salesOffer: "Sales Offer",
-        exclusiveOffer: "Exclusive Offer",
-        aboutProject: "About the Project",
-        projectDetails: "Project Details",
-        description: "Description",
-        finishing: "Finishing & Materials",
-        kitchen: "Kitchen & Appliances",
-        furnishing: "Furnishing",
-        location: "Location",
-        amenities: "Amenities & Facilities",
-        gallery: "Gallery",
-        floorPlan: "Floor Plan",
-        typicalUnits: "Typical Units",
-        yourConsultant: "Your Property Consultant",
-        licensedBroker: "Licensed Real Estate Broker",
-        createdOn: "Date of creation",
-        page: "Page",
-      };
+function prettifyUnitTitle(value, bedrooms) {
+  const raw = safe(value).trim();
+  if (!raw && bedrooms != null && bedrooms !== "") {
+    return `${bedrooms} Bedroom`;
+  }
+
+  if (!raw) return "Unit";
+
+  if (/^bedroom\s*\d+$/i.test(raw)) {
+    const n = raw.match(/\d+/)?.[0];
+    return n ? `${n} Bedroom` : raw;
+  }
+
+  if (/^\d+\s*bed(room)?s?$/i.test(raw)) {
+    const n = raw.match(/\d+/)?.[0];
+    return n ? `${n} Bedroom` : raw;
+  }
+
+  return raw
+    .replace(/^apartments?\s*:\s*/i, "")
+    .replace(/^unit\s*:\s*/i, "")
+    .trim();
 }
 
-/* ─── Sub-components ─────────────────────────────────────────── */
+function uniqueImages(list = []) {
+  const seen = new Set();
+  const out = [];
+  for (const item of list) {
+    const value = safe(item).trim();
+    if (!value || seen.has(value)) continue;
+    seen.add(value);
+    out.push(value);
+  }
+  return out;
+}
 
-function PageHeaderBar({ projectName, label, locale }) {
-  const font = getFont(locale);
+function chunkText(value, maxChars = 2200) {
+  const text = safe(value).trim();
+  if (!text) return [];
+
+  const parts = text
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const source = parts.length ? parts : [text];
+  const pages = [];
+  let current = [];
+  let count = 0;
+
+  for (const part of source) {
+    const size = part.length + 2;
+    if (count + size > maxChars && current.length) {
+      pages.push(current.join("\n\n"));
+      current = [part];
+      count = part.length;
+      continue;
+    }
+    current.push(part);
+    count += size;
+  }
+
+  if (current.length) pages.push(current.join("\n\n"));
+  return pages;
+}
+
+function repeatImages(images, needed) {
+  const list = uniqueImages(images);
+  if (!list.length) return Array.from({ length: needed }).map(() => "");
+  return Array.from({ length: needed }).map((_, index) => list[index % list.length]);
+}
+
+function splitGallery(images) {
+  const list = uniqueImages(images);
+  return list;
+}
+
+function buildImageLayouts(images) {
+  const list = uniqueImages(images);
+  const layouts = [];
+  let index = 0;
+  let mode = 0;
+
+  while (index < list.length) {
+    if (mode === 0) {
+      layouts.push([list[index]]);
+      index += 1;
+    } else if (mode === 1) {
+      layouts.push(list.slice(index, index + 2));
+      index += 2;
+    } else {
+      layouts.push(list.slice(index, index + 3));
+      index += 3;
+    }
+    mode = (mode + 1) % 3;
+  }
+
+  return layouts.filter((layout) => layout.length);
+}
+
+function amenityPages(amenities = []) {
+  const list = Array.isArray(amenities) ? amenities.filter(Boolean) : [];
+  if (!list.length) return [];
+
+  const pages = [{ withHeading: true, items: list.slice(0, 5) }];
+  let index = 5;
+  while (index < list.length) {
+    pages.push({ withHeading: false, items: list.slice(index, index + 6) });
+    index += 6;
+  }
+  return pages;
+}
+
+function sectionChrome(left, right, font) {
   return (
-    <View style={S.pageHeader}>
-      <View style={S.pageHeaderLeft}>
-        <View style={S.pageHeaderDot} />
-        <Text style={[S.pageHeaderTitle, { fontFamily: font }]}>
-          {safe(projectName)}
-        </Text>
+    <View style={S.pageChrome}>
+      <Text style={[S.pageChromeLeft, { fontFamily: font }]}>{safe(left)}</Text>
+      <Text style={[S.pageChromeRight, { fontFamily: font }]}>{safe(right)}</Text>
+    </View>
+  );
+}
+
+function renderGridPage(images) {
+  if (!images[0]) return null;
+
+  if (!images[1]) {
+    return <Image src={images[0]} style={S.fullImage} />;
+  }
+
+  if (!images[2]) {
+    return (
+      <View style={S.twinRow}>
+        <Image src={images[0]} style={S.twinImage} />
+        <Image src={images[1]} style={S.twinImage} />
       </View>
-      {label ? (
-        <Text style={[S.pageHeaderRight, { fontFamily: font }]}>{label}</Text>
-      ) : null}
-    </View>
-  );
-}
+    );
+  }
 
-function PageFooterBar({ projectName, copy, locale }) {
-  const font = getFont(locale);
   return (
-    <View style={S.footer}>
-      <Text style={[S.footerText, { fontFamily: font }]}>
-        {safe(projectName)} — {copy.salesOffer}
-      </Text>
-      <Text style={S.footerBrand}>MOHAMAD KODMANI</Text>
+    <View style={S.mixedRow}>
+      <Image src={images[0]} style={S.mixedLeft} />
+      <View style={S.mixedRight}>
+        <Image src={images[1]} style={S.mixedRightImage} />
+        <Image src={images[2]} style={S.mixedRightImage} />
+      </View>
     </View>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MAIN DOCUMENT
-   ═══════════════════════════════════════════════════════════════ */
+function AboutTable({ rows, font }) {
+  const list = Array.isArray(rows) ? rows : [];
+  if (!list.length) return null;
+
+  return (
+    <View style={S.table}>
+      <View style={S.trHead}>
+        <Text style={[S.cellHead, S.c1, { fontFamily: font }]}>Unit type</Text>
+        <Text style={[S.cellHead, S.c2, { fontFamily: font }]}>Bedrooms</Text>
+        <Text style={[S.cellHead, S.c3, { fontFamily: font }]}>Amount</Text>
+        <Text style={[S.cellHead, S.c4, { fontFamily: font }]}>Area, sqft</Text>
+        <Text style={[S.cellHead, S.c5, { fontFamily: font }]}>Price from</Text>
+      </View>
+      {list.map((row, index) => (
+        <View key={`row-${index}`} style={[S.tr, index === list.length - 1 ? { borderBottomWidth: 0 } : null]}>
+          <Text style={[S.cell, S.c1, { fontFamily: font }]}>{safe(row.unitType)}</Text>
+          <Text style={[S.cell, S.c2, { fontFamily: font }]}>{safe(row.bedrooms)}</Text>
+          <Text style={[S.cell, S.c3, { fontFamily: font }]}>{safe(row.amount)}</Text>
+          <Text style={[S.cell, S.c4, { fontFamily: font }]}>{safe(row.area)}</Text>
+          <Text style={[S.cell, S.c5, { fontFamily: font }]}>{safe(row.priceFrom)}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export default function SalesOfferDocument({ payload }) {
   const p = payload || {};
   const locale = p.locale || "en";
   const font = getFont(locale);
-  const copy = labels(locale);
-
-  const projectName = safe(p.projectName || p.title);
-  const coverImage =
-    p.coverImage || (Array.isArray(p.gallery) ? p.gallery[0] : "");
-  const facts = Array.isArray(p.facts) ? p.facts.filter(Boolean) : [];
-  const galleryImages = Array.isArray(p.gallery)
-    ? p.gallery.filter(Boolean)
-    : [];
-  const amenities = Array.isArray(p.amenities) ? p.amenities : [];
+  const projectName = safe(p.projectName || "Project");
+  const developerName = safe(p?.developer?.name);
+  const developerLogo = safe(p?.developer?.logo);
+  const districtName = safe(p?.location?.district || p?.location?.address);
+  const locationAddress = safe(p?.location?.address);
+  const descriptionPages = chunkText(p.description || p.generalFacts, 2100);
+  const locationPages = chunkText(p.locationDescription, 2100);
+  const gallery = splitGallery(p.gallery);
+  const imageLayouts = buildImageLayouts(gallery);
+  const amenityGroups = amenityPages(p.amenities);
   const floorPlans = Array.isArray(p.floorPlans) ? p.floorPlans : [];
-  const descriptionText = safe(p.generalFacts || p.description);
-  const locationText = safe(p.locationBenefits);
-  const finishingText = safe(p.finishing);
-  const kitchenText = safe(p.kitchen);
-  const furnishingText = safe(p.furnishing);
-  const hasDetails = finishingText || kitchenText || furnishingText;
-  const agent = p.agent || {};
-  const locationFact = facts.find((f) =>
-    /location|موقع/i.test(safe(f?.label))
-  );
-
-  let pageNum = 0;
+  const unitRows = Array.isArray(p.unitRows) ? p.unitRows : [];
+  const paymentPlans = Array.isArray(p.paymentPlans) ? p.paymentPlans : [];
+  const developerText = safe(p?.developer?.description);
+  const developerImages = repeatImages(p?.developer?.images || p.gallery || [], 2);
+  const overviewImage = safe(p.overviewImage || p.coverImage || gallery[0]);
+  const masterplanImage = safe(p.masterplanImage || "");
+  const mapImage = safe(p?.location?.mapImage || "");
 
   return (
     <Document>
-      {/* ════════════════ COVER PAGE ════════════════ */}
-      <Page size="A4" style={S.coverPage}>
-        {coverImage ? (
-          <Image src={coverImage} style={S.coverImage} />
-        ) : (
-          <View style={{ ...S.coverImage, backgroundColor: DARK }} />
-        )}
-        <View style={S.coverDarkOverlay} />
-
+      <Page size="A4" orientation="landscape" style={S.coverPage}>
+        {p.coverImage ? <Image src={p.coverImage} style={S.fullPageImage} /> : null}
         <View style={S.coverContent}>
-          <Text style={[S.coverBadge, { fontFamily: font }]}>
-            {copy.exclusiveOffer}
-          </Text>
-          <Text style={[S.coverTitle, { fontFamily: font }]}>
-            {projectName || copy.salesOffer}
-          </Text>
-          {locationFact ? (
-            <Text style={[S.coverLocation, { fontFamily: font }]}>
-              {safe(locationFact.value)}
+          <View style={S.coverLeft}>
+            <Text style={[S.coverLine, { fontFamily: font }]}>Look what we found for you</Text>
+            <Text style={[S.coverBrand, { fontFamily: font }]}>Izzzi.LifeMINT {projectName}</Text>
+            <Text style={[S.coverDate, { fontFamily: font }]}>
+              {safe(p.createdAtLabel)} {safe(p.createdAt)}
             </Text>
-          ) : null}
-          <View style={S.coverDivider} />
-
-          {/* Agent card on cover */}
-          {agent.name ? (
-            <View style={S.agentCardCover}>
-              {agent.avatar ? (
-                <Image src={agent.avatar} style={S.agentAvatar} />
-              ) : null}
-              <View style={{ flex: 1 }}>
-                <Text style={[S.agentNameCover, { fontFamily: font }]}>
-                  {safe(agent.name)}
-                </Text>
-                {agent.company ? (
-                  <Text style={[S.agentCompanyCover, { fontFamily: font }]}>
-                    {safe(agent.company)}
-                  </Text>
-                ) : null}
-                <Text style={[S.agentContactCover, { fontFamily: font }]}>
-                  {[agent.phone, agent.email].filter(Boolean).join("  |  ")}
-                </Text>
-              </View>
+          </View>
+          <View style={S.coverAgentWrap}>
+            <View style={S.coverAgentCard}>
+              {p?.agent?.avatar ? <Image src={p.agent.avatar} style={S.coverAgentAvatar} /> : null}
+              <Text style={[S.coverAgentName, { fontFamily: font }]}>{safe(p?.agent?.name)}</Text>
+              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.company)}</Text>
+              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.phone)}</Text>
+              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.email)}</Text>
             </View>
-          ) : null}
+          </View>
         </View>
       </Page>
 
-      {/* ════════════════ ABOUT / FACTS PAGE ════════════════ */}
-      <Page size="A4" style={S.page}>
-        <PageHeaderBar
-          projectName={projectName}
-          locale={locale}
-          label={`${copy.page} ${++pageNum}`}
-        />
-
-        <Text style={[S.sectionLabel, { fontFamily: font }]}>
-          {copy.aboutProject}
-        </Text>
-        <Text style={[S.sectionTitle, { fontFamily: font }]}>
-          {projectName}
-        </Text>
-
-        {/* Facts table */}
-        {facts.length > 0 ? (
-          <View style={S.factsTable}>
-            {facts.map((fact, idx) => (
-              <View
-                style={idx % 2 === 0 ? S.factsRow : S.factsRowAlt}
-                key={`fact-${idx}`}
-              >
-                <Text style={[S.factsLabel, { fontFamily: font }]}>
-                  {safe(fact.label)}
-                </Text>
-                <Text style={[S.factsValue, { fontFamily: font }]}>
-                  {safe(fact.value)}
-                </Text>
+      <Page size="A4" orientation="landscape" style={S.page}>
+        {sectionChrome("", "ABOUT THE PROJECT", font)}
+        <View style={S.splitRow}>
+          <View style={S.imageCol}>
+            {overviewImage ? <Image src={overviewImage} style={S.sectionImage} /> : null}
+          </View>
+          <View style={S.bodyCol}>
+            <Text style={[S.title, { fontFamily: font }]}>{projectName}</Text>
+            <View style={S.metaRow}>
+              {developerLogo ? <Image src={developerLogo} style={S.logo} /> : null}
+              <View>
+                <Text style={[S.metaLabel, { fontFamily: font }]}>Developer</Text>
+                <Text style={[S.metaValue, { fontFamily: font }]}>{developerName}</Text>
               </View>
-            ))}
+            </View>
+            <View style={S.metaRow}>
+              <View>
+                <Text style={[S.metaLabel, { fontFamily: font }]}>District</Text>
+                <Text style={[S.metaValue, { fontFamily: font }]}>{districtName}</Text>
+              </View>
+            </View>
+            <AboutTable rows={unitRows} font={font} />
           </View>
-        ) : null}
-
-        {/* Short description */}
-        {descriptionText ? (
-          <View style={{ marginTop: 8 }}>
-            <Text style={[S.descText, { fontFamily: font }]}>
-              {descriptionText.length > 600
-                ? descriptionText.slice(0, 600) + "..."
-                : descriptionText}
-            </Text>
-          </View>
-        ) : null}
-
-        {/* Date of creation */}
-        {p.createdAt ? (
-          <View
-            style={{
-              marginTop: 12,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <Text style={{ fontSize: 8, color: MUTED, fontFamily: font }}>
-              {copy.createdOn}: {safe(p.createdAt)}
-            </Text>
-          </View>
-        ) : null}
-
-        <PageFooterBar projectName={projectName} copy={copy} locale={locale} />
+        </View>
       </Page>
 
-      {/* ════════════════ DESCRIPTION PAGE (if long text) ════════════════ */}
-      {descriptionText && descriptionText.length > 600 ? (
-        <Page size="A4" style={S.pageAlt}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          <Text style={[S.sectionLabel, { fontFamily: font }]}>
-            {copy.description}
-          </Text>
-          <Text style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}>
-            {copy.projectDetails}
-          </Text>
-
-          <Text style={[S.descText, { fontFamily: font }]}>
-            {descriptionText}
-          </Text>
-
-          {/* Preview image */}
-          {galleryImages.length > 1 ? (
-            <View style={[S.imageSection, { marginTop: 16 }]}>
-              <Image src={galleryImages[1]} style={S.imageSectionImg} />
-            </View>
-          ) : null}
-
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
-        </Page>
-      ) : null}
-
-      {/* ════════════════ DETAILS PAGE ════════════════ */}
-      {hasDetails ? (
-        <Page size="A4" style={S.page}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          <Text style={[S.sectionLabel, { fontFamily: font }]}>
-            {copy.projectDetails}
-          </Text>
-          <Text style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}>
-            {copy.finishing}
-          </Text>
-
-          <View style={S.twoCol}>
-            <View style={S.col}>
-              {finishingText ? (
-                <View style={S.detailBlock}>
-                  <Text style={[S.detailLabel, { fontFamily: font }]}>
-                    {copy.finishing}
-                  </Text>
-                  <Text style={[S.detailValue, { fontFamily: font }]}>
-                    {finishingText}
-                  </Text>
-                </View>
-              ) : null}
-
-              {kitchenText ? (
-                <View style={S.detailBlock}>
-                  <Text style={[S.detailLabel, { fontFamily: font }]}>
-                    {copy.kitchen}
-                  </Text>
-                  <Text style={[S.detailValue, { fontFamily: font }]}>
-                    {kitchenText}
-                  </Text>
-                </View>
-              ) : null}
-
-              {furnishingText ? (
-                <View style={S.detailBlock}>
-                  <Text style={[S.detailLabel, { fontFamily: font }]}>
-                    {copy.furnishing}
-                  </Text>
-                  <Text style={[S.detailValue, { fontFamily: font }]}>
-                    {furnishingText}
-                  </Text>
-                </View>
-              ) : null}
+      <Page size="A4" orientation="landscape" style={S.page}>
+        {sectionChrome("", "ABOUT THE PROJECT", font)}
+        <View style={S.splitRow}>
+          <View style={S.imageCol}>
+            {overviewImage ? <Image src={overviewImage} style={S.sectionImage} /> : null}
+          </View>
+          <View style={S.bodyCol}>
+            <Text style={[S.title, { fontFamily: font }]}>{projectName}</Text>
+            <View style={S.metaRow}>
+              {developerLogo ? <Image src={developerLogo} style={S.logo} /> : null}
+              <Text style={[S.metaValue, { fontFamily: font }]}>{developerName}</Text>
             </View>
 
-            <View style={S.col}>
-              {galleryImages.length > 2 ? (
-                <Image
-                  src={galleryImages[2]}
-                  style={{
-                    width: "100%",
-                    height: 300,
-                    borderRadius: 8,
-                    objectFit: "cover",
-                  }}
-                />
-              ) : null}
+            <View style={S.factStack}>
+              <Text style={[S.factTitle, { fontFamily: font }]}>Description</Text>
+              <Text style={[S.factText, { fontFamily: font }]}>{descriptionPages[0] || "Project general facts"}</Text>
+            </View>
+
+            <View style={S.factStack}>
+              <Text style={[S.factTitle, { fontFamily: font }]}>Finishing and materials</Text>
+              <Text style={[S.factText, { fontFamily: font }]}>{safe(p.finishing || "Modern finishing with high quality materials")}</Text>
+            </View>
+
+            <View style={S.factStack}>
+              <Text style={[S.factTitle, { fontFamily: font }]}>Kitchen and appliances</Text>
+              <Text style={[S.factText, { fontFamily: font }]}>{safe(p.kitchen || "Kitchen specification on request")}</Text>
+            </View>
+
+            <View style={S.factStack}>
+              <Text style={[S.factTitle, { fontFamily: font }]}>Furnishing</Text>
+              <Text style={[S.factText, { fontFamily: font }]}>{safe(p.furnishing || "Furnishing details on request")}</Text>
             </View>
           </View>
+        </View>
+      </Page>
 
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
+      {locationPages[0] || locationAddress ? (
+        <Page size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("", "ABOUT THE PROJECT", font)}
+          <Text style={[S.factTitle, { fontFamily: font, marginBottom: 8 }]}>Location description and benefits</Text>
+          <Text style={[S.longText, { fontFamily: font }]}>
+            {locationPages[0] || locationAddress}
+          </Text>
         </Page>
       ) : null}
 
-      {/* ════════════════ LOCATION PAGE ════════════════ */}
-      {locationText ? (
-        <Page size="A4" style={S.pageAlt}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          <Text style={[S.sectionLabel, { fontFamily: font }]}>
-            {copy.location}
-          </Text>
-          <Text style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}>
-            {locationFact ? safe(locationFact.value) : copy.location}
-          </Text>
-
-          {/* Location image */}
-          {galleryImages.length > 3 ? (
-            <View
-              style={[S.imageSection, { height: 240, marginBottom: 20 }]}
-            >
-              <Image src={galleryImages[3]} style={S.imageSectionImg} />
-              <View style={S.imageSectionOverlay}>
-                <Text style={[S.imageSectionText, { fontFamily: font }]}>
-                  {locationFact ? safe(locationFact.value) : ""}
-                </Text>
-              </View>
-            </View>
-          ) : null}
-
-          <Text style={[S.descText, { fontFamily: font }]}>
-            {locationText}
-          </Text>
-
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
+      {imageLayouts.map((layout, index) => (
+        <Page key={`gallery-${index}`} size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("IZZZI.LIFEMINT / ARCHITECTURE", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+          {renderGridPage(layout)}
         </Page>
-      ) : null}
+      ))}
 
-      {/* ════════════════ GALLERY PAGE 1 ════════════════ */}
-      {galleryImages.length >= 3 ? (
-        <Page size="A4" style={S.page}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          <Text style={[S.sectionLabel, { fontFamily: font }]}>
-            {copy.gallery}
-          </Text>
-          <Text style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}>
-            {projectName}
-          </Text>
-
-          {/* 1 large on top */}
-          <Image src={galleryImages[0]} style={S.galleryFull} />
-
-          {/* 2 side by side */}
-          <View style={S.galleryRow}>
-            <Image src={galleryImages[1]} style={S.galleryHalf} />
-            <Image src={galleryImages[2]} style={S.galleryHalf} />
+      <Page size="A4" orientation="landscape" style={S.page}>
+        {sectionChrome("IZZZI.LIFEMINT / POINT OF INTEREST", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+        <View style={S.splitRow}>
+          <View style={S.sideHeadingCol}>
+            <Text style={[S.sideHeading, { fontFamily: font }]}>Location</Text>
+            <Text style={[S.sideCaption, { fontFamily: font }]}>{locationAddress}</Text>
           </View>
-
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
-        </Page>
-      ) : null}
-
-      {/* ════════════════ GALLERY PAGE 2 (5+ images) ════════════════ */}
-      {galleryImages.length >= 5 ? (
-        <Page size="A4" style={S.pageAlt}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          {/* 2 side by side */}
-          <View style={S.galleryRow}>
-            <Image src={galleryImages[3]} style={S.galleryHalf} />
-            <Image src={galleryImages[4]} style={S.galleryHalf} />
+          <View style={S.sideBodyCol}>
+            {mapImage ? <Image src={mapImage} style={S.mapImage} /> : null}
           </View>
+        </View>
+      </Page>
 
-          {/* 1 large bottom */}
-          {galleryImages.length >= 6 ? (
-            <Image src={galleryImages[5]} style={S.galleryFull} />
-          ) : null}
-
-          {/* 3 across if available */}
-          {galleryImages.length >= 9 ? (
-            <View style={S.galleryRow}>
-              <Image src={galleryImages[6]} style={S.galleryThird} />
-              <Image src={galleryImages[7]} style={S.galleryThird} />
-              <Image src={galleryImages[8]} style={S.galleryThird} />
-            </View>
-          ) : galleryImages.length >= 8 ? (
-            <View style={S.galleryRow}>
-              <Image src={galleryImages[6]} style={S.galleryHalf} />
-              <Image src={galleryImages[7]} style={S.galleryHalf} />
-            </View>
-          ) : galleryImages.length >= 7 ? (
-            <Image
-              src={galleryImages[6]}
-              style={[S.galleryFull, { height: 200 }]}
-            />
-          ) : null}
-
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
-        </Page>
-      ) : null}
-
-      {/* ════════════════ AMENITIES PAGE ════════════════ */}
-      {amenities.length > 0 ? (
-        <Page size="A4" style={S.page}>
-          <PageHeaderBar
-            projectName={projectName}
-            locale={locale}
-            label={`${copy.page} ${++pageNum}`}
-          />
-
-          <Text style={[S.sectionLabel, { fontFamily: font }]}>
-            {copy.amenities}
-          </Text>
-          <Text style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}>
-            {copy.amenities}
-          </Text>
-
+      {amenityGroups.map((group, index) => (
+        <Page key={`amen-${index}`} size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("IZZZI.LIFEMINT / FEATURES & AMENITIES", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
           <View style={S.amenGrid}>
-            {amenities.slice(0, 30).map((a, idx) => (
-              <View style={S.amenChip} key={`amen-${idx}`}>
-                {a.iconUrl ? (
-                  <Image src={a.iconUrl} style={S.amenIcon} />
+            {group.withHeading ? (
+              <View style={[S.amenCard, S.amenLeadCard]}>
+                <Text style={[S.amenLead, { fontFamily: font }]}>Features &{"\n"}Amenities</Text>
+              </View>
+            ) : null}
+            {group.items.map((amenity, amenityIndex) => (
+              <View style={S.amenCard} key={`amen-card-${index}-${amenityIndex}`}>
+                {amenity?.iconUrl ? (
+                  <View style={[S.amenImageBox, { marginBottom: 12, width: "100%" }]}>
+                    <Image src={amenity.iconUrl} style={S.amenImage} />
+                  </View>
                 ) : null}
-                <Text style={[S.amenLabel, { fontFamily: font }]}>
-                  {safe(a.label)}
-                </Text>
+                <Text style={[S.amenText, { fontFamily: font }]}>{safe(amenity?.label)}</Text>
               </View>
             ))}
           </View>
+        </Page>
+      ))}
 
-          {/* Accent image */}
-          {galleryImages.length > 4 ? (
-            <View style={[S.imageSection, { marginTop: 20, height: 180 }]}>
-              <Image
-                src={galleryImages[galleryImages.length > 5 ? 5 : 4]}
-                style={S.imageSectionImg}
-              />
+      {masterplanImage ? (
+        <Page size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("IZZZI.LIFEMINT / MASTERPLAN", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+          <View style={S.splitRow}>
+            <View style={S.sideHeadingCol}>
+              <Text style={[S.sideHeading, { fontFamily: font }]}>Masterplan</Text>
             </View>
-          ) : null}
-
-          <PageFooterBar
-            projectName={projectName}
-            copy={copy}
-            locale={locale}
-          />
+            <View style={S.sideBodyCol}>
+              <Image src={masterplanImage} style={S.mapImage} />
+            </View>
+          </View>
         </Page>
       ) : null}
 
-      {/* ════════════════ FLOOR PLAN PAGES ════════════════ */}
-      {floorPlans.length > 0
-        ? floorPlans.slice(0, 6).map((plan, i) => (
-            <Page
-              size="A4"
-              style={i % 2 === 0 ? S.page : S.pageAlt}
-              key={`plan-${i}`}
-            >
-              <PageHeaderBar
-                projectName={projectName}
-                locale={locale}
-                label={`${copy.typicalUnits} ${i + 1}/${Math.min(
-                  floorPlans.length,
-                  6
-                )}`}
-              />
+      {paymentPlans.map((plan, index) => (
+        <Page key={`payment-${index}`} size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("IZZZI.LIFEMINT / PAYMENT PLAN", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+          <View style={S.paymentBox}>
+            <Text style={[S.paymentTitle, { fontFamily: font }]}>{safe(plan?.title || `Payment Plan Option ${index + 1}`)}</Text>
+            {plan?.summary ? <Text style={[S.paymentText, { fontFamily: font }]}>{safe(plan.summary)}</Text> : null}
+            {Array.isArray(plan?.stages) && plan.stages.length ? (
+              <View style={S.paymentGrid}>
+                {plan.stages.map((stage, stageIndex) => (
+                  <View style={S.paymentCard} key={`pay-stage-${index}-${stageIndex}`}>
+                    <Text style={[S.paymentPercent, { fontFamily: font }]}>{safe(stage?.percent)}</Text>
+                    <Text style={[S.paymentLabel, { fontFamily: font }]}>{safe(stage?.caption)}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </View>
+        </Page>
+      ))}
 
-              <Text style={[S.sectionLabel, { fontFamily: font }]}>
-                {copy.typicalUnits}
-              </Text>
-              <Text
-                style={[S.sectionTitle, { fontFamily: font, fontSize: 18 }]}
-              >
-                {safe(plan.title || `${copy.floorPlan} ${i + 1}`)}
-              </Text>
-
-              {/* Floor plan image */}
-              {Array.isArray(plan.images) && plan.images[0] ? (
-                <Image src={plan.images[0]} style={S.floorPlanImage} />
-              ) : null}
-
-              {/* Specs grid */}
-              {plan.specs && Object.keys(plan.specs).length > 0 ? (
-                <View style={S.specsGrid}>
-                  {Object.entries(plan.specs)
-                    .slice(0, 8)
-                    .map(([k, v]) => (
-                      <View style={S.specCard} key={k}>
-                        <View>
-                          <Text
-                            style={[S.specLabel, { fontFamily: font }]}
-                          >
-                            {safe(k)}
-                          </Text>
-                          <Text
-                            style={[S.specValue, { fontFamily: font }]}
-                          >
-                            {safe(v)}
-                          </Text>
-                        </View>
-                      </View>
-                    ))}
-                </View>
-              ) : null}
-
-              <PageFooterBar
-                projectName={projectName}
-                copy={copy}
-                locale={locale}
-              />
-            </Page>
-          ))
-        : null}
-
-      {/* ════════════════ BACK PAGE / CONTACT ════════════════ */}
-      <Page size="A4" style={S.backPage}>
-        <View style={S.backContent}>
-          <View style={S.backTopAccent} />
-          <Text style={S.backCompany}>MOHAMAD KODMANI</Text>
-          <Text style={[S.backTagline, { fontFamily: font }]}>
-            {copy.licensedBroker}
-          </Text>
-
-          {agent.name ? (
-            <View style={S.backAgentCard}>
-              {agent.avatar ? (
-                <Image src={agent.avatar} style={S.backAgentAvatar} />
-              ) : null}
-              <Text style={[S.backAgentName, { fontFamily: font }]}>
-                {safe(agent.name)}
-              </Text>
-              {agent.company ? (
-                <Text style={[S.backAgentCompany, { fontFamily: font }]}>
-                  {safe(agent.company)}
-                </Text>
-              ) : null}
-
-              {agent.phone ? (
-                <View style={S.backContactRow}>
-                  <View style={S.backContactDot} />
-                  <Text style={[S.backContactText, { fontFamily: font }]}>
-                    {safe(agent.phone)}
+      {floorPlans.map((plan, index) => (
+        <Page key={`plan-${index}`} size="A4" orientation="landscape" style={S.page}>
+          {sectionChrome("IZZZI.LIFEMINT / TYPICAL UNITS", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+          <View style={S.splitRow}>
+            <View style={S.sideHeadingCol}>
+              <Text style={[S.sideHeading, { fontFamily: font }]}>Typical{"\n"}Units</Text>
+              <View style={S.statList}>
+                {unitRows.map((row, rowIndex) => (
+                  <Text key={`row-stat-${rowIndex}`} style={[S.statLine, { fontFamily: font }]}>
+                    {safe(row.unitType)}: {safe(row.amount)}
                   </Text>
-                </View>
-              ) : null}
-
-              {agent.email ? (
-                <View style={S.backContactRow}>
-                  <View style={S.backContactDot} />
-                  <Text style={[S.backContactText, { fontFamily: font }]}>
-                    {safe(agent.email)}
-                  </Text>
+                ))}
+              </View>
+            </View>
+            <View style={S.sideBodyCol}>
+              {plan?.images?.[0] ? <Image src={plan.images[0]} style={S.unitImage} /> : null}
+              <Text style={[S.metaLabel, { fontFamily: font }]}>Floor plan</Text>
+              <Text style={[S.title, { fontFamily: font, fontSize: 20, marginBottom: 10 }]}>
+                {prettifyUnitTitle(plan?.title || plan?.name, plan?.bedrooms || plan?.specs?.Bedrooms)}
+              </Text>
+              {plan?.specs && Object.keys(plan.specs).length ? (
+                <View style={S.specGrid}>
+                  {Object.entries(plan.specs).map(([key, value]) => (
+                    <View style={S.specCard} key={`${index}-${key}`}>
+                      <Text style={[S.specLabel, { fontFamily: font }]}>{safe(key)}</Text>
+                      <Text style={[S.specValue, { fontFamily: font }]}>{safe(value)}</Text>
+                    </View>
+                  ))}
                 </View>
               ) : null}
             </View>
-          ) : null}
+          </View>
+        </Page>
+      ))}
+
+      <Page size="A4" orientation="landscape" style={S.page}>
+        {sectionChrome("IZZZI.LIFEMINT / DEVELOPER", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+        <View style={S.splitRow}>
+          <View style={S.sideHeadingCol}>
+            <Text style={[S.sideHeading, { fontFamily: font }]}>Developer</Text>
+            {developerLogo ? <Image src={developerLogo} style={[S.bigLogo, { marginTop: 18, marginRight: 0 }]} /> : null}
+            <Text style={[S.metaValue, { fontFamily: font, marginTop: 12 }]}>{developerName}</Text>
+          </View>
+          <View style={S.sideBodyCol}>
+            {developerText ? (
+              <Text style={[S.developerText, { fontFamily: font }]}>{developerText}</Text>
+            ) : null}
+            <View style={[S.twinRow, { height: 220, marginTop: 18 }]}>
+              {developerImages[0] ? <Image src={developerImages[0]} style={S.twinImage} /> : <View style={S.twinImage} />}
+              {developerImages[1] ? <Image src={developerImages[1]} style={S.twinImage} /> : <View style={S.twinImage} />}
+            </View>
+          </View>
         </View>
       </Page>
     </Document>
