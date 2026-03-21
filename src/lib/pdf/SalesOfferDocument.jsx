@@ -53,36 +53,32 @@ const S = StyleSheet.create({
     width: LANDSCAPE_WIDTH,
     height: LANDSCAPE_HEIGHT,
     overflow: "hidden",
+    flexDirection: "column",
+  },
+  coverImagePanel: {
+    width: LANDSCAPE_WIDTH,
+    height: 470,
+    backgroundColor: COVER,
   },
   fullPageImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
     width: LANDSCAPE_WIDTH,
-    height: LANDSCAPE_HEIGHT,
+    height: 470,
     objectFit: "cover",
   },
-  coverFadeBottom: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 0,
-    backgroundColor: "transparent",
-  },
-  coverFadeMid: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 0,
-    backgroundColor: "transparent",
+  coverBottomBar: {
+    width: LANDSCAPE_WIDTH,
+    height: LANDSCAPE_HEIGHT - 470,
+    backgroundColor: COVER,
+    paddingTop: 18,
+    paddingRight: 28,
+    paddingBottom: 18,
+    paddingLeft: 28,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   coverContent: {
-    position: "absolute",
-    left: 38,
-    right: 38,
-    bottom: 28,
+    width: LANDSCAPE_WIDTH - 56,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -488,6 +484,14 @@ const S = StyleSheet.create({
     lineHeight: 1.7,
     color: "#404040",
   },
+  singleDeveloperImage: {
+    width: "100%",
+    height: 220,
+    objectFit: "cover",
+    borderRadius: 10,
+    backgroundColor: LIGHT,
+    marginTop: 18,
+  },
 });
 
 const safe = (v) => (typeof v === "string" ? v : v == null ? "" : String(v));
@@ -689,30 +693,34 @@ export default function SalesOfferDocument({ payload }) {
   const unitRows = Array.isArray(p.unitRows) ? p.unitRows : [];
   const paymentPlans = Array.isArray(p.paymentPlans) ? p.paymentPlans : [];
   const developerText = safe(p?.developer?.description);
-  const developerImages = repeatImages(p?.developer?.images || p.gallery || [], 2);
+  const developerImage = uniqueImages(p?.developer?.images || p.gallery || [])[0] || "";
   const overviewImage = safe(p.overviewImage || p.coverImage || gallery[0]);
   const masterplanImage = safe(p.masterplanImage || "");
   const mapImage = safe(p?.location?.mapImage || "");
 
   return (
     <Document>
-      <Page size="A4" orientation="landscape" style={S.coverPage}>
-        {p.coverImage ? <Image src={p.coverImage} style={S.fullPageImage} /> : null}
-        <View style={S.coverContent}>
-          <View style={S.coverLeft}>
-            <Text style={[S.coverLine, { fontFamily: font }]}>Look what we found for you</Text>
-            <Text style={[S.coverBrand, { fontFamily: font }]}>Izzzi.LifeMINT {projectName}</Text>
-            <Text style={[S.coverDate, { fontFamily: font }]}>
-              {safe(p.createdAtLabel)} {safe(p.createdAt)}
-            </Text>
-          </View>
-          <View style={S.coverAgentWrap}>
-            <View style={S.coverAgentCard}>
-              {p?.agent?.avatar ? <Image src={p.agent.avatar} style={S.coverAgentAvatar} /> : null}
-              <Text style={[S.coverAgentName, { fontFamily: font }]}>{safe(p?.agent?.name)}</Text>
-              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.company)}</Text>
-              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.phone)}</Text>
-              <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.email)}</Text>
+      <Page size={[LANDSCAPE_WIDTH, LANDSCAPE_HEIGHT]} wrap={false} style={S.coverPage}>
+        <View style={S.coverImagePanel}>
+          {p.coverImage ? <Image src={p.coverImage} style={S.fullPageImage} /> : null}
+        </View>
+        <View style={S.coverBottomBar}>
+          <View style={S.coverContent}>
+            <View style={S.coverLeft}>
+              <Text style={[S.coverLine, { fontFamily: font }]}>Look what we found for you</Text>
+              <Text style={[S.coverBrand, { fontFamily: font }]}>Izzzi.LifeMINT {projectName}</Text>
+              <Text style={[S.coverDate, { fontFamily: font }]}>
+                {safe(p.createdAtLabel)} {safe(p.createdAt)}
+              </Text>
+            </View>
+            <View style={S.coverAgentWrap}>
+              <View style={S.coverAgentCard}>
+                {p?.agent?.avatar ? <Image src={p.agent.avatar} style={S.coverAgentAvatar} /> : null}
+                <Text style={[S.coverAgentName, { fontFamily: font }]}>{safe(p?.agent?.name)}</Text>
+                <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.company)}</Text>
+                <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.phone)}</Text>
+                <Text style={[S.coverAgentMeta, { fontFamily: font }]}>{safe(p?.agent?.email)}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -850,6 +858,7 @@ export default function SalesOfferDocument({ payload }) {
       {paymentPlans.map((plan, index) => (
         <Page key={`payment-${index}`} size="A4" orientation="landscape" style={S.page}>
           {sectionChrome("IZZZI.LIFEMINT / PAYMENT PLAN", "MOHAMAD KODMANI REAL ESTATE BROKERS LLC", font)}
+          <Text style={[S.title, { fontFamily: font, fontSize: 24, marginBottom: 12 }]}>Payment Plan</Text>
           <View style={S.paymentBox}>
             <Text style={[S.paymentTitle, { fontFamily: font }]}>{safe(plan?.title || `Payment Plan Option ${index + 1}`)}</Text>
             {plan?.summary ? <Text style={[S.paymentText, { fontFamily: font }]}>{safe(plan.summary)}</Text> : null}
@@ -914,10 +923,7 @@ export default function SalesOfferDocument({ payload }) {
             {developerText ? (
               <Text style={[S.developerText, { fontFamily: font }]}>{developerText}</Text>
             ) : null}
-            <View style={[S.twinRow, { height: 220, marginTop: 18 }]}>
-              {developerImages[0] ? <Image src={developerImages[0]} style={S.twinImage} /> : <View style={S.twinImage} />}
-              {developerImages[1] ? <Image src={developerImages[1]} style={S.twinImage} /> : <View style={S.twinImage} />}
-            </View>
+            {developerImage ? <Image src={developerImage} style={S.singleDeveloperImage} /> : null}
           </View>
         </View>
       </Page>
