@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y, Autoplay, Keyboard } from "swiper/modules";
@@ -24,7 +24,15 @@ export default function VisualSymphony({ data, isRTL, locale }) {
     setMounted(true);
   }, []);
 
-  if (!data || !data.slides || data.slides.length === 0) return null;
+  // Normalize slides: ensure every entry is a plain URL string
+  const normalizedSlides = React.useMemo(() => {
+    if (!data?.slides || !Array.isArray(data.slides)) return [];
+    return data.slides
+      .map((s) => (typeof s === "string" ? s : s?.url || s?.src || ""))
+      .filter(Boolean);
+  }, [data?.slides]);
+
+  if (!data || normalizedSlides.length === 0) return null;
 
   // SSR-safe loading state
   if (!mounted) {
@@ -77,7 +85,7 @@ export default function VisualSymphony({ data, isRTL, locale }) {
                 disableOnInteraction: false,
               }}
             >
-              {data.slides.map((src, index) => (
+              {normalizedSlides.map((src, index) => (
                 <SwiperSlide key={index} className={styles.slideItem}>
                   <div className={styles.slideInner}>
                     <div className={styles.imageWrapper}>

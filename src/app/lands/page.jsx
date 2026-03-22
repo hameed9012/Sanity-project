@@ -1,32 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import styles from "@/styles/lands/lands.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 import ProjectCards from "@/components/projects/ProjectCards";
+import ProjectsFiltersBar from "@/components/filters/ProjectsFiltersBar";
+import ProjectsFiltersModal from "@/components/filters/ProjectsFiltersModal";
+import { filterProjects } from "@/lib/projects/filterProjects";
 
 const PAGE_SIZE = 9;
-const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
 
-function normalizeLocale(locale) {
-  const s = String(locale || "en").toLowerCase();
-  return s.startsWith("ar") ? "ar" : "en";
-}
-
-function normalizeSearchText(value) {
-  return String(value || "")
-    .replace(ARABIC_DIACRITICS, "")
-    .replace(/أ|إ|آ/g, "ا")
-    .replace(/ة/g, "ه")
-    .replace(/ى|ئ/g, "ي")
-    .replace(/ؤ/g, "و")
-    .replace(/[^\p{L}\p{N}\s]/gu, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-}
+const initialFilters = {
+  search: "",
+  devStatus: [],
+  unitTypes: [],
+  bedrooms: [],
+  minPrice: "",
+  maxPrice: "",
+  minSize: "",
+  maxSize: "",
+};
 
 function isLandProject(project) {
   const status = String(project?.status || project?.devStatus || "").toLowerCase();
@@ -50,22 +46,66 @@ function getTabType(project) {
   return raw.includes("industrial") ? "industrial" : "residential";
 }
 
-export default function LandsPage() {
+const TYPE_TABS = [
+  { id: "all", labelEn: "All Projects", labelAr: "\u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639" },
+  { id: "residential", labelEn: "Residential", labelAr: "\u0633\u0643\u0646\u064a" },
+  { id: "industrial", labelEn: "Industrial", labelAr: "\u0635\u0646\u0627\u0639\u064a" },
+];
+
+function LandsContent() {
   const { locale: ctxLocale } = useLanguage();
-  const locale = normalizeLocale(ctxLocale);
+  const locale = ctxLocale || "en";
   const isRTL = locale === "ar";
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const activeTab = searchParams.get("tab") || "all";
+  const setActiveTab = (tab) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === "all") params.delete("tab");
+    else params.set("tab", tab);
+    const query = params.toString();
+    router.replace(query ? `/lands?${query}` : "/lands", { scroll: false });
+  };
+
   const { allProjects, loading } = useAllProjects();
 
-  const allLands = React.useMemo(() => {
-    return (allProjects || [])
-      .filter((project) => isLandProject(project));
-  }, [allProjects]);
-
-  const [activeType, setActiveType] = React.useState("all");
-  const [search, setSearch] = React.useState("");
+  const [filters, setFilters] = React.useState(initialFilters);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
 
-  const counts = React.useMemo(
+  React.useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [
+    activeTab,
+    filters.search,
+    JSON.stringify(filters.devStatus),
+    JSON.stringify(filters.unitTypes),
+    JSON.stringify(filters.bedrooms),
+    filters.minPrice,
+    filters.maxPrice,
+    filters.minSize,
+    filters.maxSize,
+  ]);
+
+  const allLands = React.useMemo(() => {
+    return (allProjects || []).filter((project) => isLandProject(project));
+  }, [allProjects]);
+
+  const tabFiltered = React.useMemo(() => {
+    if (activeTab === "all") return allLands;
+    return allLands.filter((x) => getTabType(x) === activeTab);
+  }, [allLands, activeTab]);
+
+  const { filtered } = React.useMemo(
+    () => filterProjects(tabFiltered, filters),
+    [tabFiltered, filters]
+  );
+
+  const visibleProjects = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  const tabCounts = React.useMemo(
     () => ({
       all: allLands.length,
       residential: allLands.filter((x) => getTabType(x) === "residential").length,
@@ -73,47 +113,6 @@ export default function LandsPage() {
     }),
     [allLands]
   );
-
-  const filtered = React.useMemo(() => {
-    const base =
-      activeType === "all"
-        ? allLands
-        : allLands.filter((x) => getTabType(x) === activeType);
-
-    const q = normalizeSearchText(search);
-    if (!q) return base;
-
-    return base.filter((project) => {
-      const haystack = normalizeSearchText(
-        [
-          project?.name,
-          project?.nameEn,
-          project?.nameAr,
-          project?.title,
-          project?.titleAr,
-          project?.location,
-          project?.locationAr,
-          project?.data?.project?.location,
-          project?.data?.project?.locationAr,
-          project?.developer,
-          project?.developerName,
-          project?.developerNameEn,
-          project?.developerNameAr,
-          project?.slug,
-        ]
-          .filter(Boolean)
-          .join(" ")
-      );
-      return haystack.includes(q);
-    });
-  }, [activeType, allLands, locale, search]);
-
-  const visible = React.useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
-  const canLoadMore = visibleCount < filtered.length;
-
-  React.useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [activeType, search]);
 
   return (
     <div className={styles.page} dir={isRTL ? "rtl" : "ltr"}>
@@ -123,13 +122,13 @@ export default function LandsPage() {
             <p className={styles.pageSubOnly}>
               {isRTL
                 ? "\u0627\u0633\u062a\u0639\u0631\u0636 \u0645\u062d\u0641\u0638\u0629 \u0645\u0634\u0627\u0631\u064a\u0639 \u0627\u0644\u0623\u0631\u0627\u0636\u064a \u062d\u0633\u0628 \u0627\u0644\u0646\u0648\u0639"
-                : "Browse project portfolio by type"}
+                : "Browse land projects by type"}
             </p>
           </div>
           <div className={styles.metaPill}>
             {isRTL ? (
               <>
-                <span>\u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639: </span>
+                <span>{"\u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639: "}</span>
                 <b>{filtered.length}</b>
               </>
             ) : (
@@ -141,27 +140,69 @@ export default function LandsPage() {
           </div>
         </div>
 
-        <TypeTabs value={activeType} isRTL={isRTL} onChange={setActiveType} counts={counts} />
-
+        {/* Type tabs */}
         <div className={styles.tabsWrap}>
-          <div className={styles.tabs} style={{ marginTop: 12 }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={
-                isRTL
-                  ? "\u0627\u0628\u062d\u062b \u0628\u0627\u0633\u0645 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0623\u0648 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0623\u0648 \u0627\u0644\u0645\u0637\u0648\u0631"
-                  : "Search by project, area, or developer"
-              }
-              className={styles.tab}
-              style={{
-                flex: 1,
-                textAlign: isRTL ? "right" : "left",
-                cursor: "text",
-              }}
-            />
+          <div className={styles.tabs}>
+            {TYPE_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <span className={styles.tabLabel}>{isRTL ? tab.labelAr : tab.labelEn}</span>
+                <span className={styles.tabCount}>({tabCounts[tab.id] || 0})</span>
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* Filters bar — same as properties/offplan */}
+        <ProjectsFiltersBar
+          filters={filters}
+          onChange={setFilters}
+          onOpenFullFilters={() => setIsModalOpen(true)}
+        />
+
+        <ProjectsFiltersModal
+          isOpen={isModalOpen}
+          filters={filters}
+          onChange={setFilters}
+          onClose={() => setIsModalOpen(false)}
+          onReset={() => setFilters(initialFilters)}
+          totalProjects={filtered.length}
+        />
+
+        {!loading && (
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            margin: "12px 0 16px",
+            position: "relative",
+            zIndex: 2,
+            fontSize: "13px",
+            color: "rgba(11,11,12,0.55)",
+            letterSpacing: "0.02em",
+          }}>
+            <span>
+              {isRTL
+                ? `\u0639\u0631\u0636 ${Math.min(visibleCount, filtered.length)} \u0645\u0646 \u0623\u0635\u0644 ${filtered.length}`
+                : `Showing ${Math.min(visibleCount, filtered.length)} of ${filtered.length} projects`}
+            </span>
+            {filters.search ? (
+              <span style={{
+                background: "rgba(201,162,106,0.12)",
+                border: "1px solid rgba(201,162,106,0.3)",
+                borderRadius: "999px",
+                padding: "4px 12px",
+                fontSize: "12px",
+              }}>
+                {isRTL ? `\u0627\u0644\u0628\u062d\u062b: ${filters.search}` : `Search: ${filters.search}`}
+              </span>
+            ) : null}
+          </div>
+        )}
 
         {loading && allLands.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
@@ -169,11 +210,7 @@ export default function LandsPage() {
           </div>
         )}
 
-        <div className={styles.cardsWrap}>
-          <ProjectCards projects={visible} />
-        </div>
-
-        {!loading && filtered.length === 0 && (
+        {!loading && filtered.length === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>
               {isRTL ? "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0634\u0627\u0631\u064a\u0639" : "No projects found"}
@@ -184,46 +221,48 @@ export default function LandsPage() {
                 : "Try changing the filter type or search term."}
             </div>
           </div>
-        )}
+        ) : (
+          <>
+            <div className={styles.cardsWrap}>
+              <ProjectCards projects={visibleProjects} />
+            </div>
 
-        {canLoadMore && (
-          <div className={styles.loadMoreWrap}>
-            <button
-              type="button"
-              className={styles.loadMoreBtn}
-              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-            >
-              {isRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0632\u064a\u062f" : "LOAD MORE"}
-            </button>
-          </div>
+            {hasMore && (
+              <div className={styles.loadMoreWrap}>
+                <button
+                  type="button"
+                  className={styles.loadMoreBtn}
+                  onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                >
+                  {isRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0632\u064a\u062f" : "LOAD MORE"}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 }
 
-function TypeTabs({ value, onChange, counts, isRTL }) {
-  const tabs = [
-    { id: "all", en: "All Projects", ar: "\u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639" },
-    { id: "residential", en: "Residential", ar: "\u0633\u0643\u0646\u064a" },
-    { id: "industrial", en: "Industrial", ar: "\u0635\u0646\u0627\u0639\u064a" },
-  ];
-
+export default function LandsPage() {
   return (
-    <div className={styles.tabsWrap}>
-      <div className={styles.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`${styles.tab} ${value === tab.id ? styles.tabActive : ""}`}
-            onClick={() => onChange(tab.id)}
-          >
-            <span className={styles.tabLabel}>{isRTL ? tab.ar : tab.en}</span>
-            <span className={styles.tabCount}>({counts?.[tab.id] || 0})</span>
-          </button>
-        ))}
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#888",
+          }}
+        >
+          Loading...
+        </div>
+      }
+    >
+      <LandsContent />
+    </Suspense>
   );
 }

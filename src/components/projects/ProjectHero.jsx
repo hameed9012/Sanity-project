@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "@/styles/projects/ProjectHero.module.css";
 import { getLocalizedText } from "@/lib/text-utils";
@@ -24,6 +24,14 @@ function getInitials(value) {
     .toUpperCase();
 }
 
+function slugifyDeveloper(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/\s+(realty|properties|developments?|group|real\s+estate)\s*$/i, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export default function ProjectHero({
   data,
   projectData,
@@ -35,6 +43,24 @@ export default function ProjectHero({
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
+
+  // Fetch developer logo from the developer API
+  const [devLogoUrl, setDevLogoUrl] = useState(null);
+
+  useEffect(() => {
+    if (!projectData?.developer && !projectData?.project?.developer) return;
+    const devName = projectData?.developer || projectData?.project?.developer || "";
+    const devSlug = slugifyDeveloper(devName);
+    if (!devSlug) return;
+
+    fetch(`/api/sanity-developer?slug=${devSlug}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((doc) => {
+        const logo = doc?.logoUrl || doc?.logoCdn?.url || null;
+        if (logo) setDevLogoUrl(logo);
+      })
+      .catch(() => {});
+  }, [projectData?.developer, projectData?.project?.developer]);
 
   if (!data || !projectData) return null;
 
@@ -49,7 +75,8 @@ export default function ProjectHero({
 
   const bgUrl = heroData.backgroundUrl || heroData.squareImageUrl || "";
   const isBgVideo = isVideo(bgUrl);
-  const logoSrc = heroData.squareImageUrl || heroData.backgroundUrl || "";
+  // Use developer logo from Sanity, NOT the hero image
+  const logoSrc = devLogoUrl || "";
   const proximityItems = Array.isArray(locationData?.proximityFeatures)
     ? locationData.proximityFeatures.filter((item) => item?.text)
     : [];

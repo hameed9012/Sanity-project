@@ -228,7 +228,9 @@ function buildSanityProjectData(sanityDoc, locale) {
               : { url: g?.url || "", alt: g?.alt || project?.name || "" }
           )
         : [],
-      slides: Array.isArray(gallery?.slides) ? gallery.slides : [],
+      slides: Array.isArray(gallery?.slides)
+        ? gallery.slides.map((s) => (typeof s === "string" ? s : s?.url || "")).filter(Boolean)
+        : [],
     },
 
     floorPlans: {
