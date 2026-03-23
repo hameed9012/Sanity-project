@@ -209,11 +209,12 @@ export default function WhereToLivePage() {
   }, [locale, sanityAreas]);
 
   const heroImages = useMemo(() => {
+    const isValidUrl = (v) => typeof v === "string" && (v.startsWith("http") || v.startsWith("/"));
     const images = (allAreas || [])
       .map((area) => area.image)
-      .filter(Boolean)
+      .filter(isValidUrl)
       .filter((src, index, arr) => arr.indexOf(src) === index);
-    return images.length ? images : STATIC_AREAS.map((area) => area.heroImage).filter(Boolean);
+    return images.length ? images : STATIC_AREAS.map((area) => area.heroImage).filter(isValidUrl);
   }, [allAreas]);
 
   const { filtered, hasActiveFilters } = useMemo(
@@ -388,6 +389,7 @@ function Hero({ images }) {
                   className={styles.heroImage}
                   sizes="100vw"
                   unoptimized
+                  onError={(e) => { e.currentTarget.style.display = "none"; }}
                 />
               </SwiperSlide>
             ))}

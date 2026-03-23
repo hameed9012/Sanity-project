@@ -234,6 +234,8 @@
     -webkit-appearance: none;
     pointer-events: none;
     transform: translateY(-50%);
+}
+
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

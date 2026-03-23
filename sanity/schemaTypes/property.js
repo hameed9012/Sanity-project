@@ -205,6 +205,21 @@ export default defineType({
     }),
 
     defineField({
+      name: 'crestImage',
+      title: 'Crest / Logo Image URL',
+      type: 'url',
+      group: 'media',
+      description: 'Developer crest or project logo (Bunny CDN URL). Overrides the developer logo on cards and project page.',
+    }),
+    defineField({
+      name: 'crestImageCdn',
+      title: 'OR Crest / Logo (BunnyCDN)',
+      type: 'cdnImage',
+      group: 'media',
+      description: 'Paste a BunnyCDN crest/logo image URL instead of using the field above.',
+    }),
+
+    defineField({
       name: 'brochureUrl',
       title: 'Brochure PDF URL (optional)',
       type: 'url',

@@ -75,8 +75,9 @@ export default function ProjectHero({
 
   const bgUrl = heroData.backgroundUrl || heroData.squareImageUrl || "";
   const isBgVideo = isVideo(bgUrl);
-  // Use developer logo from Sanity, NOT the hero image
-  const logoSrc = devLogoUrl || "";
+  // Use per-property crest first, then developer logo from Sanity
+  const propertyCrest = projectData?.crestImage || projectData?.project?.crestImage || "";
+  const logoSrc = propertyCrest || devLogoUrl || "";
   const proximityItems = Array.isArray(locationData?.proximityFeatures)
     ? locationData.proximityFeatures.filter((item) => item?.text)
     : [];

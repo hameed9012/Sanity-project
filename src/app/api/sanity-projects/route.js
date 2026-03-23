@@ -30,6 +30,8 @@ const PROPERTY_QUERY = `
   heroImageUpload{
     asset->
   },
+  crestImage,
+  crestImageCdn,
   heroVideo,
   galleryImages[]{
     ...,
@@ -128,6 +130,10 @@ function normalizeProperty(item) {
       item?.heroImageCdn?.url ||
       item?.heroImage ||
       item?.heroImageUpload?.asset?.url ||
+      "",
+    crestImage:
+      item?.crestImageCdn?.url ||
+      item?.crestImage ||
       "",
     galleryImages,
     floorPlans,

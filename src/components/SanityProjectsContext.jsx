@@ -362,6 +362,7 @@ function normalizeLegacyProperty(property) {
     saleStatus: "",
     hasPostHandover: /post[- ]?handover/i.test(project?.paymentPlan || ""),
     postHandoverMonths: extractPostHandoverMonths(project?.paymentPlan),
+    crestImage: property?.crestImage || "",
     featured: property?.featured === true,
   };
 }
@@ -455,6 +456,7 @@ function normalizeFlatProperty(property) {
     saleStatus: "",
     hasPostHandover: /post[- ]?handover/i.test(property?.paymentPlan || ""),
     postHandoverMonths: extractPostHandoverMonths(property?.paymentPlan),
+    crestImage: property?.crestImage || "",
     featured: property?.featured === true,
   };
 }
