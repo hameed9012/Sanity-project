@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BunnyCDN → Sanity Property Importer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
+:root {
+  --bg:#f5f2ed;--surface:#fff;--surface2:#f0ece5;--border:#d8d0c4;--border-dark:#b8b0a4;
+  --accent:#1a1410;--amber:#c17f24;--amber-l:#f5e6c8;--red:#c0392b;--red-l:#fdecea;
+  --green:#1e7a4a;--green-l:#e6f4ec;--blue:#1a4a8a;--blue-l:#e8eef8;--purple:#6a2a9a;--purple-l:#f0e8f8;
+  --text:#1a1410;--muted:#7a7068;--mono:'JetBrains Mono',monospace;--serif:'Instrument Serif',serif;--sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+.app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+
+/* sidebar */
+.sb{background:var(--accent);color:#e8e0d4;padding:22px 16px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{display:flex;align-items:center;gap:10px}
+.lm{width:34px;height:34px;background:var(--amber);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.lt{font-family:var(--serif);font-size:1.05rem;line-height:1.15}
+.lt em{display:block;font-style:italic;color:var(--amber)}
+.ls{font-family:var(--mono);font-size:0.54rem;color:#4a4238;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.sbs{display:flex;flex-direction:column;gap:6px}
+.sbl{font-family:var(--mono);font-size:0.54rem;text-transform:uppercase;letter-spacing:2px;color:#4a4238;padding-bottom:5px;border-bottom:1px solid #2a2218}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-family:var(--mono);font-size:0.57rem;color:#7a7060;text-transform:uppercase;letter-spacing:1px}
+.fg input,.fg select{background:#241e16;border:1px solid #3a3228;border-radius:6px;color:#e8e0d4;font-family:var(--mono);font-size:0.67rem;padding:7px 9px;outline:none;width:100%;transition:border-color .15s}
+.fg input:focus,.fg select:focus{border-color:var(--amber)}
+.fg input::placeholder{color:#3a3228}
+.fg select option{background:#241e16}
+.fg .h{font-family:var(--mono);font-size:0.53rem;color:#4a4238;line-height:1.5}
+.btn-fetch{background:var(--amber);color:#1a1410;border:none;border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:0.67rem;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-fetch:hover{opacity:.85}.btn-fetch:disabled{opacity:.35;cursor:not-allowed}
+.snav{display:flex;flex-direction:column;gap:2px}
+.si{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:6px;cursor:pointer;transition:background .15s;opacity:.35}
+.si.active{background:#2a2218;opacity:1}.si.done{opacity:.65}.si.done .sn{background:var(--green)}
+.sn{width:18px;height:18px;border-radius:50%;background:#3a3228;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.54rem;flex-shrink:0}
+.sl{font-size:.72rem;color:#c8c0b4}
+
+/* main */
+.mn{padding:26px 30px;overflow-y:auto}
+.page{display:none}.page.active{display:block}
+.ph{margin-bottom:20px}
+.ph h2{font-family:var(--serif);font-size:1.85rem;font-weight:400;line-height:1.1}
+.ph h2 em{font-style:italic;color:var(--amber)}
+.ph p{font-size:.82rem;color:var(--muted);margin-top:5px}
+.ss{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-family:var(--mono);font-size:.62rem;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:16px;min-height:37px}
+.sd{width:7px;height:7px;border-radius:50%;background:var(--border-dark);flex-shrink:0;transition:background .3s}
+.sd.spin{background:var(--amber);animation:bl 1s infinite}
+.sd.ok{background:var(--green)}.sd.err{background:var(--red)}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* tree */
+.tree{display:flex;flex-direction:column;gap:9px}
+.dn{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden}
+.dh{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.dh:hover{background:var(--amber-l)}
+.dname{font-weight:600;font-size:.88rem;flex:1}
+.dbadge{font-family:var(--mono);font-size:.57rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:2px 7px;border-radius:10px}
+.darr{font-size:.63rem;color:var(--muted);transition:transform .2s}.darr.open{transform:rotate(90deg)}
+.plist{display:flex;flex-direction:column}
+.prow{border-bottom:1px solid var(--border);padding:9px 14px 9px 28px;cursor:pointer;transition:background .1s}
+.prow:last-child{border-bottom:none}.prow:hover{background:var(--blue-l)}
+.prow.sel{background:var(--blue-l);border-left:3px solid var(--blue);padding-left:25px}
+.pinner{display:flex;align-items:center;gap:8px}
+.pcb{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}
+.pname{font-size:.83rem;font-weight:500;flex:1}
+.pcount{font-family:var(--mono);font-size:.57rem;color:var(--muted)}
+.mb{font-family:var(--mono);font-size:.54rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
+.mb-ok{background:var(--green-l);color:var(--green)}.mb-no{background:var(--red-l);color:var(--red)}.mb-?{background:var(--surface2);color:var(--muted)}
+
+/* tag */
+.tleg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tpill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-family:var(--mono);font-size:.57rem}
+.pp{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:16px}
+.pptitle{font-weight:600;font-size:.88rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px}
+.it{background:var(--surface2);border:2px solid var(--border);border-radius:8px;overflow:hidden;position:relative;transition:border-color .15s}
+.it.th{border-color:var(--amber)}.it.tg{border-color:var(--blue)}.it.tc{border-color:var(--green)}.it.tf{border-color:var(--purple)}.it.ts{opacity:.32;border-color:var(--border)}
+.ithumb{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--border)}
+.ithph{width:100%;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--border-dark);background:var(--surface2)}
+.ifname{font-family:var(--mono);font-size:.54rem;color:var(--muted);padding:4px 7px 2px;word-break:break-all;line-height:1.3}
+.isel{width:calc(100% - 10px);margin:3px 5px 6px;background:var(--bg);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:.57rem;padding:3px 5px;color:var(--text);cursor:pointer}
+.isel:focus{outline:none;border-color:var(--amber)}
+.tbadge{position:absolute;top:4px;left:4px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:.51rem;font-weight:700;text-transform:uppercase}
+.tbh{background:var(--amber);color:#1a1410}.tbg{background:var(--blue);color:#fff}.tbc{background:var(--green);color:#fff}.tbf{background:var(--purple);color:#fff}.tbs{background:var(--border);color:var(--muted)}
+
+/* review */
+.rb{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:16px}
+.rbh{background:var(--surface2);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.rbht{font-weight:600;font-size:.88rem}
+.rbb{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.rrow{display:grid;grid-template-columns:130px 1fr 150px;gap:10px;align-items:start;font-size:.8rem}
+.rrlbl{font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.rrval{font-family:var(--mono);font-size:.62rem}
+.rrfield{font-family:var(--mono);font-size:.58rem;color:var(--blue);background:var(--blue-l);padding:2px 7px;border-radius:4px;display:inline-block}
+.ichips{display:flex;flex-wrap:wrap;gap:5px}
+.ichip{display:flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:3px 7px;font-family:var(--mono);font-size:.57rem}
+.ichip img{width:26px;height:17px;object-fit:cover;border-radius:3px;background:var(--border)}
+.slug-in{background:#fff;border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:.63rem;padding:5px 8px;color:var(--text);width:100%}
+.slug-in:focus{outline:none;border-color:var(--amber)}
+.mn-notice{border-radius:8px;padding:9px 13px;font-family:var(--mono);font-size:.62rem;display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;line-height:1.5}
+.mn-patch{background:var(--green-l);color:#0e4a2a;border:1px solid #b0dfc0}
+.mn-create{background:var(--blue-l);color:#0a2a5a;border:1px solid #b0c8f0}
+.mn-test{background:var(--amber-l);color:#7a5010;border:1px solid #e8c870}
+
+/* progress/log */
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:13px}
+.pm{font-family:var(--mono);font-size:.63rem;color:var(--muted);margin-bottom:7px;display:flex;justify-content:space-between}
+.pt{background:var(--surface2);border-radius:4px;height:5px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:4px;transition:width .3s;width:0%}
+.lb{background:var(--accent);border-radius:9px;padding:13px 15px;font-family:var(--mono);font-size:.62rem;line-height:1.85;max-height:260px;overflow-y:auto;color:#5a5248}
+.lb::-webkit-scrollbar{width:3px}.lb::-webkit-scrollbar-thumb{background:#3a3228;border-radius:2px}
+.lok{color:#4dffa3}.lerr{color:#ff6d6d}.linf{color:#ffc06d}.lwrn{color:#ffdd6d}
+
+/* results */
+.rg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:14px;text-align:center}
+.rn{font-family:var(--serif);font-size:2.2rem;font-weight:400}
+.rn.g{color:var(--green)}.rn.r{color:var(--red)}.rn.b{color:var(--blue)}.rn.a{color:var(--amber)}
+.rl{font-family:var(--mono);font-size:.57rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* buttons */
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border-radius:8px;font-family:var(--mono);font-size:.67rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-d{background:var(--accent);color:#fff}.btn-d:hover{opacity:.82}.btn-d:disabled{opacity:.3;cursor:not-allowed}
+.btn-a{background:var(--amber);color:#1a1410}.btn-a:hover{opacity:.85}
+.btn-g{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-g:hover{border-color:var(--border-dark)}
+.es{text-align:center;padding:50px 20px;color:var(--muted)}
+.es .ei{font-size:2.5rem;margin-bottom:10px;opacity:.35}
+.es p{font-size:.82rem}
+
+@media(max-width:768px){.app{grid-template-columns:1fr}.sb{position:static;height:auto}.rg{grid-template-columns:1fr 1fr}.rrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sb">
+  <div>
+    <div class="sb-logo"><div class="lm">🐰</div><div><div class="lt">BunnyCDN<em>→ Sanity</em></div><div class="ls">// property importer v3</div></div></div>
+  </div>
+  <div class="sbs">
+    <div class="sbl">BunnyCDN</div>
+    <div class="fg"><label>Storage Zone</label><input id="bzZone" type="text" value="mohamad-kodmane-website-projects"></div>
+    <div class="fg"><label>Access Key</label><input id="bzKey" type="password" placeholder="storage access key"><div class="h">Storage → FTP &amp; API access</div></div>
+    <div class="fg"><label>Root Folder (optional)</label><input id="bzRoot" type="text" placeholder="e.g. properties/"><div class="h">Leave blank if developer folders are at root</div></div>
+    <div class="fg"><label>CDN Base URL</label><input id="cdnBase" type="text" placeholder="https://mohamad-kod.b-cdn.net"></div>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Sanity</div>
+    <div class="fg"><label>Project ID</label><input id="sPid" type="text" value="20d53wo5" readonly></div>
+    <div class="fg"><label>Dataset</label><input id="sDs" type="text" value="production" readonly></div>
+    <div class="fg"><label>API Write Token</label><input id="sToken" type="password" placeholder="your sanity write token"><div class="h">manage.sanity.io → API → Tokens</div></div>
+    <div class="fg">
+      <label>Document Type</label>
+      <select id="docType">
+        <option value="cdnImportTest">cdnImportTest (TEST — safe)</option>
+        <option value="property">property (production)</option>
+      </select>
+      <div class="h">Use cdnImportTest first to verify in Studio</div>
+    </div>
+    <div class="fg">
+      <label>Write Mode</label>
+      <select id="writeMode">
+        <option value="patch">Patch existing — find by slug, images only</option>
+        <option value="create">Create new — always make a new doc</option>
+      </select>
+    </div>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Listing Sync</div>
+    <div class="fg">
+      <label>TSV / CSV Sheet</label>
+      <input id="sheetFile" type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv">
+      <div class="h">Use the area/developer/project sheet to patch only Listing Status in Sanity.</div>
+    </div>
+    <button class="btn-fetch" id="sheetBtn" onclick="startSheetSync()">🧾 Sync Listing Status</button>
+  </div>
+  <button class="btn-fetch" id="fetchBtn" onclick="startFetch()">⚡ Fetch Folder Structure</button>
+  <div class="sbs">
+    <div class="sbl">Steps</div>
+    <div class="snav">
+      <div class="si active" id="nav0" onclick="goPage(0)"><div class="sn" id="sn0">1</div><div class="sl">Browse Folders</div></div>
+      <div class="si"        id="nav1" onclick="goPage(1)"><div class="sn" id="sn1">2</div><div class="sl">Tag Images</div></div>
+      <div class="si"        id="nav2" onclick="goPage(2)"><div class="sn" id="sn2">3</div><div class="sl">Review &amp; Map</div></div>
+      <div class="si"        id="nav3" onclick="goPage(3)"><div class="sn" id="sn3">4</div><div class="sl">Import</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="mn">
+  <div class="ss"><div class="sd" id="sdot"></div><span id="stxt">Enter credentials, then click Fetch.</span></div>
+
+  <!-- PAGE 0 -->
+  <div class="page active" id="pg0">
+    <div class="ph"><h2>Browse <em>Folders</em></h2><p>Structure expected: <strong>developer folder → property subfolder → images</strong>. Each property subfolder = one Sanity document.</p></div>
+    <div id="treeWrap"><div class="es"><div class="ei">📁</div><p>Fetch BunnyCDN to see your folder tree.</p></div></div>
+    <div class="acts" id="bActs" style="display:none;margin-top:14px;">
+      <button class="btn btn-a" onclick="goTag()">Tag Images →</button>
+      <button class="btn btn-g" onclick="selAll()">Select All</button>
+      <button class="btn btn-g" onclick="deselAll()">Deselect All</button>
+    </div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div class="page" id="pg1">
+    <div class="ph"><h2>Tag <em>Images</em></h2><p>Assign each image to the correct Sanity field. Auto-tag guesses from filenames — fix anything wrong manually.</p></div>
+    <div class="tleg">
+      <div class="tpill" style="background:var(--amber-l);color:#7a5010">🌟 hero → heroImageCdn</div>
+      <div class="tpill" style="background:var(--blue-l);color:#1a3a6a">🖼️ gallery → galleryImages[]</div>
+      <div class="tpill" style="background:var(--green-l);color:#0e4a2a">🏷️ crest → crestImageCdn</div>
+      <div class="tpill" style="background:var(--purple-l);color:#4a1a7a">📐 floorplan → floorPlans[].images[]</div>
+      <div class="tpill" style="background:var(--surface2);color:var(--muted)">⊘ skip</div>
+    </div>
+    <div class="acts"><button class="btn btn-g" onclick="autoTagAll()">🤖 Auto-tag All</button></div>
+    <div id="tagPanels"></div>
+    <div class="acts" style="margin-top:8px;">
+      <button class="btn btn-a" onclick="goReview()">Review &amp; Map →</button>
+      <button class="btn btn-g" onclick="goPage(0)">← Back</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page" id="pg2">
+    <div class="ph"><h2>Review <em>&amp; Map</em></h2><p>In <strong>Patch mode</strong>, the tool finds your existing property doc by slug and <strong>only writes the image fields</strong>. Title, price, description, amenities — all untouched.</p></div>
+    <div id="modeNotice"></div>
+    <div id="revWrap"></div>
+    <div class="acts" style="margin-top:8px;">
+      <button class="btn btn-d" id="importBtn" onclick="startImport()">🚀 Run Import</button>
+      <button class="btn btn-g" onclick="goReviewBack()">← Back</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="page" id="pg3">
+    <div class="ph"><h2>Import <em>Results</em></h2></div>
+    <div class="rg">
+      <div class="rc"><div class="rn g" id="r-p">0</div><div class="rl">Patched</div></div>
+      <div class="rc"><div class="rn b" id="r-c">0</div><div class="rl">Created</div></div>
+      <div class="rc"><div class="rn r" id="r-f">0</div><div class="rl">Failed / Skipped</div></div>
+      <div class="rc"><div class="rn a" id="r-i">0</div><div class="rl">Images Linked</div></div>
+    </div>
+    <div class="pc">
+      <div class="pm"><span id="pLbl">0 / 0</span><span id="pPct">0%</span></div>
+      <div class="pt"><div class="pf" id="pFill"></div></div>
+    </div>
+    <div class="lb" id="lb"><span class="linf">// waiting…</span><br></div>
+    <div class="acts" style="margin-top:12px;"><button class="btn btn-g" onclick="goPage(0)">Start over</button></div>
+  </div>
+</main>
+</div>
+
+<script>
+let folderTree=[], selected=new Set(), tagMap={}, matchCache={}, sanityDocCache={}, activeFlow='images', sheetRows=[], sheetMatchCache={}, sheetSkipSet=new Set(), sheetReviewFilter='all';
+
+const $=id=>document.getElementById(id);
+const ext=n=>n.split('.').pop().toLowerCase();
+const isImg=n=>['jpg','jpeg','png','webp','avif','gif','svg'].includes(ext(n));
+const toSlug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const mkKey=(p,i)=>`${p}_${Date.now()}_${i}`;
+
+function setStatus(msg,t=''){$('stxt').textContent=msg;$('sdot').className='sd'+(t?' '+t:'')}
+function log(msg,t=''){const b=$('lb');const s=document.createElement('span');if(t)s.className='l'+t;s.textContent=new Date().toLocaleTimeString()+' — '+msg;b.appendChild(s);b.appendChild(document.createElement('br'));b.scrollTop=b.scrollHeight}
+function goPage(n){document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));document.querySelectorAll('.si').forEach((s,i)=>s.classList.toggle('active',i===n))}
+
+// ── BunnyCDN ──
+async function bunnyList(path){
+  const r=await fetch(`https://storage.bunnycdn.com/${$('bzZone').value.trim()}/${path}`,{headers:{AccessKey:$('bzKey').value.trim(),Accept:'application/json'}});
+  if(!r.ok)throw new Error(`BunnyCDN ${r.status} on /${path}`);
+  return r.json();
+}
+function normalizedCdnBase(){
+  const raw=$('cdnBase').value.trim();
+  if(!raw)throw new Error('Enter CDN Base URL, e.g. https://luxury-real-estate-media.b-cdn.net');
+  const withProtocol=/^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+  return withProtocol.replace(/\/+$/,'');
+}
+function normalizeCdnPath(p){return String(p||'').trim().replace(/^\/+/,'')}
+function encodePathSegments(p){
+  return p.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+}
+function cdnUrl(p){return `${normalizedCdnBase()}/${encodePathSegments(normalizeCdnPath(p))}`}
+function resolveAssetUrl(img){
+  const raw=typeof img==='string'?img:(img?.cdnPath||img?.url||'');
+  if(!raw)return'';
+  return /^https?:\/\//i.test(raw)?raw:cdnUrl(raw);
+}
+function makeCdnImage(url,alt){return{_type:'cdnImage',url,alt}}
+function makeGalleryItem(img,i,pn){
+  const url=resolveAssetUrl(img);
+  return{_type:'object',_key:mkKey('gal',i),url,cdnImage:makeCdnImage(url,`${pn} gallery ${i+1}`)};
+}
+function makeFloorPlanImage(img,i,pn){
+  const url=resolveAssetUrl(img);
+  return{_type:'object',_key:mkKey('fpi',i),url,cdnImage:makeCdnImage(url,`${pn} floor plan ${i+1}`)};
+}
+function floorPlanText(plan){
+  return [plan?.title,plan?.titleAr,plan?.bedrooms!=null?`${plan.bedrooms} bedroom`:'',plan?.size,plan?.price].filter(Boolean).join(' ');
+}
+function bedroomHints(text){
+  const raw=String(text||'').toLowerCase();
+  const hints=new Set();
+  if(/\bstudio\b/.test(raw))hints.add('studio');
+  const pats=[/(\d+(?:\.\d+)?)\s*(?:bed(?:room)?s?|br|bhk)\b/g,/(?:bed(?:room)?s?|br|bhk)\s*(\d+(?:\.\d+)?)/g];
+  pats.forEach(re=>{for(const m of raw.matchAll(re))hints.add(m[1])});
+  return [...hints];
+}
+function floorPlanMatchScore(img,plan){
+  const imgText=String(img?.name||img?.cdnPath||img?.url||'');
+  const imgSlug=toSlug(imgText.replace(/\.[^.]+$/,''));
+  const planText=floorPlanText(plan);
+  const planSlug=toSlug(planText);
+  const titleSlug=toSlug([plan?.title,plan?.titleAr].filter(Boolean).join(' '));
+  let score=0;
+  if(planSlug&&imgSlug.includes(planSlug))score+=30;
+  if(titleSlug&&imgSlug.includes(titleSlug))score+=20;
+  titleSlug.split('-').filter(t=>t.length>1).forEach(t=>{if(imgSlug.includes(t))score+=4});
+  const imgBeds=bedroomHints(imgText);
+  const planBeds=bedroomHints(planText);
+  if(imgBeds.includes('studio')&&planBeds.includes('studio'))score+=20;
+  const imgNums=imgBeds.filter(v=>v!=='studio');
+  const planNums=planBeds.filter(v=>v!=='studio');
+  if(imgNums.length&&planNums.length)score+=imgNums.some(v=>planNums.includes(v))?20:-10;
+  return score;
+}
+function mapFloorPlanImagesToPlans(images,plans){
+  const assignments=new Array(plans.length).fill(null);
+  const used=new Set();
+  plans.forEach((plan,planIndex)=>{
+    let bestIndex=-1,bestScore=0;
+    images.forEach((img,imgIndex)=>{
+      if(used.has(imgIndex))return;
+      const score=floorPlanMatchScore(img,plan);
+      if(score>bestScore){bestScore=score;bestIndex=imgIndex}
+    });
+    if(bestIndex>=0){assignments[planIndex]=images[bestIndex];used.add(bestIndex)}
+  });
+  let next=0;
+  assignments.forEach((img,planIndex)=>{
+    if(img)return;
+    while(next<images.length&&used.has(next))next++;
+    if(next<images.length){assignments[planIndex]=images[next];used.add(next);next++}
+  });
+  return{
+    assignments,
+    extras:images.filter((_,i)=>!used.has(i))
+  };
+}
+function cleanCell(v){return String(v??'').replace(/^\uFEFF/,'').replace(/\s+/g,' ').trim()}
+function parseDelimitedLine(line,delimiter){
+  const out=[];let cur='',inQuotes=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i],next=line[i+1];
+    if(ch==='"'){
+      if(inQuotes&&next==='"'){cur+='"';i++;continue}
+      inQuotes=!inQuotes;continue;
+    }
+    if(ch===delimiter&&!inQuotes){out.push(cur);cur='';continue}
+    cur+=ch;
+  }
+  out.push(cur);
+  return out.map(cleanCell);
+}
+function parseDelimitedText(text,delimiter){
+  const lines=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(line=>line.trim());
+  if(!lines.length)return[];
+  const headers=parseDelimitedLine(lines[0],delimiter).map(h=>cleanCell(h));
+  return lines.slice(1).map(line=>{
+    const cols=parseDelimitedLine(line,delimiter);
+    const row={};
+    headers.forEach((h,i)=>{row[h]=cleanCell(cols[i]||'')});
+    return row;
+  });
+}
+function detectSheetDelimiter(fileName,text){
+  if(/\.tsv$/i.test(fileName))return '\t';
+  if(/\.csv$/i.test(fileName))return ',';
+  return String(text||'').split(/\r?\n/,1)[0].includes('\t')?'\t':',';
+}
+function simpleKey(v){return cleanCell(v).toLowerCase()}
+function sheetProjectName(row){return cleanCell(row?.Projects||row?.Project||row?.project)}
+function sheetDeveloperName(row){return cleanCell(row?.Developer||row?.developer)}
+function sheetLocation(row){return cleanCell(row?.Location||row?.location)}
+function sheetPropertyType(row){return cleanCell(row?.['Property Type']||row?.propertyType)}
+function sheetHandover(row){return cleanCell(row?.Handover||row?.handover)}
+function deriveSheetStatus(row){
+  const type=simpleKey(sheetPropertyType(row));
+  const handover=simpleKey(sheetHandover(row));
+  if(type.includes('plot'))return'land';
+  if(type.includes('rent'))return'rental';
+  if(handover.includes('ready'))return'secondary';
+  return'offplan';
+}
+function sheetRowKey(i){return`sheet||${i}`}
+function sheetStatusLabel(status){
+  return({offplan:'Off-Plan',secondary:'Secondary',land:'Land',rental:'Rental'})[status]||status;
+}
+function sheetStatusPriority(status){
+  return({offplan:1,secondary:2,rental:3,land:4})[status]||0;
+}
+function mergeSheetRows(rows){
+  const groups=new Map();
+  rows.forEach(row=>{
+    const projectName=sheetProjectName(row);
+    if(!projectName)return;
+    const developerName=sheetDeveloperName(row);
+    const location=sheetLocation(row);
+    const propertyType=sheetPropertyType(row);
+    const handover=sheetHandover(row);
+    const proposedStatus=deriveSheetStatus(row);
+    const key=simpleKey(`${developerName}|${projectName}|${location}`);
+    if(!groups.has(key)){
+      groups.set(key,{
+        ...row,
+        _projectName:projectName,
+        _developerName:developerName,
+        _location:location,
+        _propertyTypes:propertyType?[propertyType]:[],
+        _handoverValues:handover?[handover]:[],
+        _proposedStatus:proposedStatus,
+        _sourceCount:1
+      });
+      return;
+    }
+    const existing=groups.get(key);
+    existing._sourceCount+=1;
+    if(propertyType&&!existing._propertyTypes.includes(propertyType))existing._propertyTypes.push(propertyType);
+    if(handover&&!existing._handoverValues.includes(handover))existing._handoverValues.push(handover);
+    if(sheetStatusPriority(proposedStatus)>sheetStatusPriority(existing._proposedStatus))existing._proposedStatus=proposedStatus;
+  });
+  return[...groups.values()].map((row,index)=>({
+    ...row,
+    _key:sheetRowKey(index),
+    _propertyType:row._propertyTypes.join(', '),
+    _handover:row._handoverValues.join(', ')
+  }));
+}
+
+async function startFetch(){
+  activeFlow='images';
+  if(!$('bzKey').value.trim()){setStatus('Enter BunnyCDN access key.','err');return}
+  if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
+  $('fetchBtn').disabled=true;setStatus('Connecting…','spin');
+  try{
+    const root=$('bzRoot').value.trim().replace(/^\//,'');
+    const items=await bunnyList(root);
+    const devFolders=items.filter(i=>i.IsDirectory);
+    if(!devFolders.length){setStatus('No dev folders found. Check root path.','err');$('fetchBtn').disabled=false;return}
+    setStatus(`Found ${devFolders.length} developer folders…`,'spin');
+    folderTree=[];
+    for(const dev of devFolders){
+      const devPath=root?`${root}${dev.ObjectName}/`:`${dev.ObjectName}/`;
+      let devItems=[];try{devItems=await bunnyList(devPath)}catch(e){}
+      const propFolders=devItems.filter(i=>i.IsDirectory);
+      const props=[];
+      if(propFolders.length){
+        for(const prop of propFolders){
+          const propPath=`${devPath}${prop.ObjectName}/`;
+          let pf=[];try{pf=await bunnyList(propPath)}catch(e){}
+          const imgs=pf.filter(f=>!f.IsDirectory&&isImg(f.ObjectName));
+          if(imgs.length)props.push({name:prop.ObjectName,path:propPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${propPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
+        }
+      }else{
+        const imgs=devItems.filter(f=>!f.IsDirectory&&isImg(f.ObjectName));
+        if(imgs.length)props.push({name:dev.ObjectName,path:devPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${devPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
+      }
+      if(props.length)folderTree.push({developer:dev.ObjectName,properties:props});
+    }
+    const total=folderTree.reduce((a,d)=>a+d.properties.length,0);
+    renderTree();setStatus(`✓ ${folderTree.length} developers, ${total} properties`,'ok');
+    $('bActs').style.display='flex';
+  }catch(e){setStatus('Error: '+e.message,'err')}
+  $('fetchBtn').disabled=false;
+}
+
+// ── Tree ──
+function renderTree(){
+  const wrap=$('treeWrap');wrap.innerHTML='';
+  const tree=document.createElement('div');tree.className='tree';
+  folderTree.forEach(dev=>{
+    const node=document.createElement('div');node.className='dn';
+    const hdr=document.createElement('div');hdr.className='dh';
+    hdr.innerHTML=`<span>🏗️</span><span class="dname">${dev.developer}</span><span class="dbadge">${dev.properties.length} props</span><span class="darr" id="arr-${dev.developer}">▶</span>`;
+    hdr.onclick=()=>{const l=$(`dpl-${dev.developer}`),a=$(`arr-${dev.developer}`),o=l.style.display!=='none';l.style.display=o?'none':'block';a.classList.toggle('open',!o)};
+    node.appendChild(hdr);
+    const list=document.createElement('div');list.className='plist';list.id=`dpl-${dev.developer}`;list.style.display='none';
+    dev.properties.forEach(prop=>{
+      const key=`${dev.developer}||${prop.name}`;
+      const row=document.createElement('div');row.className='prow'+(selected.has(key)?' sel':'');row.id=`pr-${key.replace(/[^a-z0-9]/gi,'_')}`;
+      const mc=matchCache[key];
+      const mbH=mc===undefined?`<span class="mb mb-?">not checked</span>`:mc?`<span class="mb mb-ok">✓ in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
+      row.innerHTML=`<div class="pinner"><input type="checkbox" class="pcb" ${selected.has(key)?'checked':''} onchange="toggleP('${key}',this)"><span class="pname">${prop.name}</span><span class="pcount">${prop.files.length} imgs</span>${mbH}</div>`;
+      list.appendChild(row);
+    });
+    node.appendChild(list);tree.appendChild(node);
+  });
+  wrap.appendChild(tree);
+}
+function toggleP(key,cb){if(cb.checked)selected.add(key);else selected.delete(key);const r=document.getElementById(`pr-${key.replace(/[^a-z0-9]/gi,'_')}`);if(r)r.classList.toggle('sel',cb.checked)}
+function selAll(){folderTree.forEach(d=>d.properties.forEach(p=>selected.add(`${d.developer}||${p.name}`)));renderTree()}
+function deselAll(){selected.clear();renderTree()}
+
+// ── Auto-tag ──
+function autoTag(n){n=n.toLowerCase();if(/hero|main|cover|facade|exterior|banner|thumb|front/.test(n))return'hero';if(/crest|logo|brand|icon|badge/.test(n))return'crest';if(/floor|plan|fp[-_]|[-_]fp|layout|\dbed|bed\d|studio/.test(n))return'floorplan';return'gallery'}
+function autoTagAll(){document.querySelectorAll('.isel').forEach(s=>{s.value=autoTag(s.dataset.fname);refreshTile(s)});syncTags()}
+function refreshTile(s){const t=s.closest('.it');t.className=`it t${s.value[0]}`;const b=t.querySelector('.tbadge');if(b){b.className=`tbadge tb${s.value[0]}`;b.textContent=s.value}}
+
+// ── Tag page ──
+function goTag(){
+  if(!selected.size){setStatus('Select at least one property first.','err');return}
+  const panels=$('tagPanels');panels.innerHTML='';
+  for(const key of selected){
+    const [dn,pn]=key.split('||');
+    const dev=folderTree.find(d=>d.developer===dn);
+    const prop=dev?.properties.find(p=>p.name===pn);
+    if(!prop)continue;
+    const mc=matchCache[key];
+    const mbH=mc===undefined?`<span class="mb mb-?">not checked</span>`:mc?`<span class="mb mb-ok">✓ exists in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
+    const panel=document.createElement('div');panel.className='pp';
+    let gridH='';
+    prop.files.forEach((file,fi)=>{
+      const tag=tagMap[key]?.[fi]?.tag||autoTag(file.name);
+      const isI=['jpg','jpeg','png','webp','avif','gif'].includes(ext(file.name));
+      const tH=isI?`<img class="ithumb" src="${file.url}" loading="lazy" onerror="this.style.display='none'">`:`<div class="ithph">🖼️</div>`;
+      gridH+=`<div class="it t${tag[0]}"><span class="tbadge tb${tag[0]}">${tag}</span>${tH}<div class="ifname">${file.name}</div>
+        <select class="isel" data-key="${key}" data-fi="${fi}" data-fname="${file.name}" onchange="refreshTile(this);syncTags()">
+          <option value="hero"      ${tag==='hero'?'selected':''}>🌟 hero</option>
+          <option value="gallery"   ${tag==='gallery'?'selected':''}>🖼️ gallery</option>
+          <option value="crest"     ${tag==='crest'?'selected':''}>🏷️ crest</option>
+          <option value="floorplan" ${tag==='floorplan'?'selected':''}>📐 floorplan</option>
+          <option value="skip"      ${tag==='skip'?'selected':''}>⊘ skip</option>
+        </select></div>`;
+    });
+    panel.innerHTML=`<div class="pptitle">🏗️ ${dn} / 📦 ${pn} ${mbH}<span style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-left:auto">${prop.files.length} images</span></div><div class="igrid">${gridH}</div>`;
+    panels.appendChild(panel);
+  }
+  syncTags();goPage(1);
+}
+function syncTags(){
+  tagMap={};
+  document.querySelectorAll('.isel').forEach(s=>{
+    const key=s.dataset.key,fi=parseInt(s.dataset.fi);
+    if(!tagMap[key])tagMap[key]=[];
+    const[dn,pn]=key.split('||');const dev=folderTree.find(d=>d.developer===dn);const prop=dev?.properties.find(p=>p.name===pn);if(!prop)return;
+    tagMap[key][fi]={...prop.files[fi],tag:s.value};
+  });
+}
+
+// ── Sanity lookup ──
+function sanityBase(){
+  const pid=$('sPid').value.trim();
+  return `https://${pid}.api.sanity.io/v2021-06-07`;
+}
+function sanityCorsHint(){
+  return location.protocol==='file:'
+    ? ' Open this file through http://localhost and allow that origin in Sanity CORS.'
+    : ` Check Sanity CORS settings for ${location.origin}.`;
+}
+function fuzzyText(s){
+  return toSlug(String(s||'').toLowerCase().replace(/\b(the|and|by|at|tower|residence|residences|apartment|apartments|project|phase|building)\b/g,' '));
+}
+function fuzzyTokens(s){return fuzzyText(s).split('-').filter(t=>t.length>1)}
+function docDeveloperName(doc){return doc?.developer||doc?.developerRef?.title||doc?.developerRef?.name||doc?.developer?.title||doc?.developer?.name||''}
+function propertyMatchScore(propertyName,developerName,doc,locationName=''){
+  const wanted=fuzzyText(propertyName),slugText=fuzzyText(doc?.slug),titleText=fuzzyText(doc?.title);
+  const devWanted=fuzzyText(developerName),devActual=fuzzyText(docDeveloperName(doc));
+  const locWanted=fuzzyText(locationName),locActual=fuzzyText(doc?.location);
+  if(!wanted)return-1;
+  let score=0;
+  if(slugText===wanted)score+=200;
+  if(titleText===wanted)score+=180;
+  if(slugText&&(slugText.includes(wanted)||wanted.includes(slugText)))score+=90;
+  if(titleText&&(titleText.includes(wanted)||wanted.includes(titleText)))score+=80;
+  fuzzyTokens(propertyName).forEach(tok=>{
+    if(slugText.includes(tok))score+=8;
+    if(titleText.includes(tok))score+=8;
+  });
+  if(devWanted&&devActual){
+    if(devWanted===devActual)score+=40;
+    fuzzyTokens(developerName).forEach(tok=>{if(devActual.includes(tok))score+=4});
+  }
+  if(locWanted&&locActual){
+    if(locWanted===locActual)score+=25;
+    if(locActual.includes(locWanted)||locWanted.includes(locActual))score+=15;
+    fuzzyTokens(locationName).forEach(tok=>{if(locActual.includes(tok))score+=3});
+  }
+  return score;
+}
+function propertyMatchAnalysis(propertyName,developerName,doc,locationName=''){
+  const wanted=fuzzyText(propertyName),slugText=fuzzyText(doc?.slug),titleText=fuzzyText(doc?.title);
+  const devWanted=fuzzyText(developerName),devActual=fuzzyText(docDeveloperName(doc));
+  const locWanted=fuzzyText(locationName),locActual=fuzzyText(doc?.location);
+  let score=0,reasons=[],exactName=false,devMatched=false,locMatched=false;
+  if(!wanted)return{score:-1,reasons,exactName,devMatched,locMatched};
+  if(slugText===wanted){score+=220;reasons.push('slug');exactName=true}
+  if(titleText===wanted){score+=200;reasons.push('title');exactName=true}
+  if(slugText&&(slugText.includes(wanted)||wanted.includes(slugText))){score+=70;reasons.push('slug partial')}
+  if(titleText&&(titleText.includes(wanted)||wanted.includes(titleText))){score+=65;reasons.push('title partial')}
+  fuzzyTokens(propertyName).forEach(tok=>{
+    if(slugText.includes(tok))score+=8;
+    if(titleText.includes(tok))score+=8;
+  });
+  if(devWanted&&devActual){
+    if(devWanted===devActual){score+=50;reasons.push('developer');devMatched=true}
+    fuzzyTokens(developerName).forEach(tok=>{if(devActual.includes(tok)){score+=5;devMatched=true}});
+  }
+  if(locWanted&&locActual){
+    if(locWanted===locActual){score+=30;reasons.push('location');locMatched=true}
+    if(locActual.includes(locWanted)||locWanted.includes(locActual)){score+=18;locMatched=true}
+    fuzzyTokens(locationName).forEach(tok=>{if(locActual.includes(tok)){score+=3;locMatched=true}});
+  }
+  return{score,reasons,exactName,devMatched,locMatched};
+}
+function chooseFuzzyMatch(propertyName,developerName,locationName,docs){
+  const scored=docs.map(doc=>{
+    const analysis=propertyMatchAnalysis(propertyName,developerName,doc,locationName);
+    return{doc,analysis,score:analysis.score};
+  }).sort((a,b)=>b.score-a.score);
+  const top=scored[0],next=scored[1];
+  if(!top||top.score<85)return null;
+  const support=top.analysis.devMatched||top.analysis.locMatched;
+  const strongName=top.analysis.exactName||top.score>=145;
+  if(!strongName&&!support)return null;
+  if(next&&top.score-next.score<15&&!top.analysis.exactName)return null;
+  if(next&&top.score-next.score<8&&top.analysis.exactName&&!support)return null;
+  return{...top.doc,_matchReason:'fuzzy',_matchScore:top.score,_matchDetails:top.analysis.reasons.join(', ')};
+}
+function sheetFilterPass(row){
+  const match=sheetMatchCache[row._key],skipped=sheetSkipSet.has(row._key);
+  if(sheetReviewFilter==='needs-review')return !match||match._matchReason!=='slug'||skipped;
+  if(sheetReviewFilter==='matched')return !!match;
+  if(sheetReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setSheetReviewFilter(mode){sheetReviewFilter=mode;buildReview()}
+function toggleSheetSkip(key,checked){if(checked)sheetSkipSet.add(key);else sheetSkipSet.delete(key);buildReview()}
+function clearSheetMatch(key){sheetMatchCache[key]=null;buildReview()}
+function sheetMatchLabel(match){
+  if(!match)return'No match';
+  if(match._matchReason==='slug')return'Exact slug';
+  return`Fuzzy${match._matchDetails?` (${match._matchDetails})`:''}`;
+}
+async function loadSanityDocs(docType,tok){
+  if(sanityDocCache[docType])return sanityDocCache[docType];
+  const ds=$('sDs').value.trim();
+  const q=`*[_type=="${docType}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0...10000]`;
+  const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
+  const j=await r.json();
+  if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
+  sanityDocCache[docType]=j.result||[];
+  return sanityDocCache[docType];
+}
+async function lookupSlug(slug,docType,propertyName='',developerName='',locationName=''){
+  try{
+    const ds=$('sDs').value.trim(),tok=$('sToken').value.trim();
+    const q=`*[_type=="${docType}"&&slug.current=="${slug}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0]`;
+    const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
+    const j=await r.json();
+    if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
+    if(j.result)return{...j.result,_matchReason:'slug'};
+    if(!propertyName)return null;
+    const docs=await loadSanityDocs(docType,tok);
+    return chooseFuzzyMatch(propertyName,developerName,locationName,docs);
+  }catch(e){console.error('lookupSlug failed',slug,e);return null}
+}
+async function startSheetSync(){
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Status sync only works with document type "property".','err');return}
+  const file=$('sheetFile').files?.[0];
+  if(!file){setStatus('Choose a TSV or CSV sheet first.','err');return}
+  $('sheetBtn').disabled=true;activeFlow='status';sheetRows=[];sheetMatchCache={};sheetSkipSet=new Set();sheetReviewFilter='all';sanityDocCache={};
+  setStatus('Reading status sheet…','spin');
+  try{
+    const text=await file.text();
+    const delimiter=detectSheetDelimiter(file.name,text);
+    const parsed=parseDelimitedText(text,delimiter).filter(row=>sheetProjectName(row));
+    if(!parsed.length)throw new Error('No usable project rows found in the sheet.');
+    sheetRows=mergeSheetRows(parsed);
+    setStatus(`Loaded ${parsed.length} rows and merged them into ${sheetRows.length} projects — matching against Sanity…`,'spin');
+    for(const row of sheetRows){
+      sheetMatchCache[row._key]=await lookupSlug(toSlug(row._projectName),$('docType').value,row._projectName,row._developerName,row._location);
+    }
+    buildReview();setStatus('Review the proposed status changes.','ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('sheetBtn').disabled=false;
+}
+async function recheckSheetMatch(key){
+  const row=sheetRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`ssl-${sKey}`);if(!inp)return;
+  const slug=inp.value.trim();
+  row._manualSlug=slug;
+  setStatus(`Checking slug "${slug}"…`,'spin');
+  sheetMatchCache[key]=await lookupSlug(slug,$('docType').value,row._projectName,row._developerName,row._location);
+  buildReview();
+  setStatus(sheetMatchCache[key]?`✓ Found: ${sheetMatchCache[key]._id}`:'✗ No match','ok');
+}
+
+// ── Review ──
+async function goReview(){
+  activeFlow='images';
+  syncTags();
+  const docType=$('docType').value,writeMode=$('writeMode').value;
+  if(writeMode==='patch'){
+    setStatus('Checking slugs in Sanity…','spin');
+    for(const key of selected){
+      const[dn,pn]=key.split('||');
+      if(matchCache[key]===undefined)matchCache[key]=await lookupSlug(toSlug(pn),docType,pn,dn);
+    }
+  }
+  buildReview();renderTree();setStatus('Ready to import.','ok');goPage(2);
+}
+function goReviewBack(){goPage(activeFlow==='status'?0:1)}
+
+function buildReview(){
+  const docType=$('docType').value,writeMode=$('writeMode').value;
+  const mn=$('modeNotice');
+if(activeFlow==='status'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">✅ STATUS SYNC MODE — matches each sheet row to a Sanity property and patches <strong>only Listing Status</strong>. Nothing else is changed.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=sheetRows.filter(row=>!!sheetMatchCache[row._key]).length;
+    const skippedCount=sheetRows.filter(row=>sheetSkipSet.has(row._key)).length;
+    const needsReviewCount=sheetRows.filter(row=>!sheetMatchCache[row._key]||sheetMatchCache[row._key]._matchReason!=='slug'||sheetSkipSet.has(row._key)).length;
+    const visibleRows=sheetRows.filter(row=>sheetFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${sheetReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setSheetReviewFilter('all')">All Rows (${sheetRows.length})</button>
+      <button class="btn ${sheetReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setSheetReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${sheetReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setSheetReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${sheetReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setSheetReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const match=sheetMatchCache[row._key];
+      const slug=row._manualSlug||toSlug(row._projectName);
+      const skipped=sheetSkipSet.has(row._key);
+      const currentStatus=match?.status?sheetStatusLabel(match.status):'—';
+      const proposedStatus=sheetStatusLabel(row._proposedStatus);
+      const matchH=match
+        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-?'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
+        :`<span class="mb mb-no">✗ no match — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">🏗️ ${row._developerName||'Unknown developer'} / 📦 ${row._projectName}</div>${matchH}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Lookup slug:</span>
+            <input class="slug-in" style="max-width:220px" id="ssl-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${slug}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckSheetMatch('${row._key}')">Re-check →</button>
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="clearSheetMatch('${row._key}')">Clear match</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="toggleSheetSkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Location</div><div class="rrval">${row._location||'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">sheet row</span></div></div>
+          <div class="rrow"><div class="rrlbl">Sheet Rows</div><div class="rrval">${row._sourceCount||1} merged row${(row._sourceCount||1)>1?'s':''}</div><div><span class="rrfield">deduped</span></div></div>
+          <div class="rrow"><div class="rrlbl">Type / Handover</div><div class="rrval">${row._propertyType||'—'} / ${row._handover||'—'}</div><div><span class="rrfield">status mapping</span></div></div>
+          <div class="rrow"><div class="rrlbl">Matched Property</div><div class="rrval">${match?`${match.title||'—'} <span style="color:var(--muted)">[${match.slug||'no-slug'}]</span>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">${sheetMatchLabel(match)}</span></div></div>
+          <div class="rrow"><div class="rrlbl">Current Status</div><div class="rrval">${currentStatus}</div><div><span class="rrfield">status</span></div></div>
+          <div class="rrow"><div class="rrlbl">Proposed Status</div><div class="rrval"><strong>${proposedStatus}</strong></div><div><span class="rrfield">status</span></div></div>
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
+  if(docType==='cdnImportTest')mn.innerHTML=`<div class="mn-notice mn-test">⚠️ TEST MODE — writing to <strong>cdnImportTest</strong>. Safe to run, won't touch real properties.</div>`;
+  else if(writeMode==='patch')mn.innerHTML=`<div class="mn-notice mn-patch">✅ PATCH MODE — finds each property by slug, sets <strong>only image fields</strong>. Title, price, description, amenities, floor plan data — all completely untouched.</div>`;
+  else mn.innerHTML=`<div class="mn-notice mn-create">ℹ️ CREATE MODE — creates a new document per property. Existing docs unchanged but you may get duplicates if you run this twice.</div>`;
+
+  const wrap=$('revWrap');wrap.innerHTML='';
+  for(const key of selected){
+    const[dn,pn]=key.split('||');
+    const imgs=tagMap[key]||[];
+    const hero=imgs.find(i=>i.tag==='hero'),crest=imgs.find(i=>i.tag==='crest');
+    const gallery=imgs.filter(i=>i.tag==='gallery'),fp=imgs.filter(i=>i.tag==='floorplan');
+    const skipped=imgs.filter(i=>i.tag==='skip').length;
+    const match=matchCache[key];
+    const slug=toSlug(pn);
+
+    const matchH=writeMode==='patch'
+      ?(match?`<span class="mb mb-ok">✓ will patch: ${match._id}</span>`:`<span class="mb mb-no">✗ no match — will skip</span>`)
+      :`<span class="mb" style="background:var(--blue-l);color:var(--blue)">will create new</span>`;
+
+    const chipify=(arr,max)=>arr.slice(0,max).map(img=>`<div class="ichip"><img src="${img.url}" onerror="this.style.display='none'">${img.name}</div>`).join('')+(arr.length>max?`<div class="ichip">+${arr.length-max} more</div>`:'');
+
+    const block=document.createElement('div');block.className='rb';
+    block.innerHTML=`
+      <div class="rbh"><div class="rbht">🏗️ ${dn} / 📦 ${pn}</div>${matchH}</div>
+      <div class="rbb">
+        ${writeMode==='patch'&&!match?`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Override slug:</span>
+          <input class="slug-in" style="max-width:200px" id="sl-${key.replace(/[^a-z0-9]/gi,'_')}" value="${slug}">
+          <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckSlug('${key}')">Re-check →</button>
+        </div>`:''}
+        <div class="rrow"><div class="rrlbl">🌟 Hero</div><div class="rrval">${hero?`<div class="ichips"><div class="ichip"><img src="${hero.url}" onerror="this.style.display='none'">${hero.name}</div></div>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">heroImageCdn</span></div></div>
+        <div class="rrow"><div class="rrlbl">🏷️ Crest</div><div class="rrval">${crest?`<div class="ichips"><div class="ichip"><img src="${crest.url}" onerror="this.style.display='none'">${crest.name}</div></div>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">crestImageCdn</span></div></div>
+        <div class="rrow"><div class="rrlbl">🖼️ Gallery <strong style="color:var(--blue)">${gallery.length}</strong></div><div class="rrval"><div class="ichips">${chipify(gallery,5)||'<em style="color:var(--muted)">none</em>'}</div></div><div><span class="rrfield">galleryImages[]</span></div></div>
+        <div class="rrow"><div class="rrlbl">📐 Floorplans <strong style="color:var(--purple)">${fp.length}</strong></div><div class="rrval"><div class="ichips">${chipify(fp,3)||'<em style="color:var(--muted)">none</em>'}</div></div><div><span class="rrfield">floorPlans[0].images[]</span></div></div>
+        ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">${skipped} image${skipped>1?'s':''} will be skipped</div>`:''}
+      </div>`;
+    wrap.appendChild(block);
+  }
+}
+
+async function recheckSlug(key){
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`sl-${sKey}`);if(!inp)return;
+  const slug=inp.value.trim();
+  setStatus(`Checking slug "${slug}"…`,'spin');
+  matchCache[key]=await lookupSlug(slug,$('docType').value);
+  buildReview();renderTree();
+  setStatus(matchCache[key]?`✓ Found: ${matchCache[key]._id}`:'✗ No match','ok');
+}
+
+// ── Import ──
+async function sanityMutate(mutations){
+  const ds=$('sDs').value.trim(),tok=$('sToken').value.trim();
+  let r;
+  try{
+    r=await fetch(`${sanityBase()}/data/mutate/${ds}`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${tok}`},body:JSON.stringify({mutations})});
+  }catch(e){
+    throw new Error(`Network/CORS error talking to Sanity.${sanityCorsHint()}`);
+  }
+  const j=await r.json();
+  if(!r.ok)throw new Error(j.error?.description||JSON.stringify(j));
+  return j;
+}
+
+async function startImport(){
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if(activeFlow==='status'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...sheetRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+for(const row of rows){
+      try{
+        const match=sheetMatchCache[row._key];
+        if(sheetSkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._projectName}" — manually skipped in Review.`,'wrn');
+        }else if(!match){
+          failed++;log(`⚠ SKIPPED "${row._projectName}" — no Sanity doc found. Override slug in Review step.`,'wrn');
+        }else if((match.status||'')===row._proposedStatus){
+          failed++;log(`⚠ SKIPPED "${row._projectName}" — already ${sheetStatusLabel(row._proposedStatus)}.`,'wrn');
+        }else{
+          await sanityMutate([{patch:{id:match._id,set:{status:row._proposedStatus}}}]);
+          patched++;log(`✓ PATCHED "${match.title||row._projectName}" (${match._id}) — status: ${sheetStatusLabel(match.status)} → ${sheetStatusLabel(row._proposedStatus)}`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._projectName}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} images linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
+  $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+  const docType=$('docType').value,writeMode=$('writeMode').value;
+  const keys=[...selected];const total=keys.length;
+  let done=0,patched=0,created=0,failed=0,imgs=0;
+  const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+  prog();
+  for(const key of keys){
+    const[dn,pn]=key.split('||');
+    const taggedImgs=tagMap[key]||[];
+    const hero=taggedImgs.find(i=>i.tag==='hero'),crest=taggedImgs.find(i=>i.tag==='crest');
+    const gallery=taggedImgs.filter(i=>i.tag==='gallery'),fp=taggedImgs.filter(i=>i.tag==='floorplan');
+    const imgCount=(hero?1:0)+(crest?1:0)+gallery.length+fp.length;
+
+    // ONLY image fields — nothing else
+    const galleryItems=gallery.map((img,i)=>makeGalleryItem(img,i,pn));
+    const floorPlanImages=fp.map((img,i)=>makeFloorPlanImage(img,i,pn));
+    const imageFields={
+      ...(hero&&{heroImageCdn:makeCdnImage(resolveAssetUrl(hero),pn)}),
+      ...(crest&&{crestImageCdn:makeCdnImage(resolveAssetUrl(crest),`${dn} logo`)}),
+      ...(galleryItems.length&&{galleryImages:galleryItems})
+    };
+
+    try{
+      const match=matchCache[key];
+      if(writeMode==='patch'&&match){
+        // ✅ PATCH — only image fields, zero other fields touched
+        const mutations=[];
+        if(Object.keys(imageFields).length)mutations.push({patch:{id:match._id,set:imageFields}});
+        if(floorPlanImages.length){
+          const existingPlans=Array.isArray(match.floorPlans)?match.floorPlans.filter(plan=>plan&&plan._key):[];
+          if(existingPlans.length){
+            const {assignments,extras}=mapFloorPlanImagesToPlans(fp,existingPlans);
+            const floorPlanSets={};
+            existingPlans.forEach((plan,i)=>{
+              if(assignments[i])floorPlanSets[`floorPlans[_key=="${plan._key}"].images`]=[makeFloorPlanImage(assignments[i],i,pn)];
+            });
+            if(Object.keys(floorPlanSets).length)mutations.push({patch:{id:match._id,set:floorPlanSets}});
+            if(floorPlanImages.length>existingPlans.length)log(`âš  "${pn}" has ${floorPlanImages.length-existingPlans.length} extra floorplan image(s) not mapped because the document only has ${existingPlans.length} floor plan row(s).`,'wrn');
+          }else{
+            mutations.push({patch:{id:match._id,set:{floorPlans:floorPlanImages.map((img,i)=>({_type:'object',_key:mkKey('fp',i),title:`Floor Plan ${i+1}`,images:[img]}))}}});
+          }
+        }
+        if(!mutations.length)throw new Error('No tagged images selected for import');
+        await sanityMutate(mutations);
+        patched++;log(`✓ PATCHED "${match.title||pn}" (${match._id}) — hero:${hero?'✓':'✗'} crest:${crest?'✓':'✗'} gallery:${gallery.length} fp:${fp.length}`,'ok');
+      }else if(writeMode==='patch'&&!match){
+        failed++;log(`⚠ SKIPPED "${pn}" — no Sanity doc found. Override slug in Review step.`,'wrn');
+      }else{
+        const doc={_type:docType,title:pn,slug:{_type:'slug',current:toSlug(pn)},developer:dn,...(docType==='property'&&{status:'offplan'}),...(floorPlanImages.length&&{floorPlans:floorPlanImages.map((img,i)=>({_type:'object',_key:mkKey('fp',i),title:`Floor Plan ${i+1}`,images:[img]}))}),...imageFields};
+        await sanityMutate([{create:doc}]);
+        created++;log(`✓ CREATED "${pn}" — hero:${hero?'✓':'✗'} crest:${crest?'✓':'✗'} gallery:${gallery.length} fp:${fp.length}`,'ok');
+      }
+      imgs+=imgCount;
+    }catch(e){failed++;log(`✗ FAILED "${pn}": ${e.message}`,'err')}
+    done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+    await new Promise(r=>setTimeout(r,160));
+  }
+  setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+  log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} images linked`,failed>0?'err':'ok');
+  $('importBtn').disabled=false;
+}
+</script>
+</body>
+</html>

@@ -5,6 +5,8 @@
 /* ── Base wrapper ──────────────────────────────────────────── */
 .wrapper {
   position: relative;
+  --market-shell-gap: clamp(10px, 1.2vw, 16px);
+  --market-sidebar-width: clamp(330px, 28vw, 430px);
   width: 100%;
   background: #000;
   font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
@@ -14,7 +16,7 @@
 .topBar {
   position: sticky;
   top: var(--site-navbar-height, 92px);
-  z-index: 100;
+  z-index: 60;
   width: 100%;
   padding: 10px 20px;
   display: flex;
@@ -25,6 +27,11 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+.wrapperWithPanel .topBar {
+  margin-left: calc(var(--market-sidebar-width) + var(--market-shell-gap));
+  width: calc(100% - var(--market-sidebar-width) - var(--market-shell-gap));
 }
 
 /* ── Pills row ─────────────────────────────────────────────── */
@@ -88,7 +95,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   overflow: hidden;
-  z-index: 20;
+  z-index: 80;
 }
 
 .dropdownItem {
@@ -125,7 +132,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   overflow: hidden;
-  z-index: 30;
+  z-index: 90;
 }
 
 .priceTabs {
@@ -294,6 +301,7 @@
 /* ── Map shell ─────────────────────────────────────────────── */
 .mapShell {
   position: relative;
+  isolation: isolate;
   width: 100%;
   height: calc(100vh - var(--site-navbar-height, 92px) - var(--filters-bar-height, 64px));
   min-height: 560px;
@@ -304,6 +312,35 @@
 .mapContainer {
   position: absolute;
   inset: 0;
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panelBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  padding: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.05) 38%, rgba(0, 0, 0, 0));
+  cursor: pointer;
+}
+
+.mapShellWithSidebar .mapContainer {
+  left: calc(var(--market-sidebar-width) + var(--market-shell-gap));
+}
+
+[dir="rtl"] .mapShellWithSidebar .mapContainer {
+  left: 0;
+  right: calc(var(--market-sidebar-width) + var(--market-shell-gap));
+}
+
+[dir="rtl"] .wrapperWithPanel .topBar {
+  margin-left: 0;
+  margin-right: calc(var(--market-sidebar-width) + var(--market-shell-gap));
+}
+
+[dir="rtl"] .panelBackdrop {
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.05) 38%, rgba(0, 0, 0, 0));
 }
 
 /* ── Map loading ───────────────────────────────────────────── */
@@ -463,19 +500,23 @@
 
 /* ── Sidebar ───────────────────────────────────────────────── */
 .sidebar {
-  position: fixed;
-  top: var(--site-navbar-height, 92px);
-  left: 0;
-  height: calc(100vh - var(--site-navbar-height, 92px));
-  width: 400px;
-  max-width: 92vw;
-  background: #0a0a0c;
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  z-index: 200;
-  transform: translateX(-102%);
+  position: absolute;
+  top: var(--market-shell-gap);
+  bottom: var(--market-shell-gap);
+  left: var(--market-shell-gap);
+  height: auto;
+  width: var(--market-sidebar-width);
+  max-width: min(92vw, calc(100% - (var(--market-shell-gap) * 2)));
+  background:
+    linear-gradient(180deg, rgba(18, 18, 22, 0.98) 0%, rgba(10, 10, 12, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 26px 56px rgba(0, 0, 0, 0.38);
+  z-index: 50;
+  overflow-y: auto;
+  transform: translateX(calc(-100% - var(--market-shell-gap)));
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .sidebarOpen {
@@ -484,12 +525,14 @@
 
 /* ── Sidebar header ────────────────────────────────────────── */
 .sidebarHeader {
-  padding: 16px;
+  padding: 16px 18px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   gap: 12px;
   align-items: flex-start;
   flex-shrink: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
 }
 
 .sidebarClose {
@@ -520,29 +563,30 @@
 
 .sidebarTitle {
   font-weight: 800;
-  font-size: 16px;
+  font-size: 24px;
   color: #fff;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.15;
+  white-space: normal;
+  overflow: visible;
+  display: block;
+  text-wrap: balance;
 }
 
 .sidebarSub {
-  margin-top: 3px;
-  font-size: 11.5px;
+  margin-top: 6px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.45);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
   font-weight: 600;
   letter-spacing: 0.2px;
+  line-height: 1.45;
 }
 
 /* ── Sidebar hero image ────────────────────────────────────── */
 .sidebarHero {
   width: 100%;
-  height: 185px;
+  height: clamp(200px, 22vh, 240px);
   background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
   flex-shrink: 0;
@@ -567,9 +611,10 @@
 
 /* ── Sidebar body ──────────────────────────────────────────── */
 .sidebarBody {
-  padding: 14px 16px 20px;
-  overflow-y: auto;
-  flex: 1;
+  padding: 16px 18px 24px;
+  overflow: visible;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 162, 106, 0.35) transparent;
 }
 
 /* price block */
@@ -962,6 +1007,16 @@
 }
 
 @media (max-width: 768px) {
+  .wrapperWithPanel .topBar {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .mapShellWithSidebar .mapContainer {
+    left: 0;
+  }
+
   .mapShell {
     min-height: 520px;
   }
@@ -1150,10 +1205,8 @@
 /* ── RTL support ──────────────────────────────────────────── */
 [dir="rtl"] .sidebar {
   left: auto;
-  right: 0;
-  border-right: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.07);
-  transform: translateX(102%);
+  right: var(--market-shell-gap);
+  transform: translateX(calc(100% + var(--market-shell-gap)));
 }
 
 [dir="rtl"] .sidebarOpen {

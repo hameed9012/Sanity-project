@@ -298,6 +298,7 @@ const BED_OPTIONS = [
 export default function MarketAnalysisMap() {
   const router = useRouter();
   const { locale } = useLanguage();
+  const topBarRef = useRef(null);
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const mapInitialized = useRef(false);
@@ -310,6 +311,7 @@ export default function MarketAnalysisMap() {
   const [is3D, setIs3D] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [topBarHeight, setTopBarHeight] = useState(64);
 
   // ── Projects mode state ────────────────────────────────────────────────
   const [metricKey, setMetricKey] = useState("priceSqft");
@@ -352,6 +354,30 @@ export default function MarketAnalysisMap() {
     if (!selectedSlug) return null;
     return allProjects.find((p) => p.slug === selectedSlug) || null;
   }, [selectedSlug, allProjects]);
+  const panelOpen = (sidebarOpen && viewMode === "projects") || (areaSidebarOpen && viewMode === "areas");
+
+  const clearSelectedProjectHighlight = useCallback(() => {
+    try {
+      mapRef.current?.getSource("selected-point")?.setData({
+        type: "FeatureCollection",
+        features: [],
+      });
+    } catch {}
+  }, []);
+
+  const closeProjectPanel = useCallback(() => {
+    setSidebarOpen(false);
+    setSelectedSlug(null);
+    clearSelectedProjectHighlight();
+  }, [clearSelectedProjectHighlight]);
+
+  const closeAreaPanel = useCallback(() => {
+    setAreaSidebarOpen(false);
+    setSelectedArea(null);
+    try {
+      mapRef.current?.setFilter("area-hover", ["==", ["get", "dldName"], ""]);
+    } catch {}
+  }, []);
 
   const priceMetricKey = useMemo(() => priceModalTab === "Price /sqft" ? "priceSqft" : "startingPrice", [priceModalTab]);
   const metricLabel = useMemo(() => PROJECT_METRICS.find((m) => m.key === metricKey)?.label || "Metric", [metricKey]);
@@ -806,6 +832,34 @@ export default function MarketAnalysisMap() {
     return () => document.removeEventListener("mousedown", handle);
   }, [openDropdown]);
 
+  useEffect(() => {
+    const node = topBarRef.current;
+    if (!node) return undefined;
+
+    const update = () => {
+      const next = Math.round(node.getBoundingClientRect?.().height || node.offsetHeight || 64);
+      setTopBarHeight(next > 0 ? next : 64);
+    };
+
+    update();
+    let observer = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(update);
+      observer.observe(node);
+    }
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      observer?.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (viewMode !== "projects" || !sidebarOpen) {
+      clearSelectedProjectHighlight();
+    }
+  }, [viewMode, sidebarOpen, clearSelectedProjectHighlight]);
+
   // ── Format bedrooms ────────────────────────────────────────────────────
   const formatBedrooms = (project) => {
     if (project.hasStudio && (!project.minBedrooms || project.minBedrooms === 0)) return "Studio";
@@ -842,9 +896,13 @@ export default function MarketAnalysisMap() {
   }, [areaMetricKey]);
 
   return (
-    <section className={styles.wrapper} dir={isRTL ? "rtl" : "ltr"}>
+    <section
+      className={`${styles.wrapper} ${panelOpen ? styles.wrapperWithPanel : ""}`}
+      dir={isRTL ? "rtl" : "ltr"}
+      style={{ "--market-topbar-height": `${topBarHeight}px` }}
+    >
       {/* ── Top bar ─────────────────────────────────────────────────── */}
-      <div className={styles.topBar}>
+      <div className={styles.topBar} ref={topBarRef}>
         <div className={styles.pillsRow}>
 
           {/* View mode toggle */}
@@ -1148,7 +1206,7 @@ export default function MarketAnalysisMap() {
       </div>
 
       {/* ── Map shell ──────────────────────────────────────────────── */}
-      <div className={styles.mapShell}>
+      <div className={`${styles.mapShell} ${panelOpen ? styles.mapShellWithSidebar : ""}`}>
         <div ref={mapContainerRef} className={styles.mapContainer}>
           {(!mapLoaded || sanityLoading) && (
             <div className={styles.mapLoading}>
@@ -1159,6 +1217,18 @@ export default function MarketAnalysisMap() {
             </div>
           )}
         </div>
+
+        {panelOpen && (
+          <button
+            type="button"
+            className={styles.panelBackdrop}
+            aria-label={locale === "ar" ? "إغلاق اللوحة" : "Close panel"}
+            onClick={() => {
+              closeProjectPanel();
+              closeAreaPanel();
+            }}
+          />
+        )}
 
         {/* Results counter — projects mode */}
         {viewMode === "projects" && (
@@ -1192,7 +1262,7 @@ export default function MarketAnalysisMap() {
         {/* ── PROJECTS sidebar ─────────────────────────────────────── */}
         <div className={`${styles.sidebar} ${sidebarOpen && viewMode === "projects" ? styles.sidebarOpen : ""}`} dir={isRTL ? "rtl" : "ltr"}>
           <div className={styles.sidebarHeader}>
-            <button className={styles.sidebarClose} onClick={() => setSidebarOpen(false)} type="button" aria-label="Close sidebar">✕</button>
+            <button className={styles.sidebarClose} onClick={closeProjectPanel} type="button" aria-label="Close sidebar">✕</button>
             <div className={styles.sidebarTitleWrap}>
               <div className={styles.sidebarTitle}>{selectedProject?.name || (locale === "ar" ? "اختر مشروعًا" : "Select a project")}</div>
               <div className={styles.sidebarSub}>
@@ -1289,7 +1359,7 @@ export default function MarketAnalysisMap() {
         {/* ── AREAS sidebar ────────────────────────────────────────── */}
         <div className={`${styles.sidebar} ${areaSidebarOpen && viewMode === "areas" ? styles.sidebarOpen : ""}`} dir={isRTL ? "rtl" : "ltr"}>
           <div className={styles.sidebarHeader}>
-            <button className={styles.sidebarClose} onClick={() => { setAreaSidebarOpen(false); setSelectedArea(null); }} type="button" aria-label="Close">✕</button>
+            <button className={styles.sidebarClose} onClick={closeAreaPanel} type="button" aria-label="Close">✕</button>
             <div className={styles.sidebarTitleWrap}>
               <div className={styles.sidebarTitle}>{selectedArea ? (locale === "ar" ? selectedArea.nameAr : selectedArea.name) : (locale === "ar" ? "اختر منطقة" : "Select an Area")}</div>
               <div className={styles.sidebarSub}>{locale === "ar" ? "بيانات الاستثمار العقاري" : "Real Estate Investment Data"}</div>

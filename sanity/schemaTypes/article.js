@@ -1346,14 +1346,30 @@ export default defineType({
       type: "string",
     }),
     defineField({
+      name: "seoTitleAr",
+      title: "SEO Title (Arabic)",
+      type: "string",
+    }),
+    defineField({
       name: "seoDescription",
       title: "SEO Description",
       type: "text",
       rows: 3,
     }),
     defineField({
+      name: "seoDescriptionAr",
+      title: "SEO Description (Arabic)",
+      type: "text",
+      rows: 3,
+    }),
+    defineField({
       name: "seoKeywords",
       title: "SEO Keywords",
+      type: "string",
+    }),
+    defineField({
+      name: "seoKeywordsAr",
+      title: "SEO Keywords (Arabic)",
       type: "string",
     }),
   ],

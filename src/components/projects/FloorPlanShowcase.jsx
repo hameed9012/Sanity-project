@@ -586,7 +586,9 @@ export default function FloorPlanShowcase({
       "مساحة إجمالية",
       "المساحة",
       "المساحة الكلية",
-    ]) || "";
+    ]) ||
+    normalizeSpaces(currentItem?.size || currentItem?.area || currentItem?.sizeRange) ||
+    "";
 
   const startingPriceValue =
     getSpecValue(rawSpecs, keyIndex, [
@@ -599,7 +601,9 @@ export default function FloorPlanShowcase({
       "سعر البداية",
       "السعر",
       "يبدأ من",
-    ]) || "";
+    ]) ||
+    normalizeSpaces(currentItem?.price || currentItem?.priceRange || currentItem?.startingPrice) ||
+    "";
 
   const handoverValue =
     getSpecValue(rawSpecs, keyIndex, [
