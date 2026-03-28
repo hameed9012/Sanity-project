@@ -205,6 +205,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     <button class="btn-fetch" id="brochureBtn" onclick="startBrochureSync()">📄 Sync Brochures</button>
   </div>
   <div class="sbs">
+    <div class="sbl">Nearby Pins</div>
+    <div class="fg">
+      <label>Google Geocoding API Key</label>
+      <input id="gmKey" type="password" placeholder="Google Maps Geocoding API key">
+      <div class="h">Looks up missing <strong>nearbyPlaces[].lat/lng</strong> from each property's existing place names and patches only the map pin fields. Use a key restricted to <strong>Geocoding API</strong> and your localhost origin.</div>
+    </div>
+    <button class="btn-fetch" id="nearbyBtn" onclick="startNearbySync()">📍 Sync Nearby Pins</button>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Payment Plans</div>
+    <div class="fg">
+      <label>Legacy Property Folder</label>
+      <input id="legacyPlanFiles" type="file" webkitdirectory directory multiple accept=".js,.jsx,.ts,.tsx,.json,.txt">
+      <div class="h">Choose the old website's <strong>src/data/properties</strong> folder or the whole old repo. Sync extracts the legacy payment plan text and patches only <strong>paymentPlan</strong> in Sanity.</div>
+    </div>
+    <button class="btn-fetch" id="planBtn" onclick="startPaymentPlanSync()">💳 Sync Payment Plans</button>
+  </div>
+  <div class="sbs">
     <div class="sbl">Progress</div>
     <div class="fg">
       <label>Resume File</label>
@@ -288,7 +306,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 </div>
 
 <script>
-let folderTree=[], selected=new Set(), tagMap={}, matchCache={}, slugOverrides={}, sanityDocCache={}, activeFlow='images', sheetRows=[], sheetMatchCache={}, sheetSkipSet=new Set(), sheetReviewFilter='all', crestRows=[], crestFiles=[], crestMatchCache={}, crestSkipSet=new Set(), crestReviewFilter='all', videoRows=[], videoMatchCache={}, videoSkipSet=new Set(), videoReviewFilter='all', brochureRows=[], brochureMatchCache={}, brochureSkipSet=new Set(), brochureReviewFilter='all';
+let folderTree=[], selected=new Set(), tagMap={}, matchCache={}, slugOverrides={}, sanityDocCache={}, activeFlow='images', sheetRows=[], sheetMatchCache={}, sheetSkipSet=new Set(), sheetReviewFilter='all', crestRows=[], crestFiles=[], crestMatchCache={}, crestSkipSet=new Set(), crestReviewFilter='all', videoRows=[], videoMatchCache={}, videoSkipSet=new Set(), videoReviewFilter='all', brochureRows=[], brochureMatchCache={}, brochureSkipSet=new Set(), brochureReviewFilter='all', nearbyRows=[], nearbySkipSet=new Set(), nearbyReviewFilter='all', nearbyGeoCache={}, planRows=[], planMatchCache={}, planSkipSet=new Set(), planReviewFilter='all';
 
 const $=id=>document.getElementById(id);
 const CREST_SYNC_ROOT='projects-profile-pictures/';
@@ -648,6 +666,188 @@ function brochureMatchLabel(match){
   if(match._matchReason==='slug')return'Exact slug';
   return`Fuzzy${match._matchDetails?` (${match._matchDetails})`:''}`;
 }
+function toValidNumber(val){
+  if(val===null||val===undefined)return null;
+  if(typeof val==='string'&&!val.trim())return null;
+  const num=Number(val);
+  return Number.isFinite(num)?num:null;
+}
+function validCoord(lat,lng){
+  const latNum=toValidNumber(lat),lngNum=toValidNumber(lng);
+  return latNum!==null&&lngNum!==null&&Math.abs(latNum)<=90&&Math.abs(lngNum)<=180;
+}
+function nearbyFilterPass(row){
+  const skipped=nearbySkipSet.has(row._key);
+  const hasResult=validCoord(row?._result?.lat,row?._result?.lng);
+  if(nearbyReviewFilter==='needs-review')return !hasResult||skipped;
+  if(nearbyReviewFilter==='matched')return hasResult;
+  if(nearbyReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setNearbyReviewFilter(mode){nearbyReviewFilter=mode;buildReview()}
+function toggleNearbySkip(key,checked){if(checked)nearbySkipSet.add(key);else nearbySkipSet.delete(key);buildReview()}
+function directionsUrlFor(lat,lng){
+  return validCoord(lat,lng)?`https://www.google.com/maps/dir/?api=1&destination=${Number(lat)},${Number(lng)}`:'';
+}
+function humanizeSlug(s){
+  return String(s||'')
+    .replace(/\.[^.]+$/,'')
+    .replace(/[-_]+/g,' ')
+    .replace(/\s+/g,' ')
+    .trim()
+    .replace(/\b\w/g,ch=>ch.toUpperCase());
+}
+function uniqueStrings(values=[]){
+  return [...new Set(values.map(v=>String(v||'').trim()).filter(Boolean))];
+}
+function geocodeQueriesForPlace(placeName,docLocation){
+  const place=String(placeName||'').trim();
+  const location=String(docLocation||'').trim();
+  return uniqueStrings([
+    location?`${place}, ${location}, United Arab Emirates`:'',
+    location?`${place}, ${location}`:'',
+    `${place}, United Arab Emirates`,
+    place
+  ]);
+}
+async function googleGeocodeQuery(query){
+  const apiKey=$('gmKey').value.trim();
+  if(!apiKey)throw new Error('Google Geocoding API key required.');
+  const cacheKey=query.toLowerCase();
+  if(nearbyGeoCache[cacheKey])return nearbyGeoCache[cacheKey];
+  const url=`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${encodeURIComponent(apiKey)}`;
+  const r=await fetch(url);
+  const j=await r.json();
+  if(!r.ok)throw new Error(`Google Geocoding failed (${r.status})`);
+  if(j.status==='OK'&&j.results?.[0]?.geometry?.location){
+    const loc=j.results[0].geometry.location;
+    const result={query,formattedAddress:j.results[0].formatted_address||'',lat:Number(loc.lat),lng:Number(loc.lng),status:j.status};
+    nearbyGeoCache[cacheKey]=result;
+    return result;
+  }
+  if(j.status==='ZERO_RESULTS'){
+    const result={query,formattedAddress:'',lat:null,lng:null,status:j.status};
+    nearbyGeoCache[cacheKey]=result;
+    return result;
+  }
+  throw new Error(j.error_message||j.status||'Geocoding failed');
+}
+async function geocodeNearbyRow(row){
+  const queries=geocodeQueriesForPlace(row._placeName,row._propertyLocation);
+  let lastResult={query:queries[0]||'',formattedAddress:'',lat:null,lng:null,status:'ZERO_RESULTS'};
+  for(const query of queries){
+    const result=await googleGeocodeQuery(query);
+    lastResult=result;
+    if(validCoord(result.lat,result.lng))return result;
+  }
+  return lastResult;
+}
+function planFilterPass(row){
+  const match=planMatchCache[row._key],skipped=planSkipSet.has(row._key);
+  if(planReviewFilter==='needs-review')return !match||match._matchReason!=='slug'||skipped||Array.isArray(row._candidates)&&row._candidates.length>1;
+  if(planReviewFilter==='matched')return !!match;
+  if(planReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setPlanReviewFilter(mode){planReviewFilter=mode;buildReview()}
+function togglePlanSkip(key,checked){if(checked)planSkipSet.add(key);else planSkipSet.delete(key);buildReview()}
+function clearPlanMatch(key){planMatchCache[key]=null;buildReview()}
+function setPlanSelection(key,value){
+  const row=planRows.find(r=>r._key===key);if(!row)return;
+  row._selectedPlan=value;
+}
+function planMatchLabel(match){
+  if(!match)return'No match';
+  if(match._matchReason==='slug')return'Exact slug';
+  return`Fuzzy${match._matchDetails?` (${match._matchDetails})`:''}`;
+}
+function decodeLegacyStringLiteral(text){
+  return String(text||'')
+    .replace(/\\r\\n|\\n|\\r/g,' ')
+    .replace(/\\t/g,' ')
+    .replace(/\\"/g,'"')
+    .replace(/\\'/g,"'")
+    .replace(/\\`/g,'`')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function extractLegacyStringConstants(src){
+  const constants={};
+  const re=/const\s+([A-Z][A-Z0-9_]+)\s*=\s*(['"`])([\s\S]*?)\2\s*;/g;
+  let m;
+  while((m=re.exec(src))){
+    let value=m[3];
+    if(m[2]==='`'){
+      value=value.replace(/\$\{([A-Z][A-Z0-9_]*)\}/g,(_,id)=>constants[id]||'');
+      if(value.includes('${'))continue;
+    }
+    constants[m[1]]=decodeLegacyStringLiteral(value);
+  }
+  return constants;
+}
+function resolveLegacyValue(expr,constants){
+  let raw=String(expr||'').trim().replace(/,$/,'').replace(/\s*\/\/.*$/,'').trim();
+  if(!raw)return'';
+  const q=raw[0];
+  if((q==='"'||q==="'"||q==='`')&&raw.lastIndexOf(q)>0){
+    let inner=raw.slice(1,raw.lastIndexOf(q));
+    if(q==='`'){
+      inner=inner.replace(/\$\{([A-Z][A-Z0-9_]*)\}/g,(_,id)=>constants[id]||'');
+      if(inner.includes('${'))return'';
+    }
+    return decodeLegacyStringLiteral(inner);
+  }
+  if(/^[A-Z][A-Z0-9_]*$/.test(raw))return constants[raw]||'';
+  return'';
+}
+function scoreLegacyPaymentPlan(value){
+  const text=String(value||'').trim();
+  if(!text)return-999;
+  const lower=text.toLowerCase();
+  const percents=(text.match(/\d{1,3}\s*%/g)||[]).length;
+  let score=0;
+  score+=Math.min(text.length,140);
+  score+=percents*18;
+  if(/booking|construction|handover|post[- ]handover|mortgage|cash|ready/i.test(text))score+=90;
+  if(/not available|غير متوفر/i.test(text))score-=35;
+  if(/[a-z]/i.test(text))score+=12;
+  if(/[ء-ي]/.test(text)&&!/[a-z]/i.test(text))score-=6;
+  if(!/%/.test(text))score-=10;
+  if(lower.includes('payment plan'))score-=4;
+  return score;
+}
+function extractLegacyProjectField(src,field){
+  const q=new RegExp(`project\\s*:\\s*\\{[\\s\\S]{0,1800}?\\b${field}\\s*:\\s*(['"\`])([\\s\\S]*?)\\1`);
+  const m=src.match(q);
+  return m?decodeLegacyStringLiteral(m[2]):'';
+}
+function extractLegacyPaymentPlanData(src){
+  const constants=extractLegacyStringConstants(src);
+  const candidates=[];
+  const seen=new Set();
+  const patterns=[
+    /(?:^|[,{]\s*)paymentPlan\s*:\s*([^\n\r,}]+)/gm,
+    /["']Payment Plan["']\s*:\s*([^\n\r,}]+)/g
+  ];
+  patterns.forEach(re=>{
+    let m;
+    while((m=re.exec(src))){
+      const resolved=resolveLegacyValue(m[1],constants);
+      if(!resolved)continue;
+      const key=resolved.toLowerCase();
+      if(seen.has(key))continue;
+      seen.add(key);
+      candidates.push(resolved);
+    }
+  });
+  candidates.sort((a,b)=>scoreLegacyPaymentPlan(b)-scoreLegacyPaymentPlan(a));
+  return{
+    projectName:extractLegacyProjectField(src,'name'),
+    developerName:extractLegacyProjectField(src,'developer'),
+    candidates,
+    value:candidates[0]||''
+  };
+}
 function saveProgress(){
   const payload={
     version:1,
@@ -683,7 +883,14 @@ function saveProgress(){
     brochureRows,
     brochureMatchCache,
     brochureSkipKeys:[...brochureSkipSet],
-    brochureReviewFilter
+    brochureReviewFilter,
+    nearbyRows,
+    nearbySkipKeys:[...nearbySkipSet],
+    nearbyReviewFilter,
+    planRows,
+    planMatchCache,
+    planSkipKeys:[...planSkipSet],
+    planReviewFilter
   };
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -740,6 +947,14 @@ function restoreProgress(payload){
   brochureMatchCache=payload?.brochureMatchCache||{};
   brochureSkipSet=new Set(Array.isArray(payload?.brochureSkipKeys)?payload.brochureSkipKeys:[]);
   brochureReviewFilter=payload?.brochureReviewFilter||'all';
+  nearbyRows=Array.isArray(payload?.nearbyRows)?payload.nearbyRows:[];
+  nearbySkipSet=new Set(Array.isArray(payload?.nearbySkipKeys)?payload.nearbySkipKeys:[]);
+  nearbyReviewFilter=payload?.nearbyReviewFilter||'all';
+  nearbyGeoCache={};
+  planRows=Array.isArray(payload?.planRows)?payload.planRows:[];
+  planMatchCache=payload?.planMatchCache||{};
+  planSkipSet=new Set(Array.isArray(payload?.planSkipKeys)?payload.planSkipKeys:[]);
+  planReviewFilter=payload?.planReviewFilter||'all';
   const currentPage=Number.isInteger(payload?.currentPage)?payload.currentPage:0;
 
   if(folderTree.length){
@@ -974,7 +1189,7 @@ function sheetMatchLabel(match){
 async function loadSanityDocs(docType,tok){
   if(sanityDocCache[docType])return sanityDocCache[docType];
   const ds=$('sDs').value.trim();
-  const q=`*[_type=="${docType}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,heroVideo,brochureUrl,crestImage,crestImageCdn,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0...10000]`;
+  const q=`*[_type=="${docType}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,paymentPlan,heroVideo,brochureUrl,crestImage,crestImageCdn,nearbyPlaces[]{_key,name,nameAr,distance,icon,lat,lng,directionsUrl},floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0...10000]`;
   const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
   const j=await r.json();
   if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
@@ -984,7 +1199,7 @@ async function loadSanityDocs(docType,tok){
 async function lookupSlug(slug,docType,propertyName='',developerName='',locationName=''){
   try{
     const ds=$('sDs').value.trim(),tok=$('sToken').value.trim();
-    const q=`*[_type=="${docType}"&&slug.current=="${slug}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,heroVideo,brochureUrl,crestImage,crestImageCdn,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0]`;
+    const q=`*[_type=="${docType}"&&slug.current=="${slug}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,paymentPlan,heroVideo,brochureUrl,crestImage,crestImageCdn,nearbyPlaces[]{_key,name,nameAr,distance,icon,lat,lng,directionsUrl},floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0]`;
     const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
     const j=await r.json();
     if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
@@ -1069,6 +1284,128 @@ async function recheckCrestMatch(key){
   crestMatchCache[key]=crestManualLookup(query);
   buildReview();
   setStatus(crestMatchCache[key]?`✓ Found crest: ${crestMatchCache[key].name}`:'✗ No crest match','ok');
+}
+
+async function startNearbySync(){
+  if(!$('gmKey').value.trim()){setStatus('Google Geocoding API key required.','err');return}
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Nearby pin sync only works with document type "property".','err');return}
+  $('nearbyBtn').disabled=true;activeFlow='nearby';nearbyRows=[];nearbySkipSet=new Set();nearbyReviewFilter='all';nearbyGeoCache={};sanityDocCache={};
+  setStatus('Loading nearby places from Sanity and geocoding missing pins…','spin');
+  try{
+    const docs=await loadSanityDocs('property',$('sToken').value.trim());
+    let rowIndex=0,alreadyMapped=0;
+    for(const doc of docs){
+      const places=Array.isArray(doc.nearbyPlaces)?doc.nearbyPlaces:[];
+      for(const place of places){
+        if(validCoord(place?.lat,place?.lng)){alreadyMapped++;continue}
+        const placeName=String(place?.name||place?.nameAr||'').trim();
+        if(!place?._key||!placeName)continue;
+        const row={
+          _key:`nearby||${rowIndex++}`,
+          _id:doc._id,
+          _title:doc.title||doc.slug||'Untitled property',
+          _slug:doc.slug||'',
+          _propertyLocation:doc.location||'',
+          _placeKey:place._key,
+          _placeName:placeName,
+          _placeDistance:place.distance||'',
+          _placeIcon:place.icon||'location',
+          _query:geocodeQueriesForPlace(placeName,doc.location||'')[0]||placeName,
+          _currentLat:place?.lat??null,
+          _currentLng:place?.lng??null,
+          _currentDirectionsUrl:place?.directionsUrl||'',
+          _result:null
+        };
+        row._result=await geocodeNearbyRow(row);
+        nearbyRows.push(row);
+        await new Promise(r=>setTimeout(r,40));
+      }
+    }
+    if(!nearbyRows.length){
+      $('nearbyBtn').disabled=false;
+      setStatus(alreadyMapped?`All nearby places already have coordinates (${alreadyMapped} already mapped).`:'No nearby places found to geocode.','ok');
+      return;
+    }
+    buildReview();setStatus(`Review ${nearbyRows.length} nearby place pin${nearbyRows.length===1?'':'s'} (${alreadyMapped} already mapped skipped automatically).`,'ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('nearbyBtn').disabled=false;
+}
+async function recheckNearbyRow(key){
+  const row=nearbyRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`nq-${sKey}`);if(!inp)return;
+  row._query=inp.value.trim();
+  setStatus(`Geocoding "${row._query}"…`,'spin');
+  try{
+    row._result=await googleGeocodeQuery(row._query);
+    buildReview();
+    setStatus(validCoord(row?._result?.lat,row?._result?.lng)?`✓ Found coordinates for ${row._placeName}`:`✗ No coordinates found for ${row._placeName}`,'ok');
+  }catch(e){
+    row._result={query:row._query,formattedAddress:'',lat:null,lng:null,status:'ERROR',error:e.message};
+    buildReview();
+    setStatus(`Error: ${e.message}`,'err');
+  }
+}
+
+async function startPaymentPlanSync(){
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Payment plan sync only works with document type "property".','err');return}
+  const files=[...($('legacyPlanFiles').files||[])];
+  if(!files.length){setStatus('Choose the old website property folder first.','err');return}
+  $('planBtn').disabled=true;activeFlow='payment-plans';planRows=[];planMatchCache={};planSkipSet=new Set();planReviewFilter='all';sanityDocCache={};
+  setStatus('Reading legacy property files for payment plans…','spin');
+  try{
+    let rowIndex=0;
+    for(const file of files){
+      const rel=String(file.webkitRelativePath||file.name||'').replace(/\\/g,'/');
+      const lower=rel.toLowerCase();
+      const propIdx=lower.indexOf('src/data/properties/');
+      if(propIdx<0)continue;
+      if(!/\.(js|jsx|ts|tsx|json|txt)$/i.test(rel))continue;
+      const parts=rel.slice(propIdx).split('/').filter(Boolean);
+      const idx=parts.findIndex(p=>p.toLowerCase()==='properties');
+      if(idx<0||parts.length<idx+5)continue;
+      const developerFolder=parts[idx+2]||'';
+      const propertyFolder=parts[idx+3]||parts[parts.length-1].replace(/\.[^.]+$/,'');
+      const src=await file.text();
+      const extracted=extractLegacyPaymentPlanData(src);
+      if(!extracted.value)continue;
+      const propertyName=extracted.projectName||humanizeSlug(propertyFolder);
+      const developerName=extracted.developerName||humanizeSlug(developerFolder);
+      const row={
+        _key:`plan||${rowIndex++}`,
+        _legacyPath:rel,
+        _propertyName:propertyName,
+        _developerName:developerName,
+        _slugHint:toSlug(propertyFolder),
+        _paymentPlan:extracted.value,
+        _candidates:extracted.candidates,
+        _selectedPlan:extracted.value
+      };
+      planRows.push(row);
+      planMatchCache[row._key]=await lookupSlug(row._slugHint,$('docType').value,row._propertyName,row._developerName);
+      await new Promise(r=>setTimeout(r,0));
+    }
+    if(!planRows.length)throw new Error('No payment plans were found in the selected legacy files.');
+    buildReview();setStatus(`Review the proposed payment plan matches (${planRows.length} row${planRows.length===1?'':'s'}).`,'ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('planBtn').disabled=false;
+}
+async function recheckPlanMatch(key){
+  const row=planRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`psl-${sKey}`);if(!inp)return;
+  const slug=inp.value.trim();
+  row._manualSlug=slug;
+  setStatus(`Checking slug "${slug}"…`,'spin');
+  planMatchCache[key]=await lookupSlug(slug,$('docType').value,row._propertyName,row._developerName);
+  buildReview();
+  setStatus(planMatchCache[key]?`✓ Found: ${planMatchCache[key]._id}`:'✗ No match','ok');
 }
 
 async function startBrochureSync(){
@@ -1253,6 +1590,118 @@ function goReviewBack(){goPage(activeFlow==='images'?1:0)}
 function buildReview(){
   const docType=$('docType').value,writeMode=$('writeMode').value;
   const mn=$('modeNotice');
+if(activeFlow==='payment-plans'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">💳 PAYMENT PLAN SYNC MODE — reads legacy static property files and patches <strong>only paymentPlan</strong> in the matched Sanity property.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=planRows.filter(row=>!!planMatchCache[row._key]).length;
+    const skippedCount=planRows.filter(row=>planSkipSet.has(row._key)).length;
+    const needsReviewCount=planRows.filter(row=>!planMatchCache[row._key]||planMatchCache[row._key]._matchReason!=='slug'||planSkipSet.has(row._key)||(row._candidates||[]).length>1).length;
+    const visibleRows=planRows.filter(row=>planFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${planReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setPlanReviewFilter('all')">All Rows (${planRows.length})</button>
+      <button class="btn ${planReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setPlanReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${planReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setPlanReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${planReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setPlanReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const match=planMatchCache[row._key];
+      const slug=row._manualSlug||row._slugHint||toSlug(row._propertyName);
+      const skipped=planSkipSet.has(row._key);
+      const selectedPlan=row._selectedPlan||row._paymentPlan||'';
+      const matchH=match
+        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-pending'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
+        :`<span class="mb mb-no">✗ no match — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">💳 ${row._developerName} / ${row._propertyName}</div>${matchH}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Lookup slug:</span>
+            <input class="slug-in" style="max-width:220px" id="psl-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${slug}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckPlanMatch('${row._key}')">Re-check →</button>
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="clearPlanMatch('${row._key}')">Clear match</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="togglePlanSkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Matched Property</div><div class="rrval">${match?`${match.title||'—'} <span style="color:var(--muted)">[${match.slug||'no-slug'}]</span>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">${planMatchLabel(match)}</span></div></div>
+          <div class="rrow"><div class="rrlbl">Legacy Source</div><div class="rrval">${row._legacyPath}</div><div><span class="rrfield">legacy file</span></div></div>
+          <div class="rrow"><div class="rrlbl">Current Payment Plan</div><div class="rrval">${match?.paymentPlan?match.paymentPlan:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">paymentPlan</span></div></div>
+          <div class="rrow"><div class="rrlbl">Legacy Payment Plan</div><div class="rrval">${selectedPlan||'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">paymentPlan</span></div></div>
+          <div class="rrow"><div class="rrlbl">Plan Choice</div><div class="rrval">
+            <select class="slug-in" onchange="setPlanSelection('${row._key}',this.value)" style="max-width:520px">
+              ${(row._candidates||[row._paymentPlan]).map(value=>`<option value="${value}" ${value===selectedPlan?'selected':''}>${value}</option>`).join('')}
+            </select>
+          </div><div><span class="rrfield">${(row._candidates||[]).length||1} candidate${((row._candidates||[]).length||1)===1?'':'s'}</span></div></div>
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
+if(activeFlow==='nearby'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">📍 NEARBY PIN SYNC MODE — geocodes each property's existing <strong>nearbyPlaces</strong> entries and patches <strong>only nearbyPlaces[].lat/lng/directionsUrl</strong>. Places with existing coordinates are skipped automatically.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=nearbyRows.filter(row=>validCoord(row?._result?.lat,row?._result?.lng)).length;
+    const skippedCount=nearbyRows.filter(row=>nearbySkipSet.has(row._key)).length;
+    const needsReviewCount=nearbyRows.filter(row=>!validCoord(row?._result?.lat,row?._result?.lng)||nearbySkipSet.has(row._key)).length;
+    const visibleRows=nearbyRows.filter(row=>nearbyFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${nearbyReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setNearbyReviewFilter('all')">All Rows (${nearbyRows.length})</button>
+      <button class="btn ${nearbyReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setNearbyReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${nearbyReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setNearbyReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${nearbyReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setNearbyReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const skipped=nearbySkipSet.has(row._key);
+      const result=row._result||{};
+      const hasCoords=validCoord(result.lat,result.lng);
+      const resultText=hasCoords
+        ?`${Number(result.lat).toFixed(6)}, ${Number(result.lng).toFixed(6)}`
+        :(result.status==='ZERO_RESULTS'?'No result':(result.error||'No result'));
+      const statusBadge=hasCoords
+        ?`<span class="mb mb-ok">✓ will patch: ${Number(result.lat).toFixed(5)}, ${Number(result.lng).toFixed(5)}</span>`
+        :`<span class="mb mb-no">✗ no coordinates — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">📍 ${row._title} / ${row._placeName}</div>${statusBadge}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Search query:</span>
+            <input class="slug-in" style="max-width:420px" id="nq-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${row._query||''}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckNearbyRow('${row._key}')">Re-check →</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="toggleNearbySkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Property</div><div class="rrval">${row._title} <span style="color:var(--muted)">[${row._slug||'no-slug'}]</span></div><div><span class="rrfield">property</span></div></div>
+          <div class="rrow"><div class="rrlbl">Place</div><div class="rrval">${row._placeName}${row._placeDistance?` <span style="color:var(--muted)">- ${row._placeDistance}</span>`:''}</div><div><span class="rrfield">${row._placeIcon||'location'}</span></div></div>
+          <div class="rrow"><div class="rrlbl">Property Location</div><div class="rrval">${row._propertyLocation||'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">location</span></div></div>
+          <div class="rrow"><div class="rrlbl">Current Coordinates</div><div class="rrval">${validCoord(row._currentLat,row._currentLng)?`${Number(row._currentLat).toFixed(6)}, ${Number(row._currentLng).toFixed(6)}`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">nearbyPlaces[]</span></div></div>
+          <div class="rrow"><div class="rrlbl">Geocode Result</div><div class="rrval">${resultText}${result.formattedAddress?`<div style="margin-top:4px;color:var(--muted)">${result.formattedAddress}</div>`:''}</div><div><span class="rrfield">${result.status||'pending'}</span></div></div>
+          ${hasCoords?`<div class="rrow"><div class="rrlbl">Directions URL</div><div class="rrval">${directionsUrlFor(result.lat,result.lng)}</div><div><span class="rrfield">google maps</span></div></div>`:''}
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
 if(activeFlow==='brochures'){
     mn.innerHTML=`<div class="mn-notice mn-patch">📄 BROCHURE SYNC MODE — matches each Bunny property folder to a Sanity property and patches <strong>only brochureUrl</strong> using the selected <strong>.pdf</strong>.</div>`;
     const wrap=$('revWrap');wrap.innerHTML='';
@@ -1543,6 +1992,69 @@ async function sanityMutate(mutations){
 
 async function startImport(){
   if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if(activeFlow==='payment-plans'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...planRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+    for(const row of rows){
+      try{
+        const match=planMatchCache[row._key];
+        const selectedPlan=String(row._selectedPlan||row._paymentPlan||'').trim();
+        if(planSkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — manually skipped in Review.`,'wrn');
+        }else if(!match){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no Sanity doc found. Override slug in Review step.`,'wrn');
+        }else if(!selectedPlan){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no payment plan selected.`,'wrn');
+        }else if((match.paymentPlan||'').trim()===selectedPlan){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — payment plan already up to date.`,'wrn');
+        }else{
+          await sanityMutate([{patch:{id:match._id,set:{paymentPlan:selectedPlan}}}]);
+          patched++;imgs++;log(`✓ PATCHED "${match.title||row._propertyName}" (${match._id}) — payment plan updated`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._propertyName}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} payment plans linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
+  if(activeFlow==='nearby'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...nearbyRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+    for(const row of rows){
+      try{
+        const result=row._result||{};
+        if(nearbySkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._title}" / "${row._placeName}" — manually skipped in Review.`,'wrn');
+        }else if(!validCoord(result.lat,result.lng)){
+          failed++;log(`⚠ SKIPPED "${row._title}" / "${row._placeName}" — no coordinates found.`,'wrn');
+        }else{
+          const lat=Number(result.lat),lng=Number(result.lng);
+          const directionsUrl=row._currentDirectionsUrl||directionsUrlFor(lat,lng);
+          await sanityMutate([{patch:{id:row._id,set:{
+            [`nearbyPlaces[_key=="${row._placeKey}"].lat`]:lat,
+            [`nearbyPlaces[_key=="${row._placeKey}"].lng`]:lng,
+            [`nearbyPlaces[_key=="${row._placeKey}"].directionsUrl`]:directionsUrl
+          }}}]);
+          patched++;imgs++;log(`✓ PATCHED "${row._title}" / "${row._placeName}" — ${lat.toFixed(6)}, ${lng.toFixed(6)}`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._title}" / "${row._placeName}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} nearby pins linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
   if(activeFlow==='brochures'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
     const rows=[...brochureRows],total=rows.length;
