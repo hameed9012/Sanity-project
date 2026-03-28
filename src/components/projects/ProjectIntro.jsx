@@ -5,6 +5,7 @@ import Image from "next/image";
 import GenerateSalesOfferButton from "@/components/projects/GenerateSalesOfferButton";
 import styles from "@/styles/projects/ProjectIntro.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
+import { collectProjectBrochures } from "@/lib/projectBrochure";
 
 function normalizeAmenities(raw) {
   if (!raw) return [];
@@ -58,55 +59,10 @@ export default function ProjectIntro({
   }, [data, projectData]);
 
   const brochures = useMemo(() => {
-    const candidates = [];
-    const pushBrochure = (item, fallbackTitle = "") => {
-      const url = item?.url || item?.href || "";
-      if (!url) return;
-      candidates.push({
-        id:
-          item?.id ||
-          item?.type ||
-          item?.url ||
-          item?.href ||
-          `${candidates.length}-${item?.title || fallbackTitle || "brochure"}`,
-        title:
-          item?.title ||
-          fallbackTitle ||
-          (activeIsRTL
-            ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0628\u0631\u0648\u0634\u0648\u0631"
-            : "Download Brochure"),
-        url,
-      });
-    };
-
-    if (Array.isArray(data?.brochures)) {
-      data.brochures.forEach((item) => pushBrochure(item));
-    }
-
-    if (Array.isArray(projectData?.intro?.brochures)) {
-      projectData.intro.brochures.forEach((item) => pushBrochure(item));
-    }
-
-    if (projectData?.brochureUrl) {
-      pushBrochure(
-        { url: projectData.brochureUrl, type: "main" },
-        activeIsRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0628\u0631\u0648\u0634\u0648\u0631" : "Download Brochure"
-      );
-    }
-
-    if (rawProjectData?.brochureUrl) {
-      pushBrochure(
-        { url: rawProjectData.brochureUrl, type: "main" },
-        activeIsRTL ? "\u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0628\u0631\u0648\u0634\u0648\u0631" : "Download Brochure"
-      );
-    }
-
-    const seen = new Set();
-    return candidates.filter((item) => {
-      if (!item.url || seen.has(item.url)) return false;
-      seen.add(item.url);
-      return true;
-    });
+    return collectProjectBrochures(
+      [data, projectData, rawProjectData],
+      { isRTL: activeIsRTL }
+    );
   }, [data, projectData, rawProjectData, activeIsRTL]);
 
   const heading =

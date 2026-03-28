@@ -11,6 +11,7 @@ import MapDirections from "@/components/projects/MapDirections";
 import RelatedProjects from "@/components/projects/RelatedProjects";
 import MasterplanViewer from "@/components/projects/MasterplanViewer";
 import { useLanguage } from "@/components/LanguageProvider";
+import { getPrimaryBrochureUrl } from "@/lib/projectBrochure";
 
 function normalizeAmenities(raw) {
   if (!raw) return { amenities: [] };
@@ -177,6 +178,7 @@ function buildSanityProjectData(sanityDoc, locale) {
   const floorPlans = content?.floorPlans || {};
   const location = content?.location || {};
   const intro = content?.intro || {};
+  const brochureUrl = getPrimaryBrochureUrl(content, sanityDoc);
 
   return {
     // Identity fields used by RelatedProjects scoring.
@@ -189,6 +191,12 @@ function buildSanityProjectData(sanityDoc, locale) {
       .replace(/^-|-$/g, "") || "",
     regionSlug: sanityDoc?.regionSlug || "",
     startingPriceAED: parsePriceToAED(project?.startingPrice),
+    brochureUrl,
+    completionDate: project?.completionDate || "",
+    handoverDate: project?.completionDate || "",
+    paymentPlan: project?.paymentPlan || "",
+    status: normalizeListingStatus(project?.status || sanityDoc?.status || ""),
+    unitTypes: normalizeUnitTypes(project?.type || ""),
 
     // Standard fields for the project page.
     title: project?.name || sanityDoc?.name || "",
@@ -212,7 +220,9 @@ function buildSanityProjectData(sanityDoc, locale) {
       title: intro?.title || project?.name || "",
       description: intro?.description || content?.description || "",
       paragraphs: Array.isArray(intro?.paragraphs) ? intro.paragraphs : [],
-      brochures: Array.isArray(intro?.brochures) ? intro.brochures : [],
+      brochures: brochureUrl
+        ? [{ title: "Download Brochure", url: brochureUrl, type: "main" }]
+        : [],
       imgUrl: intro?.imgUrl || "",
       imgAlt: intro?.imgAlt || "",
       stats: project?.stats || [],
@@ -269,6 +279,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     locale === "ar"
       ? sanityDoc?.descriptionAr || sanityDoc?.description || ""
       : sanityDoc?.description || "";
+  const brochureUrl = getPrimaryBrochureUrl(sanityDoc);
   const gallerySlides = Array.isArray(sanityDoc?.galleryImages)
     ? sanityDoc.galleryImages.map((item) => item?.url).filter(Boolean)
     : [];
@@ -279,6 +290,12 @@ function buildSanityProjectData(sanityDoc, locale) {
     developerSlug: developerToSlug(sanityDoc?.developer || ""),
     regionSlug: sanityDoc?.regionSlug || "",
     startingPriceAED: parsePriceToAED(sanityDoc?.startingPrice),
+    brochureUrl,
+    completionDate: sanityDoc?.completionDate || "",
+    handoverDate: sanityDoc?.completionDate || "",
+    paymentPlan: sanityDoc?.paymentPlan || "",
+    status: normalizeListingStatus(sanityDoc?.status || ""),
+    unitTypes: normalizeUnitTypes(sanityDoc?.unitTypes || sanityDoc?.propertyType || ""),
     title: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
     developer: cleanLocalizedText(sanityDoc?.developer, sanityDoc?.developerEn || ""),
     project: {
@@ -302,8 +319,8 @@ function buildSanityProjectData(sanityDoc, locale) {
       title: sanityDoc?.title || "",
       description: cleanLocalizedText(localizedDescription, sanityDoc?.description || ""),
       paragraphs: cleanLocalizedText(localizedDescription, sanityDoc?.description || "") ? [cleanLocalizedText(localizedDescription, sanityDoc?.description || "")] : [],
-      brochures: sanityDoc?.brochureUrl
-        ? [{ title: "Download Brochure", url: sanityDoc.brochureUrl, type: "main" }]
+      brochures: brochureUrl
+        ? [{ title: "Download Brochure", url: brochureUrl, type: "main" }]
         : [],
       imgUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
       imgAlt: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
@@ -366,7 +383,14 @@ export default function ProjectPage({ params }) {
 
       // 1. Prefer live Sanity/API data so property pages stop drifting from backend content.
       try {
-        const res = await fetch(`/api/sanity-projects?slug=${project}`);
+        const query = new URLSearchParams({
+          slug: project,
+          category,
+          developer,
+          project,
+          locale: locale || "en",
+        });
+        const res = await fetch(`/api/sanity-projects?${query.toString()}`);
         if (res.ok) {
           const payload = await res.json();
           const doc = Array.isArray(payload)

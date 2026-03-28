@@ -644,7 +644,10 @@ export default function FloorPlanShowcase({
     const h = normalizeKey(handoverValue);
     const pStatus = normalizeKey(projectData?.status);
     const pHandover = normalizeKey(
-      projectData?.handoverDate || projectData?.completionDate,
+      projectData?.handoverDate ||
+      projectData?.completionDate ||
+      projectData?.project?.handoverDate ||
+      projectData?.project?.completionDate,
     );
 
     const readyWords =
@@ -837,7 +840,12 @@ export default function FloorPlanShowcase({
 
   const renderedHandover =
     handoverValue ||
-    normalizeSpaces(projectData?.completionDate || projectData?.handoverDate) ||
+    normalizeSpaces(
+      projectData?.completionDate ||
+      projectData?.handoverDate ||
+      projectData?.project?.completionDate ||
+      projectData?.project?.handoverDate
+    ) ||
     "—";
 
   return (

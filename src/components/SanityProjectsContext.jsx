@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { getPrimaryBrochureUrl } from "@/lib/projectBrochure";
 
 const SanityProjectsContext = createContext({ allProjects: [], loading: true });
 
@@ -313,10 +314,7 @@ function normalizeLegacyProperty(property) {
         property?.en?.intro?.description ||
         property?.en?.intro?.paragraphs?.[0] ||
         "",
-      brochureUrl:
-        property?.en?.intro?.brochures?.[0]?.url ||
-        property?.en?.floorPlans?.brochureHref ||
-        "",
+      brochureUrl: getPrimaryBrochureUrl(property),
       masterplanUrl: extractMasterplanUrl(property?.en?.intro?.brochures),
       amenities: property?.en?.amenities?.amenities || [],
       floorPlans,
@@ -410,7 +408,7 @@ function normalizeFlatProperty(property) {
       squareImageUrl,
       gallerySlides,
       description: property?.description || "",
-      brochureUrl: property?.brochureUrl || "",
+      brochureUrl: getPrimaryBrochureUrl(property),
       masterplanUrl: property?.masterplanUrl || "",
       amenities: property?.amenities || [],
       floorPlans: property?.floorPlans || [],

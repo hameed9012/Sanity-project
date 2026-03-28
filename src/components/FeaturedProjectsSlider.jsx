@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 import styles from "@/styles/FeaturedProjectsSlider.module.css";
+import { getPrimaryBrochureUrl } from "@/lib/projectBrochure";
 
 const AUTOPLAY_MS = 7000;
 
@@ -32,9 +33,12 @@ function formatPrice(value, isAr = false) {
 
 function getProjectLogo(project) {
   return (
-    project?.data?.hero?.squareImageUrl ||
-    project?.logo ||
+    project?.crestImage ||
+    project?.data?.crestImage ||
+    project?.data?.project?.crestImage ||
     project?.developerLogo ||
+    project?.logo ||
+    project?.data?.hero?.squareImageUrl ||
     ""
   );
 }
@@ -59,11 +63,7 @@ function getProjectAmenities(project) {
 }
 
 function getProjectBrochureUrl(project) {
-  return (
-    project?.data?.intro?.brochures?.[0]?.url ||
-    project?.brochureUrl ||
-    ""
-  );
+  return getPrimaryBrochureUrl(project);
 }
 
 function formatProjectName(name) {

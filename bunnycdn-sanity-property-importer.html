@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .pname{font-size:.83rem;font-weight:500;flex:1}
 .pcount{font-family:var(--mono);font-size:.57rem;color:var(--muted)}
 .mb{font-family:var(--mono);font-size:.54rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
-.mb-ok{background:var(--green-l);color:var(--green)}.mb-no{background:var(--red-l);color:var(--red)}.mb-?{background:var(--surface2);color:var(--muted)}
+.mb-ok{background:var(--green-l);color:var(--green)}.mb-no{background:var(--red-l);color:var(--red)}.mb-pending{background:var(--surface2);color:var(--muted)}
 
 /* tag */
 .tleg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
@@ -179,6 +179,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     </div>
     <button class="btn-fetch" id="sheetBtn" onclick="startSheetSync()">🧾 Sync Listing Status</button>
   </div>
+  <div class="sbs">
+    <div class="sbl">Crest Sync</div>
+    <div class="fg">
+      <label>Crest Folder</label>
+      <input id="crestRoot" type="text" value="projects-profile-pictures/" readonly>
+      <div class="h">Fixed Bunny crest source. Sync will only read from <strong>projects-profile-pictures/</strong>.</div>
+    </div>
+    <button class="btn-fetch" id="crestBtn" onclick="startCrestSync()">🏷️ Sync Developer Crests</button>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Video Sync</div>
+    <div class="fg">
+      <label>Hero Videos</label>
+      <div class="h">Scans all property folders for <strong>.mp4</strong> files and patches the matched property's <strong>heroVideo</strong>.</div>
+    </div>
+    <button class="btn-fetch" id="videoBtn" onclick="startVideoSync()">🎬 Sync Hero Videos</button>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Brochure Sync</div>
+    <div class="fg">
+      <label>Brochure PDFs</label>
+      <div class="h">Scans all property folders for <strong>.pdf</strong> files and patches the matched property's <strong>brochureUrl</strong>. Prefers brochure-like PDFs over floorplans, masterplans, and factsheets.</div>
+    </div>
+    <button class="btn-fetch" id="brochureBtn" onclick="startBrochureSync()">📄 Sync Brochures</button>
+  </div>
+  <div class="sbs">
+    <div class="sbl">Progress</div>
+    <div class="fg">
+      <label>Resume File</label>
+      <input id="progressFile" type="file" accept=".json,application/json" onchange="loadProgressFile(event)">
+      <div class="h">Saves selections, tags, slug overrides, and review progress. Tokens and access keys are not saved.</div>
+    </div>
+    <button class="btn-fetch" id="saveBtn" onclick="saveProgress()">💾 Save Progress</button>
+  </div>
   <button class="btn-fetch" id="fetchBtn" onclick="startFetch()">⚡ Fetch Folder Structure</button>
   <div class="sbs">
     <div class="sbl">Steps</div>
@@ -254,11 +288,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 </div>
 
 <script>
-let folderTree=[], selected=new Set(), tagMap={}, matchCache={}, sanityDocCache={}, activeFlow='images', sheetRows=[], sheetMatchCache={}, sheetSkipSet=new Set(), sheetReviewFilter='all';
+let folderTree=[], selected=new Set(), tagMap={}, matchCache={}, slugOverrides={}, sanityDocCache={}, activeFlow='images', sheetRows=[], sheetMatchCache={}, sheetSkipSet=new Set(), sheetReviewFilter='all', crestRows=[], crestFiles=[], crestMatchCache={}, crestSkipSet=new Set(), crestReviewFilter='all', videoRows=[], videoMatchCache={}, videoSkipSet=new Set(), videoReviewFilter='all', brochureRows=[], brochureMatchCache={}, brochureSkipSet=new Set(), brochureReviewFilter='all';
 
 const $=id=>document.getElementById(id);
+const CREST_SYNC_ROOT='projects-profile-pictures/';
 const ext=n=>n.split('.').pop().toLowerCase();
 const isImg=n=>['jpg','jpeg','png','webp','avif','gif','svg'].includes(ext(n));
+const isMp4=n=>ext(n)==='mp4';
+const isPdf=n=>ext(n)==='pdf';
 const toSlug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const mkKey=(p,i)=>`${p}_${Date.now()}_${i}`;
 
@@ -269,13 +306,20 @@ function goPage(n){document.querySelectorAll('.page').forEach((p,i)=>p.classList
 // ── BunnyCDN ──
 async function bunnyList(path){
   const r=await fetch(`https://storage.bunnycdn.com/${$('bzZone').value.trim()}/${path}`,{headers:{AccessKey:$('bzKey').value.trim(),Accept:'application/json'}});
-  if(!r.ok)throw new Error(`BunnyCDN ${r.status} on /${path}`);
+  if(!r.ok){
+    if(r.status===401||r.status===403)throw new Error(`BunnyCDN ${r.status} on /${path} — check the Storage Zone name and FTP/API Access Key.`);
+    throw new Error(`BunnyCDN ${r.status} on /${path}`);
+  }
   return r.json();
 }
 function normalizedCdnBase(){
   const raw=$('cdnBase').value.trim();
   if(!raw)throw new Error('Enter CDN Base URL, e.g. https://luxury-real-estate-media.b-cdn.net');
+  if(raw===$('bzZone').value.trim())throw new Error('CDN Base URL cannot be the Storage Zone name. Use your Bunny CDN hostname, e.g. https://luxury-real-estate-media.b-cdn.net');
   const withProtocol=/^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+  let host='';
+  try{host=new URL(withProtocol).hostname}catch(e){throw new Error('CDN Base URL is invalid. Use a full Bunny hostname, e.g. https://luxury-real-estate-media.b-cdn.net')}
+  if(!host||(!host.includes('.')&&host!=='localhost'))throw new Error('CDN Base URL must be a real hostname, not the Storage Zone name.');
   return withProtocol.replace(/\/+$/,'');
 }
 function normalizeCdnPath(p){return String(p||'').trim().replace(/^\/+/,'')}
@@ -438,9 +482,293 @@ function mergeSheetRows(rows){
     _handover:row._handoverValues.join(', ')
   }));
 }
+function normalizeBunnyFolderPath(path){
+  const clean=String(path||'').trim().replace(/^\/+/,'');
+  if(!clean)return'';
+  return clean.endsWith('/')?clean:`${clean}/`;
+}
+async function bunnyCollectImages(path,depth=2){
+  const folderPath=normalizeBunnyFolderPath(path);
+  const items=await bunnyList(folderPath);
+  let files=[];
+  for(const item of items){
+    if(item.IsDirectory){
+      if(depth>0){
+        try{files=files.concat(await bunnyCollectImages(`${folderPath}${item.ObjectName}/`,depth-1))}catch(e){}
+      }
+      continue;
+    }
+    if(!isImg(item.ObjectName))continue;
+    const cdnPath=normalizeCdnPath(`${folderPath}${item.ObjectName}`);
+    files.push({
+      name:item.ObjectName,
+      folder:folderPath,
+      cdnPath,
+      url:cdnUrl(cdnPath)
+    });
+  }
+  return files;
+}
+function stripExt(name){return String(name||'').replace(/\.[^.]+$/,'')}
+function normalizeDeveloperKey(value){
+  return toSlug(
+    String(value||'')
+      .toLowerCase()
+      .replace(/&/g,' and ')
+      .replace(/\b(realty|properties|property|developments?|development|real\s*estate|group|groups|holding|holdings|llc|l\.l\.c\.|pjsc|broker|brokers)\b/g,' ')
+      .replace(/\s+/g,' ')
+  );
+}
+function developerKeyTokens(value){return normalizeDeveloperKey(value).split('-').filter(t=>t.length>1)}
+function crestManualLookup(query){
+  const wanted=String(query||'').trim();
+  if(!wanted)return null;
+  const cleanPath=normalizeCdnPath(wanted).toLowerCase();
+  const byPath=crestFiles.find(file=>{
+    const filePath=normalizeCdnPath(file.cdnPath).toLowerCase();
+    return filePath===cleanPath||filePath.endsWith(`/${cleanPath}`)||file.name.toLowerCase()===wanted.toLowerCase();
+  });
+  if(byPath)return{...byPath,_matchReason:'exact',_matchDetails:'manual file'};
+  return chooseDeveloperCrest(wanted,crestFiles);
+}
+function crestMatchAnalysis(developerName,file){
+  const wanted=normalizeDeveloperKey(developerName);
+  const fileName=normalizeDeveloperKey(stripExt(file?.name));
+  const folderName=normalizeDeveloperKey((file?.folder||'').split('/').filter(Boolean).slice(-1)[0]||'');
+  const tokens=developerKeyTokens(developerName);
+  let score=0,reasons=[],exact=false;
+  if(!wanted)return{score:-1,reasons,exact};
+  if(fileName===wanted){score+=220;reasons.push('file');exact=true}
+  if(folderName===wanted){score+=180;reasons.push('folder');exact=true}
+  if(fileName&&(fileName.includes(wanted)||wanted.includes(fileName))){score+=75;reasons.push('file partial')}
+  if(folderName&&(folderName.includes(wanted)||wanted.includes(folderName))){score+=60;reasons.push('folder partial')}
+  tokens.forEach(tok=>{
+    if(fileName.includes(tok))score+=10;
+    if(folderName.includes(tok))score+=8;
+  });
+  if(fileName&&folderName&&fileName===folderName){score+=10}
+  return{score,reasons,exact};
+}
+function chooseDeveloperCrest(developerName,files){
+  const scored=(files||[]).map(file=>{
+    const analysis=crestMatchAnalysis(developerName,file);
+    return{file,analysis,score:analysis.score};
+  }).sort((a,b)=>b.score-a.score);
+  const top=scored[0],next=scored[1];
+  if(!top||top.score<55)return null;
+  if(!top.analysis.exact&&top.score<85)return null;
+  if(next&&top.score-next.score<12&&!top.analysis.exact)return null;
+  if(next&&top.score-next.score<6&&top.analysis.exact)return null;
+  return{...top.file,_matchReason:top.analysis.exact?'exact':'fuzzy',_matchDetails:top.analysis.reasons.join(', ')};
+}
+function crestFilterPass(row){
+  const match=crestMatchCache[row._key],skipped=crestSkipSet.has(row._key);
+  if(crestReviewFilter==='needs-review')return !match||match._matchReason!=='exact'||skipped;
+  if(crestReviewFilter==='matched')return !!match;
+  if(crestReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setCrestReviewFilter(mode){crestReviewFilter=mode;buildReview()}
+function toggleCrestSkip(key,checked){if(checked)crestSkipSet.add(key);else crestSkipSet.delete(key);buildReview()}
+function clearCrestMatch(key){crestMatchCache[key]=null;buildReview()}
+function crestMatchLabel(match){
+  if(!match)return'No match';
+  if(match._matchReason==='exact')return'Exact';
+  return`Fuzzy${match._matchDetails?` (${match._matchDetails})`:''}`;
+}
+function shortFileNameFromUrl(url){
+  const clean=String(url||'').split('?')[0];
+  if(!clean)return'';
+  const bits=clean.split('/').filter(Boolean);
+  return bits[bits.length-1]||clean;
+}
+function fileChip(label,url=''){
+  const safeLabel=label||'file';
+  if(!url)return`<div class="ichip">${safeLabel}</div>`;
+  return`<div class="ichip">${safeLabel} <a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--blue);text-decoration:none">open</a></div>`;
+}
+function pickBestHeroVideo(files){
+  if(!Array.isArray(files)||!files.length)return null;
+  return [...files].sort((a,b)=>scoreHeroVideo(b)-scoreHeroVideo(a))[0]||null;
+}
+function scoreHeroVideo(file){
+  const name=String(file?.name||'').toLowerCase();
+  let score=0;
+  if(/hero|launch|intro|film|presentation|teaser|video/.test(name))score+=25;
+  if(/16x9|landscape|horizontal/.test(name))score+=18;
+  if(/project/.test(name))score+=12;
+  if(/square|vertical|portrait|9x16|reel/.test(name))score-=25;
+  if(/low|lq|preview|sample/.test(name))score-=12;
+  return score;
+}
+function pickBestBrochureFile(files){
+  if(!Array.isArray(files)||!files.length)return null;
+  return [...files].sort((a,b)=>scoreBrochureFile(b)-scoreBrochureFile(a))[0]||null;
+}
+function scoreBrochureFile(file){
+  const name=String(file?.name||'').toLowerCase();
+  let score=0;
+  if(/broch|brouch|booklet|catalog/.test(name))score+=45;
+  if(/project|property|residence|residences|tower|development/.test(name))score+=12;
+  if(/\bmain\b|\bofficial\b|english|\ben\b/.test(name))score+=8;
+  if(/fact.?sheet|factsheet|payment.?plan|floor.?plan|master.?plan|layout|inventory|price.?list|offer|presentation|teaser/.test(name))score-=40;
+  if(/arabic|\bar\b/.test(name))score-=4;
+  return score;
+}
+function videoFilterPass(row){
+  const match=videoMatchCache[row._key],skipped=videoSkipSet.has(row._key);
+  if(videoReviewFilter==='needs-review')return !match||match._matchReason!=='slug'||skipped||((row._files||[]).length>1);
+  if(videoReviewFilter==='matched')return !!match;
+  if(videoReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setVideoReviewFilter(mode){videoReviewFilter=mode;buildReview()}
+function toggleVideoSkip(key,checked){if(checked)videoSkipSet.add(key);else videoSkipSet.delete(key);buildReview()}
+function brochureLookupName(name,fallback=''){
+  const base=String(name||'').replace(/\.[^.]+$/,'');
+  const cleaned=base
+    .replace(/[_]+/g,' ')
+    .replace(/\b(brochure|brouchure|broucher|brochure|booklet|catalog(?:ue)?|pdf|factsheet|fact\s*sheet|payment\s*plan|floor\s*plan|master\s*plan|layout|price\s*list|offer|presentation|teaser|english|arabic|en|ar)\b/gi,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+  return cleaned||fallback||base;
+}
+function brochureFilterPass(row){
+  const match=brochureMatchCache[row._key],skipped=brochureSkipSet.has(row._key);
+  if(brochureReviewFilter==='needs-review')return !match||match._matchReason!=='slug'||skipped||((row._files||[]).length>1);
+  if(brochureReviewFilter==='matched')return !!match;
+  if(brochureReviewFilter==='skipped')return skipped;
+  return true;
+}
+function setBrochureReviewFilter(mode){brochureReviewFilter=mode;buildReview()}
+function toggleBrochureSkip(key,checked){if(checked)brochureSkipSet.add(key);else brochureSkipSet.delete(key);buildReview()}
+function clearBrochureMatch(key){brochureMatchCache[key]=null;buildReview()}
+function brochureMatchLabel(match){
+  if(!match)return'No match';
+  if(match._matchReason==='slug')return'Exact slug';
+  return`Fuzzy${match._matchDetails?` (${match._matchDetails})`:''}`;
+}
+function saveProgress(){
+  const payload={
+    version:1,
+    savedAt:new Date().toISOString(),
+    form:{
+      bzZone:$('bzZone').value.trim(),
+      bzRoot:$('bzRoot').value.trim(),
+      cdnBase:$('cdnBase').value.trim(),
+      docType:$('docType').value,
+      writeMode:$('writeMode').value,
+      crestRoot:$('crestRoot')?.value||CREST_SYNC_ROOT
+    },
+    activeFlow,
+    currentPage:[...document.querySelectorAll('.page')].findIndex(p=>p.classList.contains('active')),
+    folderTree,
+    selected:[...selected],
+    tagMap,
+    matchCache,
+    slugOverrides,
+    sheetRows,
+    sheetMatchCache,
+    sheetSkipKeys:[...sheetSkipSet],
+    sheetReviewFilter,
+    crestRows,
+    crestFiles,
+    crestMatchCache,
+    crestSkipKeys:[...crestSkipSet],
+    crestReviewFilter,
+    videoRows,
+    videoMatchCache,
+    videoSkipKeys:[...videoSkipSet],
+    videoReviewFilter,
+    brochureRows,
+    brochureMatchCache,
+    brochureSkipKeys:[...brochureSkipSet],
+    brochureReviewFilter
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`bunny-sanity-import-progress-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setStatus('Progress file downloaded. Keep it and load it later to resume.','ok');
+}
+async function loadProgressFile(evt){
+  const file=evt?.target?.files?.[0];
+  if(!file)return;
+  try{
+    const payload=JSON.parse(await file.text());
+    restoreProgress(payload);
+    setStatus(`Progress loaded from ${file.name}. Re-enter your Bunny and Sanity tokens to continue.`,'ok');
+  }catch(e){
+    setStatus(`Could not load progress: ${e.message}`,'err');
+  }
+  evt.target.value='';
+}
+function restoreProgress(payload){
+  const form=payload?.form||{};
+  if(form.bzZone)$('bzZone').value=form.bzZone;
+  if(typeof form.bzRoot==='string')$('bzRoot').value=form.bzRoot;
+  if(typeof form.cdnBase==='string')$('cdnBase').value=form.cdnBase;
+  if(form.docType)$('docType').value=form.docType;
+  if(form.writeMode)$('writeMode').value=form.writeMode;
+  if(form.crestRoot)$('crestRoot').value=form.crestRoot;
+
+  folderTree=Array.isArray(payload?.folderTree)?payload.folderTree:[];
+  selected=new Set(Array.isArray(payload?.selected)?payload.selected:[]);
+  tagMap=payload?.tagMap||{};
+  matchCache=payload?.matchCache||{};
+  slugOverrides=payload?.slugOverrides||{};
+  activeFlow=payload?.activeFlow||'images';
+  sheetRows=Array.isArray(payload?.sheetRows)?payload.sheetRows:[];
+  sheetMatchCache=payload?.sheetMatchCache||{};
+  sheetSkipSet=new Set(Array.isArray(payload?.sheetSkipKeys)?payload.sheetSkipKeys:[]);
+  sheetReviewFilter=payload?.sheetReviewFilter||'all';
+  crestRows=Array.isArray(payload?.crestRows)?payload.crestRows:[];
+  crestFiles=Array.isArray(payload?.crestFiles)?payload.crestFiles:[];
+  crestMatchCache=payload?.crestMatchCache||{};
+  crestSkipSet=new Set(Array.isArray(payload?.crestSkipKeys)?payload.crestSkipKeys:[]);
+  crestReviewFilter=payload?.crestReviewFilter||'all';
+  videoRows=Array.isArray(payload?.videoRows)?payload.videoRows:[];
+  videoMatchCache=payload?.videoMatchCache||{};
+  videoSkipSet=new Set(Array.isArray(payload?.videoSkipKeys)?payload.videoSkipKeys:[]);
+  videoReviewFilter=payload?.videoReviewFilter||'all';
+  brochureRows=Array.isArray(payload?.brochureRows)?payload.brochureRows:[];
+  brochureMatchCache=payload?.brochureMatchCache||{};
+  brochureSkipSet=new Set(Array.isArray(payload?.brochureSkipKeys)?payload.brochureSkipKeys:[]);
+  brochureReviewFilter=payload?.brochureReviewFilter||'all';
+  const currentPage=Number.isInteger(payload?.currentPage)?payload.currentPage:0;
+
+  if(folderTree.length){
+    renderTree();
+    $('bActs').style.display='flex';
+  }else{
+    $('treeWrap').innerHTML='<div class="es"><div class="ei">📁</div><p>Load progress restored review state, but no folder tree was saved.</p></div>';
+  }
+
+  if(activeFlow==='images'){
+    if(selected.size){
+      goTag();
+      if(currentPage>=2&&Object.keys(tagMap).length){
+        buildReview();
+        goPage(2);
+      }
+    }else{
+      goPage(0);
+    }
+    return;
+  }
+
+  buildReview();
+  goPage(currentPage===3?2:currentPage||2);
+}
 
 async function startFetch(){
   activeFlow='images';
+  selected=new Set();tagMap={};matchCache={};slugOverrides={};
   if(!$('bzKey').value.trim()){setStatus('Enter BunnyCDN access key.','err');return}
   if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
   $('fetchBtn').disabled=true;setStatus('Connecting…','spin');
@@ -491,7 +819,7 @@ function renderTree(){
       const key=`${dev.developer}||${prop.name}`;
       const row=document.createElement('div');row.className='prow'+(selected.has(key)?' sel':'');row.id=`pr-${key.replace(/[^a-z0-9]/gi,'_')}`;
       const mc=matchCache[key];
-      const mbH=mc===undefined?`<span class="mb mb-?">not checked</span>`:mc?`<span class="mb mb-ok">✓ in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
+      const mbH=mc===undefined?`<span class="mb mb-pending">not checked</span>`:mc?`<span class="mb mb-ok">✓ in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
       row.innerHTML=`<div class="pinner"><input type="checkbox" class="pcb" ${selected.has(key)?'checked':''} onchange="toggleP('${key}',this)"><span class="pname">${prop.name}</span><span class="pcount">${prop.files.length} imgs</span>${mbH}</div>`;
       list.appendChild(row);
     });
@@ -518,7 +846,7 @@ function goTag(){
     const prop=dev?.properties.find(p=>p.name===pn);
     if(!prop)continue;
     const mc=matchCache[key];
-    const mbH=mc===undefined?`<span class="mb mb-?">not checked</span>`:mc?`<span class="mb mb-ok">✓ exists in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
+    const mbH=mc===undefined?`<span class="mb mb-pending">not checked</span>`:mc?`<span class="mb mb-ok">✓ exists in Sanity</span>`:`<span class="mb mb-no">✗ not found</span>`;
     const panel=document.createElement('div');panel.className='pp';
     let gridH='';
     prop.files.forEach((file,fi)=>{
@@ -646,7 +974,7 @@ function sheetMatchLabel(match){
 async function loadSanityDocs(docType,tok){
   if(sanityDocCache[docType])return sanityDocCache[docType];
   const ds=$('sDs').value.trim();
-  const q=`*[_type=="${docType}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0...10000]`;
+  const q=`*[_type=="${docType}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,heroVideo,brochureUrl,crestImage,crestImageCdn,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0...10000]`;
   const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
   const j=await r.json();
   if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
@@ -656,7 +984,7 @@ async function loadSanityDocs(docType,tok){
 async function lookupSlug(slug,docType,propertyName='',developerName='',locationName=''){
   try{
     const ds=$('sDs').value.trim(),tok=$('sToken').value.trim();
-    const q=`*[_type=="${docType}"&&slug.current=="${slug}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0]`;
+    const q=`*[_type=="${docType}"&&slug.current=="${slug}"]{_id,"slug":slug.current,title,developer,"developerRef":developer->{title,name},location,status,propertyType,heroVideo,brochureUrl,crestImage,crestImageCdn,floorPlans[]{_key,title,titleAr,bedrooms,size,price,images}}[0]`;
     const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
     const j=await r.json();
     if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
@@ -700,8 +1028,213 @@ async function recheckSheetMatch(key){
   buildReview();
   setStatus(sheetMatchCache[key]?`✓ Found: ${sheetMatchCache[key]._id}`:'✗ No match','ok');
 }
+async function startCrestSync(){
+  if(!$('bzKey').value.trim()){setStatus('BunnyCDN access key required.','err');return}
+  if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Crest sync only works with document type "property".','err');return}
+  const crestRoot=normalizeBunnyFolderPath(CREST_SYNC_ROOT);
+  $('crestRoot').value=crestRoot;
+  $('crestBtn').disabled=true;activeFlow='crests';crestRows=[];crestFiles=[];crestMatchCache={};crestSkipSet=new Set();crestReviewFilter='all';sanityDocCache={};
+  setStatus('Loading Sanity properties and Bunny crest files…','spin');
+  try{
+    const docs=await loadSanityDocs('property',$('sToken').value.trim());
+    crestFiles=await bunnyCollectImages(crestRoot,2);
+    if(!crestFiles.length)throw new Error(`No images found inside ${crestRoot}`);
+    crestRows=docs.map((doc,index)=>({
+      _key:`crest||${index}`,
+      _id:doc._id,
+      _title:doc.title||doc.slug||'Untitled property',
+      _slug:doc.slug||'',
+      _developerName:docDeveloperName(doc),
+      _currentCrest:doc?.crestImageCdn?.url||doc?.crestImage||'',
+      _doc:doc
+    }));
+    for(const row of crestRows){
+      crestMatchCache[row._key]=chooseDeveloperCrest(row._developerName,crestFiles);
+    }
+    buildReview();setStatus(`Loaded ${crestRows.length} properties and ${crestFiles.length} crest files — review matches.`,'ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('crestBtn').disabled=false;
+}
+async function recheckCrestMatch(key){
+  const row=crestRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`csl-${sKey}`);if(!inp)return;
+  const query=inp.value.trim();
+  row._manualLookup=query;
+  setStatus(`Checking crest "${query}"…`,'spin');
+  crestMatchCache[key]=crestManualLookup(query);
+  buildReview();
+  setStatus(crestMatchCache[key]?`✓ Found crest: ${crestMatchCache[key].name}`:'✗ No crest match','ok');
+}
+
+async function startBrochureSync(){
+  if(!$('bzKey').value.trim()){setStatus('BunnyCDN access key required.','err');return}
+  if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Brochure sync only works with document type "property".','err');return}
+  $('brochureBtn').disabled=true;activeFlow='brochures';brochureRows=[];brochureMatchCache={};brochureSkipSet=new Set();brochureReviewFilter='all';sanityDocCache={};
+  setStatus('Scanning BunnyCDN property folders for .pdf files…','spin');
+  try{
+    const root=$('bzRoot').value.trim().replace(/^\//,'');
+    const items=await bunnyList(root);
+    const devFolders=items.filter(i=>i.IsDirectory);
+    if(!devFolders.length)throw new Error('No developer folders found. Check the Bunny root path.');
+    let rowIndex=0;
+    for(const dev of devFolders){
+      const devPath=root?`${root}${dev.ObjectName}/`:`${dev.ObjectName}/`;
+      setStatus(`Checking ${dev.ObjectName} for brochures…`,'spin');
+      let devItems=[];try{devItems=await bunnyList(devPath)}catch(e){continue}
+      const propFolders=devItems.filter(i=>i.IsDirectory);
+      if(propFolders.length){
+        for(const prop of propFolders){
+          const propPath=`${devPath}${prop.ObjectName}/`;
+          let pf=[];try{pf=await bunnyList(propPath)}catch(e){continue}
+          const files=pf.filter(f=>!f.IsDirectory&&isPdf(f.ObjectName)).map(f=>{
+            const cdnPath=normalizeCdnPath(`${propPath}${f.ObjectName}`);
+            return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)};
+          });
+          if(!files.length)continue;
+          const defaultPdf=pickBestBrochureFile(files)||files[0];
+          brochureRows.push({
+            _key:`brochure||${rowIndex++}`,
+            _developerName:dev.ObjectName,
+            _propertyName:prop.ObjectName,
+            _path:propPath,
+            _files:files,
+            _selectedPdfPath:defaultPdf?.cdnPath||''
+          });
+        }
+      }else{
+        const files=devItems.filter(f=>!f.IsDirectory&&isPdf(f.ObjectName));
+        for(const file of files){
+          const cdnPath=normalizeCdnPath(`${devPath}${file.ObjectName}`);
+          const pdf={name:file.ObjectName,cdnPath,url:cdnUrl(cdnPath)};
+          brochureRows.push({
+            _key:`brochure||${rowIndex++}`,
+            _developerName:dev.ObjectName,
+            _propertyName:brochureLookupName(file.ObjectName,dev.ObjectName),
+            _path:devPath,
+            _files:[pdf],
+            _selectedPdfPath:pdf.cdnPath
+          });
+        }
+      }
+      await new Promise(r=>setTimeout(r,0));
+    }
+    if(!brochureRows.length)throw new Error('No .pdf files found in the scanned Bunny property folders.');
+    setStatus(`Found ${brochureRows.length} properties with .pdf files — matching against Sanity…`,'spin');
+    for(const row of brochureRows){
+      brochureMatchCache[row._key]=await lookupSlug(toSlug(row._propertyName),$('docType').value,row._propertyName,row._developerName);
+    }
+    buildReview();setStatus('Review the proposed brochure matches.','ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('brochureBtn').disabled=false;
+}
+async function recheckBrochureMatch(key){
+  const row=brochureRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`bsl-${sKey}`);if(!inp)return;
+  const slug=inp.value.trim();
+  row._manualSlug=slug;
+  setStatus(`Checking slug "${slug}"…`,'spin');
+  brochureMatchCache[key]=await lookupSlug(slug,$('docType').value,row._propertyName,row._developerName);
+  buildReview();
+  setStatus(brochureMatchCache[key]?`✓ Found: ${brochureMatchCache[key]._id}`:'✗ No match','ok');
+}
+function setBrochureSelection(key,cdnPath){
+  const row=brochureRows.find(r=>r._key===key);if(!row)return;
+  row._selectedPdfPath=cdnPath;
+}
 
 // ── Review ──
+async function startVideoSync(){
+  if(!$('bzKey').value.trim()){setStatus('BunnyCDN access key required.','err');return}
+  if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
+  if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if($('docType').value!=='property'){setStatus('Video sync only works with document type "property".','err');return}
+  $('videoBtn').disabled=true;activeFlow='videos';videoRows=[];videoMatchCache={};videoSkipSet=new Set();videoReviewFilter='all';sanityDocCache={};
+  setStatus('Scanning BunnyCDN property folders for .mp4 filesâ€¦','spin');
+  try{
+    const root=$('bzRoot').value.trim().replace(/^\//,'');
+    const items=await bunnyList(root);
+    const devFolders=items.filter(i=>i.IsDirectory);
+    if(!devFolders.length)throw new Error('No developer folders found. Check the Bunny root path.');
+    let rowIndex=0;
+    for(const dev of devFolders){
+      const devPath=root?`${root}${dev.ObjectName}/`:`${dev.ObjectName}/`;
+      setStatus(`Checking ${dev.ObjectName} for hero videosâ€¦`,'spin');
+      let devItems=[];try{devItems=await bunnyList(devPath)}catch(e){continue}
+      const propFolders=devItems.filter(i=>i.IsDirectory);
+      if(propFolders.length){
+        for(const prop of propFolders){
+          const propPath=`${devPath}${prop.ObjectName}/`;
+          let pf=[];try{pf=await bunnyList(propPath)}catch(e){continue}
+          const files=pf.filter(f=>!f.IsDirectory&&isMp4(f.ObjectName)).map(f=>{
+            const cdnPath=normalizeCdnPath(`${propPath}${f.ObjectName}`);
+            return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)};
+          });
+          if(!files.length)continue;
+          const defaultVideo=pickBestHeroVideo(files)||files[0];
+          videoRows.push({
+            _key:`video||${rowIndex++}`,
+            _developerName:dev.ObjectName,
+            _propertyName:prop.ObjectName,
+            _path:propPath,
+            _files:files,
+            _selectedVideoPath:defaultVideo?.cdnPath||''
+          });
+        }
+      }else{
+        const files=devItems.filter(f=>!f.IsDirectory&&isMp4(f.ObjectName)).map(f=>{
+          const cdnPath=normalizeCdnPath(`${devPath}${f.ObjectName}`);
+          return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)};
+        });
+        if(files.length){
+          const defaultVideo=pickBestHeroVideo(files)||files[0];
+          videoRows.push({
+            _key:`video||${rowIndex++}`,
+            _developerName:dev.ObjectName,
+            _propertyName:dev.ObjectName,
+            _path:devPath,
+            _files:files,
+            _selectedVideoPath:defaultVideo?.cdnPath||''
+          });
+        }
+      }
+      await new Promise(r=>setTimeout(r,0));
+    }
+    if(!videoRows.length)throw new Error('No .mp4 files found in the scanned Bunny property folders.');
+    setStatus(`Found ${videoRows.length} properties with .mp4 files â€” matching against Sanityâ€¦`,'spin');
+    for(const row of videoRows){
+      videoMatchCache[row._key]=await lookupSlug(toSlug(row._propertyName),$('docType').value,row._propertyName,row._developerName);
+    }
+    buildReview();setStatus('Review the proposed hero video matches.','ok');goPage(2);
+  }catch(e){
+    setStatus('Error: '+e.message,'err');
+  }
+  $('videoBtn').disabled=false;
+}
+async function recheckVideoMatch(key){
+  const row=videoRows.find(r=>r._key===key);if(!row)return;
+  const sKey=key.replace(/[^a-z0-9]/gi,'_');
+  const inp=$(`vsl-${sKey}`);if(!inp)return;
+  const slug=inp.value.trim();
+  row._manualSlug=slug;
+  setStatus(`Checking slug "${slug}"â€¦`,'spin');
+  videoMatchCache[key]=await lookupSlug(slug,$('docType').value,row._propertyName,row._developerName);
+  buildReview();
+  setStatus(videoMatchCache[key]?`âœ“ Found: ${videoMatchCache[key]._id}`:'âœ— No match','ok');
+}
+function setVideoSelection(key,cdnPath){
+  const row=videoRows.find(r=>r._key===key);if(!row)return;
+  row._selectedVideoPath=cdnPath;
+}
 async function goReview(){
   activeFlow='images';
   syncTags();
@@ -715,11 +1248,180 @@ async function goReview(){
   }
   buildReview();renderTree();setStatus('Ready to import.','ok');goPage(2);
 }
-function goReviewBack(){goPage(activeFlow==='status'?0:1)}
+function goReviewBack(){goPage(activeFlow==='images'?1:0)}
 
 function buildReview(){
   const docType=$('docType').value,writeMode=$('writeMode').value;
   const mn=$('modeNotice');
+if(activeFlow==='brochures'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">📄 BROCHURE SYNC MODE — matches each Bunny property folder to a Sanity property and patches <strong>only brochureUrl</strong> using the selected <strong>.pdf</strong>.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=brochureRows.filter(row=>!!brochureMatchCache[row._key]).length;
+    const skippedCount=brochureRows.filter(row=>brochureSkipSet.has(row._key)).length;
+    const needsReviewCount=brochureRows.filter(row=>!brochureMatchCache[row._key]||brochureMatchCache[row._key]._matchReason!=='slug'||brochureSkipSet.has(row._key)||(row._files||[]).length>1).length;
+    const visibleRows=brochureRows.filter(row=>brochureFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${brochureReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setBrochureReviewFilter('all')">All Rows (${brochureRows.length})</button>
+      <button class="btn ${brochureReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setBrochureReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${brochureReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setBrochureReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${brochureReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setBrochureReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const match=brochureMatchCache[row._key];
+      const slug=row._manualSlug||toSlug(row._propertyName);
+      const skipped=brochureSkipSet.has(row._key);
+      const selectedPdf=(row._files||[]).find(file=>file.cdnPath===row._selectedPdfPath)||(row._files||[])[0];
+      const selectedPdfLabel=selectedPdf?fileChip(selectedPdf.name,selectedPdf.url):'<em style="color:var(--muted)">none</em>';
+      const currentPdf=match?.brochureUrl?fileChip(shortFileNameFromUrl(match.brochureUrl)||'current brochure',match.brochureUrl):'<em style="color:var(--muted)">none</em>';
+      const matchH=match
+        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-pending'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
+        :`<span class="mb mb-no">✗ no match — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">📄 ${row._developerName} / ${row._propertyName}</div>${matchH}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Lookup slug:</span>
+            <input class="slug-in" style="max-width:220px" id="bsl-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${slug}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckBrochureMatch('${row._key}')">Re-check →</button>
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="clearBrochureMatch('${row._key}')">Clear match</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="toggleBrochureSkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Matched Property</div><div class="rrval">${match?`${match.title||'—'} <span style="color:var(--muted)">[${match.slug||'no-slug'}]</span>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">${brochureMatchLabel(match)}</span></div></div>
+          <div class="rrow"><div class="rrlbl">Folder</div><div class="rrval">${row._path}</div><div><span class="rrfield">bunny</span></div></div>
+          <div class="rrow"><div class="rrlbl">Current Brochure</div><div class="rrval"><div class="ichips">${currentPdf}</div></div><div><span class="rrfield">brochureUrl</span></div></div>
+          <div class="rrow"><div class="rrlbl">Selected PDF</div><div class="rrval"><div class="ichips">${selectedPdfLabel}</div></div><div><span class="rrfield">brochureUrl</span></div></div>
+          <div class="rrow"><div class="rrlbl">PDF Choice</div><div class="rrval">
+            <select class="slug-in" onchange="setBrochureSelection('${row._key}',this.value)" style="max-width:420px">
+              ${row._files.map(file=>`<option value="${file.cdnPath}" ${file.cdnPath===row._selectedPdfPath?'selected':''}>${file.name}</option>`).join('')}
+            </select>
+          </div><div><span class="rrfield">${row._files.length} pdf${row._files.length===1?'':'s'}</span></div></div>
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
+if(activeFlow==='videos'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">🎬 HERO VIDEO SYNC MODE — matches each Bunny property folder to a Sanity property and patches <strong>only heroVideo</strong> using the selected <strong>.mp4</strong>.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=videoRows.filter(row=>!!videoMatchCache[row._key]).length;
+    const skippedCount=videoRows.filter(row=>videoSkipSet.has(row._key)).length;
+    const needsReviewCount=videoRows.filter(row=>!videoMatchCache[row._key]||videoMatchCache[row._key]._matchReason!=='slug'||videoSkipSet.has(row._key)||(row._files||[]).length>1).length;
+    const visibleRows=videoRows.filter(row=>videoFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${videoReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setVideoReviewFilter('all')">All Rows (${videoRows.length})</button>
+      <button class="btn ${videoReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setVideoReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${videoReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setVideoReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${videoReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setVideoReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const match=videoMatchCache[row._key];
+      const slug=row._manualSlug||toSlug(row._propertyName);
+      const skipped=videoSkipSet.has(row._key);
+      const selectedVideo=(row._files||[]).find(file=>file.cdnPath===row._selectedVideoPath)||(row._files||[])[0];
+      const selectedVideoLabel=selectedVideo?fileChip(selectedVideo.name,selectedVideo.url):'<em style="color:var(--muted)">none</em>';
+      const matchH=match
+        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-pending'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
+        :`<span class="mb mb-no">✗ no match — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">🎬 ${row._developerName} / ${row._propertyName}</div>${matchH}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Lookup slug:</span>
+            <input class="slug-in" style="max-width:220px" id="vsl-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${slug}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckVideoMatch('${row._key}')">Re-check →</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="toggleVideoSkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Matched Property</div><div class="rrval">${match?`${match.title||'—'} <span style="color:var(--muted)">[${match.slug||'no-slug'}]</span>`:'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">${match?sheetMatchLabel(match):'No match'}</span></div></div>
+          <div class="rrow"><div class="rrlbl">Folder</div><div class="rrval">${row._path}</div><div><span class="rrfield">bunny</span></div></div>
+          <div class="rrow"><div class="rrlbl">Selected Video</div><div class="rrval"><div class="ichips">${selectedVideoLabel}</div></div><div><span class="rrfield">heroVideo</span></div></div>
+          <div class="rrow"><div class="rrlbl">Video Choice</div><div class="rrval">
+            <select class="slug-in" onchange="setVideoSelection('${row._key}',this.value)" style="max-width:420px">
+              ${row._files.map(file=>`<option value="${file.cdnPath}" ${file.cdnPath===row._selectedVideoPath?'selected':''}>${file.name}</option>`).join('')}
+            </select>
+          </div><div><span class="rrfield">${row._files.length} mp4${row._files.length===1?'':'s'}</span></div></div>
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
+if(activeFlow==='crests'){
+    mn.innerHTML=`<div class="mn-notice mn-patch">🏷️ CREST SYNC MODE — matches each property's <strong>developer</strong> to a Bunny crest file and patches <strong>only crestImageCdn</strong>. Nothing else is changed.</div>`;
+    const wrap=$('revWrap');wrap.innerHTML='';
+    const matchedCount=crestRows.filter(row=>!!crestMatchCache[row._key]).length;
+    const skippedCount=crestRows.filter(row=>crestSkipSet.has(row._key)).length;
+    const needsReviewCount=crestRows.filter(row=>!crestMatchCache[row._key]||crestMatchCache[row._key]._matchReason!=='exact'||crestSkipSet.has(row._key)).length;
+    const visibleRows=crestRows.filter(row=>crestFilterPass(row));
+    const controls=document.createElement('div');
+    controls.className='acts';
+    controls.innerHTML=`
+      <button class="btn ${crestReviewFilter==='all'?'btn-d':'btn-g'}" onclick="setCrestReviewFilter('all')">All Rows (${crestRows.length})</button>
+      <button class="btn ${crestReviewFilter==='needs-review'?'btn-d':'btn-g'}" onclick="setCrestReviewFilter('needs-review')">Needs Review (${needsReviewCount})</button>
+      <button class="btn ${crestReviewFilter==='matched'?'btn-d':'btn-g'}" onclick="setCrestReviewFilter('matched')">Matched (${matchedCount})</button>
+      <button class="btn ${crestReviewFilter==='skipped'?'btn-d':'btn-g'}" onclick="setCrestReviewFilter('skipped')">Skipped (${skippedCount})</button>
+      <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted)">Showing ${visibleRows.length} row${visibleRows.length===1?'':'s'}</span>`;
+    wrap.appendChild(controls);
+    if(!visibleRows.length){
+      wrap.innerHTML+=`<div class="es"><div class="ei">✓</div><p>No rows in this filter.</p></div>`;
+      return;
+    }
+    for(const row of visibleRows){
+      const match=crestMatchCache[row._key];
+      const lookup=row._manualLookup||row._developerName||row._slug||'';
+      const skipped=crestSkipSet.has(row._key);
+      const currentCrest=row._currentCrest?`<div class="ichips">${fileChip(shortFileNameFromUrl(row._currentCrest)||'current crest',row._currentCrest)}</div>`:'<em style="color:var(--muted)">none</em>';
+      const matchedCrest=match?`<div class="ichips">${fileChip(match.name,match.url)}</div>`:'<em style="color:var(--muted)">none</em>';
+      const matchH=match
+        ?`<span class="mb ${match._matchReason==='exact'?'mb-ok':'mb-pending'}">${match._matchReason==='exact'?'✓ will patch':'⚠ review match'}: ${match.name}</span>`
+        :`<span class="mb mb-no">✗ no match — will skip</span>`;
+      const block=document.createElement('div');block.className='rb';
+      block.innerHTML=`
+        <div class="rbh"><div class="rbht">🏷️ ${row._title}</div>${matchH}</div>
+        <div class="rbb">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:.61rem;color:var(--muted)">Lookup:</span>
+            <input class="slug-in" style="max-width:260px" id="csl-${row._key.replace(/[^a-z0-9]/gi,'_')}" value="${lookup}">
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="recheckCrestMatch('${row._key}')">Re-check →</button>
+            <button class="btn btn-g" style="padding:5px 9px;font-size:.59rem" onclick="clearCrestMatch('${row._key}')">Clear match</button>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">
+              <input type="checkbox" ${skipped?'checked':''} onchange="toggleCrestSkip('${row._key}',this.checked)">
+              Skip this row
+            </label>
+          </div>
+          <div class="rrow"><div class="rrlbl">Property</div><div class="rrval">${row._title} <span style="color:var(--muted)">[${row._slug||'no-slug'}]</span></div><div><span class="rrfield">property</span></div></div>
+          <div class="rrow"><div class="rrlbl">Developer</div><div class="rrval">${row._developerName||'<em style="color:var(--muted)">none</em>'}</div><div><span class="rrfield">developer</span></div></div>
+          <div class="rrow"><div class="rrlbl">Current Crest</div><div class="rrval">${currentCrest}</div><div><span class="rrfield">crestImageCdn</span></div></div>
+          <div class="rrow"><div class="rrlbl">Matched Crest</div><div class="rrval">${matchedCrest}</div><div><span class="rrfield">${crestMatchLabel(match)}</span></div></div>
+          ${match?`<div class="rrow"><div class="rrlbl">Bunny Path</div><div class="rrval">${match.cdnPath}</div><div><span class="rrfield">bunny</span></div></div>`:''}
+          ${skipped?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--red)">This row will be skipped during import.</div>`:''}
+        </div>`;
+      wrap.appendChild(block);
+    }
+    return;
+  }
 if(activeFlow==='status'){
     mn.innerHTML=`<div class="mn-notice mn-patch">✅ STATUS SYNC MODE — matches each sheet row to a Sanity property and patches <strong>only Listing Status</strong>. Nothing else is changed.</div>`;
     const wrap=$('revWrap');wrap.innerHTML='';
@@ -747,7 +1449,7 @@ if(activeFlow==='status'){
       const currentStatus=match?.status?sheetStatusLabel(match.status):'—';
       const proposedStatus=sheetStatusLabel(row._proposedStatus);
       const matchH=match
-        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-?'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
+        ?`<span class="mb ${match._matchReason==='slug'?'mb-ok':'mb-pending'}">${match._matchReason==='slug'?'✓ will patch':'⚠ review match'}: ${match._id}</span>`
         :`<span class="mb mb-no">✗ no match — will skip</span>`;
       const block=document.createElement('div');block.className='rb';
       block.innerHTML=`
@@ -787,7 +1489,7 @@ if(activeFlow==='status'){
     const gallery=imgs.filter(i=>i.tag==='gallery'),fp=imgs.filter(i=>i.tag==='floorplan');
     const skipped=imgs.filter(i=>i.tag==='skip').length;
     const match=matchCache[key];
-    const slug=toSlug(pn);
+    const slug=slugOverrides[key]||toSlug(pn);
 
     const matchH=writeMode==='patch'
       ?(match?`<span class="mb mb-ok">✓ will patch: ${match._id}</span>`:`<span class="mb mb-no">✗ no match — will skip</span>`)
@@ -818,6 +1520,7 @@ async function recheckSlug(key){
   const sKey=key.replace(/[^a-z0-9]/gi,'_');
   const inp=$(`sl-${sKey}`);if(!inp)return;
   const slug=inp.value.trim();
+  slugOverrides[key]=slug;
   setStatus(`Checking slug "${slug}"…`,'spin');
   matchCache[key]=await lookupSlug(slug,$('docType').value);
   buildReview();renderTree();
@@ -840,6 +1543,96 @@ async function sanityMutate(mutations){
 
 async function startImport(){
   if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
+  if(activeFlow==='brochures'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...brochureRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+    for(const row of rows){
+      try{
+        const match=brochureMatchCache[row._key];
+        const selectedPdf=(row._files||[]).find(file=>file.cdnPath===row._selectedPdfPath)||(row._files||[])[0];
+        if(brochureSkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — manually skipped in Review.`,'wrn');
+        }else if(!match){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no Sanity doc found. Override slug in Review step.`,'wrn');
+        }else if(!selectedPdf){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no .pdf selected.`,'wrn');
+        }else if((match.brochureUrl||'')===selectedPdf.url){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — brochure already up to date.`,'wrn');
+        }else{
+          await sanityMutate([{patch:{id:match._id,set:{brochureUrl:selectedPdf.url}}}]);
+          patched++;imgs++;log(`✓ PATCHED "${match.title||row._propertyName}" (${match._id}) — brochure: ${selectedPdf.name}`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._propertyName}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} brochures linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
+  if(activeFlow==='videos'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...videoRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+    for(const row of rows){
+      try{
+        const match=videoMatchCache[row._key];
+        const selectedVideo=(row._files||[]).find(file=>file.cdnPath===row._selectedVideoPath)||(row._files||[])[0];
+        if(videoSkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — manually skipped in Review.`,'wrn');
+        }else if(!match){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no Sanity doc found. Override slug in Review step.`,'wrn');
+        }else if(!selectedVideo){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — no .mp4 selected.`,'wrn');
+        }else if((match.heroVideo||'')===selectedVideo.url){
+          failed++;log(`⚠ SKIPPED "${row._propertyName}" — hero video already up to date.`,'wrn');
+        }else{
+          await sanityMutate([{patch:{id:match._id,set:{heroVideo:selectedVideo.url}}}]);
+          patched++;imgs++;log(`✓ PATCHED "${match.title||row._propertyName}" (${match._id}) — hero video: ${selectedVideo.name}`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._propertyName}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} videos linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
+  if(activeFlow==='crests'){
+    $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
+    const rows=[...crestRows],total=rows.length;
+    let done=0,patched=0,created=0,failed=0,imgs=0;
+    const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
+    prog();
+    for(const row of rows){
+      try{
+        const match=crestMatchCache[row._key];
+        if(crestSkipSet.has(row._key)){
+          failed++;log(`⚠ SKIPPED "${row._title}" — manually skipped in Review.`,'wrn');
+        }else if(!match){
+          failed++;log(`⚠ SKIPPED "${row._title}" — no Bunny crest match found.`,'wrn');
+        }else if((row._currentCrest||'')===match.url){
+          failed++;log(`⚠ SKIPPED "${row._title}" — crest already up to date.`,'wrn');
+        }else{
+          await sanityMutate([{patch:{id:row._id,set:{crestImageCdn:makeCdnImage(match.url,`${row._developerName||row._title} logo`)}}}]);
+          patched++;imgs++;log(`✓ PATCHED "${row._title}" (${row._id}) — crest: ${match.name}`,'ok');
+        }
+      }catch(e){failed++;log(`✗ FAILED "${row._title}": ${e.message}`,'err')}
+      done++;$('r-p').textContent=patched;$('r-c').textContent=created;$('r-f').textContent=failed;$('r-i').textContent=imgs;prog();
+      await new Promise(r=>setTimeout(r,80));
+    }
+    setStatus(`Done — ${patched} patched, ${created} created, ${failed} failed`,failed>0?'err':'ok');
+    log(`Complete: ${patched} patched, ${created} created, ${failed} failed/skipped, ${imgs} images linked`,failed>0?'err':'ok');
+    $('importBtn').disabled=false;
+    return;
+  }
   if(activeFlow==='status'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
     const rows=[...sheetRows],total=rows.length;
