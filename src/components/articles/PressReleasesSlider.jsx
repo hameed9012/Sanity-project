@@ -157,7 +157,7 @@ export default function PressReleasesSlider() {
               769: {
                 slidesPerView: "auto",
                 centeredSlides: true,
-                spaceBetween: 18,
+                spaceBetween: 8,
               },
             }}
             className={`${styles.storiesSlider} ${

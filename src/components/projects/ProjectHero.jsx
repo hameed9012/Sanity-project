@@ -48,19 +48,39 @@ export default function ProjectHero({
   const [devLogoUrl, setDevLogoUrl] = useState(null);
 
   useEffect(() => {
-    if (!projectData?.developer && !projectData?.project?.developer) return;
-    const devName = projectData?.developer || projectData?.project?.developer || "";
-    const devSlug = slugifyDeveloper(devName);
+    const rawDeveloperName =
+      projectData?._raw?.developer ||
+      projectData?._raw?.project?.developer ||
+      projectData?.project?.developerEn ||
+      projectData?.developerEn ||
+      projectData?.project?.developer ||
+      projectData?.developer ||
+      "";
+    const devSlug =
+      projectData?.developerSlug ||
+      projectData?._raw?.developerSlug ||
+      slugifyDeveloper(rawDeveloperName);
+
+    setDevLogoUrl(null);
     if (!devSlug) return;
 
-    fetch(`/api/sanity-developer?slug=${devSlug}`)
+    const query = new URLSearchParams({ slug: devSlug });
+    if (rawDeveloperName) query.set("name", rawDeveloperName);
+
+    fetch(`/api/sanity-developer?${query.toString()}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((doc) => {
         const logo = doc?.logoUrl || doc?.logoCdn?.url || null;
         if (logo) setDevLogoUrl(logo);
       })
       .catch(() => {});
-  }, [projectData?.developer, projectData?.project?.developer]);
+  }, [
+    projectData?.developer,
+    projectData?.developerSlug,
+    projectData?.project?.developer,
+    projectData?._raw?.developer,
+    projectData?._raw?.developerSlug,
+  ]);
 
   if (!data || !projectData) return null;
 
@@ -76,7 +96,12 @@ export default function ProjectHero({
   const bgUrl = heroData.backgroundUrl || heroData.squareImageUrl || "";
   const isBgVideo = isVideo(bgUrl);
   // Use per-property crest first, then developer logo from Sanity
-  const propertyCrest = projectData?.crestImage || projectData?.project?.crestImage || "";
+  const propertyCrest =
+    projectData?.crestImage ||
+    projectData?._raw?.crestImage ||
+    projectData?._raw?.crestImageCdn?.url ||
+    projectData?.project?.crestImage ||
+    "";
   const logoSrc = propertyCrest || devLogoUrl || "";
   const proximityItems = Array.isArray(locationData?.proximityFeatures)
     ? locationData.proximityFeatures.filter((item) => item?.text)

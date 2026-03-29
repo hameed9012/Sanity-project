@@ -68,6 +68,59 @@ function isValidLatLng(lat, lng) {
   );
 }
 
+function distributeOverlappingPoints(points = []) {
+  const groups = new Map();
+
+  points.forEach((point) => {
+    const lat = toNumber(point?.lat, "lat");
+    const lng = toNumber(point?.lng, "lng");
+    if (lat === null || lng === null || !isValidLatLng(lat, lng)) return;
+    const key = `${lat.toFixed(6)}:${lng.toFixed(6)}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(point);
+  });
+
+  groups.forEach((group) => {
+    if (!Array.isArray(group) || group.length <= 1) {
+      const only = group?.[0];
+      if (only) {
+        only._displayLat = toNumber(only.lat, "lat");
+        only._displayLng = toNumber(only.lng, "lng");
+      }
+      return;
+    }
+
+    const anchorIndex = group.findIndex((point) => point.id === "project");
+    const ordered =
+      anchorIndex > 0
+        ? [group[anchorIndex], ...group.slice(0, anchorIndex), ...group.slice(anchorIndex + 1)]
+        : group;
+
+    const anchorLat = toNumber(ordered[0]?.lat, "lat");
+    const anchorLng = toNumber(ordered[0]?.lng, "lng");
+    if (anchorLat === null || anchorLng === null) return;
+
+    const radiusMeters = Math.min(70 + ordered.length * 14, 150);
+    const lngScale = Math.max(Math.cos((anchorLat * Math.PI) / 180), 0.2);
+
+    ordered.forEach((point, index) => {
+      if (index === 0 && point.id === "project") {
+        point._displayLat = anchorLat;
+        point._displayLng = anchorLng;
+        return;
+      }
+
+      const angle = ((Math.PI * 2) / Math.max(ordered.length - (ordered[0]?.id === "project" ? 1 : 0), 1)) * (ordered[0]?.id === "project" ? index - 1 : index);
+      const latOffset = (Math.sin(angle) * radiusMeters) / 111320;
+      const lngOffset = (Math.cos(angle) * radiusMeters) / (111320 * lngScale);
+      point._displayLat = anchorLat + latOffset;
+      point._displayLng = anchorLng + lngOffset;
+    });
+  });
+
+  return points;
+}
+
 function buildInlineMarkerEl({ isProject, label }) {
   const wrap = document.createElement("div");
   wrap.setAttribute("tabindex", "-1");
@@ -382,7 +435,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       zoom: toNumber(data?.zoom) ?? 13,
       categories,
       landmarks,
-      points: [
+      points: distributeOverlappingPoints([
         {
           id: "project",
           categoryId: "all",
@@ -393,7 +446,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
           directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
         },
         ...landmarkPoints,
-      ],
+      ]),
     };
   }, [activeLocale, data, projectData]);
 
@@ -489,8 +542,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
     const bounds = new mapbox.LngLatBounds();
 
     visiblePoints.forEach((point) => {
-      const lat = toNumber(point.lat, "lat");
-      const lng = toNumber(point.lng, "lng");
+      const lat = toNumber(point._displayLat ?? point.lat, "lat");
+      const lng = toNumber(point._displayLng ?? point.lng, "lng");
       if (lat === null || lng === null || !isValidLatLng(lat, lng)) return;
 
       const isProject = point.id === "project";
@@ -547,7 +600,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
     }
 
     const viewportKey = visiblePoints
-      .map((point) => `${point.id}:${point.lat}:${point.lng}`)
+      .map((point) => `${point.id}:${point._displayLat ?? point.lat}:${point._displayLng ?? point.lng}`)
       .join("|");
 
     if (!bounds.isEmpty() && lastViewportKeyRef.current !== viewportKey) {

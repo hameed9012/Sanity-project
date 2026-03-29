@@ -195,6 +195,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     completionDate: project?.completionDate || "",
     handoverDate: project?.completionDate || "",
     paymentPlan: project?.paymentPlan || "",
+    crestImage: sanityDoc?.crestImage || sanityDoc?.crestImageCdn?.url || "",
     status: normalizeListingStatus(project?.status || sanityDoc?.status || ""),
     unitTypes: normalizeUnitTypes(project?.type || ""),
 
@@ -275,6 +276,14 @@ function buildSanityProjectData(sanityDoc, locale) {
     locale === "ar"
       ? sanityDoc?.locationAr || sanityDoc?.location || ""
       : sanityDoc?.location || "";
+  const localizedTitle =
+    locale === "ar"
+      ? sanityDoc?.titleAr || sanityDoc?.title || ""
+      : sanityDoc?.title || sanityDoc?.titleAr || "";
+  const localizedDeveloper =
+    locale === "ar"
+      ? sanityDoc?.developerAr || sanityDoc?.developer || ""
+      : sanityDoc?.developer || sanityDoc?.developerAr || "";
   const localizedDescription =
     locale === "ar"
       ? sanityDoc?.descriptionAr || sanityDoc?.description || ""
@@ -294,13 +303,14 @@ function buildSanityProjectData(sanityDoc, locale) {
     completionDate: sanityDoc?.completionDate || "",
     handoverDate: sanityDoc?.completionDate || "",
     paymentPlan: sanityDoc?.paymentPlan || "",
+    crestImage: sanityDoc?.crestImage || sanityDoc?.crestImageCdn?.url || "",
     status: normalizeListingStatus(sanityDoc?.status || ""),
     unitTypes: normalizeUnitTypes(sanityDoc?.unitTypes || sanityDoc?.propertyType || ""),
-    title: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
-    developer: cleanLocalizedText(sanityDoc?.developer, sanityDoc?.developerEn || ""),
+    title: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
+    developer: cleanLocalizedText(localizedDeveloper, sanityDoc?.developer || ""),
     project: {
-      name: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
-      developer: normalizeDeveloperName(cleanLocalizedText(sanityDoc?.developer, sanityDoc?.developerEn || "")),
+      name: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
+      developer: normalizeDeveloperName(cleanLocalizedText(localizedDeveloper, sanityDoc?.developer || "")),
       location: normalizeLocation(cleanLocalizedText(localizedLocation, sanityDoc?.location || "")),
       startingPrice: sanityDoc?.startingPrice || "",
       completionDate: sanityDoc?.completionDate || "",
@@ -312,25 +322,25 @@ function buildSanityProjectData(sanityDoc, locale) {
       backgroundUrl:
         sanityDoc?.heroVideo || sanityDoc?.heroImage || gallerySlides[0] || "",
       squareImageUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
-      title: sanityDoc?.title || "",
-      companyName: normalizeDeveloperName(sanityDoc?.developer || ""),
+      title: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
+      companyName: normalizeDeveloperName(cleanLocalizedText(localizedDeveloper, sanityDoc?.developer || "")),
     },
     intro: {
-      title: sanityDoc?.title || "",
+      title: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
       description: cleanLocalizedText(localizedDescription, sanityDoc?.description || ""),
       paragraphs: cleanLocalizedText(localizedDescription, sanityDoc?.description || "") ? [cleanLocalizedText(localizedDescription, sanityDoc?.description || "")] : [],
       brochures: brochureUrl
         ? [{ title: "Download Brochure", url: brochureUrl, type: "main" }]
         : [],
       imgUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
-      imgAlt: cleanLocalizedText(sanityDoc?.title, sanityDoc?.titleEn || ""),
+      imgAlt: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
       stats: [],
     },
     masterplan: sanityDoc?.masterplanUrl
       ? { url: sanityDoc.masterplanUrl, title: "Masterplan" }
       : null,
     gallery: {
-      images: gallerySlides.map((url) => ({ url, alt: sanityDoc?.title || "" })),
+      images: gallerySlides.map((url) => ({ url, alt: cleanLocalizedText(localizedTitle, sanityDoc?.title || "") })),
       slides: gallerySlides,
     },
     floorPlans: {

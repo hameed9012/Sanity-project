@@ -51,7 +51,10 @@ export default defineType({
           title: 'Navbar Logo (Upload)',
           type: 'image',
           options: { hotspot: true },
-          fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+          fields: [
+            { name: 'alt', type: 'string', title: 'Alt text' },
+            { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+          ],
         }),
         defineField({
           name: 'logoCdn',
@@ -204,7 +207,10 @@ export default defineType({
           type: 'image',
           description: 'Upload owner photo',
           options: { hotspot: true },
-          fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
+          fields: [
+            { name: 'alt', type: 'string', title: 'Alt text' },
+            { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+          ]
         }),
         defineField({
           name: 'ownerImageCdn',
@@ -245,7 +251,10 @@ export default defineType({
                   title: 'Pillar Image',
                   type: 'image',
                   options: { hotspot: true },
-                  fields: [{ name: 'alt', type: 'string', title: 'Alt text' }]
+                  fields: [
+                    { name: 'alt', type: 'string', title: 'Alt text' },
+                    { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+                  ]
                 }),
                 defineField({
                   name: 'imageCdn',
@@ -357,7 +366,10 @@ export default defineType({
               title: 'Hero Portrait (Upload)',
               type: 'image',
               options: { hotspot: true },
-              fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+              ],
             }),
             defineField({
               name: 'imageCdn',
@@ -399,7 +411,10 @@ export default defineType({
               title: 'Section Image (Upload)',
               type: 'image',
               options: { hotspot: true },
-              fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+              ],
             }),
             defineField({
               name: 'imageCdn',
@@ -524,7 +539,10 @@ export default defineType({
               title: 'Vision Image (Upload)',
               type: 'image',
               options: { hotspot: true },
-              fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+              ],
             }),
             defineField({
               name: 'visionImageCdn',
@@ -543,7 +561,10 @@ export default defineType({
               title: 'Mission Image (Upload)',
               type: 'image',
               options: { hotspot: true },
-              fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+              fields: [
+                { name: 'alt', type: 'string', title: 'Alt text' },
+                { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+              ],
             }),
             defineField({
               name: 'missionImageCdn',
@@ -584,7 +605,10 @@ export default defineType({
                       title: 'Card Image (Upload)',
                       type: 'image',
                       options: { hotspot: true },
-                      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+                      fields: [
+                        { name: 'alt', type: 'string', title: 'Alt text' },
+                        { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+                      ],
                     }),
                     defineField({
                       name: 'imageCdn',
@@ -647,7 +671,10 @@ export default defineType({
                       title: 'Timeline Image (Upload)',
                       type: 'image',
                       options: { hotspot: true },
-                      fields: [{ name: 'alt', type: 'string', title: 'Alt text' }],
+                      fields: [
+                        { name: 'alt', type: 'string', title: 'Alt text' },
+                        { name: 'altAr', type: 'string', title: 'Alt text (Arabic)' },
+                      ],
                     }),
                     defineField({
                       name: 'imageCdn',

@@ -346,6 +346,11 @@ const ProjectCards = ({ projects, onResetFilters }) => {
 
   // --------- developer ----------
   const getDeveloperLabel = (project) => {
+    const explicitLocalizedName = isAr
+      ? project?.developerNameAr || project?.developerAr
+      : project?.developerNameEn || project?.developer;
+    if (explicitLocalizedName) return explicitLocalizedName;
+
     const devSlug =
       project?.developerSlug ||
       project?.developer?.slug ||
@@ -372,15 +377,15 @@ const ProjectCards = ({ projects, onResetFilters }) => {
 
   // --------- project name (FIXED using projectMaps.js) ----------
   const getProjectNameLabel = (project) => {
+    if (isAr && project?.nameAr) return project.nameAr;
+    if (!isAr && project?.nameEn) return project.nameEn;
+
     const slug = project?.slug ? String(project.slug).trim() : "";
     if (slug && PROJECT_NAME_KEY_MAP?.[slug]) {
       const key = PROJECT_NAME_KEY_MAP[slug];
       const fromT = safeT(`projectNames.${key}`, undefined, "");
       if (fromT) return fromT;
     }
-
-    if (isAr && project?.nameAr) return project.nameAr;
-    if (!isAr && project?.nameEn) return project.nameEn;
 
     return project?.name || "";
   };

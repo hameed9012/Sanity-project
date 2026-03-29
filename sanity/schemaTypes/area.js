@@ -142,6 +142,11 @@ export default defineType({
               description: 'e.g. "10 mins", "600 m", "15 min drive"',
             }),
             defineField({
+              name: 'distanceAr',
+              title: 'Distance / Travel Time (Arabic)',
+              type: 'string',
+            }),
+            defineField({
               name: 'icon',
               title: 'Icon',
               type: 'string',
@@ -201,6 +206,11 @@ export default defineType({
               title: 'Distance / Travel Time',
               type: 'string',
               description: 'e.g. "8 mins", "12 min drive"',
+            }),
+            defineField({
+              name: 'distanceAr',
+              title: 'Distance / Travel Time (Arabic)',
+              type: 'string',
             }),
             defineField({
               name: 'icon',

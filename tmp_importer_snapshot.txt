@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -27,16 +27,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .sbl{font-family:var(--mono);font-size:0.54rem;text-transform:uppercase;letter-spacing:2px;color:#4a4238;padding-bottom:5px;border-bottom:1px solid #2a2218}
 .fg{display:flex;flex-direction:column;gap:3px}
 .fg label{font-family:var(--mono);font-size:0.57rem;color:#7a7060;text-transform:uppercase;letter-spacing:1px}
-.fg input,.fg select,.fg textarea{background:#241e16;border:1px solid #3a3228;border-radius:6px;color:#e8e0d4;font-family:var(--mono);font-size:0.67rem;padding:7px 9px;outline:none;width:100%;transition:border-color .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--amber)}
+.fg input,.fg select{background:#241e16;border:1px solid #3a3228;border-radius:6px;color:#e8e0d4;font-family:var(--mono);font-size:0.67rem;padding:7px 9px;outline:none;width:100%;transition:border-color .15s}
+.fg input:focus,.fg select:focus{border-color:var(--amber)}
 .fg input::placeholder{color:#3a3228}
-.fg textarea{min-height:74px;resize:vertical}
-.fg textarea::placeholder{color:#3a3228}
 .fg select option{background:#241e16}
 .fg .h{font-family:var(--mono);font-size:0.53rem;color:#4a4238;line-height:1.5}
-.ckg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:3px}
-.ckg label{display:flex;align-items:center;gap:7px;font-size:0.63rem;color:#d8d0c4;text-transform:none;letter-spacing:0}
-.ckg input{width:auto;padding:0;margin:0;accent-color:var(--amber)}
 .btn-fetch{background:var(--amber);color:#1a1410;border:none;border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:0.67rem;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-fetch:hover{opacity:.85}.btn-fetch:disabled{opacity:.35;cursor:not-allowed}
 .snav{display:flex;flex-direction:column;gap:2px}
@@ -176,14 +171,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     </div>
   </div>
   <div class="sbs">
-    <div class="sbl">Target Slugs</div>
-    <div class="fg">
-      <label>Document / Property Slugs (optional)</label>
-      <textarea id="targetSlugs" placeholder="binghatti-pinnacle&#10;orchid-towers&#10;canterbury-waterfront"></textarea>
-      <div class="h">Comma, space, or newline separated slugs. When filled, sync/import actions only touch matching docs or property folders where that flow supports it.</div>
-    </div>
-  </div>
-  <div class="sbs">
     <div class="sbl">Listing Sync</div>
     <div class="fg">
       <label>TSV / CSV Sheet</label>
@@ -245,21 +232,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
       <label>DeepL API Key</label>
       <input id="deeplKey" type="password" placeholder="DeepL API key">
       <div class="h">Translates missing Arabic fields with <strong>DeepL</strong> across supported Sanity docs: <strong>properties, developers, areas, and safe string-based article fields</strong>. It avoids Portable Text blocks on purpose.</div>
-    </div>
-    <div class="fg">
-      <label>Arabic Document Types</label>
-      <div class="ckg">
-        <label><input id="arTypeProperty" type="checkbox" checked> Properties</label>
-        <label><input id="arTypeDeveloper" type="checkbox" checked> Developers</label>
-        <label><input id="arTypeArea" type="checkbox" checked> Areas</label>
-        <label><input id="arTypeArticle" type="checkbox" checked> Articles</label>
-        <label><input id="arTypeSiteSettings" type="checkbox" checked> Site Settings</label>
-      </div>
-      <div class="h">Choose which Sanity document types to translate for Arabic in this run.</div>
-    </div>
-    <div class="fg">
-      <label><input id="arabicForce" type="checkbox"> Re-translate existing Arabic fields</label>
-      <div class="h">Use this if earlier Arabic values are missing, still in English, or you want to refresh them from DeepL.</div>
     </div>
     <button class="btn-fetch" id="arabicBtn" onclick="startArabicSync()">🌐 Sync Arabic Fields</button>
   </div>
@@ -357,88 +329,6 @@ const isMp4=n=>ext(n)==='mp4';
 const isPdf=n=>ext(n)==='pdf';
 const toSlug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const mkKey=(p,i)=>`${p}_${Date.now()}_${i}`;
-function normalizeSlugCandidate(value){
-  const raw=String(value??'').trim();
-  if(!raw)return'';
-  return toSlug(raw);
-}
-function getTargetSlugSet(){
-  const raw=$('targetSlugs')?.value||'';
-  return new Set(raw.split(/[\s,;\n\r\t]+/).map(normalizeSlugCandidate).filter(Boolean));
-}
-function matchingTargetSlugs(candidates,targetSet=getTargetSlugSet()){
-  if(!targetSet.size)return [];
-  const found=new Set();
-  const candidateSlugs=candidates.map(normalizeSlugCandidate).filter(Boolean);
-  for(const target of targetSet){
-    for(const slug of candidateSlugs){
-      if(!slug)continue;
-      if(slug===target||slug.includes(target)||target.includes(slug)){
-        found.add(target);
-        break;
-      }
-    }
-  }
-  return [...found];
-}
-function matchesTargetSlugs(candidates,targetSet=getTargetSlugSet()){
-  if(!targetSet.size)return true;
-  return matchingTargetSlugs(candidates,targetSet).length>0;
-}
-function docSlugCandidates(doc){
-  return[
-    doc?.slug,
-    doc?.title,
-    doc?.name,
-    doc?.projectName
-  ];
-}
-function rowSlugCandidates(row){
-  return[
-    row?._manualSlug,
-    row?._slug,
-    row?._slugHint,
-    row?._propertyName,
-    row?._projectName,
-    row?._title,
-    row?._name
-  ];
-}
-function imageKeyCandidates(key){
-  const[,pn='']=String(key||'').split('||');
-  return[slugOverrides[key],pn];
-}
-function getTargetedImageKeys(){
-  const targetSet=getTargetSlugSet();
-  return [...selected].filter(key=>matchesTargetSlugs(imageKeyCandidates(key),targetSet));
-}
-function filterRowsByTargetSlugs(rows){
-  const targetSet=getTargetSlugSet();
-  if(!targetSet.size)return [...rows];
-  return rows.filter(row=>matchesTargetSlugs(rowSlugCandidates(row),targetSet));
-}
-function filterDocsByTargetSlugs(docs){
-  const targetSet=getTargetSlugSet();
-  if(!targetSet.size)return [...docs];
-  return docs.filter(doc=>matchesTargetSlugs(docSlugCandidates(doc),targetSet));
-}
-function targetScopeSummary(){
-  const targetSet=getTargetSlugSet();
-  if(!targetSet.size)return'';
-  const slugs=[...targetSet];
-  return slugs.length===1?`target slug "${slugs[0]}"`:`${slugs.length} target slugs`;
-}
-function getArabicTypeSelection(){
-  const types=[
-    ['property','arTypeProperty'],
-    ['developer','arTypeDeveloper'],
-    ['area','arTypeArea'],
-    ['article','arTypeArticle'],
-    ['siteSettings','arTypeSiteSettings']
-  ];
-  const selected=types.filter(([,id])=>$(`${id}`)?.checked).map(([type])=>type);
-  return selected.length?selected:types.map(([type])=>type);
-}
 
 function setStatus(msg,t=''){$('stxt').textContent=msg;$('sdot').className='sd'+(t?' '+t:'')}
 function log(msg,t=''){const b=$('lb');const s=document.createElement('span');if(t)s.className='l'+t;s.textContent=new Date().toLocaleTimeString()+' — '+msg;b.appendChild(s);b.appendChild(document.createElement('br'));b.scrollTop=b.scrollHeight}
@@ -1060,29 +950,6 @@ function deeplProxyUrl(){
 function escapePatchKey(key){
   return String(key||'').replace(/\\/g,'\\\\').replace(/"/g,'\\"');
 }
-function hasArabicText(value=''){
-  return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(value||''));
-}
-function shouldTranslateArabicValue(source,currentValue,forceOverwrite=false){
-  const sourceText=String(source??'').trim();
-  const currentText=String(currentValue??'').trim();
-  if(!sourceText)return false;
-  if(forceOverwrite)return true;
-  if(!currentText)return true;
-  if(currentText===sourceText)return true;
-  if(!hasArabicText(currentText))return true;
-  return false;
-}
-function shouldTranslateArabicArray(sourceValues,currentValues,forceOverwrite=false){
-  const source=stringArrayValues(sourceValues);
-  const current=stringArrayValues(currentValues);
-  if(!source.length)return false;
-  if(forceOverwrite)return true;
-  if(!current.length)return true;
-  if(current.join('||')===source.join('||'))return true;
-  if(current.some(item=>!hasArabicText(item)))return true;
-  return false;
-}
 async function deeplTranslateTexts(texts,context=''){
   const key=$('deeplKey').value.trim();
   if(!key)throw new Error('DeepL API key required.');
@@ -1118,109 +985,123 @@ async function loadArabicDocsByType(docType,tok){
   if(sanityDocCache[cacheKey])return sanityDocCache[cacheKey];
   const ds=$('sDs').value.trim();
   const queries={
-    property:`*[_type=="property"]{...,"slug":slug.current,"developerRef":developer->{title,name}}[0...10000]`,
-    developer:`*[_type=="developer"]{...,"slug":slug.current}[0...10000]`,
-    area:`*[_type=="area"]{...,"slug":slug.current}[0...10000]`,
-    article:`*[_type=="article"]{...,"slug":slug.current}[0...10000]`,
-    siteSettings:`*[_type=="siteSettings"]{...}[0...100]`
+    property:`*[_type=="property"]{_id,_type,"slug":slug.current,title,titleAr,description,descriptionAr,location,locationAr,developer,"developerRef":developer->{title,name},developerAr,startingPrice,startingPriceAr,completionDate,completionDateAr,paymentPlan,paymentPlanAr,unitTypes,unitTypesAr,statusDisplay,statusDisplayAr,amenities[]{_key,label,labelAr,icon},floorPlans[]{_key,title,titleAr,bedrooms,size,price},nearbyPlaces[]{_key,name,nameAr,distance,icon,lat,lng,directionsUrl}}[0...10000]`,
+    developer:`*[_type=="developer"]{_id,_type,"slug":slug.current,name,nameAr,tagline,taglineAr,description,descriptionAr,about,aboutAr,highlights,highlightsAr,founder{name,nameAr,title,titleAr,bio,bioAr,ctaLabel,ctaLabelAr}}[0...10000]`,
+    area:`*[_type=="area"]{_id,_type,"slug":slug.current,name,nameAr,tagline,taglineAr,description,descriptionAr,location,locationAr,avgBuyPrice,avgBuyPriceAr,avgRentPrice,avgRentPriceAr,roi,roiAr,highlights,highlightsAr,nearbyLandmarks[]{_key,name,nameAr,distance,icon,lat,lng,directionsUrl},nearbyAreas[]{_key,name,nameAr,distance,icon,slug}}[0...10000]`,
+    article:`*[_type=="article"]{_id,_type,"slug":slug.current,title,titleAr,description,descriptionAr,category,categoryAr,readTime,readTimeAr,hero{title,titleAr,subtitle,subtitleAr},author{name,nameAr,role,roleAr},sections[]{_key,title,titleAr,content,contentAr,keyPoints,keyPointsAr,expertQuote{text,textAr}},cta{title,titleAr,description,descriptionAr,buttonLabel,buttonLabelAr,secondaryButtonLabel,secondaryButtonLabelAr,trustNote,trustNoteAr,inlineTitle,inlineTitleAr,inlineDescription,inlineDescriptionAr},seoTitle,seoTitleAr,seoDescription,seoDescriptionAr,seoKeywords,seoKeywordsAr}[0...10000]`
   };
   const q=queries[docType];
   if(!q)return[];
   const r=await fetch(`${sanityBase()}/data/query/${ds}?query=${encodeURIComponent(q)}`,{headers:tok?{Authorization:`Bearer ${tok}`}:{}}); 
   const j=await r.json();
   if(!r.ok)throw new Error(j.error?.description||`Sanity query failed (${r.status})`);
-  sanityDocCache[cacheKey]=(j.result||[]).map(doc=>docType==='property'
-    ?{...doc,developer:typeof doc?.developer==='string'?doc.developer:docDeveloperName(doc)}
-    :doc);
+  sanityDocCache[cacheKey]=(j.result||[]).map(doc=>docType==='property'?{...doc,developer:doc?.developer||docDeveloperName(doc)}:doc);
   return sanityDocCache[cacheKey];
 }
-async function loadArabicDocs(tok,types=getArabicTypeSelection()){
+async function loadArabicDocs(tok){
+  const types=['property','developer','area','article'];
   const groups=await Promise.all(types.map(type=>loadArabicDocsByType(type,tok)));
   return groups.flat();
 }
 function stringArrayValues(arr){
   return Array.isArray(arr)?arr.map(v=>String(v??'').trim()).filter(Boolean):[];
 }
-function humanizeArabicFieldLabel(key){
-  return String(key||'')
-    .replace(/Ar$/,'')
-    .replace(/En$/,'')
-    .replace(/([a-z0-9])([A-Z])/g,'$1 $2')
-    .replace(/^./,m=>m.toUpperCase());
-}
-function buildArabicPath(path,key){
-  return path?`${path}.${key}`:key;
-}
-function buildArabicArrayItemPath(arrayPath,item,index){
-  if(item&&typeof item==='object'&&item._key)return `${arrayPath}[_key=="${escapePatchKey(item._key)}"]`;
-  return `${arrayPath}[${index}]`;
-}
-function isPlainObject(value){
-  return !!value&&typeof value==='object'&&!Array.isArray(value);
-}
 function collectArabicTasks(doc){
   const tasks=[];
-  const forceOverwrite=!!$('arabicForce')?.checked;
   const push=(path,fieldLabel,text,currentValue='')=>{
     const source=String(text??'').trim();
     const current=String(currentValue??'').trim();
-    if(!shouldTranslateArabicValue(source,current,forceOverwrite))return;
+    if(!source||current)return;
     tasks.push({path,fieldLabel,text:source});
   };
   const pushArray=(path,fieldLabel,texts,currentValues=[])=>{
     const source=stringArrayValues(texts);
     const current=stringArrayValues(currentValues);
-    if(!shouldTranslateArabicArray(source,current,forceOverwrite))return;
+    if(!source.length||current.length)return;
     tasks.push({path,fieldLabel,texts:source});
   };
-  const walk=(obj,path='',labelPrefix='')=>{
-    if(!isPlainObject(obj))return;
-    const keys=Object.keys(obj);
-
-    keys.forEach(key=>{
-      if(key.startsWith('_')||key.endsWith('Ar'))return;
-      const sourceValue=obj[key];
-      let targetKey='';
-      let labelKey=key;
-      if(key.endsWith('En')&&keys.includes(`${key.slice(0,-2)}Ar`)){
-        targetKey=`${key.slice(0,-2)}Ar`;
-        labelKey=key.slice(0,-2);
-      }else if(keys.includes(`${key}Ar`)){
-        targetKey=`${key}Ar`;
-      }
-      if(!targetKey)return;
-      const targetValue=obj[targetKey];
-      const fieldLabel=`${labelPrefix}${humanizeArabicFieldLabel(labelKey)}`;
-      const targetPath=buildArabicPath(path,targetKey);
-      if(typeof sourceValue==='string'||typeof sourceValue==='number'){
-        push(targetPath,fieldLabel,sourceValue,targetValue);
-        return;
-      }
-      if(Array.isArray(sourceValue)&&sourceValue.every(item=>typeof item==='string')){
-        pushArray(targetPath,fieldLabel,sourceValue,targetValue);
-      }
-    });
-
-    keys.forEach(key=>{
-      if(key.startsWith('_')||key.endsWith('Ar'))return;
-      const sourceValue=obj[key];
-      if(Array.isArray(sourceValue)){
-        if(sourceValue.every(item=>typeof item==='string'))return;
-        const arrayPath=buildArabicPath(path,key);
-        sourceValue.forEach((item,index)=>{
-          if(!isPlainObject(item))return;
-          walk(item,buildArabicArrayItemPath(arrayPath,item,index),`${labelPrefix}${humanizeArabicFieldLabel(key)} ${index+1} › `);
-        });
-        return;
-      }
-      if(isPlainObject(sourceValue)){
-        walk(sourceValue,buildArabicPath(path,key),`${labelPrefix}${humanizeArabicFieldLabel(key)} › `);
-      }
-    });
-  };
-
-  walk(doc,'','');
-  return tasks.filter((task,index,arr)=>arr.findIndex(other=>other.path===task.path)===index);
+  switch(doc?._type){
+    case 'property':
+      push('titleAr','Project Name',doc?.title,doc?.titleAr);
+      push('descriptionAr','Description',doc?.description,doc?.descriptionAr);
+      push('locationAr','Area / Location',doc?.location,doc?.locationAr);
+      push('developerAr','Developer',docDeveloperName(doc),doc?.developerAr);
+      push('startingPriceAr','Starting Price',doc?.startingPrice,doc?.startingPriceAr);
+      push('completionDateAr','Completion Date',doc?.completionDate,doc?.completionDateAr);
+      push('paymentPlanAr','Payment Plan',doc?.paymentPlan,doc?.paymentPlanAr);
+      push('unitTypesAr','Unit Types',doc?.unitTypes,doc?.unitTypesAr);
+      push('statusDisplayAr','Status Display',doc?.statusDisplay,doc?.statusDisplayAr);
+      (doc?.amenities||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`amenities[_key=="${escapePatchKey(item._key)}"].labelAr`,`Amenity: ${item.label||'item'}`,item?.label,item?.labelAr);
+      });
+      (doc?.floorPlans||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`floorPlans[_key=="${escapePatchKey(item._key)}"].titleAr`,`Floor Plan: ${item.title||'item'}`,item?.title,item?.titleAr);
+      });
+      (doc?.nearbyPlaces||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`nearbyPlaces[_key=="${escapePatchKey(item._key)}"].nameAr`,`Nearby Place: ${item.name||'item'}`,item?.name,item?.nameAr);
+      });
+      break;
+    case 'developer':
+      push('nameAr','Developer Name',doc?.name,doc?.nameAr);
+      push('taglineAr','Tagline',doc?.tagline,doc?.taglineAr);
+      push('descriptionAr','Description',doc?.description,doc?.descriptionAr);
+      pushArray('aboutAr','About Paragraphs',doc?.about,doc?.aboutAr);
+      pushArray('highlightsAr','Highlights',doc?.highlights,doc?.highlightsAr);
+      push('founder.nameAr','Founder Name',doc?.founder?.name,doc?.founder?.nameAr);
+      push('founder.titleAr','Founder Title',doc?.founder?.title,doc?.founder?.titleAr);
+      push('founder.bioAr','Founder Bio',doc?.founder?.bio,doc?.founder?.bioAr);
+      push('founder.ctaLabelAr','Founder CTA Label',doc?.founder?.ctaLabel,doc?.founder?.ctaLabelAr);
+      break;
+    case 'area':
+      push('nameAr','Area Name',doc?.name,doc?.nameAr);
+      push('taglineAr','Tagline',doc?.tagline,doc?.taglineAr);
+      push('descriptionAr','Description',doc?.description,doc?.descriptionAr);
+      push('locationAr','Location',doc?.location,doc?.locationAr);
+      push('avgBuyPriceAr','Avg Buy Price',doc?.avgBuyPrice,doc?.avgBuyPriceAr);
+      push('avgRentPriceAr','Avg Rent Price',doc?.avgRentPrice,doc?.avgRentPriceAr);
+      push('roiAr','ROI',doc?.roi,doc?.roiAr);
+      pushArray('highlightsAr','Highlights',doc?.highlights,doc?.highlightsAr);
+      (doc?.nearbyLandmarks||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`nearbyLandmarks[_key=="${escapePatchKey(item._key)}"].nameAr`,`Nearby Landmark: ${item.name||'item'}`,item?.name,item?.nameAr);
+      });
+      (doc?.nearbyAreas||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`nearbyAreas[_key=="${escapePatchKey(item._key)}"].nameAr`,`Nearby Area: ${item.name||'item'}`,item?.name,item?.nameAr);
+      });
+      break;
+    case 'article':
+      push('titleAr','Article Title',doc?.title,doc?.titleAr);
+      push('descriptionAr','Article Description',doc?.description,doc?.descriptionAr);
+      push('categoryAr','Category',doc?.category,doc?.categoryAr);
+      push('readTimeAr','Read Time',doc?.readTime,doc?.readTimeAr);
+      push('hero.titleAr','Hero Title',doc?.hero?.title,doc?.hero?.titleAr);
+      push('hero.subtitleAr','Hero Subtitle',doc?.hero?.subtitle,doc?.hero?.subtitleAr);
+      push('author.nameAr','Author Name',doc?.author?.name,doc?.author?.nameAr);
+      push('author.roleAr','Author Role',doc?.author?.role,doc?.author?.roleAr);
+      (doc?.sections||[]).forEach(item=>{
+        if(!item?._key)return;
+        push(`sections[_key=="${escapePatchKey(item._key)}"].titleAr`,`Section Title: ${item.title||'item'}`,item?.title,item?.titleAr);
+        push(`sections[_key=="${escapePatchKey(item._key)}"].contentAr`,`Section Content: ${item.title||'item'}`,item?.content,item?.contentAr);
+        pushArray(`sections[_key=="${escapePatchKey(item._key)}"].keyPointsAr`,`Section Key Points: ${item.title||'item'}`,item?.keyPoints,item?.keyPointsAr);
+        push(`sections[_key=="${escapePatchKey(item._key)}"].expertQuote.textAr`,`Section Quote: ${item.title||'item'}`,item?.expertQuote?.text,item?.expertQuote?.textAr);
+      });
+      push('cta.titleAr','CTA Title',doc?.cta?.title,doc?.cta?.titleAr);
+      push('cta.descriptionAr','CTA Description',doc?.cta?.description,doc?.cta?.descriptionAr);
+      push('cta.buttonLabelAr','Primary Button Label',doc?.cta?.buttonLabel,doc?.cta?.buttonLabelAr);
+      push('cta.secondaryButtonLabelAr','Secondary Button Label',doc?.cta?.secondaryButtonLabel,doc?.cta?.secondaryButtonLabelAr);
+      push('cta.trustNoteAr','CTA Trust Note',doc?.cta?.trustNote,doc?.cta?.trustNoteAr);
+      push('cta.inlineTitleAr','Inline CTA Title',doc?.cta?.inlineTitle,doc?.cta?.inlineTitleAr);
+      push('cta.inlineDescriptionAr','Inline CTA Description',doc?.cta?.inlineDescription,doc?.cta?.inlineDescriptionAr);
+      push('seoTitleAr','SEO Title',doc?.seoTitle,doc?.seoTitleAr);
+      push('seoDescriptionAr','SEO Description',doc?.seoDescription,doc?.seoDescriptionAr);
+      push('seoKeywordsAr','SEO Keywords',doc?.seoKeywords,doc?.seoKeywordsAr);
+      break;
+  }
+  return tasks;
 }
 function arabicFilterPass(row){
   const skipped=arabicSkipSet.has(row._key);
@@ -1242,9 +1123,7 @@ function saveProgress(){
       cdnBase:$('cdnBase').value.trim(),
       docType:$('docType').value,
       writeMode:$('writeMode').value,
-      crestRoot:$('crestRoot')?.value||CREST_SYNC_ROOT,
-      targetSlugs:$('targetSlugs')?.value||'',
-      arabicTypes:getArabicTypeSelection()
+      crestRoot:$('crestRoot')?.value||CREST_SYNC_ROOT
     },
     activeFlow,
     currentPage:[...document.querySelectorAll('.page')].findIndex(p=>p.classList.contains('active')),
@@ -1312,14 +1191,6 @@ function restoreProgress(payload){
   if(form.docType)$('docType').value=form.docType;
   if(form.writeMode)$('writeMode').value=form.writeMode;
   if(form.crestRoot)$('crestRoot').value=form.crestRoot;
-  if(typeof form.targetSlugs==='string'&&$('targetSlugs'))$('targetSlugs').value=form.targetSlugs;
-  if(Array.isArray(form.arabicTypes)){
-    $('arTypeProperty').checked=form.arabicTypes.includes('property');
-    $('arTypeDeveloper').checked=form.arabicTypes.includes('developer');
-    $('arTypeArea').checked=form.arabicTypes.includes('area');
-    $('arTypeArticle').checked=form.arabicTypes.includes('article');
-    $('arTypeSiteSettings').checked=form.arabicTypes.includes('siteSettings');
-  }
 
   folderTree=Array.isArray(payload?.folderTree)?payload.folderTree:[];
   selected=new Set(Array.isArray(payload?.selected)?payload.selected:[]);
@@ -1386,63 +1257,40 @@ async function startFetch(){
   selected=new Set();tagMap={};matchCache={};slugOverrides={};
   if(!$('bzKey').value.trim()){setStatus('Enter BunnyCDN access key.','err');return}
   if(!$('cdnBase').value.trim()){setStatus('Enter CDN Base URL first.','err');return}
-  const targetSet=getTargetSlugSet();
-  $('fetchBtn').disabled=true;setStatus('Connecting...','spin');
+  $('fetchBtn').disabled=true;setStatus('Connecting…','spin');
   try{
     const root=$('bzRoot').value.trim().replace(/^\//,'');
     const items=await bunnyList(root);
     const devFolders=items.filter(i=>i.IsDirectory);
     if(!devFolders.length){setStatus('No dev folders found. Check root path.','err');$('fetchBtn').disabled=false;return}
-    setStatus(targetSet.size?`Found ${devFolders.length} developer folders - filtering to ${targetScopeSummary()}...`:`Found ${devFolders.length} developer folders...`,'spin');
+    setStatus(`Found ${devFolders.length} developer folders…`,'spin');
     folderTree=[];
-    const foundTargets=new Set();
     for(const dev of devFolders){
       const devPath=root?`${root}${dev.ObjectName}/`:`${dev.ObjectName}/`;
       let devItems=[];try{devItems=await bunnyList(devPath)}catch(e){}
-      let propFolders=devItems.filter(i=>i.IsDirectory);
-      if(targetSet.size&&propFolders.length)propFolders=propFolders.filter(prop=>matchesTargetSlugs([prop.ObjectName],targetSet));
+      const propFolders=devItems.filter(i=>i.IsDirectory);
       const props=[];
       if(propFolders.length){
         for(const prop of propFolders){
           const propPath=`${devPath}${prop.ObjectName}/`;
           let pf=[];try{pf=await bunnyList(propPath)}catch(e){}
           const imgs=pf.filter(f=>!f.IsDirectory&&isImg(f.ObjectName));
-          if(imgs.length){
-            props.push({name:prop.ObjectName,path:propPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${propPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
-            matchingTargetSlugs([prop.ObjectName],targetSet).forEach(slug=>foundTargets.add(slug));
-          }
+          if(imgs.length)props.push({name:prop.ObjectName,path:propPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${propPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
         }
       }else{
-        if(targetSet.size&&!matchesTargetSlugs([dev.ObjectName],targetSet))continue;
         const imgs=devItems.filter(f=>!f.IsDirectory&&isImg(f.ObjectName));
-        if(imgs.length){
-          props.push({name:dev.ObjectName,path:devPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${devPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
-          matchingTargetSlugs([dev.ObjectName],targetSet).forEach(slug=>foundTargets.add(slug));
-        }
+        if(imgs.length)props.push({name:dev.ObjectName,path:devPath,files:imgs.map(f=>{const cdnPath=normalizeCdnPath(`${devPath}${f.ObjectName}`);return{name:f.ObjectName,cdnPath,url:cdnUrl(cdnPath)}})});
       }
       if(props.length)folderTree.push({developer:dev.ObjectName,properties:props});
     }
     const total=folderTree.reduce((a,d)=>a+d.properties.length,0);
-    if(targetSet.size&&!total){
-      $('treeWrap').innerHTML='<div class="es"><div class="ei">??</div><p>No Bunny property folders matched the target slug list.</p></div>';
-      $('bActs').style.display='none';
-      setStatus(`No Bunny property folders matched ${targetScopeSummary()}.`,'err');
-      $('fetchBtn').disabled=false;
-      return;
-    }
-    renderTree();
-    if(targetSet.size){
-      const missingTargets=[...targetSet].filter(slug=>!foundTargets.has(slug));
-      if(missingTargets.length)log(`Target slugs not found in Bunny or with no images: ${missingTargets.join(', ')}`,'wrn');
-      setStatus(missingTargets.length?`? ${folderTree.length} matching developers, ${total} targeted properties (${missingTargets.length} target slugs still missing)`:`? ${folderTree.length} matching developers, ${total} targeted properties`,'ok');
-    }else{
-      setStatus(`? ${folderTree.length} developers, ${total} properties`,'ok');
-    }
+    renderTree();setStatus(`✓ ${folderTree.length} developers, ${total} properties`,'ok');
     $('bActs').style.display='flex';
   }catch(e){setStatus('Error: '+e.message,'err')}
   $('fetchBtn').disabled=false;
 }
 
+// ── Tree ──
 function renderTree(){
   const wrap=$('treeWrap');wrap.innerHTML='';
   const tree=document.createElement('div');tree.className='tree';
@@ -1477,10 +1325,8 @@ function refreshTile(s){const t=s.closest('.it');t.className=`it t${s.value[0]}`
 // ── Tag page ──
 function goTag(){
   if(!selected.size){setStatus('Select at least one property first.','err');return}
-  const keys=getTargetedImageKeys();
-  if(!keys.length){setStatus(`No selected properties matched ${targetScopeSummary()||'the current filter'}.`,'err');return}
   const panels=$('tagPanels');panels.innerHTML='';
-  for(const key of keys){
+  for(const key of selected){
     const [dn,pn]=key.split('||');
     const dev=folderTree.find(d=>d.developer===dn);
     const prop=dev?.properties.find(p=>p.name===pn);
@@ -1646,8 +1492,7 @@ async function startSheetSync(){
     const delimiter=detectSheetDelimiter(file.name,text);
     const parsed=parseDelimitedText(text,delimiter).filter(row=>sheetProjectName(row));
     if(!parsed.length)throw new Error('No usable project rows found in the sheet.');
-    sheetRows=filterRowsByTargetSlugs(mergeSheetRows(parsed));
-    if(!sheetRows.length)throw new Error(`No sheet rows matched ${targetScopeSummary()||'the current filter'}.`);
+    sheetRows=mergeSheetRows(parsed);
     setStatus(`Loaded ${parsed.length} rows and merged them into ${sheetRows.length} projects — matching against Sanity…`,'spin');
     for(const row of sheetRows){
       sheetMatchCache[row._key]=await lookupSlug(toSlug(row._projectName),$('docType').value,row._projectName,row._developerName,row._location);
@@ -1679,10 +1524,9 @@ async function startCrestSync(){
   $('crestBtn').disabled=true;activeFlow='crests';crestRows=[];crestFiles=[];crestMatchCache={};crestSkipSet=new Set();crestReviewFilter='all';sanityDocCache={};
   setStatus('Loading Sanity properties and Bunny crest files…','spin');
   try{
-    const docs=filterDocsByTargetSlugs(await loadSanityDocs('property',$('sToken').value.trim()));
+    const docs=await loadSanityDocs('property',$('sToken').value.trim());
     crestFiles=await bunnyCollectImages(crestRoot,2);
     if(!crestFiles.length)throw new Error(`No images found inside ${crestRoot}`);
-    if(!docs.length)throw new Error(`No Sanity properties matched ${targetScopeSummary()||'the current filter'}.`);
     crestRows=docs.map((doc,index)=>({
       _key:`crest||${index}`,
       _id:doc._id,
@@ -1717,18 +1561,15 @@ async function startNearbySync(){
   if(!$('gmKey').value.trim()){setStatus('Google Geocoding API key required.','err');return}
   if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
   if($('docType').value!=='property'){setStatus('Nearby pin sync only works with document type "property".','err');return}
-  const forceRescan=!!$('nearbyForce')?.checked;
   $('nearbyBtn').disabled=true;activeFlow='nearby';nearbyRows=[];nearbySkipSet=new Set();nearbyReviewFilter='all';nearbyGeoCache={};sanityDocCache={};
-  setStatus(forceRescan?'Loading nearby places from Sanity and re-geocoding existing pins...':'Loading nearby places from Sanity and geocoding missing pins...','spin');
+  setStatus('Loading nearby places from Sanity and geocoding missing pins…','spin');
   try{
-    const docs=filterDocsByTargetSlugs(await loadSanityDocs('property',$('sToken').value.trim()));
-    if(!docs.length)throw new Error(`No Sanity properties matched ${targetScopeSummary()||'the current filter'}.`);
+    const docs=await loadSanityDocs('property',$('sToken').value.trim());
     let rowIndex=0,alreadyMapped=0;
     for(const doc of docs){
       const places=Array.isArray(doc.nearbyPlaces)?doc.nearbyPlaces:[];
       for(const place of places){
-        const hasExistingCoords=validCoord(place?.lat,place?.lng);
-        if(hasExistingCoords&&!forceRescan){alreadyMapped++;continue}
+        if(validCoord(place?.lat,place?.lng)){alreadyMapped++;continue}
         const placeName=String(place?.name||place?.nameAr||'').trim();
         if(!place?._key||!placeName)continue;
         const safeToGeocode=looksLikeSpecificPlace(placeName);
@@ -1743,12 +1584,11 @@ async function startNearbySync(){
           _placeDistance:place.distance||'',
           _placeIcon:place.icon||'location',
           _query:geocodeQueriesForPlace(placeName,doc.location||'')[0]||`${placeName}, Dubai, United Arab Emirates`,
-          _currentLat:hasExistingCoords?Number(place?.lat):null,
-          _currentLng:hasExistingCoords?Number(place?.lng):null,
+          _currentLat:place?.lat??null,
+          _currentLng:place?.lng??null,
           _currentDirectionsUrl:place?.directionsUrl||'',
           _result:null,
           _safeToGeocode:safeToGeocode,
-          _forced:forceRescan&&hasExistingCoords,
           _warning:''
         };
         if(!safeToGeocode)nearbySkipSet.add(row._key);
@@ -1776,10 +1616,10 @@ async function startNearbySync(){
     });
     if(!nearbyRows.length){
       $('nearbyBtn').disabled=false;
-      setStatus(alreadyMapped&&!forceRescan?`All nearby places already have coordinates (${alreadyMapped} already mapped). Tick "Rescan existing coordinates" to run them again.`:'No nearby places found to geocode.','ok');
+      setStatus(alreadyMapped?`All nearby places already have coordinates (${alreadyMapped} already mapped).`:'No nearby places found to geocode.','ok');
       return;
     }
-    buildReview();setStatus(forceRescan?`Review ${nearbyRows.length} nearby place pin${nearbyRows.length===1?'':'s'} (including existing coordinates being rechecked).`:`Review ${nearbyRows.length} nearby place pin${nearbyRows.length===1?'':'s'} (${alreadyMapped} already mapped skipped automatically).`,'ok');goPage(2);
+    buildReview();setStatus(`Review ${nearbyRows.length} nearby place pin${nearbyRows.length===1?'':'s'} (${alreadyMapped} already mapped skipped automatically).`,'ok');goPage(2);
   }catch(e){
     setStatus('Error: '+e.message,'err');
   }
@@ -1844,8 +1684,7 @@ async function startPaymentPlanSync(){
       planMatchCache[row._key]=await lookupSlug(row._slugHint,$('docType').value,row._propertyName,row._developerName);
       await new Promise(r=>setTimeout(r,0));
     }
-    planRows=filterRowsByTargetSlugs(planRows);
-    if(!planRows.length)throw new Error(`No payment plans matched ${targetScopeSummary()||'the selected legacy files'}.`);
+    if(!planRows.length)throw new Error('No payment plans were found in the selected legacy files.');
     buildReview();setStatus(`Review the proposed payment plan matches (${planRows.length} row${planRows.length===1?'':'s'}).`,'ok');goPage(2);
   }catch(e){
     setStatus('Error: '+e.message,'err');
@@ -1855,12 +1694,10 @@ async function startPaymentPlanSync(){
 async function startArabicSync(){
   if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
   if(!$('deeplKey').value.trim()){setStatus('DeepL API key required.','err');return}
-  const forceOverwrite=!!$('arabicForce')?.checked;
   $('arabicBtn').disabled=true;activeFlow='arabic';arabicRows=[];arabicSkipSet=new Set();arabicReviewFilter='all';sanityDocCache={};
-  setStatus(forceOverwrite?'Loading supported Sanity docs for Arabic re-translation...':'Loading supported Sanity docs for Arabic translation…','spin');
+  setStatus('Loading supported Sanity docs for Arabic translation…','spin');
   try{
-    const docs=filterDocsByTargetSlugs(await loadArabicDocs($('sToken').value.trim(),getArabicTypeSelection()));
-    if(!docs.length)throw new Error(`No supported documents matched ${targetScopeSummary()||'the current filter'}.`);
+    const docs=await loadArabicDocs($('sToken').value.trim());
     let rowIndex=0,needsTranslation=0;
     for(const doc of docs){
       const tasks=collectArabicTasks(doc);
@@ -1870,13 +1707,13 @@ async function startArabicSync(){
         _key:`arabic||${rowIndex++}`,
         _id:doc._id,
         _type:doc._type||'document',
-        _title:doc.title||doc.name||humanizeSlug(doc.slug||'')||(doc._type==='siteSettings'?'Site Settings':'Untitled document'),
+        _title:doc.title||'Untitled property',
         _slug:doc.slug||'',
         _tasks:tasks,
         _patchSet:{},
         _translatedPreview:[]
       };
-      row._title=row._title||doc?.name||doc?.slug||(doc?._type==='siteSettings'?'Site Settings':'Untitled document');
+      row._title=row._title||doc?.name||doc?.slug||'Untitled document';
       setStatus(`Translating Arabic fields for ${row._title}…`,'spin');
       try{
         const flattened=[];
@@ -1904,7 +1741,7 @@ async function startArabicSync(){
           row._patchSet[task.path]=arText;
           row._translatedPreview.push({...task,translated:arText});
         });
-        if(!Object.keys(row._patchSet).length)row._error='DeepL returned empty translations for this document.';
+        if(!Object.keys(row._patchSet).length)row._error='DeepL returned empty translations for this property.';
       }catch(e){
         row._error=e.message;
       }
@@ -1913,11 +1750,11 @@ async function startArabicSync(){
     }
     if(!needsTranslation){
       buildReview();
-      setStatus(forceOverwrite?'No supported Arabic fields were found for re-translation.':'All supported Arabic fields already look filled. Tick "Re-translate existing Arabic fields" to run them again.','ok');
+      setStatus('All supported Arabic fields already look filled.','ok');
       goPage(2);
       return;
     }
-    buildReview();setStatus(forceOverwrite?`Review the Arabic re-translation patches (${arabicRows.length} document${arabicRows.length===1?'':'s'}).`:`Review the Arabic translation patches (${arabicRows.length} document${arabicRows.length===1?'':'s'}).`,'ok');goPage(2);
+    buildReview();setStatus(`Review the Arabic translation patches (${arabicRows.length} document${arabicRows.length===1?'':'s'}).`,'ok');goPage(2);
   }catch(e){
     setStatus('Error: '+e.message,'err');
   }
@@ -1989,8 +1826,7 @@ async function startBrochureSync(){
       }
       await new Promise(r=>setTimeout(r,0));
     }
-    brochureRows=filterRowsByTargetSlugs(brochureRows);
-    if(!brochureRows.length)throw new Error(`No brochure rows matched ${targetScopeSummary()||'the scanned Bunny property folders'}.`);
+    if(!brochureRows.length)throw new Error('No .pdf files found in the scanned Bunny property folders.');
     setStatus(`Found ${brochureRows.length} properties with .pdf files — matching against Sanity…`,'spin');
     for(const row of brochureRows){
       brochureMatchCache[row._key]=await lookupSlug(toSlug(row._propertyName),$('docType').value,row._propertyName,row._developerName);
@@ -2074,8 +1910,7 @@ async function startVideoSync(){
       }
       await new Promise(r=>setTimeout(r,0));
     }
-    videoRows=filterRowsByTargetSlugs(videoRows);
-    if(!videoRows.length)throw new Error(`No video rows matched ${targetScopeSummary()||'the scanned Bunny property folders'}.`);
+    if(!videoRows.length)throw new Error('No .mp4 files found in the scanned Bunny property folders.');
     setStatus(`Found ${videoRows.length} properties with .mp4 files â€” matching against Sanityâ€¦`,'spin');
     for(const row of videoRows){
       videoMatchCache[row._key]=await lookupSlug(toSlug(row._propertyName),$('docType').value,row._propertyName,row._developerName);
@@ -2105,11 +1940,9 @@ async function goReview(){
   activeFlow='images';
   syncTags();
   const docType=$('docType').value,writeMode=$('writeMode').value;
-  const keys=getTargetedImageKeys();
-  if(!keys.length){setStatus(`No selected properties matched ${targetScopeSummary()||'the current filter'}.`,'err');return}
   if(writeMode==='patch'){
     setStatus('Checking slugs in Sanity…','spin');
-    for(const key of keys){
+    for(const key of selected){
       const[dn,pn]=key.split('||');
       if(matchCache[key]===undefined)matchCache[key]=await lookupSlug(toSlug(pn),docType,pn,dn);
     }
@@ -2522,12 +2355,7 @@ if(activeFlow==='status'){
   else mn.innerHTML=`<div class="mn-notice mn-create">ℹ️ CREATE MODE — creates a new document per property. Existing docs unchanged but you may get duplicates if you run this twice.</div>`;
 
   const wrap=$('revWrap');wrap.innerHTML='';
-  const keys=getTargetedImageKeys();
-  if(!keys.length){
-    wrap.innerHTML='<div class="es"><div class="ei">🎯</div><p>No selected image folders matched the target property slugs.</p></div>';
-    return;
-  }
-  for(const key of keys){
+  for(const key of selected){
     const[dn,pn]=key.split('||');
     const imgs=tagMap[key]||[];
     const hero=imgs.find(i=>i.tag==='hero'),crest=imgs.find(i=>i.tag==='crest');
@@ -2590,7 +2418,7 @@ async function startImport(){
   if(!$('sToken').value.trim()){setStatus('Sanity write token required.','err');return}
   if(activeFlow==='arabic'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(arabicRows),total=rows.length;
+    const rows=[...arabicRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2619,7 +2447,7 @@ async function startImport(){
   }
   if(activeFlow==='payment-plans'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(planRows),total=rows.length;
+    const rows=[...planRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2650,7 +2478,7 @@ async function startImport(){
   }
   if(activeFlow==='nearby'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(nearbyRows),total=rows.length;
+    const rows=[...nearbyRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2684,7 +2512,7 @@ async function startImport(){
   }
   if(activeFlow==='brochures'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(brochureRows),total=rows.length;
+    const rows=[...brochureRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2715,7 +2543,7 @@ async function startImport(){
   }
   if(activeFlow==='videos'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(videoRows),total=rows.length;
+    const rows=[...videoRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2746,7 +2574,7 @@ async function startImport(){
   }
   if(activeFlow==='crests'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(crestRows),total=rows.length;
+    const rows=[...crestRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2774,7 +2602,7 @@ async function startImport(){
   }
   if(activeFlow==='status'){
     $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
-    const rows=filterRowsByTargetSlugs(sheetRows),total=rows.length;
+    const rows=[...sheetRows],total=rows.length;
     let done=0,patched=0,created=0,failed=0,imgs=0;
     const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
     prog();
@@ -2802,8 +2630,7 @@ for(const row of rows){
   }
   $('importBtn').disabled=true;$('lb').innerHTML='';goPage(3);
   const docType=$('docType').value,writeMode=$('writeMode').value;
-  const keys=getTargetedImageKeys();const total=keys.length;
-  if(!total){$('importBtn').disabled=false;goPage(2);setStatus(`No selected properties matched ${targetScopeSummary()||'the current filter'}.`,'err');return}
+  const keys=[...selected];const total=keys.length;
   let done=0,patched=0,created=0,failed=0,imgs=0;
   const prog=()=>{const pct=total?Math.round(done/total*100):0;$('pFill').style.width=pct+'%';$('pLbl').textContent=`${done}/${total}`;$('pPct').textContent=pct+'%'};
   prog();
@@ -2865,5 +2692,4 @@ for(const row of rows){
 </script>
 </body>
 </html>
-
 

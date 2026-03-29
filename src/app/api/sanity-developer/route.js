@@ -69,10 +69,19 @@ async function withScopedProjects(developer) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug");
+  const name = searchParams.get("name");
 
   try {
+    const safeSlug = JSON.stringify(String(slug || ""));
+    const safeName = JSON.stringify(String(name || ""));
     const filter = slug
-      ? `*[_type == "developer" && slug.current == "${slug}"][0]`
+      ? `coalesce(
+          *[_type == "developer" && slug.current == ${safeSlug}][0],
+          *[_type == "developer" && (
+            name == ${safeName} ||
+            nameAr == ${safeName}
+          )][0]
+        )`
       : `*[_type == "developer"] | order(_createdAt asc)`;
 
     const rawData = await sanityClient.fetch(`

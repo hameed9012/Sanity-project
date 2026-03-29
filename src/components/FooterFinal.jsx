@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/FooterFinal.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 
-// ─── Social icons ──────────────────────────────────────────────
 const SOCIAL_ICONS = {
   instagram: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -36,9 +35,6 @@ const SOCIAL_ICONS = {
   ),
 };
 
-
-
-// ─── helpers ──────────────────────────────────────────────────
 function humanizeName(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
@@ -49,8 +45,59 @@ function humanizeName(value) {
     .trim();
 }
 
-// ─── single property card ─────────────────────────────────────
-function PropertyCard({ project }) {
+function getLocalizedProjectName(project, isRTL) {
+  if (isRTL) {
+    return (
+      project?.nameAr ||
+      project?.titleAr ||
+      project?.nameEn ||
+      project?.title ||
+      project?.name ||
+      project?.data?.project?.nameAr ||
+      project?.data?.project?.name ||
+      project?.slug ||
+      ""
+    );
+  }
+
+  return (
+    project?.nameEn ||
+    project?.title ||
+    project?.name ||
+    project?.nameAr ||
+    project?.titleAr ||
+    project?.data?.project?.name ||
+    project?.data?.project?.nameAr ||
+    project?.slug ||
+    ""
+  );
+}
+
+function getLocalizedDeveloperName(project, isRTL) {
+  if (isRTL) {
+    return (
+      project?.developerNameAr ||
+      project?.developerAr ||
+      project?.developerNameEn ||
+      project?.developer ||
+      project?.data?.project?.developerAr ||
+      project?.data?.project?.developer ||
+      ""
+    );
+  }
+
+  return (
+    project?.developerNameEn ||
+    project?.developer ||
+    project?.developerNameAr ||
+    project?.developerAr ||
+    project?.data?.project?.developer ||
+    project?.data?.project?.developerAr ||
+    ""
+  );
+}
+
+function PropertyCard({ project, isRTL }) {
   const [imgOk, setImgOk] = useState(true);
   const image =
     project?.image ||
@@ -59,22 +106,9 @@ function PropertyCard({ project }) {
     project?.data?.gallery?.slides?.[0] ||
     project?.data?.intro?.imgUrl ||
     "";
-  const name  = humanizeName(
-    project?.nameEn ||
-    project?.nameAr ||
-    project?.name ||
-    project?.data?.project?.name ||
-    project?.slug ||
-    ""
-  );
-  const dev = humanizeName(
-    project?.developerNameEn ||
-    project?.developerNameAr ||
-    project?.developer ||
-    project?.data?.project?.developer ||
-    ""
-  );
-  const href  = project?.href || "#";
+  const name = humanizeName(getLocalizedProjectName(project, isRTL));
+  const dev = humanizeName(getLocalizedDeveloperName(project, isRTL));
+  const href = project?.href || "#";
 
   return (
     <Link href={href} className={styles.propCard} aria-label={name}>
@@ -98,7 +132,6 @@ function PropertyCard({ project }) {
   );
 }
 
-// ─── main footer ──────────────────────────────────────────────
 export default function FooterFinal() {
   const { locale } = useLanguage();
   const isRTL = locale === "ar";
@@ -107,12 +140,10 @@ export default function FooterFinal() {
 
   const [cards, setCards] = useState([]);
   const [siteContact, setSiteContact] = useState(null);
+
   useEffect(() => {
     if (!allProjects?.length) return;
-    const pool = allProjects.filter((p) => {
-      const developerSlug = String(p?.developerSlug || p?.developer || "").toLowerCase();
-      return !p.isLand && p.image;
-    });
+    const pool = allProjects.filter((p) => !p?.isLand && p?.image);
     const featured = pool.filter((project) => project?.featured);
     const orderedPool = [...(featured.length ? featured : pool)].sort((a, b) => {
       const aFeatured = a?.featured ? 1 : 0;
@@ -144,23 +175,23 @@ export default function FooterFinal() {
   const year = new Date().getFullYear();
 
   const copy = {
-    logoBar:        isRTL ? "محمد قدماني للوساطة العقارية"     : "Mohamad Kodmane Real Estate Brokers",
-    featuredProps:  isRTL ? "مشاريع مميزة"                       : "FEATURED PROPERTIES",
-    corpName:       isRTL ? "محمد قدماني"                        : "MOHAMAD KODMANE",
-    corpTitle:      isRTL ? "وسيط عقاري معتمد"                   : "REAL ESTATE BROKER",
-    license:        isRTL ? "رخصة تجارية: 1192580"               : "TRADE LICENSE: 1192580",
-    permit:         isRTL ? "تصريح إعلاني: 139532"               : "ADVERTISING PERMIT: 139532",
-    rera:           isRTL ? "معتمد من RERA"                      : "RERA CERTIFIED",
-    hqTitle:        isRTL ? "المقر الرئيسي"                      : "HEADQUARTERS",
-    addrLine1:      isRTL ? "الطابق 22، برج 22ND COURT"          : "22ND FLOOR, 22ND COURT TOWER",
-    addrLine2:      isRTL ? "مكتب B08، الخليج التجاري"           : "OFFICE B08, BUSINESS BAY",
-    addrLine3:      isRTL ? "دبي، الإمارات العربية المتحدة"       : "DUBAI, UNITED ARAB EMIRATES",
-    poBox:          isRTL ? "ص.ب. 446097"                        : "P.O. BOX 446097",
-    consultation:   isRTL ? "استشارة خاصة"                       : "PRIVATE CONSULTATION",
-    direct:         isRTL ? "مباشر:"                              : "DIRECT:",
-    office:         isRTL ? "مكتب:"                               : "OFFICE:",
-    email:          isRTL ? "بريد:"                               : "EMAIL:",
-    rights:         isRTL ? "جميع الحقوق محفوظة."               : "All rights reserved.",
+    logoBar: isRTL ? "محمد قدماني للوساطة العقارية" : "Mohamad Kodmane Real Estate Brokers",
+    featuredProps: isRTL ? "مشاريع مميزة" : "FEATURED PROPERTIES",
+    corpName: isRTL ? "محمد قدماني" : "MOHAMAD KODMANE",
+    corpTitle: isRTL ? "وسيط عقاري معتمد" : "REAL ESTATE BROKER",
+    license: isRTL ? "رخصة تجارية: 1192580" : "TRADE LICENSE: 1192580",
+    permit: isRTL ? "تصريح إعلاني: 139532" : "ADVERTISING PERMIT: 139532",
+    rera: isRTL ? "معتمد من RERA" : "RERA CERTIFIED",
+    hqTitle: isRTL ? "المقر الرئيسي" : "HEADQUARTERS",
+    addrLine1: isRTL ? "الطابق 22، برج 22ND COURT" : "22ND FLOOR, 22ND COURT TOWER",
+    addrLine2: isRTL ? "مكتب B08، الخليج التجاري" : "OFFICE B08, BUSINESS BAY",
+    addrLine3: isRTL ? "دبي، الإمارات العربية المتحدة" : "DUBAI, UNITED ARAB EMIRATES",
+    poBox: isRTL ? "ص.ب. 446097" : "P.O. BOX 446097",
+    consultation: isRTL ? "استشارة خاصة" : "PRIVATE CONSULTATION",
+    direct: isRTL ? "مباشر:" : "DIRECT:",
+    office: isRTL ? "مكتب:" : "OFFICE:",
+    email: isRTL ? "بريد:" : "EMAIL:",
+    rights: isRTL ? "جميع الحقوق محفوظة." : "All rights reserved.",
   };
 
   const socials = [
@@ -169,12 +200,8 @@ export default function FooterFinal() {
     siteContact?.linkedin ? { id: "linkedin", href: siteContact.linkedin, label: "LinkedIn" } : null,
   ].filter(Boolean);
 
-  const phoneHref = siteContact?.phone
-    ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}`
-    : null;
-  const officeHref = siteContact?.phone
-    ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}`
-    : null;
+  const phoneHref = siteContact?.phone ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}` : null;
+  const officeHref = siteContact?.phone ? `tel:${String(siteContact.phone).replace(/\s+/g, "")}` : null;
   const emailHref = siteContact?.email ? `mailto:${siteContact.email}` : null;
   const phoneLabel = siteContact?.whatsapp || siteContact?.phone || (isRTL ? "أضف رقم واتساب" : "Add WhatsApp number");
   const officeLabel = siteContact?.phone || (isRTL ? "أضف رقم المكتب" : "Add office phone");
@@ -182,32 +209,25 @@ export default function FooterFinal() {
 
   return (
     <footer className={`${styles.footer} ${isRTL ? styles.rtl : ""}`} dir={isRTL ? "rtl" : "ltr"}>
-
-      {/* TOP LOGO BAR */}
       <div className={styles.logoBar}>
         <div className={styles.logoBarInner}>
           <div className={styles.logoWrap}>{copy.logoBar}</div>
         </div>
       </div>
 
-      {/* MAIN FOOTER */}
       <div className={styles.footerMain}>
-
-        {/* PROPERTY CARDS */}
         {cards.length > 0 && (
           <div className={styles.footerMainInner}>
             <h4 className={styles.cardsHeading}>{copy.featuredProps}</h4>
             <div className={styles.propCardsGrid}>
               {cards.map((p) => (
-                <PropertyCard key={p.slug || p.href} project={p} />
+                <PropertyCard key={p.slug || p.href} project={p} isRTL={isRTL} />
               ))}
             </div>
           </div>
         )}
 
-        {/* BOTTOM: corporate / address / contact */}
         <div className={styles.footerBottom}>
-
           <div className={styles.bottomLeft}>
             <div className={styles.corporateBlock}>
               <div className={styles.corporateName}>{copy.corpName}</div>
@@ -256,9 +276,7 @@ export default function FooterFinal() {
                 <div className={styles.contactLine}>
                   <span className={styles.contactType}>{copy.email}</span>
                   {emailHref ? (
-                    <Link href={emailHref} className={styles.contactEmail}>
-                      {emailLabel}
-                    </Link>
+                    <Link href={emailHref} className={styles.contactEmail}>{emailLabel}</Link>
                   ) : (
                     <span className={styles.contactEmail}>{emailLabel}</span>
                   )}
@@ -268,7 +286,6 @@ export default function FooterFinal() {
           </div>
         </div>
 
-        {/* COPYRIGHT + SOCIALS */}
         <div className={styles.footerMeta}>
           <div className={styles.footerMetaInner}>
             <div className={styles.metaCopy}>
@@ -276,15 +293,20 @@ export default function FooterFinal() {
             </div>
             <div className={styles.metaSocials} aria-label="Social media links">
               {socials.map((s) => (
-                <a key={s.id} href={s.href} target="_blank" rel="noopener noreferrer"
-                   className={styles.metaSocialLink} aria-label={s.label}>
+                <a
+                  key={s.id}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.metaSocialLink}
+                  aria-label={s.label}
+                >
                   <span className={styles.metaSocialIcon}>{SOCIAL_ICONS[s.id]}</span>
                 </a>
               ))}
             </div>
           </div>
         </div>
-
       </div>
     </footer>
   );

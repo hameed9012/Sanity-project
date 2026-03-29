@@ -165,7 +165,10 @@ export default defineType({
       group: 'media',
       description: 'Optional Sanity upload if you are not using BunnyCDN for this image',
       options: {hotspot: true},
-      fields: [{name: 'alt', title: 'Alt text', type: 'string'}],
+      fields: [
+        {name: 'alt', title: 'Alt text', type: 'string'},
+        {name: 'altAr', title: 'Alt text (Arabic)', type: 'string'},
+      ],
     }),
     defineField({
       name: 'heroImageCdn',
@@ -277,7 +280,9 @@ export default defineType({
             defineField({name: 'titleAr', title: 'Label (Arabic)', type: 'string'}),
             defineField({name: 'bedrooms',title: 'Bedrooms',      type: 'number'}),
             defineField({name: 'size',    title: 'Size Range',    type: 'string', description: 'e.g. "750–920 sqft"'}),
+            defineField({name: 'sizeAr',  title: 'Size Range (Arabic)', type: 'string'}),
             defineField({name: 'price',   title: 'Price Range',   type: 'string', description: 'e.g. "AED 1.2M–1.5M"'}),
+            defineField({name: 'priceAr', title: 'Price Range (Arabic)', type: 'string'}),
             defineField({
               name: 'images',
               title: 'Floor Plan Images',
@@ -339,6 +344,7 @@ export default defineType({
             defineField({name: 'name',     title: 'Place Name',    type: 'string'}),
             defineField({name: 'nameAr',   title: 'Place Name (Arabic)', type: 'string'}),
             defineField({name: 'distance', title: 'Distance',      type: 'string', description: 'e.g. "5 mins"'}),
+            defineField({name: 'distanceAr', title: 'Distance (Arabic)', type: 'string'}),
             defineField({name: 'icon',     title: 'Icon',          type: 'string', description: 'e.g. "mall", "airport", "beach"'}),
             defineField({
               name: 'lat',

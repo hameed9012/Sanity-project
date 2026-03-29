@@ -207,6 +207,11 @@ export default defineType({
               title: "Label",
               type: "string",
             }),
+            defineField({
+              name: "labelAr",
+              title: "Label (AR)",
+              type: "string",
+            }),
           ],
         },
       ],
@@ -332,6 +337,11 @@ export default defineType({
                 defineField({
                   name: "author",
                   title: "Author",
+                  type: "string",
+                }),
+                defineField({
+                  name: "authorAr",
+                  title: "Author (AR)",
                   type: "string",
                 }),
               ],
@@ -504,6 +514,12 @@ export default defineType({
                         defineField({
                           name: "taxes",
                           title: "Taxes",
+                          type: "array",
+                          of: [{ type: "string" }],
+                        }),
+                        defineField({
+                          name: "taxesAr",
+                          title: "Taxes (AR)",
                           type: "array",
                           of: [{ type: "string" }],
                         }),

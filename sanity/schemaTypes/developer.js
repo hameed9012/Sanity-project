@@ -72,10 +72,15 @@ export default defineType({
       type: 'object',
       fields: [
         defineField({name: 'projects', title: 'Total Projects (e.g. 80+)', type: 'string'}),
+        defineField({name: 'projectsAr', title: 'Total Projects (Arabic)', type: 'string'}),
         defineField({name: 'deliveredProjects', title: 'Delivered Projects', type: 'string'}),
+        defineField({name: 'deliveredProjectsAr', title: 'Delivered Projects (Arabic)', type: 'string'}),
         defineField({name: 'underConstructionProjects', title: 'Under Construction', type: 'string'}),
+        defineField({name: 'underConstructionProjectsAr', title: 'Under Construction (Arabic)', type: 'string'}),
         defineField({name: 'communities', title: 'Communities', type: 'string'}),
+        defineField({name: 'communitiesAr', title: 'Communities (Arabic)', type: 'string'}),
         defineField({name: 'sales2024', title: '2024 Sales (e.g. AED 18B+)', type: 'string'}),
+        defineField({name: 'sales2024Ar', title: '2024 Sales (Arabic)', type: 'string'}),
       ],
     }),
     defineField({

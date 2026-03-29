@@ -21,6 +21,14 @@ export default function AmenitiesShowcase({
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
 
+  const getAmenityLabel = (amenity) => {
+    if (!amenity) return "";
+    if (activeLocale === "ar") {
+      return amenity?.labelAr || getLocalizedText(amenity?.label, activeLocale);
+    }
+    return amenity?.label || getLocalizedText(amenity?.label, activeLocale);
+  };
+
   if (!data || !projectData) return null;
 
   const [activeAmenity, setActiveAmenity] = useState(null);
@@ -57,9 +65,7 @@ export default function AmenitiesShowcase({
         projectData?.seo?.description,
         activeLocale
       ),
-      amenities: (amenitiesData?.amenities || []).map((amenity) =>
-        getLocalizedText(amenity?.label, activeLocale)
-      ),
+      amenities: (amenitiesData?.amenities || []).map((amenity) => getAmenityLabel(amenity)),
     };
   }, [amenitiesData, projectData, activeLocale]);
 
@@ -85,7 +91,7 @@ export default function AmenitiesShowcase({
 
         <div className={styles.row}>
           {(amenitiesData?.amenities || []).map((amenity, index) => {
-            const label = getLocalizedText(amenity?.label, activeLocale);
+            const label = getAmenityLabel(amenity);
             const Icon = amenity?.PhosphorIcon || Building; // 100% guaranteed
 
             return (

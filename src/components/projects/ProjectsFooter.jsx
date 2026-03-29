@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAllProjects } from "@/components/SanityProjectsContext";
+import { useLanguage } from "@/components/LanguageProvider";
 import styles from "@/styles/projects/ProjectsFooter.module.css";
 
 function shuffleCopy(items) {
@@ -16,6 +17,8 @@ function shuffleCopy(items) {
 
 export default function ProjectsFooter({ title = "" }) {
   const { allProjects } = useAllProjects();
+  const { locale } = useLanguage();
+  const isAr = locale === "ar" || String(locale || "").startsWith("ar");
   const [siteContact, setSiteContact] = useState(null);
 
   useEffect(() => {
@@ -36,10 +39,30 @@ export default function ProjectsFooter({ title = "" }) {
 
   const featuredProjects = useMemo(() => {
     const valid = (allProjects || []).filter(
-      (project) => !project?.isLand && project?.href && project?.nameEn
+      (project) => !project?.isLand && project?.href && (project?.nameEn || project?.nameAr || project?.name)
     );
     return shuffleCopy(valid).slice(0, 8);
   }, [allProjects]);
+
+  const getProjectTitle = (project) =>
+    isAr
+      ? project?.nameAr || project?.nameEn || project?.name || ""
+      : project?.nameEn || project?.name || project?.nameAr || "";
+
+  const getProjectMeta = (project) =>
+    isAr
+      ? project?.developerNameAr ||
+        project?.developerAr ||
+        project?.locationAr ||
+        project?.developer ||
+        project?.location ||
+        "دبي، الإمارات"
+      : project?.developer || project?.location || project?.developerNameAr || "Dubai, UAE";
+
+  const getProjectType = (project) =>
+    isAr
+      ? project?.unitTypeAr || project?.statusDisplayAr || project?.type || "عقار"
+      : project?.type || project?.category || project?.unitTypeAr || "Property";
 
   const whatsappHref = siteContact?.whatsapp
     ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
@@ -54,7 +77,9 @@ export default function ProjectsFooter({ title = "" }) {
 
       <div className={styles.container}>
         <div className={styles.header}>
-          <h2 className={styles.mainTitle}>{title || "Featured Projects"}</h2>
+          <h2 className={styles.mainTitle}>
+            {title || (isAr ? "مشاريع مميزة" : "Featured Projects")}
+          </h2>
           <div className={styles.titleLine}></div>
         </div>
 
@@ -62,9 +87,9 @@ export default function ProjectsFooter({ title = "" }) {
           {featuredProjects.map((project) => (
             <Link key={project.slug} href={project.href} className={styles.categoryCard}>
               <div className={styles.categoryHeader}>
-                <div className={styles.categoryTitle}>{project.nameEn}</div>
+                <div className={styles.categoryTitle}>{getProjectTitle(project)}</div>
                 <p className={styles.categoryDescription}>
-                  {project.developer || project.location || "Dubai, UAE"}
+                  {getProjectMeta(project)}
                 </p>
               </div>
 
@@ -76,7 +101,7 @@ export default function ProjectsFooter({ title = "" }) {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={project.image}
-                          alt={project.nameEn}
+                          alt={getProjectTitle(project)}
                           className={styles.image}
                           loading="lazy"
                         />
@@ -86,10 +111,10 @@ export default function ProjectsFooter({ title = "" }) {
                       <div className={styles.imageOverlay}></div>
                     </div>
                     <div className={styles.projectInfo}>
-                      <span className={styles.projectTitle}>{project.nameEn}</span>
+                      <span className={styles.projectTitle}>{getProjectTitle(project)}</span>
                       <div className={styles.projectMeta}>
                         <span className={styles.projectType}>
-                          {project.type || project.category || "Property"}
+                          {getProjectType(project)}
                         </span>
                         <span className={styles.projectArrow}>-></span>
                       </div>

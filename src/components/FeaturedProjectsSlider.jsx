@@ -31,19 +31,36 @@ function formatPrice(value, isAr = false) {
   return isAr ? `د.إ ${num}` : `AED ${num}`;
 }
 
+function pickLocalizedValue(project, isAr, arabicKeys = [], englishKeys = []) {
+  const orderedKeys = isAr
+    ? [...arabicKeys, ...englishKeys]
+    : [...englishKeys, ...arabicKeys];
+
+  for (const key of orderedKeys) {
+    const value = project?.[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+
+  return "";
+}
+
 function getProjectLogo(project) {
   return (
     project?.crestImage ||
+    project?.crestImageCdn?.url ||
     project?.data?.crestImage ||
+    project?.data?.crestImageCdn?.url ||
     project?.data?.project?.crestImage ||
+    project?.data?.project?.crestImageCdn?.url ||
     project?.developerLogo ||
+    project?.data?.developerLogo ||
     project?.logo ||
     project?.data?.hero?.squareImageUrl ||
     ""
   );
 }
 
-function getProjectAmenities(project) {
+function getProjectAmenities(project, isAr = false) {
   const amenities =
     project?.data?.amenities?.amenities ||
     project?.amenities ||
@@ -54,7 +71,9 @@ function getProjectAmenities(project) {
   return amenities
     .map((item) => {
       if (typeof item === "string") return item;
+      if (isAr && item?.labelAr) return item.labelAr;
       if (item?.label) return item.label;
+      if (isAr && item?.titleAr) return item.titleAr;
       if (item?.title) return item.title;
       return "";
     })
@@ -98,25 +117,46 @@ export default function HomeHeroSlider() {
       .slice(0, 12)
       .map((p, index) => ({
         id: p?._id || p?.slug || p?.id || index,
-        title: formatProjectName(p?.nameEn || p?.name || ""),
+        title: formatProjectName(
+          pickLocalizedValue(p, isAr, ["nameAr"], ["nameEn", "name"])
+        ),
         image: p?.image || "",
         developerName: formatProjectName(
-          p?.developerNameEn ||
-          p?.developerName ||
-          p?.developer ||
-          ""
+          pickLocalizedValue(
+            p,
+            isAr,
+            ["developerNameAr", "developerAr"],
+            ["developerNameEn", "developerName", "developer"]
+          )
         ),
-        location: formatProjectName(p?.location || ""),
+        location: formatProjectName(
+          pickLocalizedValue(p, isAr, ["locationAr"], ["location"])
+        ),
         priceAED: p?.priceAED || p?.startingPriceAED || p?.price || null,
-        status: p?.status || "Available",
-        propertyType: p?.unitType || p?.type || "Luxury Property",
+        status: pickLocalizedValue(
+          p,
+          isAr,
+          ["statusDisplayAr", "statusAr"],
+          ["status"]
+        ) || (isAr ? "متاح" : "Available"),
+        propertyType: pickLocalizedValue(
+          p,
+          isAr,
+          ["unitTypeAr", "propertyTypeAr", "typeAr"],
+          ["unitType", "propertyType", "type"]
+        ) || (isAr ? "عقار فاخر" : "Luxury Property"),
         href: p?.href || "#",
-        completion: p?.completionDate || p?.handover || "",
+        completion: pickLocalizedValue(
+          p,
+          isAr,
+          ["completionDateAr", "handoverAr"],
+          ["completionDate", "handover"]
+        ),
         logo: getProjectLogo(p),
         brochureUrl: getProjectBrochureUrl(p),
-        amenities: getProjectAmenities(p),
+        amenities: getProjectAmenities(p, isAr),
       }));
-  }, [allProjects]);
+  }, [allProjects, isAr]);
 
   const current = projects[currentIndex];
 
