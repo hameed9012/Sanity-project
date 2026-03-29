@@ -66,6 +66,10 @@
 }
 
 .heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
   filter: brightness(0.8);
@@ -322,10 +326,20 @@
 }
 
 .articleImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
   transition: transform 0.3s ease;
   animation: articleFloat 14s ease-in-out infinite alternate;
+}
+
+.imagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #d8d8d8 0%, #8f8f8f 100%);
 }
 
 .articleCard:hover .articleImage {

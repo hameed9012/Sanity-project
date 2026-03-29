@@ -1,10 +1,45 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
 import styles from "./articles.module.css";
+
+function normalizeArticleImageSrc(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "object") {
+    return String(
+      value?.url ||
+      value?.src ||
+      value?.asset?.url ||
+      value?.image?.url ||
+      ""
+    ).trim();
+  }
+  return "";
+}
+
+function normalizeArticle(article = {}) {
+  return {
+    ...article,
+    title: article?.title || "",
+    titleAr: article?.titleAr || "",
+    description: article?.description || "",
+    descriptionAr: article?.descriptionAr || "",
+    category: article?.category || "",
+    categoryAr: article?.categoryAr || "",
+    readTime: article?.readTime || "",
+    readTimeAr: article?.readTimeAr || "",
+    mainImage: normalizeArticleImageSrc(article?.mainImage),
+    hero: article?.hero
+      ? {
+          ...article.hero,
+          image: normalizeArticleImageSrc(article.hero?.image),
+        }
+      : undefined,
+  };
+}
 
 export default function ArticlesClient({ sanityArticles = [] }) {
   const router = useRouter();
@@ -12,6 +47,9 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   const [isVisible, setIsVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
   const [siteContact, setSiteContact] = useState(null);
+  const [articlesData, setArticlesData] = useState(() =>
+    Array.isArray(sanityArticles) ? sanityArticles.map(normalizeArticle) : []
+  );
 
   const isRTL = locale === "ar";
 
@@ -58,11 +96,11 @@ export default function ArticlesClient({ sanityArticles = [] }) {
   };
 
   const heroImages = useMemo(() => {
-    return sanityArticles
-      .filter((article) => article?.mainImage || article?.hero?.image)
+    return articlesData
+      .filter((article) => normalizeArticleImageSrc(article?.mainImage || article?.hero?.image))
       .slice(0, 3)
       .map((article) => ({
-        src: article.mainImage || article.hero?.image,
+        src: normalizeArticleImageSrc(article.mainImage || article.hero?.image),
         alt: isRTL
           ? article.titleAr || article.title || "Article"
           : article.title || article.titleAr || "Article",
@@ -73,7 +111,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           ? article.descriptionAr || article.description || ""
           : article.description || article.descriptionAr || "",
       }));
-  }, [isRTL, sanityArticles]);
+  }, [articlesData, isRTL]);
 
   const listingData = useMemo(
     () => ({
@@ -120,7 +158,7 @@ export default function ArticlesClient({ sanityArticles = [] }) {
 
   const articles = useMemo(
     () =>
-      sanityArticles.map((article) => ({
+      articlesData.map((article) => ({
         id: article._id,
         slug: article.slug,
         title:
@@ -129,12 +167,18 @@ export default function ArticlesClient({ sanityArticles = [] }) {
           locale === "ar" && article.descriptionAr
             ? article.descriptionAr
             : article.description,
-        image: article.mainImage || article.hero?.image || "",
-        readTime: article.readTime || "5 min read",
-        category: article.category || "Investment",
+        image: normalizeArticleImageSrc(article.mainImage || article.hero?.image),
+        readTime:
+          locale === "ar" && article.readTimeAr
+            ? article.readTimeAr
+            : article.readTime || "5 min read",
+        category:
+          locale === "ar" && article.categoryAr
+            ? article.categoryAr
+            : article.category || "Investment",
         cta: copy.readArticle,
       })),
-    [copy.readArticle, locale, sanityArticles]
+    [articlesData, copy.readArticle, locale]
   );
 
   useEffect(() => {
@@ -151,6 +195,25 @@ export default function ArticlesClient({ sanityArticles = [] }) {
         if (active && json?.ok) {
           setSiteContact(json?.data?.contact || null);
         }
+      } catch {}
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/sanity-articles?ts=${Date.now()}`, {
+          cache: "no-store",
+        });
+        const json = await res.json();
+        if (!active || !Array.isArray(json) || !json.length) return;
+        setArticlesData(json.map(normalizeArticle));
       } catch {}
     })();
 
@@ -202,12 +265,11 @@ export default function ArticlesClient({ sanityArticles = [] }) {
               {heroImages.map((image, index) => (
                 <div key={index} className={styles.carouselSlide}>
                   <div className={styles.heroBackground}>
-                    <Image
+                    <img
                       src={image.src}
                       alt={image.alt}
-                      fill
                       className={styles.heroImage}
-                      priority
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
                     <div className={styles.heroOverlay} />
                   </div>
@@ -292,12 +354,11 @@ export default function ArticlesClient({ sanityArticles = [] }) {
               >
                 <div className={styles.imageContainer}>
                   {article.image ? (
-                    <Image
+                    <img
                       src={article.image}
                       alt={article.title}
-                      fill
                       className={styles.articleImage}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
                     />
                   ) : (
                     <div className={styles.imagePlaceholder} />

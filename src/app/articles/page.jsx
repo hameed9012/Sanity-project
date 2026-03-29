@@ -1,7 +1,8 @@
-import { getAllArticles } from "@/lib/server/articleQueries";
 import ArticlesClient from "./ArticlesClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ArticlesPage() {
-  const sanityArticles = await getAllArticles().catch(() => []);
-  return <ArticlesClient sanityArticles={sanityArticles} />;
+  return <ArticlesClient />;
 }
