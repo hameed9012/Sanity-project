@@ -110,12 +110,15 @@ function getImageUrl(item) {
 }
 
 function getProjectName(d) {
-  return (
+  const raw =
     d?.project?.name ||
     d?.title ||
     d?.name ||
-    ""
-  );
+    "";
+
+  return String(raw || "")
+    .replace(/^izzzi\.?\s*lifemint\s*[:\-|]?\s*/i, "")
+    .trim();
 }
 
 function getProjectSlug(d) {
@@ -150,6 +153,108 @@ function getHeroImage(d) {
     d?.heroImage ||
     ""
   );
+}
+
+function toPlainText(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => toPlainText(item))
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  if (typeof value === "object") {
+    if (Array.isArray(value.children)) {
+      return value.children
+        .map((item) => toPlainText(item))
+        .filter(Boolean)
+        .join("");
+    }
+
+    if (Array.isArray(value.spans)) {
+      return value.spans
+        .map((item) => toPlainText(item))
+        .filter(Boolean)
+        .join("");
+    }
+
+    return [
+      toPlainText(value.title),
+      toPlainText(value.name),
+      toPlainText(value.label),
+      toPlainText(value.text),
+      toPlainText(value.value),
+      toPlainText(value.description),
+      toPlainText(value.distance),
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  return "";
+}
+
+function normalizeParagraphs(text) {
+  return String(text || "")
+    .replace(/\[object Object\]/gi, "")
+    .replace(/\r/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function dedupeParagraphs(text) {
+  const seen = new Set();
+
+  return String(text || "")
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .join("\n\n");
+}
+
+function stripGeneratedSections(text) {
+  return String(text || "")
+    .replace(/==\s*developer\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/==\s*location\s*&\s*connectivity\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/==\s*pricing\s*&\s*payment\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/==\s*available units\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/==\s*amenities\s*&\s*features\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/==\s*project status\s*==[\s\S]*?(?=\n==|\n[A-Z][A-Z \-:&]{6,}|$)/gi, "")
+    .replace(/^a\s*b\s*o\s*u\s*t\s*t\s*h\s*e\s*p\s*r\s*o\s*j\s*e\s*c\s*t.*$/gim, "")
+    .replace(/^location description and benefits.*$/gim, "");
+}
+
+function cleanDescriptionText(text) {
+  return dedupeParagraphs(
+    normalizeParagraphs(
+      stripGeneratedSections(String(text || "").replace(/==\s*project overview\s*==/gi, ""))
+    )
+  );
+}
+
+function cleanLocationText(text) {
+  return dedupeParagraphs(
+    normalizeParagraphs(stripGeneratedSections(text))
+  );
+}
+
+function joinTextBlocks(...values) {
+  return values
+    .map((value) => toPlainText(value))
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
 }
 
 function collectProjectImages(d) {
@@ -311,15 +416,15 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteData, dev
     iconUrl: a?.iconUrl || "",
   }));
 
-  const generalFacts =
-    prefs?.description ||
-    (Array.isArray(d?.intro?.paragraphs)
-      ? d.intro.paragraphs.join("\n\n")
-      : "") ||
-    d?.intro?.description ||
-    d?.description ||
-    d?.seo?.description ||
-    "";
+  const generalFacts = cleanDescriptionText(
+    joinTextBlocks(
+      Array.isArray(d?.intro?.paragraphs) ? d.intro.paragraphs : "",
+      d?.intro?.description,
+      d?.project?.description,
+      d?.description,
+      d?.seo?.description
+    )
+  );
 
   const chosenCurrency = prefs?.currency || "AED";
   const fxRate = prefs?.fx?.rate;
@@ -373,8 +478,8 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteData, dev
 
   const projectImages = collectProjectImages(d);
   const developerDescription = Array.isArray(developerData?.about)
-    ? developerData.about.join("\n\n")
-    : developerData?.about || developerData?.description || "";
+    ? joinTextBlocks(developerData.about)
+    : joinTextBlocks(developerData?.about, developerData?.description);
   const developerImages = uniqueStrings([
     developerData?.heroImageUrl,
     developerData?.coverImage,
@@ -389,12 +494,14 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteData, dev
         )?.url
       : "");
   const paymentPlanValue = d?.project?.paymentPlan || "";
-  const descriptionParts = generalFacts
-    ? String(generalFacts)
-        .split(/\n\s*\n/)
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [];
+  const locationText = cleanLocationText(
+    joinTextBlocks(
+      d?.location?.description,
+      d?.location?.benefits,
+      d?.location?.proximityFeatures,
+      d?.project?.locationDescription
+    )
+  );
 
   return {
     locale: pdfLocale,
@@ -433,12 +540,7 @@ function buildSalesOfferPayload(projectData, prefs, currentLocale, siteData, dev
       lat: d?.location?.lat || d?.lat || null,
       lng: d?.location?.lng || d?.lng || null,
     },
-    locationDescription:
-      d?.location?.description ||
-      d?.location?.benefits ||
-      d?.description ||
-      descriptionParts.slice(1).join("\n\n") ||
-      generalFacts,
+    locationDescription: locationText,
     masterplanImage: masterplanUrl,
     paymentPlanText: paymentPlanValue || d?.paymentPlan || "",
     paymentPlans: paymentPlanValue
