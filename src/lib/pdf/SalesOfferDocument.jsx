@@ -272,8 +272,11 @@ const S = StyleSheet.create({
   },
   longText: {
     fontSize: 11,
-    lineHeight: 1.7,
+    lineHeight: 1.45,
     color: "#404040",
+  },
+  longParagraph: {
+    marginBottom: 10,
   },
   fullImage: {
     width: "100%",
@@ -496,6 +499,12 @@ const S = StyleSheet.create({
 
 const safe = (v) => (typeof v === "string" ? v : v == null ? "" : String(v));
 
+function cleanProjectName(value) {
+  return safe(value)
+    .replace(/^izzzi\.?\s*lifemint\s*[:\-|]?\s*/i, "")
+    .trim();
+}
+
 function getFont(locale) {
   return String(locale || "").startsWith("ar") ? "NotoSansArabic" : "Inter";
 }
@@ -622,6 +631,34 @@ function sectionChrome(left, right, font) {
   );
 }
 
+function renderParagraphBlock(value, font, baseStyle) {
+  const paragraphs = safe(value)
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (!paragraphs.length) {
+    return <Text style={[baseStyle, { fontFamily: font }]}> </Text>;
+  }
+
+  return (
+    <View>
+      {paragraphs.map((paragraph, index) => (
+        <Text
+          key={`paragraph-${index}`}
+          style={[
+            baseStyle,
+            { fontFamily: font },
+            index === paragraphs.length - 1 ? null : S.longParagraph,
+          ]}
+        >
+          {paragraph}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
 function renderGridPage(images) {
   if (!images[0]) return null;
 
@@ -679,7 +716,7 @@ export default function SalesOfferDocument({ payload }) {
   const p = payload || {};
   const locale = p.locale || "en";
   const font = getFont(locale);
-  const projectName = safe(p.projectName || "Project");
+  const projectName = cleanProjectName(p.projectName || "Project");
   const developerName = safe(p?.developer?.name);
   const developerLogo = safe(p?.developer?.logo);
   const districtName = safe(p?.location?.district || p?.location?.address);
@@ -708,7 +745,7 @@ export default function SalesOfferDocument({ payload }) {
           <View style={S.coverContent}>
             <View style={S.coverLeft}>
               <Text style={[S.coverLine, { fontFamily: font }]}>Look what we found for you</Text>
-              <Text style={[S.coverBrand, { fontFamily: font }]}>Izzzi.LifeMINT {projectName}</Text>
+              <Text style={[S.coverBrand, { fontFamily: font }]}>{projectName}</Text>
               <Text style={[S.coverDate, { fontFamily: font }]}>
                 {safe(p.createdAtLabel)} {safe(p.createdAt)}
               </Text>
@@ -767,7 +804,7 @@ export default function SalesOfferDocument({ payload }) {
 
             <View style={S.factStack}>
               <Text style={[S.factTitle, { fontFamily: font }]}>Description</Text>
-              <Text style={[S.factText, { fontFamily: font }]}>{descriptionPages[0] || "Project general facts"}</Text>
+              {renderParagraphBlock(descriptionPages[0] || "Project general facts", font, S.factText)}
             </View>
 
             <View style={S.factStack}>
@@ -792,9 +829,7 @@ export default function SalesOfferDocument({ payload }) {
         <Page size="A4" orientation="landscape" style={S.page}>
           {sectionChrome("", "ABOUT THE PROJECT", font)}
           <Text style={[S.factTitle, { fontFamily: font, marginBottom: 8 }]}>Location description and benefits</Text>
-          <Text style={[S.longText, { fontFamily: font }]}>
-            {locationPages[0] || locationAddress}
-          </Text>
+          {renderParagraphBlock(locationPages[0] || locationAddress, font, S.longText)}
         </Page>
       ) : null}
 
@@ -921,7 +956,7 @@ export default function SalesOfferDocument({ payload }) {
           </View>
           <View style={S.sideBodyCol}>
             {developerText ? (
-              <Text style={[S.developerText, { fontFamily: font }]}>{developerText}</Text>
+              renderParagraphBlock(developerText, font, S.developerText)
             ) : null}
             {developerImage ? <Image src={developerImage} style={S.singleDeveloperImage} /> : null}
           </View>
