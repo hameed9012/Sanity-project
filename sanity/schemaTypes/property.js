@@ -8,6 +8,7 @@ export default defineType({
   type: 'document',
 
   groups: [
+    {name: 'sales', title: 'Sales'},
     {name: 'basics',    title: '📋 Basics',       default: true},
     {name: 'media',     title: '🖼️  Media'},
     {name: 'details',   title: '📐 Details'},
@@ -60,6 +61,7 @@ export default defineType({
         list: [
           {title: '🏗️  Off-Plan', value: 'offplan'},
           {title: '🏠 Secondary', value: 'secondary'},
+          {title: '🔁 Resale', value: 'resale'},
           {title: '🌿 Land', value: 'land'},
           {title: '🔑 Rental', value: 'rental'},
         ],
@@ -140,6 +142,91 @@ export default defineType({
       type: 'boolean',
       group: 'basics',
       initialValue: false,
+    }),
+
+    defineField({
+      name: 'assignedBroker',
+      title: 'Assigned Broker',
+      type: 'object',
+      group: 'sales',
+      description: 'Broker shown on this property page and used for property-specific enquiries.',
+      fields: [
+        defineField({
+          name: 'name',
+          title: 'Broker Name',
+          type: 'string',
+        }),
+        defineField({
+          name: 'nameAr',
+          title: 'Broker Name (Arabic)',
+          type: 'string',
+        }),
+        defineField({
+          name: 'role',
+          title: 'Role / Title',
+          type: 'string',
+          description: 'e.g. Senior Property Consultant',
+        }),
+        defineField({
+          name: 'roleAr',
+          title: 'Role / Title (Arabic)',
+          type: 'string',
+        }),
+        defineField({
+          name: 'phone',
+          title: 'Phone Number',
+          type: 'string',
+          description: 'Displayed on the property page.',
+        }),
+        defineField({
+          name: 'whatsapp',
+          title: 'WhatsApp Number',
+          type: 'string',
+          description: 'Used for property-specific WhatsApp clicks.',
+        }),
+        defineField({
+          name: 'email',
+          title: 'Email',
+          type: 'string',
+          description: 'Used for broker enquiry notifications.',
+        }),
+        defineField({
+          name: 'languages',
+          title: 'Languages Spoken',
+          type: 'array',
+          of: [{type: 'string'}],
+          options: {layout: 'tags'},
+        }),
+        defineField({
+          name: 'languagesAr',
+          title: 'Languages Spoken (Arabic)',
+          type: 'array',
+          of: [{type: 'string'}],
+          options: {layout: 'tags'},
+        }),
+        defineField({
+          name: 'photoUpload',
+          title: 'Broker Photo Upload',
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            {name: 'alt', title: 'Alt text', type: 'string'},
+            {name: 'altAr', title: 'Alt text (Arabic)', type: 'string'},
+          ],
+        }),
+        defineField({
+          name: 'photoCdn',
+          title: 'OR Broker Photo (BunnyCDN)',
+          type: 'cdnImage',
+          description: 'Paste a BunnyCDN image URL instead of uploading the broker photo.',
+        }),
+      ],
+      preview: {
+        select: {
+          title: 'name',
+          subtitle: 'role',
+        },
+      },
     }),
 
     // ─── MEDIA ────────────────────────────────────────────────

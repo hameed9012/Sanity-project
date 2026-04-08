@@ -91,6 +91,54 @@ function cleanLocalizedText(primary, fallback = "") {
   return value;
 }
 
+function normalizeBrokerData(rawBroker, locale) {
+  if (!rawBroker || typeof rawBroker !== "object") return null;
+
+  const name =
+    locale === "ar"
+      ? cleanLocalizedText(rawBroker?.nameAr, rawBroker?.name)
+      : cleanLocalizedText(rawBroker?.name, rawBroker?.nameAr);
+  const role =
+    locale === "ar"
+      ? cleanLocalizedText(rawBroker?.roleAr, rawBroker?.role)
+      : cleanLocalizedText(rawBroker?.role, rawBroker?.roleAr);
+  const languagesSource =
+    locale === "ar"
+      ? (Array.isArray(rawBroker?.languagesAr) && rawBroker.languagesAr.length
+          ? rawBroker.languagesAr
+          : rawBroker?.languages)
+      : (Array.isArray(rawBroker?.languages) && rawBroker.languages.length
+          ? rawBroker.languages
+          : rawBroker?.languagesAr);
+
+  const languages = Array.isArray(languagesSource)
+    ? languagesSource.map((entry) => cleanLocalizedText(entry)).filter(Boolean)
+    : [];
+
+  const photo =
+    rawBroker?.photo ||
+    rawBroker?.photoCdn?.url ||
+    rawBroker?.photoUpload?.asset?.url ||
+    "";
+
+  if (!name && !rawBroker?.phone && !rawBroker?.whatsapp && !photo) return null;
+
+  return {
+    name,
+    nameAr: cleanLocalizedText(rawBroker?.nameAr, rawBroker?.name),
+    role,
+    roleAr: cleanLocalizedText(rawBroker?.roleAr, rawBroker?.role),
+    phone: String(rawBroker?.phone || "").trim(),
+    whatsapp: String(rawBroker?.whatsapp || "").trim(),
+    email: String(rawBroker?.email || "").trim(),
+    languages,
+    languagesAr: Array.isArray(rawBroker?.languagesAr)
+      ? rawBroker.languagesAr.map((entry) => cleanLocalizedText(entry)).filter(Boolean)
+      : [],
+    photo,
+  };
+}
+
 
 function developerToSlug(name) {
   return String(name || "")
@@ -179,6 +227,10 @@ function buildSanityProjectData(sanityDoc, locale) {
   const location = content?.location || {};
   const intro = content?.intro || {};
   const brochureUrl = getPrimaryBrochureUrl(content, sanityDoc);
+  const broker = normalizeBrokerData(
+    sanityDoc?.assignedBroker || sanityDoc?._raw?.assignedBroker,
+    locale
+  );
 
   return {
     // Identity fields used by RelatedProjects scoring.
@@ -196,6 +248,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     handoverDate: project?.completionDate || "",
     paymentPlan: project?.paymentPlan || "",
     crestImage: sanityDoc?.crestImage || sanityDoc?.crestImageCdn?.url || "",
+    broker,
     status: normalizeListingStatus(project?.status || sanityDoc?.status || ""),
     unitTypes: normalizeUnitTypes(project?.type || ""),
 
@@ -289,6 +342,7 @@ function buildSanityProjectData(sanityDoc, locale) {
       ? sanityDoc?.descriptionAr || sanityDoc?.description || ""
       : sanityDoc?.description || "";
   const brochureUrl = getPrimaryBrochureUrl(sanityDoc);
+  const broker = normalizeBrokerData(sanityDoc?.assignedBroker, locale);
   const gallerySlides = Array.isArray(sanityDoc?.galleryImages)
     ? sanityDoc.galleryImages.map((item) => item?.url).filter(Boolean)
     : [];
@@ -304,6 +358,7 @@ function buildSanityProjectData(sanityDoc, locale) {
     handoverDate: sanityDoc?.completionDate || "",
     paymentPlan: sanityDoc?.paymentPlan || "",
     crestImage: sanityDoc?.crestImage || sanityDoc?.crestImageCdn?.url || "",
+    broker,
     status: normalizeListingStatus(sanityDoc?.status || ""),
     unitTypes: normalizeUnitTypes(sanityDoc?.unitTypes || sanityDoc?.propertyType || ""),
     title: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),
