@@ -92,49 +92,6 @@ export default function ContactFormFinal({
   const { locale } = useLanguage();
   const isRTL = locale === "ar";
   const [siteContact, setSiteContact] = useState(null);
-  const assignedBroker = useMemo(() => {
-    const broker = projectData?.broker || projectData?.assignedBroker || null;
-    if (!broker || typeof broker !== "object") return null;
-
-    const localizedName =
-      locale === "ar"
-        ? broker?.nameAr || broker?.name
-        : broker?.name || broker?.nameAr;
-    const localizedRole =
-      locale === "ar"
-        ? broker?.roleAr || broker?.role
-        : broker?.role || broker?.roleAr;
-    const localizedLanguages =
-      locale === "ar"
-        ? broker?.languagesAr?.length
-          ? broker.languagesAr
-          : broker?.languages
-        : broker?.languages?.length
-        ? broker.languages
-        : broker?.languagesAr;
-
-    if (
-      !localizedName &&
-      !broker?.phone &&
-      !broker?.whatsapp &&
-      !broker?.email &&
-      !broker?.photo
-    ) {
-      return null;
-    }
-
-    return {
-      name: localizedName || "",
-      role: localizedRole || "",
-      phone: broker?.phone || "",
-      whatsapp: broker?.whatsapp || "",
-      email: broker?.email || "",
-      photo: broker?.photo || "",
-      languages: Array.isArray(localizedLanguages)
-        ? localizedLanguages.filter(Boolean)
-        : [],
-    };
-  }, [locale, projectData]);
 
   // ✅ project name
   const projectName =
@@ -206,44 +163,6 @@ export default function ContactFormFinal({
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (typeof document === "undefined") return undefined;
-
-    const body = document.body;
-    const previousWhatsapp = body.dataset.propertyWhatsapp || "";
-    const previousBrokerName = body.dataset.propertyBrokerName || "";
-    const previousPropertyName = body.dataset.propertyName || "";
-
-    if (assignedBroker?.whatsapp) {
-      body.dataset.propertyWhatsapp = assignedBroker.whatsapp;
-    } else {
-      delete body.dataset.propertyWhatsapp;
-    }
-
-    if (assignedBroker?.name) {
-      body.dataset.propertyBrokerName = assignedBroker.name;
-    } else {
-      delete body.dataset.propertyBrokerName;
-    }
-
-    if (projectName) {
-      body.dataset.propertyName = projectName;
-    } else {
-      delete body.dataset.propertyName;
-    }
-
-    return () => {
-      if (previousWhatsapp) body.dataset.propertyWhatsapp = previousWhatsapp;
-      else delete body.dataset.propertyWhatsapp;
-
-      if (previousBrokerName) body.dataset.propertyBrokerName = previousBrokerName;
-      else delete body.dataset.propertyBrokerName;
-
-      if (previousPropertyName) body.dataset.propertyName = previousPropertyName;
-      else delete body.dataset.propertyName;
-    };
-  }, [assignedBroker, projectName]);
 
   // ✅ Reset form when tab changes
   useEffect(() => {
@@ -444,11 +363,6 @@ export default function ContactFormFinal({
           dialingCode: `+${selectedCountry.dial}`,
           formType: "PROJECT_FORM",
           locale,
-          brokerName: assignedBroker?.name || "",
-          brokerEmail: assignedBroker?.email || "",
-          brokerPhone: assignedBroker?.phone || "",
-          brokerWhatsapp: assignedBroker?.whatsapp || "",
-          brokerRole: assignedBroker?.role || "",
         }),
       });
 
@@ -668,32 +582,6 @@ export default function ContactFormFinal({
       ? { key: "whatsapp", href: whatsappHref, label: "WhatsApp", value: siteContact?.whatsapp }
       : null,
   ].filter(Boolean);
-  const brokerActions = [
-    assignedBroker?.phone
-      ? {
-          key: "phone",
-          href: `tel:${assignedBroker.phone}`,
-          label: isRTL ? "اتصال" : "Call",
-          value: assignedBroker.phone,
-        }
-      : null,
-    assignedBroker?.whatsapp
-      ? {
-          key: "whatsapp",
-          href: `https://wa.me/${String(assignedBroker.whatsapp).replace(/\D/g, "")}`,
-          label: "WhatsApp",
-          value: assignedBroker.whatsapp,
-        }
-      : null,
-    assignedBroker?.email
-      ? {
-          key: "email",
-          href: `mailto:${assignedBroker.email}`,
-          label: isRTL ? "البريد" : "Email",
-          value: assignedBroker.email,
-        }
-      : null,
-  ].filter(Boolean);
 
   return (
     <section className={styles.section} dir={isRTL ? "rtl" : "ltr"}>
@@ -730,61 +618,6 @@ export default function ContactFormFinal({
                   : "Fill the form and our team will reach out to you."}
               </div>
             </div>
-
-            {assignedBroker && (
-              <div className={styles.brokerCard}>
-                <div className={styles.brokerHeader}>
-                  {assignedBroker.photo ? (
-                    <img
-                      src={assignedBroker.photo}
-                      alt={assignedBroker.name || projectName}
-                      className={styles.brokerAvatar}
-                    />
-                  ) : (
-                    <div className={styles.brokerAvatarFallback}>
-                      {(assignedBroker.name || "B").trim().charAt(0).toUpperCase()}
-                    </div>
-                  )}
-
-                  <div className={styles.brokerIdentity}>
-                    <div className={styles.brokerEyebrow}>
-                      {isRTL ? "المستشار المسؤول" : "Assigned Broker"}
-                    </div>
-                    <div className={styles.brokerName}>{assignedBroker.name}</div>
-                    {assignedBroker.role ? (
-                      <div className={styles.brokerRole}>{assignedBroker.role}</div>
-                    ) : null}
-                  </div>
-                </div>
-
-                {assignedBroker.languages?.length ? (
-                  <div className={styles.brokerLanguages}>
-                    {assignedBroker.languages.map((language) => (
-                      <span key={language} className={styles.brokerLanguageChip}>
-                        {language}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-
-                {brokerActions.length ? (
-                  <div className={styles.brokerActions}>
-                    {brokerActions.map((action) => (
-                      <a
-                        key={action.key}
-                        href={action.href}
-                        className={styles.brokerAction}
-                        target={action.key === "whatsapp" ? "_blank" : undefined}
-                        rel={action.key === "whatsapp" ? "noreferrer" : undefined}
-                      >
-                        <span className={styles.brokerActionLabel}>{action.label}</span>
-                        <span className={styles.brokerActionValue}>{action.value}</span>
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            )}
           </div>
 
           {/* RIGHT */}

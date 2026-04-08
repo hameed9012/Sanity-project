@@ -28,21 +28,6 @@ const PROPERTY_QUERY = `
   developerAr,
   statusDisplayAr,
   featured,
-  assignedBroker{
-    name,
-    nameAr,
-    role,
-    roleAr,
-    phone,
-    whatsapp,
-    email,
-    languages,
-    languagesAr,
-    photoCdn,
-    photoUpload{
-      asset->
-    }
-  },
   heroImage,
   heroImageCdn,
   heroImageUpload{
@@ -153,15 +138,6 @@ function normalizeProperty(item) {
       item?.crestImageCdn?.url ||
       item?.crestImage ||
       "",
-    assignedBroker: item?.assignedBroker
-      ? {
-          ...item.assignedBroker,
-          photo:
-            item?.assignedBroker?.photoCdn?.url ||
-            item?.assignedBroker?.photoUpload?.asset?.url ||
-            "",
-        }
-      : null,
     galleryImages,
     floorPlans,
     priceAED: parsePriceToAED(item?.startingPrice),

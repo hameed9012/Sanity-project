@@ -123,7 +123,6 @@ export async function POST(request) {
     // Prepare results
     const results = {
       adminEmail: { success: false, error: null },
-      brokerEmail: { success: false, error: null },
       userEmail: { success: false, error: null },
       respondIo: { success: false, error: null },
     };
@@ -144,19 +143,7 @@ export async function POST(request) {
         { senderEmail, adminEmail }
       );
 
-      // 2. Send to assigned broker if available
-      if (formData.brokerEmail) {
-        console.log("🔄 Sending broker email...");
-        results.brokerEmail = await sendAdminEmail(
-          transporter,
-          formData,
-          t,
-          isRTL,
-          { senderEmail, adminEmail: formData.brokerEmail }
-        );
-      }
-
-      // 3. Send auto-reply to user
+      // 2. Send auto-reply to user
       console.log("🔄 Sending user auto-reply...");
       results.userEmail = await sendUserAutoReply(
         transporter,
@@ -166,7 +153,7 @@ export async function POST(request) {
         { senderEmail }
       );
 
-      // 4. Send to respond.io
+      // 3. Send to respond.io
       console.log("🔄 Sending to respond.io...");
       results.respondIo = await sendToRespondIO(formData);
     } catch (error) {
@@ -176,7 +163,6 @@ export async function POST(request) {
     // Log results
     console.log("📊 ========== RESULTS ==========");
     console.log("📨 Admin Email:", results.adminEmail.success ? "✅" : "❌");
-    console.log("👤 Broker Email:", results.brokerEmail.success ? "✅" : "❌");
     console.log("📧 User Email:", results.userEmail.success ? "✅" : "❌");
     console.log("🤖 Respond.io:", results.respondIo.success ? "✅" : "❌");
 
@@ -193,7 +179,6 @@ export async function POST(request) {
         formType: "PROJECT_FORM",
         components: {
           adminEmail: results.adminEmail.success,
-          brokerEmail: results.brokerEmail.success,
           userEmail: results.userEmail.success,
           respondIo: results.respondIo.success,
         },
