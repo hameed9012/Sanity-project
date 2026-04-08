@@ -34,6 +34,18 @@ function normalize(value) {
     .trim();
 }
 
+function safeTranslate(t, key, params, fallback) {
+  try {
+    const value = t?.(key, params)
+    if (value === undefined || value === null || value === "" || value === key) {
+      return fallback
+    }
+    return value
+  } catch {
+    return fallback
+  }
+}
+
 function extractProjectImage(project) {
   return (
     project?.image ||
@@ -296,6 +308,19 @@ export default function DeveloperPage() {
   const exclusiveProjectLabel = isRTL ? "مشروع مميز" : "Exclusive Project";
   const signatureProjectsLabel = isRTL ? "مشاريع مختارة" : "Signature Developments";
 
+  const displayPortfolioTitle =
+    portfolioTitle === "developerPage.portfolioTitle"
+      ? isRTL
+        ? "مجموعة المشاريع"
+        : "Portfolio Collection"
+      : portfolioTitle;
+  const displayPortfolioSubtitle =
+    portfolioSubtitle === "developerPage.portfolioSubtitle"
+      ? isRTL
+        ? `مجموعة مختارة من مشاريع ${developer?.name}`
+        : `Curated selection of ${developer?.name}'s exceptional developments`
+      : portfolioSubtitle;
+
   if (sanityLoaded && (isExcludedDeveloper || !developer)) {
     return (
       <div className={styles.notFound}>
@@ -333,8 +358,8 @@ export default function DeveloperPage() {
         <section className={styles.projectsSection}>
           <div className={styles.sectionHeader}>
             <div className={styles.headerOrnament}></div>
-            <h2 className={styles.sectionTitle}>{portfolioTitle}</h2>
-            <p className={styles.sectionSubtitle}>{portfolioSubtitle}</p>
+            <h2 className={styles.sectionTitle}>{displayPortfolioTitle}</h2>
+            <p className={styles.sectionSubtitle}>{displayPortfolioSubtitle}</p>
             <div className={styles.projectCountBadge}>
               {filteredProjects.length}{" "}
               {filteredProjects.length === 1 ? projectWord : projectsWord}
