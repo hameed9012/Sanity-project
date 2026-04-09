@@ -34,7 +34,23 @@ export default function WhatsappFloatingButton() {
   }, [siteContact]);
 
   const handleClick = () => {
-    if (!whatsappBase) return;
+    const propertyWhatsapp =
+      typeof document !== "undefined"
+        ? String(document.body?.dataset?.propertyWhatsapp || "").replace(/\D/g, "")
+        : "";
+    const brokerName =
+      typeof document !== "undefined"
+        ? document.body?.dataset?.propertyBrokerName || ""
+        : "";
+    const propertyName =
+      typeof document !== "undefined"
+        ? document.body?.dataset?.propertyName || ""
+        : "";
+    const targetBase = propertyWhatsapp
+      ? `https://wa.me/${propertyWhatsapp}`
+      : whatsappBase;
+
+    if (!targetBase) return;
 
     // ✅ Always accurate URL at click time
     const fullUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -45,9 +61,11 @@ export default function WhatsappFloatingButton() {
     const pageName = path === "/" ? "Home" : path;
 
     // ✅ Build message (include Home + full URL)
-    const message = `Hi Mohamad, I'm interested in your properties.\n\nPage: ${pageName}\nLink: ${fullUrl}`;
+    const introName = brokerName || "Mohamad";
+    const propertyLine = propertyName ? `\nProperty: ${propertyName}` : "";
+    const message = `Hi ${introName}, I'm interested in your properties.${propertyLine}\nPage: ${pageName}\nLink: ${fullUrl}`;
 
-    const whatsappHref = `${whatsappBase}?text=${encodeURIComponent(message)}`;
+    const whatsappHref = `${targetBase}?text=${encodeURIComponent(message)}`;
 
     // ✅ GA4 event (for Google Ads import later)
     try {
