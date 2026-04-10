@@ -3,6 +3,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/styles/projects/ContactFormFinal.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 import * as ga from "@/lib/ga"; // ✅ GA4 helper
 
 // FB tracking helper
@@ -336,6 +340,7 @@ export default function ContactFormSimplified({
           dialingCode: `+${selectedCountry.dial}`,
           formType: "CONTACT_FORM", // Changed from PROJECT_FORM
           locale,
+          pageUrl: typeof window !== "undefined" ? window.location.href : "",
         }),
       });
 
@@ -543,9 +548,12 @@ export default function ContactFormSimplified({
   const contactHeadline = isRTL
     ? siteContact?.formTitleAr || "نسمع منك"
     : siteContact?.formTitle || "Hear From You";
-  const whatsappHref = siteContact?.whatsapp
-    ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-    : null;
+  const whatsappHref = buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+    locale,
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+    sourceLabel: "Simplified Contact Form",
+  });
   const contactLinks = [
     siteContact?.phone
       ? { key: "phone", href: `tel:${siteContact.phone}`, label: "Call", value: siteContact.phone }
@@ -557,6 +565,15 @@ export default function ContactFormSimplified({
       ? { key: "whatsapp", href: whatsappHref, label: "WhatsApp", value: siteContact?.whatsapp }
       : null,
   ].filter(Boolean);
+
+  const handleSiteWhatsAppClick = () => {
+    queueKodmaniApprovalLead({
+      locale,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: "Simplified Contact Form",
+    });
+  };
 
   return (
     <section className={styles.section} dir={isRTL ? "rtl" : "ltr"}>

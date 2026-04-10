@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import ContactFormSimplified from "@/components/ContactFormSimplified";
 import { useLanguage } from "@/components/LanguageProvider";
+import { buildKodmaniWhatsAppHref, queueKodmaniApprovalLead } from "@/lib/whatsapp";
 
 export default function ContactPage() {
   const { locale } = useLanguage();
@@ -25,9 +26,12 @@ export default function ContactPage() {
     };
   }, []);
 
-  const whatsappHref = contact?.whatsapp
-    ? `https://wa.me/${String(contact.whatsapp).replace(/\D/g, "")}`
-    : null;
+  const whatsappHref = buildKodmaniWhatsAppHref(contact?.whatsapp, {
+    locale,
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    pagePath: typeof window !== "undefined" ? window.location.pathname : "/contact-us",
+    sourceLabel: isRTL ? "صفحة التواصل" : "Contact Page",
+  });
 
   return (
     <div
@@ -65,7 +69,23 @@ export default function ContactPage() {
               </a>
             ) : null}
             {whatsappHref ? (
-              <a href={whatsappHref} target="_blank" rel="noreferrer noopener" style={pillStyle}>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noreferrer noopener"
+                style={pillStyle}
+                onClick={() =>
+                  queueKodmaniApprovalLead({
+                    locale,
+                    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+                    pagePath:
+                      typeof window !== "undefined"
+                        ? window.location.pathname
+                        : "/contact-us",
+                    sourceLabel: isRTL ? "صفحة التواصل" : "Contact Page",
+                  })
+                }
+              >
                 WhatsApp
               </a>
             ) : null}

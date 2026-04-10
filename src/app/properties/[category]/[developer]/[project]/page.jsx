@@ -130,7 +130,6 @@ function normalizeBrokerData(rawBroker, locale) {
     roleAr: cleanLocalizedText(rawBroker?.roleAr, rawBroker?.role),
     phone: String(rawBroker?.phone || "").trim(),
     whatsapp: String(rawBroker?.whatsapp || "").trim(),
-    email: String(rawBroker?.email || "").trim(),
     languages,
     languagesAr: Array.isArray(rawBroker?.languagesAr)
       ? rawBroker.languagesAr.map((entry) => cleanLocalizedText(entry)).filter(Boolean)

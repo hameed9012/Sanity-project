@@ -25,3 +25,11 @@ yarn-error.log*
 *.zip
 *.7z
 
+# local tooling / private notes
+.codex-dev.log
+build.log
+.tmp-importer-check.js
+.data/
+docs/
+
+

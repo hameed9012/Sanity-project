@@ -1,10 +1,32 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/FreeServices.module.css";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 
 export default function FreeServices() {
   const [activeService, setActiveService] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const consultationHref = buildKodmaniWhatsAppHref(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
+    {
+      locale: "en",
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: "Free Services CTA",
+    }
+  );
+
+  const handleConsultationClick = () => {
+    queueKodmaniApprovalLead({
+      locale: "en",
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: "Free Services CTA",
+    });
+  };
 
   useEffect(() => {
     setIsVisible(true);
@@ -281,10 +303,11 @@ export default function FreeServices() {
 
               <div className={styles.ctaActions}>
                 <a
-                  href="https://wa.me/message/AHLCIZILK45JH1"
+                  href={consultationHref || "/contact-us"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.primaryCTA}
+                  onClick={handleConsultationClick}
                 >
                   <span className={styles.ctaIcon}>💬</span>
                   Start Free Consultation on WhatsApp

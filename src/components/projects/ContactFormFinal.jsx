@@ -4,6 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/projects/ContactFormFinal.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import * as ga from "@/lib/ga";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 
 // FB tracking helper
 const fbTrack = (type, eventName, params = {}) => {
@@ -117,7 +121,6 @@ export default function ContactFormFinal({
       !localizedName &&
       !broker?.phone &&
       !broker?.whatsapp &&
-      !broker?.email &&
       !broker?.photo
     ) {
       return null;
@@ -128,7 +131,6 @@ export default function ContactFormFinal({
       role: localizedRole || "",
       phone: broker?.phone || "",
       whatsapp: broker?.whatsapp || "",
-      email: broker?.email || "",
       photo: broker?.photo || "",
       languages: Array.isArray(localizedLanguages)
         ? localizedLanguages.filter(Boolean)
@@ -211,20 +213,20 @@ export default function ContactFormFinal({
     if (typeof document === "undefined") return undefined;
 
     const body = document.body;
-    const previousWhatsapp = body.dataset.propertyWhatsapp || "";
     const previousBrokerName = body.dataset.propertyBrokerName || "";
+    const previousBrokerRole = body.dataset.propertyBrokerRole || "";
     const previousPropertyName = body.dataset.propertyName || "";
-
-    if (assignedBroker?.whatsapp) {
-      body.dataset.propertyWhatsapp = assignedBroker.whatsapp;
-    } else {
-      delete body.dataset.propertyWhatsapp;
-    }
 
     if (assignedBroker?.name) {
       body.dataset.propertyBrokerName = assignedBroker.name;
     } else {
       delete body.dataset.propertyBrokerName;
+    }
+
+    if (assignedBroker?.role) {
+      body.dataset.propertyBrokerRole = assignedBroker.role;
+    } else {
+      delete body.dataset.propertyBrokerRole;
     }
 
     if (projectName) {
@@ -234,11 +236,11 @@ export default function ContactFormFinal({
     }
 
     return () => {
-      if (previousWhatsapp) body.dataset.propertyWhatsapp = previousWhatsapp;
-      else delete body.dataset.propertyWhatsapp;
-
       if (previousBrokerName) body.dataset.propertyBrokerName = previousBrokerName;
       else delete body.dataset.propertyBrokerName;
+
+      if (previousBrokerRole) body.dataset.propertyBrokerRole = previousBrokerRole;
+      else delete body.dataset.propertyBrokerRole;
 
       if (previousPropertyName) body.dataset.propertyName = previousPropertyName;
       else delete body.dataset.propertyName;
@@ -444,11 +446,12 @@ export default function ContactFormFinal({
           dialingCode: `+${selectedCountry.dial}`,
           formType: "PROJECT_FORM",
           locale,
+          pageUrl: typeof window !== "undefined" ? window.location.href : "",
           brokerName: assignedBroker?.name || "",
-          brokerEmail: assignedBroker?.email || "",
           brokerPhone: assignedBroker?.phone || "",
           brokerWhatsapp: assignedBroker?.whatsapp || "",
           brokerRole: assignedBroker?.role || "",
+          brokerLanguages: assignedBroker?.languages || [],
         }),
       });
 
@@ -654,9 +657,26 @@ export default function ContactFormFinal({
   const contactHeadline = isRTL
     ? siteContact?.formTitleAr || "Hear From You"
     : siteContact?.formTitle || "Hear From You";
-  const whatsappHref = siteContact?.whatsapp
-    ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-    : null;
+  const whatsappHref = buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+    locale,
+    propertyName: projectName,
+    brokerName: assignedBroker?.name,
+    brokerRole: assignedBroker?.role,
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+    sourceLabel: "Property Contact Form",
+  });
+  const brokerWhatsAppHref = buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+    locale,
+    propertyName: projectName,
+    brokerName: assignedBroker?.name,
+    brokerRole: assignedBroker?.role,
+    brokerPhone: assignedBroker?.phone,
+    brokerWhatsapp: assignedBroker?.whatsapp,
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+    sourceLabel: "Assigned Broker WhatsApp",
+  });
   const contactLinks = [
     siteContact?.phone
       ? { key: "phone", href: `tel:${siteContact.phone}`, label: "Call", value: siteContact.phone }
@@ -672,28 +692,37 @@ export default function ContactFormFinal({
     assignedBroker?.phone
       ? {
           key: "phone",
-          href: `tel:${assignedBroker.phone}`,
           label: isRTL ? "اتصال" : "Call",
           value: assignedBroker.phone,
+          href: `tel:${assignedBroker.phone}`,
         }
       : null,
-    assignedBroker?.whatsapp
+    assignedBroker?.whatsapp && brokerWhatsAppHref
       ? {
           key: "whatsapp",
-          href: `https://wa.me/${String(assignedBroker.whatsapp).replace(/\D/g, "")}`,
           label: "WhatsApp",
           value: assignedBroker.whatsapp,
-        }
-      : null,
-    assignedBroker?.email
-      ? {
-          key: "email",
-          href: `mailto:${assignedBroker.email}`,
-          label: isRTL ? "البريد" : "Email",
-          value: assignedBroker.email,
+          href: brokerWhatsAppHref,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          onClick: () =>
+            queueKodmaniApprovalLead({
+              locale,
+              propertyName: projectName,
+              brokerName: assignedBroker?.name,
+              brokerRole: assignedBroker?.role,
+              brokerPhone: assignedBroker?.phone,
+              brokerWhatsapp: assignedBroker?.whatsapp,
+              pageUrl:
+                typeof window !== "undefined" ? window.location.href : "",
+              pagePath:
+                typeof window !== "undefined" ? window.location.pathname : "",
+              sourceLabel: "Assigned Broker WhatsApp",
+            }),
         }
       : null,
   ].filter(Boolean);
+  const brokerProfileRows = brokerActions;
 
   return (
     <section className={styles.section} dir={isRTL ? "rtl" : "ltr"}>
@@ -767,15 +796,16 @@ export default function ContactFormFinal({
                   </div>
                 ) : null}
 
-                {brokerActions.length ? (
+                {brokerProfileRows.length ? (
                   <div className={styles.brokerActions}>
-                    {brokerActions.map((action) => (
+                    {brokerProfileRows.map((action) => (
                       <a
                         key={action.key}
-                        href={action.href}
                         className={styles.brokerAction}
-                        target={action.key === "whatsapp" ? "_blank" : undefined}
-                        rel={action.key === "whatsapp" ? "noreferrer" : undefined}
+                        href={action.href}
+                        target={action.target}
+                        rel={action.rel}
+                        onClick={action.onClick}
                       >
                         <span className={styles.brokerActionLabel}>{action.label}</span>
                         <span className={styles.brokerActionValue}>{action.value}</span>

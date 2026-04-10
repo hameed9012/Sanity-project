@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAllProjects } from "@/components/SanityProjectsContext";
 import { useLanguage } from "@/components/LanguageProvider";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 import styles from "@/styles/projects/ProjectsFooter.module.css";
 
 function shuffleCopy(items) {
@@ -64,9 +68,21 @@ export default function ProjectsFooter({ title = "" }) {
       ? project?.unitTypeAr || project?.statusDisplayAr || project?.type || "عقار"
       : project?.type || project?.category || project?.unitTypeAr || "Property";
 
-  const whatsappHref = siteContact?.whatsapp
-    ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-    : null;
+  const whatsappHref = buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+    locale,
+    pageUrl: typeof window !== "undefined" ? window.location.href : "",
+    pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+    sourceLabel: "Projects Footer",
+  });
+
+  const handleFooterWhatsAppClick = () => {
+    queueKodmaniApprovalLead({
+      locale,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: "Projects Footer",
+    });
+  };
 
   return (
     <footer className={styles.luxuryFooter}>
@@ -116,7 +132,7 @@ export default function ProjectsFooter({ title = "" }) {
                         <span className={styles.projectType}>
                           {getProjectType(project)}
                         </span>
-                        <span className={styles.projectArrow}>-></span>
+                        <span className={styles.projectArrow}>{"->"}</span>
                       </div>
                     </div>
                   </div>
@@ -135,27 +151,51 @@ export default function ProjectsFooter({ title = "" }) {
               <div className={styles.contactIcon}>Call</div>
               <div className={styles.contactDetails}>
                 <div className={styles.contactLabel}>Direct Consultation</div>
-                <div className={styles.contactValue}>
-                  {siteContact?.phone || siteContact?.whatsapp || "Add consultation phone"}
-                </div>
+                {siteContact?.phone || siteContact?.whatsapp ? (
+                  <a
+                    href={`tel:${siteContact?.phone || siteContact?.whatsapp}`}
+                    className={styles.contactValue}
+                  >
+                    {siteContact?.phone || siteContact?.whatsapp}
+                  </a>
+                ) : (
+                  <div className={styles.contactValue}>Add consultation phone</div>
+                )}
               </div>
             </div>
             <div className={styles.contactItem}>
               <div className={styles.contactIcon}>Mail</div>
               <div className={styles.contactDetails}>
                 <div className={styles.contactLabel}>Email</div>
-                <div className={styles.contactValue}>
-                  {siteContact?.email || "Add contact email"}
-                </div>
+                {siteContact?.email ? (
+                  <a
+                    href={`mailto:${siteContact.email}`}
+                    className={styles.contactValue}
+                  >
+                    {siteContact.email}
+                  </a>
+                ) : (
+                  <div className={styles.contactValue}>Add contact email</div>
+                )}
               </div>
             </div>
             <div className={styles.contactItem}>
               <div className={styles.contactIcon}>WA</div>
               <div className={styles.contactDetails}>
                 <div className={styles.contactLabel}>WhatsApp</div>
-                <div className={styles.contactValue}>
-                  {whatsappHref ? "Available" : "Contact team"}
-                </div>
+                {whatsappHref ? (
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className={styles.contactValue}
+                    onClick={handleFooterWhatsAppClick}
+                  >
+                    Available
+                  </a>
+                ) : (
+                  <div className={styles.contactValue}>Contact team</div>
+                )}
               </div>
             </div>
           </div>

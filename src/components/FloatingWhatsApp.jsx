@@ -4,6 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/FloatingWhatsApp.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
 import * as ga from "@/lib/ga";
+import {
+  buildKodmaniWhatsAppHref,
+  normalizeWhatsAppNumber,
+  queueKodmaniApprovalLead,
+  readPropertyWhatsAppContextFromBody,
+} from "@/lib/whatsapp";
 
 export default function WhatsappFloatingButton() {
   const { locale, t } = useLanguage?.() || { locale: "en" };
@@ -14,6 +20,7 @@ export default function WhatsappFloatingButton() {
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       try {
         const res = await fetch("/api/site-settings", { cache: "no-store" });
@@ -23,51 +30,45 @@ export default function WhatsappFloatingButton() {
         }
       } catch {}
     })();
+
     return () => {
       active = false;
     };
   }, []);
 
   const whatsappBase = useMemo(() => {
-    const digits = String(siteContact?.whatsapp || "").replace(/\D/g, "");
+    const digits = normalizeWhatsAppNumber(siteContact?.whatsapp);
     return digits ? `https://wa.me/${digits}` : null;
   }, [siteContact]);
 
   const handleClick = () => {
-    const propertyWhatsapp =
-      typeof document !== "undefined"
-        ? String(document.body?.dataset?.propertyWhatsapp || "").replace(/\D/g, "")
-        : "";
-    const brokerName =
-      typeof document !== "undefined"
-        ? document.body?.dataset?.propertyBrokerName || ""
-        : "";
-    const propertyName =
-      typeof document !== "undefined"
-        ? document.body?.dataset?.propertyName || ""
-        : "";
-    const targetBase = propertyWhatsapp
-      ? `https://wa.me/${propertyWhatsapp}`
-      : whatsappBase;
-
-    if (!targetBase) return;
-
-    // ✅ Always accurate URL at click time
     const fullUrl = typeof window !== "undefined" ? window.location.href : "";
-
     const path = typeof window !== "undefined" ? window.location.pathname : "";
-
-    // ✅ If it's only "/" render "Home"
     const pageName = path === "/" ? "Home" : path;
+    const bodyContext = readPropertyWhatsAppContextFromBody();
 
-    // ✅ Build message (include Home + full URL)
-    const introName = brokerName || "Mohamad";
-    const propertyLine = propertyName ? `\nProperty: ${propertyName}` : "";
-    const message = `Hi ${introName}, I'm interested in your properties.${propertyLine}\nPage: ${pageName}\nLink: ${fullUrl}`;
+    const whatsappHref = buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+      locale,
+      propertyName: bodyContext.propertyName,
+      brokerName: bodyContext.brokerName,
+      brokerRole: bodyContext.brokerRole,
+      pageUrl: fullUrl,
+      pagePath: pageName,
+      sourceLabel: "Floating WhatsApp Button",
+    });
 
-    const whatsappHref = `${targetBase}?text=${encodeURIComponent(message)}`;
+    if (!whatsappHref) return;
 
-    // ✅ GA4 event (for Google Ads import later)
+    queueKodmaniApprovalLead({
+      locale,
+      propertyName: bodyContext.propertyName,
+      brokerName: bodyContext.brokerName,
+      brokerRole: bodyContext.brokerRole,
+      pageUrl: fullUrl,
+      pagePath: pageName,
+      sourceLabel: "Floating WhatsApp Button",
+    });
+
     try {
       if (typeof window !== "undefined" && typeof window.gtag === "function") {
         window.gtag("event", "whatsapp_click", {
@@ -77,18 +78,16 @@ export default function WhatsappFloatingButton() {
           placement: "floating_button",
         });
       }
-    } catch (e) {}
+    } catch {}
 
-    // ✅ Keep your existing tracker too (optional)
     try {
       ga.event?.({
         action: "click_whatsapp",
         category: "engagement",
         label: "floating_whatsapp_button",
       });
-    } catch (e) {}
+    } catch {}
 
-    // ✅ Open WhatsApp with the correct message
     if (typeof window !== "undefined") {
       window.open(whatsappHref, "_blank", "noopener,noreferrer");
     }

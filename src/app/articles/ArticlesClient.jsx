@@ -3,6 +3,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/LanguageProvider";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 import styles from "./articles.module.css";
 
 function normalizeArticleImageSrc(value) {
@@ -137,9 +141,13 @@ export default function ArticlesClient({ sanityArticles = [] }) {
         buttons: [
           {
             text: isRTL ? "\u0648\u0627\u062a\u0633\u0627\u0628" : "WhatsApp",
-            href: siteContact?.whatsapp
-              ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-              : "/contact-us",
+            href:
+              buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+                locale,
+                pageUrl: typeof window !== "undefined" ? window.location.href : "",
+                pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+                sourceLabel: "Articles CTA",
+              }) || "/contact-us",
             type: "primary",
           },
           {
@@ -241,6 +249,16 @@ export default function ArticlesClient({ sanityArticles = [] }) {
       locale,
     });
     router.push(`/articles/${article.slug}`);
+  };
+
+  const handleArticlesWhatsAppClick = (href, sourceLabel) => {
+    if (!String(href || "").startsWith("https://wa.me/")) return;
+    queueKodmaniApprovalLead({
+      locale,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel,
+    });
   };
 
   const getCarouselTransform = () =>
@@ -436,11 +454,14 @@ export default function ArticlesClient({ sanityArticles = [] }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() =>
-                    track("ArticlesCTAButtonClick", {
-                      label: button.text,
-                      href: button.href,
-                      locale,
-                    })
+                    {
+                      track("ArticlesCTAButtonClick", {
+                        label: button.text,
+                        href: button.href,
+                        locale,
+                      });
+                      handleArticlesWhatsAppClick(button.href, "Articles CTA");
+                    }
                   }
                 >
                   {button.text}

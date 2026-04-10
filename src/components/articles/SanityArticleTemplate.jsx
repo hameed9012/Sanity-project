@@ -5,6 +5,10 @@ import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import styles from "@/styles/ArticleTemplate.module.css";
 import { useLanguage } from "@/components/LanguageProvider";
+import {
+  buildKodmaniWhatsAppHref,
+  queueKodmaniApprovalLead,
+} from "@/lib/whatsapp";
 
 const slugify = (s = "") =>
   String(s).toLowerCase().trim().replace(/[^a-z0-9\u0600-\u06FF]+/g, "-");
@@ -574,9 +578,23 @@ export default function SanityArticleTemplate({ article }) {
 
   const contactHref =
     cta?.buttonUrl ||
-    (siteContact?.whatsapp
-      ? `https://wa.me/${String(siteContact.whatsapp).replace(/\D/g, "")}`
-      : "/contact-us");
+    buildKodmaniWhatsAppHref(siteContact?.whatsapp, {
+      locale,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: isRTL ? "المقال" : "Article Page",
+    }) ||
+    "/contact-us";
+
+  const handleArticleWhatsAppClick = () => {
+    if (!String(contactHref || "").startsWith("https://wa.me/")) return;
+    queueKodmaniApprovalLead({
+      locale,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+      sourceLabel: isRTL ? "مقال" : "Article Page",
+    });
+  };
 
   const displayAuthorName = isRTL
     ? author?.nameAr || author?.name
@@ -703,6 +721,7 @@ export default function SanityArticleTemplate({ article }) {
               target={contactHref.startsWith("http") ? "_blank" : undefined}
               rel={contactHref.startsWith("http") ? "noopener noreferrer" : undefined}
               className={styles.primaryCTA}
+              onClick={handleArticleWhatsAppClick}
             >
               {(isRTL ? cta?.buttonLabelAr : cta?.buttonLabel) ||
                 (isRTL ? "تواصل معنا" : "Contact us")}

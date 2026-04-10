@@ -1,14 +1,28 @@
 "use client";
 import React, { useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 import styles from "@/styles/MiniCallbackForm.module.css";
 
 export default function MiniCallbackForm() {
+  const { locale } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const getPropertyLeadContext = () => {
+    if (typeof document === "undefined" || !document.body?.dataset) {
+      return {};
+    }
+
+    return {
+      project: document.body.dataset.propertyName || "",
+      brokerName: document.body.dataset.propertyBrokerName || "",
+      brokerRole: document.body.dataset.propertyBrokerRole || "",
+    };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,6 +37,10 @@ export default function MiniCallbackForm() {
         body: JSON.stringify({
           name: formData.name,
           phone: formData.phone,
+          ...getPropertyLeadContext(),
+          formType: "CALLBACK_FORM",
+          pageUrl: typeof window !== "undefined" ? window.location.href : "",
+          locale,
         }),
       });
 

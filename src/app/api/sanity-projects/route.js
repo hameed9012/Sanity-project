@@ -35,7 +35,6 @@ const PROPERTY_QUERY = `
     roleAr,
     phone,
     whatsapp,
-    email,
     languages,
     languagesAr,
     photoCdn,

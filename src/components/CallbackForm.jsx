@@ -28,6 +28,18 @@ export default function CallbackForm() {
     window.fbq("trackCustom", eventName, params);
   };
 
+  const getPropertyLeadContext = () => {
+    if (typeof document === "undefined" || !document.body?.dataset) {
+      return {};
+    }
+
+    return {
+      project: document.body.dataset.propertyName || "",
+      brokerName: document.body.dataset.propertyBrokerName || "",
+      brokerRole: document.body.dataset.propertyBrokerRole || "",
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -51,6 +63,9 @@ export default function CallbackForm() {
         },
         body: JSON.stringify({
           ...formData,
+          ...getPropertyLeadContext(),
+          formType: "CALLBACK_FORM",
+          pageUrl: typeof window !== "undefined" ? window.location.href : "",
           locale: locale,
         }),
       });

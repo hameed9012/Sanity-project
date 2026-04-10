@@ -149,7 +149,7 @@ export default defineType({
       title: 'Assigned Broker',
       type: 'object',
       group: 'sales',
-      description: 'Broker shown on this property page and used for property-specific enquiries.',
+      description: 'Broker shown on this property page. Use this to assign the responsible sales person for the property.',
       fields: [
         defineField({
           name: 'name',
@@ -182,13 +182,7 @@ export default defineType({
           name: 'whatsapp',
           title: 'WhatsApp Number',
           type: 'string',
-          description: 'Used for property-specific WhatsApp clicks.',
-        }),
-        defineField({
-          name: 'email',
-          title: 'Email',
-          type: 'string',
-          description: 'Used for broker enquiry notifications.',
+          description: 'Broker WhatsApp number for internal assignment and display.',
         }),
         defineField({
           name: 'languages',
