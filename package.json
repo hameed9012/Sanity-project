@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "i18n:sync:ar": "node mjs-scrips/sync-static-arabic.mjs",
     "dev:production": "NODE_ENV=production next dev",
     "build:production": "NODE_ENV=production next build",
     "start:production": "NODE_ENV=production next start",

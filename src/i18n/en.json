@@ -1521,5 +1521,52 @@
     "card3Desc": "A blend of ready and off-plan assets for diversified returns and managed risk",
     "card3Metrics": "8–12% Total Return",
     "yearLabel": "Year"
+  },
+  "projectPage": {
+    "scrollToContent": "Scroll to content",
+    "scrollIndicator": "DISCOVER",
+    "logoAlt": "{project} logo",
+    "gallerySection": "Gallery",
+    "gallerySet": "View gallery set",
+    "loadingGallery": "Loading gallery...",
+    "galleryView": "view",
+    "projectLabel": "Project",
+    "masterPlan": {
+      "title": "Master Plan",
+      "view": "View Master Plan",
+      "fullSize": "Click to view full size"
+    },
+    "intro": {
+      "location": "Location",
+      "downloadBrochure": "Download Brochure",
+      "viewBrochure": "View {project} brochure"
+    },
+    "location": {
+      "title": "Project Location",
+      "allNearby": "All Nearby",
+      "directions": "Directions",
+      "mapboxMissing": "Map is not available. Add NEXT_PUBLIC_MAPBOX_TOKEN then restart the server.",
+      "landmarksTitle": "Key Landmarks & Travel Times",
+      "nearbyLandmark": "Nearby landmark"
+    },
+    "floorPlans": {
+      "title": "Floor Plan",
+      "tabs": "Floor plan tabs",
+      "plan": "Plan",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right",
+      "swipeMore": "Swipe to see more",
+      "totalArea": "Total Area",
+      "startingPrice": "Starting Price",
+      "handover": "Handover",
+      "paymentPlan": "Payment Plan",
+      "duration": "Duration",
+      "imageComingSoon": "Image coming soon",
+      "previousVariant": "Previous variant",
+      "nextVariant": "Next variant",
+      "previousImage": "Previous image",
+      "nextImage": "Next image",
+      "imageAlt": "floor plan"
+    }
   }
 }

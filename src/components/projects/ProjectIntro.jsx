@@ -22,7 +22,7 @@ export default function ProjectIntro({
   isRTL,
   locale,
 }) {
-  const { locale: ctxLocale } = useLanguage();
+  const { locale: ctxLocale, t } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
@@ -256,14 +256,16 @@ export default function ProjectIntro({
   }, [transitionToNextSet]);
 
   const brochureAriaTarget = project?.title || project?.developer || "project";
-  const galleryAriaPrefix =
-    activeIsRTL
-      ? "\u0645\u0639\u0631\u0636 \u0635\u0648\u0631"
-      : "Gallery";
-  const gallerySetLabel =
-    activeIsRTL
-      ? "\u0639\u0631\u0636 \u0645\u062c\u0645\u0648\u0639\u0629 \u0627\u0644\u0635\u0648\u0631"
-      : "View gallery set";
+  const galleryAriaPrefix = t("projectPage.gallerySection") || "Gallery";
+  const gallerySetLabel = t("projectPage.gallerySet") || "View gallery set";
+  const locationLabel = t("projectPage.intro.location") || "Location";
+  const defaultBrochureTitle =
+    t("projectPage.intro.downloadBrochure") || "Download Brochure";
+  const brochureAriaLabel = (title) =>
+    t("projectPage.intro.viewBrochure", {
+      project: brochureAriaTarget,
+      brochure: title,
+    }) || `View ${brochureAriaTarget} brochure`;
 
   return (
     <section
@@ -287,9 +289,7 @@ export default function ProjectIntro({
 
             {project?.location ? (
               <div className={styles.locationSection}>
-                <div className={styles.locationLabel}>
-                  {activeIsRTL ? "\u0627\u0644\u0645\u0648\u0642\u0639:" : "Location:"}
-                </div>
+                <div className={styles.locationLabel}>{locationLabel}:</div>
                 <div className={styles.locationValue}>{project.location}</div>
               </div>
             ) : null}
@@ -304,10 +304,12 @@ export default function ProjectIntro({
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.downloadBrochure}
-                      aria-label={`View ${brochureAriaTarget} brochure`}
+                      aria-label={brochureAriaLabel(
+                        brochure?.title || defaultBrochureTitle
+                      )}
                     >
                       <span className={styles.brochureText}>
-                        {brochure?.title || "Download Brochure"}
+                        {brochure?.title || defaultBrochureTitle}
                       </span>
 
                       <div className={styles.downloadIcon}>

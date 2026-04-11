@@ -338,10 +338,24 @@ function parseLandmarkFeature(item, locale = "en") {
 }
 
 export default function MapDirections({ data, projectData, isRTL, locale }) {
-  const { locale: ctxLocale } = useLanguage();
+  const { locale: ctxLocale, t } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : String(activeLocale).startsWith("ar");
+  const projectLocationLabel =
+    t("projectPage.location.title") || "Project Location";
+  const allNearbyLabel =
+    t("projectPage.location.allNearby") || "All Nearby";
+  const directionsLabel =
+    t("projectPage.location.directions") || "Directions";
+  const mapboxMissingLabel =
+    t("projectPage.location.mapboxMissing") ||
+    "Map is not available. Add NEXT_PUBLIC_MAPBOX_TOKEN then restart the server.";
+  const landmarksLabel =
+    t("projectPage.location.landmarksTitle") ||
+    "Key Landmarks & Travel Times";
+  const nearbyLandmarkLabel =
+    t("projectPage.location.nearbyLandmark") || "Nearby landmark";
 
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -365,8 +379,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       typeof data?.title === "string"
         ? { en: data.title, ar: data.title }
         : data?.title || {
-            en: "Project Location",
-            ar: "\u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u0634\u0631\u0648\u0639",
+            en: projectLocationLabel,
+            ar: projectLocationLabel,
           };
 
     const projectName =
@@ -400,8 +414,8 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
       {
         id: "all",
         label: {
-          en: "All Nearby",
-          ar: "\u0643\u0644 \u0627\u0644\u0623\u0645\u0627\u0643\u0646",
+          en: allNearbyLabel,
+          ar: allNearbyLabel,
         },
       },
       ...Array.from(
@@ -556,9 +570,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
         label: isProject ? name : null,
       });
 
-      const dirLabel = activeIsRTL
-        ? "\u0627\u0644\u0627\u062a\u062c\u0627\u0647\u0627\u062a"
-        : "Directions";
+      const dirLabel = directionsLabel;
       const popupNode = buildInlinePopupEl({
         title: name,
         desc,
@@ -614,9 +626,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
 
   const title = normalized?.title
     ? getLocalizedText(normalized.title, activeLocale)
-    : activeIsRTL
-      ? "\u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u0634\u0631\u0648\u0639"
-      : "Project Location";
+    : projectLocationLabel;
 
   return (
     <section className={styles.mapSection} dir={activeIsRTL ? "rtl" : "ltr"}>
@@ -639,11 +649,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
         ) : null}
 
         {tokenError ? (
-          <div className={styles.warning}>
-            {activeIsRTL
-              ? "\u0627\u0644\u062e\u0631\u064a\u0637\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629. \u0623\u0636\u0641 NEXT_PUBLIC_MAPBOX_TOKEN \u062b\u0645 \u0623\u0639\u062f \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u062e\u0627\u062f\u0645."
-              : "Map is not available. Add NEXT_PUBLIC_MAPBOX_TOKEN then restart the server."}
-          </div>
+          <div className={styles.warning}>{mapboxMissingLabel}</div>
         ) : null}
 
         {coordError ? <div className={styles.warning}>{coordError}</div> : null}
@@ -655,7 +661,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
         {Array.isArray(normalized?.landmarks) && normalized.landmarks.length > 0 ? (
           <div className={styles.landmarksPanel}>
             <div className={styles.landmarksHeading}>
-              {activeIsRTL ? "\u0627\u0644\u0645\u0639\u0627\u0644\u0645 \u0648\u0623\u0632\u0645\u0646\u0629 \u0627\u0644\u0648\u0635\u0648\u0644" : "Key Landmarks & Travel Times"}
+              {landmarksLabel}
             </div>
             <div className={styles.landmarksGrid}>
               {normalized.landmarks
@@ -666,7 +672,7 @@ export default function MapDirections({ data, projectData, isRTL, locale }) {
                     <div className={styles.landmarkContent}>
                       <div className={styles.landmarkName}>{item.name}</div>
                       <div className={styles.landmarkMeta}>
-                        {item.distance || item.description || (activeIsRTL ? "\u0645\u0639\u0644\u0645 \u0642\u0631\u064a\u0628" : "Nearby landmark")}
+                        {item.distance || item.description || nearbyLandmarkLabel}
                       </div>
                     </div>
                   </div>

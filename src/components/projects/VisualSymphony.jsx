@@ -13,10 +13,15 @@ import { getLocalizedText } from "@/lib/text-utils";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export default function VisualSymphony({ data, isRTL, locale }) {
-  const { locale: ctxLocale } = useLanguage();
+  const { locale: ctxLocale, t } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
+  const galleryLabel = t("projectPage.gallerySection") || "Gallery";
+  const loadingLabel =
+    t("projectPage.loadingGallery") || "Loading gallery...";
+  const projectLabel = t("projectPage.projectLabel") || "Project";
+  const galleryViewLabel = t("projectPage.galleryView") || "view";
 
   const [mounted, setMounted] = useState(false);
 
@@ -24,31 +29,29 @@ export default function VisualSymphony({ data, isRTL, locale }) {
     setMounted(true);
   }, []);
 
-  // Normalize slides: ensure every entry is a plain URL string
   const normalizedSlides = React.useMemo(() => {
     if (!data?.slides || !Array.isArray(data.slides)) return [];
     return data.slides
-      .map((s) => (typeof s === "string" ? s : s?.url || s?.src || ""))
+      .map((slide) =>
+        typeof slide === "string" ? slide : slide?.url || slide?.src || ""
+      )
       .filter(Boolean);
   }, [data?.slides]);
 
   if (!data || normalizedSlides.length === 0) return null;
 
-  // SSR-safe loading state
   if (!mounted) {
     return (
       <section
         className={styles.section}
         dir={activeIsRTL ? "rtl" : "ltr"}
-        aria-label={getLocalizedText(data.title, activeLocale) || "Gallery"}
+        aria-label={getLocalizedText(data.title, activeLocale) || galleryLabel}
       >
         <div className={styles.wrapper}>
           <h2 className={styles.heading}>
             {getLocalizedText(data.title, activeLocale)}
           </h2>
-          <div className={styles.loadingState}>
-            {activeIsRTL ? "جاري تحميل المعرض..." : "Loading gallery..."}
-          </div>
+          <div className={styles.loadingState}>{loadingLabel}</div>
         </div>
       </section>
     );
@@ -58,15 +61,13 @@ export default function VisualSymphony({ data, isRTL, locale }) {
     <section
       className={styles.section}
       dir={activeIsRTL ? "rtl" : "ltr"}
-      aria-label={`${getLocalizedText(data.title, activeLocale)} gallery`}
+      aria-label={`${getLocalizedText(data.title, activeLocale)} ${galleryLabel}`}
     >
       <div className={styles.wrapper}>
-        {/* Title – Sobha style */}
         <h2 className={styles.heading}>
           {getLocalizedText(data.title, activeLocale)}
         </h2>
 
-        {/* Slider – force LTR behaviour */}
         <div className={styles.slider} dir="ltr">
           <div className={styles.swiperShell}>
             <Swiper
@@ -75,8 +76,8 @@ export default function VisualSymphony({ data, isRTL, locale }) {
               navigation={true}
               centeredSlides={true}
               loop={true}
-              slidesPerView={"auto"} // <— key for Sobha behaviour
-              spaceBetween={0} // we control overlap with margin-right
+              slidesPerView={"auto"}
+              spaceBetween={0}
               speed={500}
               grabCursor={true}
               keyboard={{ enabled: true }}
@@ -93,8 +94,8 @@ export default function VisualSymphony({ data, isRTL, locale }) {
                         src={src}
                         alt={`${
                           getLocalizedText(data.projectTag, activeLocale) ||
-                          "Project"
-                        } ${activeIsRTL ? "منظر" : "view"} ${index + 1}`}
+                          projectLabel
+                        } ${galleryViewLabel} ${index + 1}`}
                         width={1600}
                         height={900}
                         priority={index === 0}

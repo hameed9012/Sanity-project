@@ -3,16 +3,20 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const ALLOWED_ORIGINS = new Set([
-  "http://localhost:5500",
-  "http://127.0.0.1:5500",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-]);
+const LOCAL_ORIGIN_PATTERN =
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+
+function isAllowedOrigin(origin = "") {
+  const value = String(origin || "").trim();
+  if (!value) return false;
+  if (value === "null") return true;
+  return LOCAL_ORIGIN_PATTERN.test(value);
+}
 
 function corsHeaders(origin = "") {
-  const allowOrigin = ALLOWED_ORIGINS.has(origin)
-    ? origin
+  const normalizedOrigin = String(origin || "").trim();
+  const allowOrigin = isAllowedOrigin(normalizedOrigin)
+    ? normalizedOrigin
     : "http://localhost:5500";
 
   return {
@@ -55,7 +59,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const key = String(body?.key || "").trim();
+    const key = String(
+      body?.key || process.env.DEEPL_API_KEY || process.env.DEEPL_AUTH_KEY || ""
+    ).trim();
     const text = Array.isArray(body?.text)
       ? body.text.map((entry) => String(entry ?? "").trim()).filter(Boolean)
       : [];

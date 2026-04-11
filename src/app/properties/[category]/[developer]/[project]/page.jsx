@@ -209,7 +209,10 @@ function extractMasterplan(brochures) {
     (b) => b && String(b.type || "").toLowerCase() === "masterplan"
   );
   if (mp && (mp.url || mp.href)) {
-    return { url: mp.url || mp.href, title: mp.title || "Masterplan" };
+    return {
+      url: mp.url || mp.href,
+      title: mp.title || { en: "Master Plan", ar: "المخطط الرئيسي" },
+    };
   }
   return null;
 }
@@ -274,7 +277,13 @@ function buildSanityProjectData(sanityDoc, locale) {
       description: intro?.description || content?.description || "",
       paragraphs: Array.isArray(intro?.paragraphs) ? intro.paragraphs : [],
       brochures: brochureUrl
-        ? [{ title: "Download Brochure", url: brochureUrl, type: "main" }]
+        ? [
+            {
+              title: locale === "ar" ? "تحميل الكتيب" : "Download Brochure",
+              url: brochureUrl,
+              type: "main",
+            },
+          ]
         : [],
       imgUrl: intro?.imgUrl || "",
       imgAlt: intro?.imgAlt || "",
@@ -384,7 +393,13 @@ function buildSanityProjectData(sanityDoc, locale) {
       description: cleanLocalizedText(localizedDescription, sanityDoc?.description || ""),
       paragraphs: cleanLocalizedText(localizedDescription, sanityDoc?.description || "") ? [cleanLocalizedText(localizedDescription, sanityDoc?.description || "")] : [],
       brochures: brochureUrl
-        ? [{ title: "Download Brochure", url: brochureUrl, type: "main" }]
+        ? [
+            {
+              title: locale === "ar" ? "تحميل الكتيب" : "Download Brochure",
+              url: brochureUrl,
+              type: "main",
+            },
+          ]
         : [],
       imgUrl: sanityDoc?.heroImage || gallerySlides[0] || "",
       imgAlt: cleanLocalizedText(localizedTitle, sanityDoc?.title || ""),

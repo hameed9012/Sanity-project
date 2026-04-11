@@ -39,7 +39,7 @@ export default function ProjectHero({
   locale,
   showScrollIndicator = true,
 }) {
-  const { locale: ctxLocale } = useLanguage();
+  const { locale: ctxLocale, t } = useLanguage();
   const activeLocale = locale || ctxLocale || "en";
   const activeIsRTL =
     typeof isRTL === "boolean" ? isRTL : activeLocale === "ar";
@@ -106,10 +106,11 @@ export default function ProjectHero({
   const proximityItems = Array.isArray(locationData?.proximityFeatures)
     ? locationData.proximityFeatures.filter((item) => item?.text)
     : [];
-  const scrollLabel =
-    activeLocale === "ar"
-      ? "\u0627\u0646\u062a\u0642\u0644 \u0625\u0644\u0649 \u0627\u0644\u0645\u062d\u062a\u0648\u0649"
-      : "Scroll to content";
+  const scrollLabel = t("projectPage.scrollToContent") || "Scroll to content";
+  const scrollText = t("projectPage.scrollIndicator") || "DISCOVER";
+  const logoAlt =
+    t("projectPage.logoAlt", { project: projectName }) ||
+    `${projectName} logo`;
 
   const scrollToContent = () => {
     const secondWrapper = document.querySelector(`.${styles.secondWrapper}`);
@@ -165,9 +166,7 @@ export default function ProjectHero({
               aria-label={scrollLabel}
             >
               <div className={styles.scrollLine} />
-              <span className={styles.scrollText}>
-                {activeLocale === "ar" ? "\u0627\u0643\u062a\u0634\u0641" : "SCROLL"}
-              </span>
+              <span className={styles.scrollText}>{scrollText}</span>
             </div>
           ) : null}
         </div>
@@ -180,7 +179,7 @@ export default function ProjectHero({
               {logoSrc ? (
                 <Image
                   src={logoSrc}
-                  alt={`${projectName} logo`}
+                  alt={logoAlt}
                   width={260}
                   height={140}
                   className={styles.logoImg}
